@@ -1,0 +1,10 @@
+format: jb-book
+root: README
+
+parts:
+  - caption: Planilla de Cálculo
+    numbered: True
+    chapters:
+      - file: unidades/u1-planilla-calculo/unidad-1-planilla-calculo.md
+      - file: unidades/u1-planilla-calculo/test.ipynb
+      - file: unidades/u2-manipulacion-datos/unidad-2-manipulacion-datos.md
