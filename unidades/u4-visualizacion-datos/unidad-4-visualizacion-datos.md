@@ -1,9 +1,5 @@
 # Unidad 4 - Análisis exploratorio de datos: Visualizaciones
 
-### Fundamentos de ciencia de datos
-
-![Banner FCD-1.png](./imagenes/Banner_FCD-1.png)
-
 ## Introducción
 
 Recomendamos la siguiente lectura: [Articulo del Gorila](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02133-w)

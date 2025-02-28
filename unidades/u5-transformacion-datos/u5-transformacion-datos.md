@@ -1,9 +1,5 @@
 # Unidad 5 - Transformación de datos
 
-### Fundamentos de Ciencia de Datos
-
-![Banner FCD-1.png](./imagenes/Banner_FCD-1.png)
-
 ## Introducción
 
 En esta unidad, exploraremos algunas técnicas esenciales y avanzadas de preprocesamiento de datos, aplicables en el análisis exploratorio de datos, y en la mejora de la eficiencia de los modelos de aprendizaje automático. Estos métodos nos permiten transformar los datos brutos en un formato más útil y comprensible, facilitando la extracción de patrones significativos y la generación de predicciones más precisas.

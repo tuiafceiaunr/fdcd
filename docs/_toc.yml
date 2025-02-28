@@ -3,31 +3,26 @@ root: README
 
 parts:
   - caption: Planilla de cálculo
-    numbered: True
     chapters:
       - file: unidades/u1-planilla-calculo/unidad-1-planilla-calculo.md
 
   - caption: Manipulación de datos
-    numbered: True
     chapters:
       - file: unidades/u2-manipulacion-datos/unidad-2-manipulacion-datos.md
+      - file: unidades/u2-manipulacion-datos/unidad-2-slides.md
 
   - caption: Análisis exploratorio de datos
-    numbered: True
     chapters:
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-analisis-exploratorio-datos.md
 
   - caption: Visualización de datos
-    numbered: True
     chapters:
       - file: unidades/u4-visualizacion-datos/unidad-4-visualizacion-datos.md
 
   - caption: Transofrmación de datos
-    numbered: True
     chapters:
       - file: unidades/u5-transformacion-datos/u5-transformacion-datos.md
 
   - caption: Ajustes y modelos
-    numbered: True
     chapters:
       - file: unidades/u6-ajustes-y-modelos/unidad-6-ajustes-y-modelos.md

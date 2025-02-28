@@ -1,9 +1,5 @@
 # Unidad 3 - Análisis explcorrelationoratorio de datos: Medidas de Resumen
 
-### Fundamentos de ciencia de datos
-
-![Banner FCD-1.png](./imagenes/Banner_FCD-1.png)
-
 ## Introducción
 
 Una de las primeras tareas que tenemos que realizar antes de comenzar a trabajar con los datos que recibimos es el análisis exploratorio de los datos. Esta tarea surge naturalmente cuando la consigna del análisis no está definida pero es muy posible pasarla por alto cuando nos piden realizar X análisis usando ciertos datos. 

@@ -1,9 +1,5 @@
 # Unidad 2 - Manipulación de datos
 
-### Fundamentos de ciencia de datos
-
-![Banner FCD-1.png](./imagenes/Banner_FCD-1.png)
-
 ## ¿Qué son los datos?
 
 Los datos son una porción de información de algún tema en particular que se guardan para ser utilizados en futuros análisis. Los datos pueden venir de tres formas: estructurados, no estructurados y semi estructurados. Durante este curso vamos a utilizar mayormente datos estructurados y algunos semi estructurados.
