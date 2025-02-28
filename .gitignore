@@ -2,4 +2,4 @@
 *.html
 *.csv
 *.idea
-_build/*
+_build/
