@@ -2,7 +2,7 @@
 
 ### Fundamentos de ciencia de datos
 
-![Banner FCD-1.png](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Banner_FCD-1.png)
+![Banner FCD-1.png](./imagenes/Banner_FCD-1.png)
 
 ## ¿Qué son los datos?
 
@@ -147,11 +147,11 @@ hobbies:
 - YAML puede tener problemas de compatibilidad en diferentes lenguajes de programación y plataformas. Puede que un [parseador](https://yaml.org/) determinado no soporte todas las versiones de [YAML](https://yaml.org/) disponibles.
 - La falta de estándares para el formato YAML puede generar ambigüedad en la interpretación de los datos.
 
-# Datos Tabulares
+## Datos Tabulares
 
 Los datos utilizados en el análisis de datos están generalmente representados en forma tabular, como una tabla, compuestos por filas y columnas. Para guardar los datos se pueden usar diferentes tipos de archivos:  .csv, .json, .txt, .html, .parquet.
 
-## Archivo orientado a filas o a columnas
+### Archivo orientado a filas o a columnas
 
 Antes de revisar cada tipo de archivo en particular, es preciso establecer una diferenciación entre los archivos orientados a filas y los archivos orientados a columnas.
 
@@ -203,9 +203,9 @@ Mientras que si se guarda orientado a columnas tendrá esta otra:
 
 [El siguiente post](https://dataschool.com/data-modeling-101/row-vs-column-oriented-databases/#:~:text=Row%20oriented%20databases%20are%20databases,benefits%20for%20storing%20data%20quickly) muestra de forma clara las ventajas y desventajas de cada tipo de archivo.
 
-## Tipos de archivos para el almacenamiento de datos tabulares
+### Tipos de archivos para el almacenamiento de datos tabulares
 
-### CSV
+#### CSV
 
 *Comma-Separated Values* (CSV) es un tipo de archivo que sirve para guardar y transferir datos tabulares. Los diferentes registros (las filas) se separan entre sí mediante saltos de líneas, mientras que los atributos/variables (las columnas) se separan usando la coma (también se pueden usar otros símbolos como el punto y coma o el *tab*). Hoy en día es uno de los formatos más utilizados en el análisis de datos.
 
@@ -234,7 +234,7 @@ Soporte limitado para la codificación.
 - Los archivos CSV no guardan información acerca del tipo de dato de su contenido puesto que todo se guarda en texto simple. Por lo tanto, el tipo de dato debe ser especificado al leer el archivo.
 - Si bien los archivos CSV son de rápida lectura, cuando tienen un tamaño considerable (por contener un gran número de registros y/o columnas) este proceso puede volverse bastante lento.
 
-### TXT
+#### TXT
 
 El tipo de archivo de texto sin formato, también conocido como formato .txt, es uno de los formatos más simples y ampliamente utilizados para el almacenamiento de datos. Este formato se utiliza con frecuencia en el campo de la ciencia de datos debido a su facilidad de uso y compatibilidad con una amplia variedad de herramientas y lenguajes de programación. Cuando se almacenan datos tabulares, los archivos TXT suelen ser muy similares a CSV.
 
@@ -255,7 +255,7 @@ También es utilizado para el almacenamiento y procesamiento de datos estructura
 - La falta de estructura en los archivos de texto sin formato puede dificultar su procesamiento automatizado. Esto puede hacer que el análisis de datos sea más lento y menos preciso en algunos casos y que se requiera de validaciones o de la construcción de funciones especiales para interpretarlos (parseo).
 - El formato .txt no es adecuado para almacenar datos complejos o información multimedia, como imágenes, audio o video. Tampoco resulta eficiente para almacenar grandes cantidades de datos con una alta densidad de información.
 
-### Apache Parquet
+#### Apache Parquet
 
 Parquet es un formato para el almacenamiento de datos tabulares orientado a columnas y está optimizado para grandes cargas de datos. En este sentido, es de uso común en sistemas de procesamiento de *Big Data* basados en [Hadoop](https://hadoop.apache.org/)**,** como [Hive](https://hive.apache.org/), [Impala](https://impala.apache.org/) y [Spark](https://spark.apache.org/). ****Fue desarrollado por Cloudera y Twitter en 2013 como un proyecto de código abierto. 
 
@@ -282,11 +282,11 @@ Parquet es un formato popular para el procesamiento de *Big Data* y se utiliza e
 - No apto para conjuntos de datos pequeños: Parquet está optimizado para consultas analíticas a gran escala y no es adecuado para conjuntos de datos pequeños.
 - Sobrecarga de planificación de consultas: el almacenamiento en columnas requiere más sobrecarga de planificación de consultas que los formatos de almacenamiento basados en filas. Esto puede aumentar el tiempo de planificación de la consulta y hacerla más compleja.
 
-### JSON
+#### JSON
 
 Explicados en detalle en la sección de datos semi-estructurados
 
-### HTML
+#### HTML
 
 El formato HTML (Lenguaje de Marcado de Hipertexto o *HyperText Markup Language*) es un lenguaje utilizado principalmente para crear páginas web y documentos de hipertexto. En el campo de la ciencia de datos, se puede utilizar como un formato de almacenamiento de datos estructurados y no estructurados.
 
@@ -345,11 +345,11 @@ El formato HTML (Lenguaje de Marcado de Hipertexto o *HyperText Markup Language*
 - El formato HTML puede ser susceptible a cambios en la estructura de la página, lo que puede afectar la calidad y la precisión de los datos extraídos.
 - HTML no es un formato de almacenamiento de datos óptimo para grandes cantidades de datos o datos no estructurados.
 
-## Lectura de archivos con datos tabulares
+### Lectura de archivos con datos tabulares
 
 Existen muchas formas de leer archivos en Python. Hasta el momento, en cursos anteriores vimos como leer archivos .csv usando el paquete `csv` y `pandas`
 
-### Paquete csv
+#### Paquete csv
 
 El siguiente código muestra cómo abrir el archivo de `listings.csv` de Airbnb, que usamos en Programación I, a través del paquete `csv`. Aquí podemos ver con claridad que el archivo .csv es un archivo orientado a filas, ya que, para poder acceder a los datos que se encuentran en su interior, `csv` tiene que recorrer con un *for-loop* cada una de las filas del archivo. Por ejemplo, para calcular el precio promedio de los alojamientos, debe entrar a cada registro, extraer el precio (que se encuentra en la posición #9) y guardarlo en la lista `lista_precios`. Sólo una vez que se ha completado esta secuencia de pasos, puede calcularse el precio promedio como la suma de todos los precios dividida entre la longitud de la lista.
 
@@ -366,7 +366,7 @@ with open('listings.csv') as File:
 precio_prom = sum(lista_precios)/len(lista_precios)
 ```
 
-### Paquete pandas
+#### Paquete pandas
 
 El paquete `pandas` que aprendimos a usar en Programación II nos permite leer los datos de un archivo .csv de una forma mucho más sencilla. Si bien el archivo .csv sigue siendo orientado a filas, la librería se encarga de ponerlo dentro de un objeto **DataFrame**, que nos evita tener que escribir el código necesario para extraer la información, como en el caso anterior.
 
@@ -394,7 +394,7 @@ storage_options = None, use_nullable_dtypes = False, **kwargs)
 
 El parámetro `engine` nos permite seleccionar la librería específica de `parquet` para leer el archivo: io.parquet.engine (’auto’), ‘pyarrow’, ‘fastparquet’. 
 
-### Paquete JSON
+#### Paquete JSON
 
 La librería nativa `json` en Python proporciona herramientas para trabajar con datos JSON (Notación de Objetos JavaScript), que es un formato de intercambio de datos muy utilizado en aplicaciones web y móviles. 
 
@@ -452,11 +452,11 @@ print(datos)
 
 En este ejemplo, el archivo `datos.json` es leído utilizando la función **`read_json()`** de `pandas` y se almacena en un objeto Pandas **DataFrame** llamado **`datos`**. La función **`read_json()`** convierte automáticamente los datos JSON en un **DataFrame** de `pandas` . Esto permite que podamos cargar los datos en la memoria, para luego realizar diversas operaciones y análisis con nuestros datos, como el filtrado de datos, el cálculo de estadísticas y la construcción de gráficos.
 
-## Escritura de datos tabulares en archivos
+### Escritura de datos tabulares en archivos
 
 Desde Python, es posible realizar la escritura de datos tabulares (filas/columnas) en formatos como CSV y Parquet. 
 
-### Escritura de datos en formato CSV
+#### Escritura de datos en formato CSV
 
 Para escribir datos en un archivo CSV, primero debemos importar la librería `csv`. A continuación, podemos abrir el archivo en modo de escritura utilizando la función **`open()`**. Luego, creamos un objeto `csv.writer` que nos permitirá escribir los datos en el archivo en formato CSV. Por último, escribimos los datos en el archivo utilizando el método **`writerow()` .**
 
@@ -503,7 +503,7 @@ df.to_csv('datos.csv', index = False) #guardamos los datos sin el índice
 print(pd.read_csv('datos.csv'))
 ```
 
-### **Escritura de datos en formato Parquet:**
+#### **Escritura de datos en formato Parquet:**
 
 Para escribir datos en un archivo Parquet, primero debemos importar la librería `pyarrow`. A continuación, podemos convertir los datos en un objeto `pandas.DataFrame`. Luego, utilizamos el método **`to_parquet()`** para escribir los datos en el archivo en formato Parquet.
 
@@ -712,13 +712,13 @@ La precisión de **`datetime64`** se puede controlar mediante los modificadores 
 
 En la siguiente tabla se puede ver cómo compatibilizar los tipos de datos de las diferentes librerías:
 
-![Untitled](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Untitled.png)
+![Untitled](./imagenes/Untitled.png)
 
 ## Manipulación de datos
 
 El *Data Wrangling,* por su nombre en inglés, es el proceso de preparar los datos y ponerlos en el formato necesario para poder realizar un posterior análisis de los mismos. 
 
-![Untitled](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Untitled%201.png)
+![Untitled](./imagenes/Untitled%201.png)
 
 ### Datos en forma larga o ancha
 
@@ -967,7 +967,7 @@ $$
 \frac{x_{1} - x_{0}}{x_{i}-x_{0}} = \frac{y_{1} - y_{0}}{y_{i}-y_{0}}
 $$
 
-![Untitled](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Untitled%202.png)
+![Untitled](./imagenes/Untitled%202.png)
 
 <aside>
 💡 Si el valor de x que queremos usar en la predicción se encuentra por fuera del rango establecido, esto deja de ser una interpolación y será una **extrapolación**.
@@ -983,7 +983,7 @@ Esta interpolación es global y va a buscar un polinomio que pase por todos los 
 - 4 puntos NO alineados: un polinomio de grado 3
 - n + 1 puntos NO alineados: un polinomio de grado n
 
-![Untitled](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Untitled%203.png)
+![Untitled](./imagenes/Untitled%203.png)
 
 <aside>
 💡 Existen diversos métodos de interpolación no lineales, por ejemplo: Método de Newton, de Lagrange, interpolación de spline, etc. De acuerdo al método elegido, se pueden obtener valores de $y_{i}$ similares o por el contrario, bastante diferentes. Por eso es importante analizar en cada caso el método más apropiado.
@@ -1010,7 +1010,7 @@ $$
 f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \qquad x_{1}\lt x_{i} \lt x_{2} 
 $$
 
-![Untitled](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Untitled%204.png)
+![Untitled](./imagenes/Untitled%204.png)
 
 ## Convenciones de nombres y buenas prácticas
 
@@ -1119,7 +1119,7 @@ segundos_en_un_dia = SECONDS_IN_A_MINUTE * 60 * HOURS_IN_A_DAY
 print("Segundos en un día:", segundos_en_un_dia)
 ```
 
-![Untitled](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Untitled%205.png)
+![Untitled](./imagenes/Untitled%205.png)
 
 ## Expresiones regulares
 
@@ -1546,7 +1546,7 @@ El resultado de la ejecución del código anterior sería el siguiente:
 
 Como se puede ver, el nuevo DataFrame resultante contiene todas las combinaciones posibles entre los valores de ambas tablas, sin importar si los valores coinciden o no. 
 
-![Untitled](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/Untitled%206.png)
+![Untitled](./imagenes/Untitled%206.png)
 
 Es importante tener en cuenta que realizar una unión cruzada puede generar un DataFrame muy grande si los DataFrames originales son grandes. Por lo tanto, se debe tener cuidado al utilizar esta técnica y asegurarse de que sea realmente necesaria para el análisis que se está realizando.
 
@@ -1587,13 +1587,13 @@ La salida del código anterior sería:
 
 En este ejemplo, se ha utilizado un *cross join* para generar todas las posibles combinaciones de productos electrónicos y accesorios que se podrían ofrecer juntos en un paquete promocional. Esto podría ayudar a identificar combinaciones de productos y accesorios que se venden bien juntos y a diseñar paquetes promocionales efectivos para los clientes.
 
-# Temas avanzados
+## Temas avanzados
 
-## Enlace difuso de registros (Fuzzy joins)
+### Enlace difuso de registros (Fuzzy joins)
 
 Se refiere a la idea de unir dos o más registros que probablemente hacen referencia a la misma entidad y es parte del proceso de fusión de datos. Esto puede ser realizado entre dos registros de dos tablas diferentes o entre registros de una misma tabla para identificar duplicados. En la sección anterior vimos como unir dos o más datasets utilizando un atributo en común y dimos por sentado que ese atributo estaba limpio y completo para todos los datasets. Sin embargo, esto puede no ser así. 
 
-### **Enlace determinístico de registros**
+#### **Enlace determinístico de registros**
 
 Es la forma más sencilla de enlazar registros y puede ser realizada de diferentes formas:
 
