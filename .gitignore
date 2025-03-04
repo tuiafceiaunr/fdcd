@@ -1,4 +1,5 @@
 # Files
 *.html
 *.csv
-*.idea
+**/_build/
+.idea/

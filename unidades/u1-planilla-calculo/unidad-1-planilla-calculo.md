@@ -1,9 +1,5 @@
 # Unidad 1 - Planilla de Cálculo
 
-### Fundamentos de ciencia de datos
-
-![Banner FCD-1.png](imagenes/Banner_FCD-1.png)
-
 Los software de hojas de cálculo (tales como Microsoft Excel, Google Sheets y LibreOffice Calc, entre otros) son herramientas valiosas para ingresar, organizar y almacenar datos. También se pueden utilizar para cálculos, análisis y visualizaciones.
 
 ![Algunos software ejemplo basados en hojas de cálculo](imagenes/hojas_de_calc_(2).png)
