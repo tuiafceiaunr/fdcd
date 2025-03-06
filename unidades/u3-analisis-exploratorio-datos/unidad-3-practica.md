@@ -1,9 +1,5 @@
 # Unidad 3 - Análisis exploratorio de datos: Medidas de Resumen
 
-### Fundamentos de ciencia de datos
-
-![Banner FCD-1.png](imagenes/Banner_FCD-1.png)
-
 **Ejercicio N°1**
 
 El dataset `alimentos.csv` fue elaborado por una clínica de nutrición que suministró a sus pacientes una lista de alimentos permitidos con sus respectivos contenidos calóricos. También se detalló el tipo de alimento del que se trataba (fruta, verdura, etc.) y el tipo de vitamina que aportaba cada uno (A, B o C).

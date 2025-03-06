@@ -1,8 +1,4 @@
-# Unidad 6 - Ajustes y modelos
-
-### Fundamentos de ciencia de datos
-
-![Banner FCD-1.png](imagenes/Banner_FCD-1.png)
+# Unidad 6 - Ajustes y modelos 1
 
 **Ejercicio N° 1**
 

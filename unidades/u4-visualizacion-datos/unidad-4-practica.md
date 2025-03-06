@@ -1,9 +1,5 @@
 # Unidad 4 - Análisis exploratorio de datos: Visualizaciones
 
-### Fundamentos de ciencia de datos
-
-![Banner FCD-1.png](imagenes/Banner_FCD-1.png)
-
 **Ejercicio N° 1**
 
 El set de datos `viajes_tup.xlsx` contiene información sobre el número de viajes mensuales registrados en el Transporte Urbano de Pasajeros (TUP) de la ciudad de Rosario entre los años 2015 y 2021.
