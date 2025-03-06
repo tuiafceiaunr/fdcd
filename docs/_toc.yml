@@ -5,31 +5,31 @@ parts:
   - caption: Planilla de cálculo
     chapters:
       - file: unidades/u1-planilla-calculo/unidad-1-planilla-calculo.md
-      - file: unidades/u1-planilla-calculo/unidad-1-planilla-calculo-practica.md
+      - file: unidades/u1-planilla-calculo/unidad-1-practica.md
 
   - caption: Manipulación de datos
     chapters:
       - file: unidades/u2-manipulacion-datos/unidad-2-manipulacion-datos.md
       - file: unidades/u2-manipulacion-datos/unidad-2-slides.md
-      - file: unidades/u2-manipulacion-datos/unidad-2-manipulacion-datos-practica.md
+      - file: unidades/u2-manipulacion-datos/unidad-2-practica.md
       
   - caption: Análisis exploratorio de datos
     chapters:
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-analisis-exploratorio-datos.md
-      - file: unidades/u3-analisis-exploratorio-datos/unidad-3-analisis-exploratorio-datos-practica.md
+      - file: unidades/u3-analisis-exploratorio-datos/unidad-3-practica.md
 
   - caption: Visualización de datos
     chapters:
       - file: unidades/u4-visualizacion-datos/unidad-4-visualizacion-datos.md
-      - file: unidades/u4-visualizacion-datos/unidad-4-visualizacion-datos-practica.md
+      - file: unidades/u4-visualizacion-datos/unidad-4-practica.md
 
   - caption: Transofrmación de datos
     chapters:
       - file: unidades/u5-transformacion-datos/u5-transformacion-datos.md
-      - file: unidades/u5-transformacion-datos/unidad-5-transformacion-datos-practica.md
+      - file: unidades/u5-transformacion-datos/unidad-5-practica.md
 
   - caption: Ajustes y modelos
     chapters:
       - file: unidades/u6-ajustes-y-modelos/unidad-6-ajustes-y-modelos.md
-      - file: unidades/u6-ajustes-y-modelos/unidad-6-ajustes-y-modelos-practica1.md
-      - file: unidades/u6-ajustes-y-modelos/unidad-6-ajustes-y-modelos-practica2.md
+      - file: unidades/u6-ajustes-y-modelos/unidad-6-practica1.md
+      - file: unidades/u6-ajustes-y-modelos/unidad-6-practica2.md
