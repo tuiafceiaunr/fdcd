@@ -1,5 +1,9 @@
 # Unidad 3 - Análisis exploratorio de datos: Medidas de Resumen
 
+```{admonition} 📂 Descargar archivos  
+[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){.external}
+```
+
 **Ejercicio N°1**
 
 El dataset `alimentos.csv` fue elaborado por una clínica de nutrición que suministró a sus pacientes una lista de alimentos permitidos con sus respectivos contenidos calóricos. También se detalló el tipo de alimento del que se trataba (fruta, verdura, etc.) y el tipo de vitamina que aportaba cada uno (A, B o C).
@@ -56,8 +60,8 @@ Importe y explore el conjunto de datos `titanic.csv`
     
 6. Construya una tabla en la que se resuma la distribución de pasajeros del Titanic en función de la clase en la que viajaron. La misma debe contener la siguiente información (en distintas columnas): cantidad de pasajeros/as que viajaron en cada clase y porcentajes en relación al total. ¿A qué clase pertenecía la mayoría de los pasajeros del Titanic?
 7. Construya una tabla de contingencia cruzando las variables “survived” y “Pclass”. ¿Qué proporción de personas de cada clase sobrevivieron al naufragio del Titanic? Represente gráficamente esta información en un gráfico de barras.
-8. a. Categorice la variable edad en los siguientes grupos etarios: 0-18 años, 19-35 años, 36-56 años y >57 años.
-    
+8. 
+    a. Categorice la variable edad en los siguientes grupos etarios: 0-18 años, 19-35 años, 36-56 años y >57 años.
     b. Construya un gráfico de barras que muestre la cantidad de personas de género masculino y femenino que sobrevivieron y murieron según el rango etario definido anteriormente.
     
 

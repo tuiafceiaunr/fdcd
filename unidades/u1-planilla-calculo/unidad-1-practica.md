@@ -1,7 +1,8 @@
 # Unidad 1 - Planilla de Cálculo
 
 ```{admonition} 📂 Descargar archivos  
-[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){target=_blank} 
+[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){.external}
+```
 
 ### Ejercicio N°1
 

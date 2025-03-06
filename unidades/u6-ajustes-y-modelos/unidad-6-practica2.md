@@ -1,8 +1,8 @@
 # Unidad 6 - Ajustes y modelos 2
 
 ```{admonition} 📂 Descargar archivos  
-[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){target=_blank}  
-
+[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){.external}
+```
 ### **Ejercicio N°1**
 
 El dataset `student_data.csv` contiene información sobre el promedio de horas semanales de estudio que un conjunto de estudiantes dedicó para la preparación de un examen y la calificación final recibida luego de rendirlo.
