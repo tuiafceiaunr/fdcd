@@ -1,5 +1,9 @@
 # Unidad 4 - Análisis exploratorio de datos: Visualizaciones
 
+```{admonition} 📂 Descargar archivos  
+[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){.external}
+```
+
 **Ejercicio N° 1**
 
 El set de datos `viajes_tup.xlsx` contiene información sobre el número de viajes mensuales registrados en el Transporte Urbano de Pasajeros (TUP) de la ciudad de Rosario entre los años 2015 y 2021.

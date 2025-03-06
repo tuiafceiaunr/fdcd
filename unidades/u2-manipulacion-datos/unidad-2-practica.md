@@ -1,8 +1,8 @@
 # Unidad 2 - Manipulación de Datos
 
 ```{admonition} 📂 Descargar archivos  
-[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){target=_blank} 
-
+[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){.external}
+```
 ### **Ejercicio N°1**
 
 Lea en *Colab* el archivo `flete-aereo-vacunas-covid19-al-2021-06-28.xlsx` y realice cualquier tarea de limpieza y/o adecuación del dataset que considere necesaria.
