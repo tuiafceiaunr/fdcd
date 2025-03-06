@@ -1,13 +1,7 @@
 # Unidad 1 - Planilla de Cálculo
 
-### Fundamentos de Ciencia de Datos
-
-![Banner FCD-1.png](imagenes/Banner_FCD-1.png)
-
-<aside>
-📂 Descargar los archivos para la práctica desde el [Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471).
-
-</aside>
+```{admonition} 📂 Descargar archivos  
+[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){target=_blank} 
 
 ### Ejercicio N°1
 
