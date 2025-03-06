@@ -1,7 +1,7 @@
 # Unidad 3 - Análisis exploratorio de datos: Medidas de Resumen
 
 ```{admonition} 📂 Descargar archivos  
-[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471){.external}
+[Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471)
 ```
 
 **Ejercicio N°1**
