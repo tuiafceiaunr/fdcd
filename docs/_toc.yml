@@ -5,6 +5,7 @@ parts:
   - caption: Planilla de cálculo
     chapters:
       - file: unidades/u1-planilla-calculo/unidad-1-planilla-calculo.md
+      - file: unidades/u1-planilla-calculo/unidad-1-diapositivas.md
       - file: unidades/u1-planilla-calculo/unidad-1-practica.md
         title: Práctica - Planilla de Cálculo
   
