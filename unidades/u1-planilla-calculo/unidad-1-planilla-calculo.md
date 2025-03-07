@@ -381,7 +381,4 @@ A una tabla resumen donde podemos mostrar la cantidad de empleados por categorí
 En la tabla dinámica se puede arrastrar y soltar las columnas que se desean analizar y se pueden seleccionar diferentes tipos de medidas resumen, como sumas, promedios, conteos, etc. También, se pueden aplicar filtros para mostrar solo ciertos datos, y se puede cambiar la organización y la presentación de la tabla dinámica de manera interactiva y visual.
 
  
-
-[Ejemplo de creación de tabla dinámica en Google Sheets a partir del [archivo](https://docs.google.com/spreadsheets/d/1gy7BgdUL--zdKKGQsTZbhRYt78deKi2Y/edit?usp=share_link&ouid=108452728172495579105&rtpof=true&sd=true) que contiene información sobre la superficie de área quemada por provincia para el período 1993-2021.](https://docs.google.com/presentation/d/1XhjJ4exK015TCinYc86vBfsJ2VF5_l__3sVFfnaY96g/edit?usp=sharing)
-
-Ejemplo de creación de tabla dinámica en Google Sheets a partir del [archivo](https://docs.google.com/spreadsheets/d/1gy7BgdUL--zdKKGQsTZbhRYt78deKi2Y/edit?usp=share_link&ouid=108452728172495579105&rtpof=true&sd=true) que contiene información sobre la superficie de área quemada por provincia para el período 1993-2021.
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRRpZf133Ylr9PfNRYQxw9TqstZecGNmuMH7QLxN8eK7D5dgaHB6cHBIrIT7uJEeW1YSTRSo13tuFAG/pub?start=false&loop=false&delayms=3000" width="800" height="450" allowfullscreen></iframe>
