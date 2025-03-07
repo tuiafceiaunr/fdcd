@@ -380,5 +380,7 @@ A una tabla resumen donde podemos mostrar la cantidad de empleados por categorí
 
 En la tabla dinámica se puede arrastrar y soltar las columnas que se desean analizar y se pueden seleccionar diferentes tipos de medidas resumen, como sumas, promedios, conteos, etc. También, se pueden aplicar filtros para mostrar solo ciertos datos, y se puede cambiar la organización y la presentación de la tabla dinámica de manera interactiva y visual.
 
- 
-<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRRpZf133Ylr9PfNRYQxw9TqstZecGNmuMH7QLxN8eK7D5dgaHB6cHBIrIT7uJEeW1YSTRSo13tuFAG/pub?start=false&loop=false&delayms=3000" width="800" height="450" allowfullscreen></iframe>
+<iframe src="https://docs.google.com/presentation/d/e/2PACX-1vRRpZf133Ylr9PfNRYQxw9TqstZecGNmuMH7QLxN8eK7D5dgaHB6cHBIrIT7uJEeW1YSTRSo13tuFAG/embed?start=false&loop=false&delayms=3000"
+frameborder="0" width="800" height="450" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe> 
+
+[Link a la presentación](https://docs.google.com/presentation/d/e/2PACX-1vRRpZf133Ylr9PfNRYQxw9TqstZecGNmuMH7QLxN8eK7D5dgaHB6cHBIrIT7uJEeW1YSTRSo13tuFAG/pub?start=false&loop=false&delayms=3000).
