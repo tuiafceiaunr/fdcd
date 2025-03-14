@@ -714,7 +714,7 @@ En la siguiente tabla se puede ver cómo compatibilizar los tipos de datos de la
 
 El *Data Wrangling,* por su nombre en inglés, es el proceso de preparar los datos y ponerlos en el formato necesario para poder realizar un posterior análisis de los mismos. 
 
-![Untitled](./imagenes/Untitled%201.png)
+![Untitled](./imagenes/dataset_wild.png)
 
 ### Datos en forma larga o ancha
 
@@ -963,7 +963,7 @@ $$
 \frac{x_{1} - x_{0}}{x_{i}-x_{0}} = \frac{y_{1} - y_{0}}{y_{i}-y_{0}}
 $$
 
-![Untitled](./imagenes/Untitled%202.png)
+![Untitled](./imagenes/interpolacion.png)
 
 <aside>
 💡 Si el valor de x que queremos usar en la predicción se encuentra por fuera del rango establecido, esto deja de ser una interpolación y será una **extrapolación**.
@@ -979,7 +979,7 @@ Esta interpolación es global y va a buscar un polinomio que pase por todos los 
 - 4 puntos NO alineados: un polinomio de grado 3
 - n + 1 puntos NO alineados: un polinomio de grado n
 
-![Untitled](./imagenes/Untitled%203.png)
+![Untitled](./imagenes/Untitled3.png)
 
 <aside>
 💡 Existen diversos métodos de interpolación no lineales, por ejemplo: Método de Newton, de Lagrange, interpolación de spline, etc. De acuerdo al método elegido, se pueden obtener valores de $y_{i}$ similares o por el contrario, bastante diferentes. Por eso es importante analizar en cada caso el método más apropiado.
@@ -1006,7 +1006,7 @@ $$
 f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \qquad x_{1}\lt x_{i} \lt x_{2} 
 $$
 
-![Untitled](./imagenes/Untitled%204.png)
+![Untitled](./imagenes/Untitled4.png)
 
 ## Convenciones de nombres y buenas prácticas
 
@@ -1115,7 +1115,7 @@ segundos_en_un_dia = SECONDS_IN_A_MINUTE * 60 * HOURS_IN_A_DAY
 print("Segundos en un día:", segundos_en_un_dia)
 ```
 
-![Untitled](./imagenes/Untitled%205.png)
+![Untitled](./imagenes/Untitled5.png)
 
 ## Expresiones regulares
 
@@ -1542,7 +1542,7 @@ El resultado de la ejecución del código anterior sería el siguiente:
 
 Como se puede ver, el nuevo DataFrame resultante contiene todas las combinaciones posibles entre los valores de ambas tablas, sin importar si los valores coinciden o no. 
 
-![Untitled](./imagenes/Untitled%206.png)
+![Untitled](./imagenes/Untitled6.png)
 
 Es importante tener en cuenta que realizar una unión cruzada puede generar un DataFrame muy grande si los DataFrames originales son grandes. Por lo tanto, se debe tener cuidado al utilizar esta técnica y asegurarse de que sea realmente necesaria para el análisis que se está realizando.
 
