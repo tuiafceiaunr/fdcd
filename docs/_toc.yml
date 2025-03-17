@@ -12,7 +12,8 @@ parts:
   - caption: Manipulación de datos
     chapters:
       - file: unidades/u2-manipulacion-datos/unidad-2-manipulacion-datos.md
-      - file: unidades/u2-manipulacion-datos/unidad-2-slides.md
+      - file: unidades/u2-manipulacion-datos/unidad-2-slides-p1.md
+      - file: unidades/u2-manipulacion-datos/unidad-2-slides-p2.md
       - file: unidades/u2-manipulacion-datos/unidad-2-practica.md
         title: Unidad 2 - Práctica - Manipulación de datos
       
