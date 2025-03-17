@@ -4,4 +4,4 @@
 **/_build/
 .idea/
 .Rproj.user
-!*/slides/*.html
+!slides/**/*.html
