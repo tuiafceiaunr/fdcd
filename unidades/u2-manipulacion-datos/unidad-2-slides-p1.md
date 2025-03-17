@@ -1,3 +1,3 @@
-# Unidad 2 - Diapositivas - Manipulación de Datos
+# Slides Unidad 2 - Parte 1
 
-<iframe src="./slides/clase2_publicar.pdf" width="100%" height="600px"></iframe>
+<iframe src="./slides/u2-manipulacion-datos-p1.pdf" width="100%" height="600px"></iframe>
