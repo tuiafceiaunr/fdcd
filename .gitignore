@@ -3,3 +3,5 @@
 *.csv
 **/_build/
 .idea/
+.Rproj.user
+!*/slides/*.html
