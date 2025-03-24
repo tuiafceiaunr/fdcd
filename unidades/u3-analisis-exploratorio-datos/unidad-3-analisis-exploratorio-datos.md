@@ -1,4 +1,4 @@
-# Unidad 3 - Análisis explcorrelationoratorio de datos: Medidas de Resumen
+# Unidad 3 - Análisis exploratorio de datos: medidas de resumen
 
 ## Introducción
 

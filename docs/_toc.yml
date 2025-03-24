@@ -20,8 +20,9 @@ parts:
   - caption: Análisis exploratorio de datos
     chapters:
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-analisis-exploratorio-datos.md
+      - file: unidades/u3-analisis-exploratorio-datos/unidad-3-slides-p1.md
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-practica.md
-        title: Práctica - Análisis exploratorio
+        title: Práctica - Análisis exploratorio de datos
 
   - caption: Visualización de datos
     chapters:
