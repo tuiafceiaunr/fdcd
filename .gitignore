@@ -3,5 +3,5 @@
 *.csv
 **/_build/
 .idea/
-fdcd.Rproj
+*.Rproj
 .Rproj.user/
