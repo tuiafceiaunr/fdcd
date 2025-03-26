@@ -12,13 +12,13 @@ Los modelos se utilizan para representar fenómenos de la realidad que queremos 
 
 Incluso. probablemente, ya hayan estado usando modelos en alguna otra clase de la carrera, como por ejemplo en Cálculo. El ejemplo de abajo lo copiamos del libro “Cálculo de una Variable” de J. Stewart
 
-![Untitled](./imagenes/Untitled%201.png)
+![Untitled](./imagenes/Untitled1.png)
 
-![Untitled](./imagenes/Untitled%202.png)
+![Untitled](./imagenes/Untitled2.png)
 
 Probablemente, antes de obtener el modelo para T que se muestra arriba, la situación era como la imagen de abajo, mediciones de temperatura del aire a diferentes alturas sobre el nivel del suelo. Luego, se realizó un modelo lineal para predecir la temperatura del aire, variable dependiente, en función de la altura con respecto al suelo, variable independiente.
 
-![Untitled](./imagenes/Untitled%203.png)
+![Untitled](./imagenes/Untitled3.png)
 
 En este capítulo vamos a ver uno de los modelos más básicos de estadística, pero no menos importante, el modelo de regresión lineal. 
 
@@ -26,7 +26,7 @@ En este capítulo vamos a ver uno de los modelos más básicos de estadística, 
 
 Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
 
-![Untitled](./imagenes/Untitled%204.png)
+![Untitled](./imagenes/Untitled4.png)
 
 Pero cómo sabemos si una recta es mejor que otra? 
 
@@ -34,7 +34,7 @@ Pero cómo sabemos si una recta es mejor que otra?
 
 Para realizar el ajuste del modelo, en este caso una recta, a los datos vamos a utilizar un método llamado “mínimos cuadrados”. El objetivo del mismo es encontrar la recta que produzca el menor error general.
 
-![Untitled](./imagenes/Untitled%205.png)
+![Untitled](./imagenes/Untitled5.png)
 
 El procedimiento para calcular el error general de una recta es el siguiente:
 
@@ -47,21 +47,21 @@ $$
 L = (\hat{y}_1 - (a + b x_1))^2 + (\hat{y}_2 - (a + b x_2))^2 + ... + (\hat{y}_n - (a + b x_n))^2
 $$
 
-![Untitled](./imagenes/Untitled%206.png)
+![Untitled](./imagenes/Untitled6.png)
 
 Entonces, en nuestro caso, probaríamos con diferentes rectas y calcularíamos el error general que cada una produce. 
 
-![Untitled](./imagenes/Untitled%207.png)
+![Untitled](./imagenes/Untitled7.png)
 
-![Untitled](./imagenes/Untitled%208.png)
+![Untitled](./imagenes/Untitled8.png)
 
-![Untitled](./imagenes/Untitled%209.png)
+![Untitled](./imagenes/Untitled9.png)
 
-![Untitled](./imagenes/Untitled%2010.png)
+![Untitled](./imagenes/Untitled10.png)
 
 En nuestro ejemplo, vemos que a medida que rotamos la recta en sentido horario, el error disminuya hasta un punto y luego vuelve a aumentar. Lo que estamos observando es que el error comienza a disminuir a medida que la pendiente aumenta, hasta cierto punto, donde alcanzamos un error mínimo. A partir de este punto el error vuelve a aumentar.  
 
-![Untitled](./imagenes/Untitled%2011.png)
+![Untitled](./imagenes/Untitled11.png)
 
 Esto nos indica que estamos frente a un problema de optimización. Si consiguiéramos la ecuación de la parábola que estamos viendo arriba, podríamos buscar el mínimo de la misma usando la primer derivada. Resulta que esa ecuación si la conocemos y es la que vimos más arriba:
 
@@ -107,7 +107,7 @@ El término “a” es la ordenada al origen y nos indica el valor de la variabl
 
 El término “b” es la pendiente de la recta y nos indica cómo es la variación de la variable dependiente con respecto a la independiente
 
-![Untitled](./imagenes/Untitled%2012.png)
+![Untitled](./imagenes/Untitled12.png)
 
 ## Ejemplo
 
@@ -123,7 +123,7 @@ $$
 
 Estudiar los residuos es muy importante para verificar si un modelo lineal es el adecuado para nuestros datos. Cuando graficamos los residuos para los diferentes valores de la variable independiente, x, los mismos deben presentar una distribución aleatoria como en la figura de abajo (1) a la izquierda. Sin embargo, si los residuos se distribuyen de alguna forma en particular, como la parábola de la imagen de la derecha, entonces el modelo no es el adecuado. En este último caso, lo que sucede es que para valores bajos y altos de la variable independiente, el modelo subestima a la variable dependiente, mientras que para los valores intermedios el modelo sobrestima a la variable dependiente. Al ver el gráfico de residuos concluimos que el modelo debe ser revisado.
 
-![Untitled](./imagenes/Untitled%2013.png)
+![Untitled](./imagenes/Untitled13.png)
 
 Variables Categóricas
 
@@ -156,12 +156,12 @@ Tiene pileta:
     - 0 - No
     - 1 - Sí
     
-    ![Untitled](./imagenes/Untitled%2014.png)
+    ![Untitled](./imagenes/Untitled14.png)
     
 
 Entonces, las ecuaciones con los diferentes casos se ven de esta forma:
 
-![Untitled](./imagenes/Untitled%2015.png)
+![Untitled](./imagenes/Untitled15.png)
 
 # Suavizado y Splines
 
@@ -171,7 +171,7 @@ El material de esta sección fue extraído de: [http://rafalab.dfci.harvard.edu/
 
 El suavizado es una técnica muy poderosa utilizada en todo el análisis de datos. Otro nombre dado a esta técnica es ajuste de curva. Está diseñado para detectar tendencias en presencia de datos ruidosos en casos en los que la forma de la tendencia es desconocida. El nombre de suavizado proviene del hecho de que, para lograr este objetivo, asumimos que la tendencia es suave, como en una superficie suave. En contraste, el ruido o desviación de la tendencia es impredeciblemente irregular:
 
-![Untitled](./imagenes/Untitled%2016.png)
+![Untitled](./imagenes/Untitled16.png)
 
 Para explicar estos conceptos, nos centraremos primero en un problema con solo un predictor. Específicamente, intentamos estimar la tendencia temporal en el margen de la encuesta de voto popular de EE.UU. en 2008 (diferencia entre Obama y McCain).
 
@@ -185,7 +185,7 @@ $$
 
 Consideremos que queremos predecir Y para un día x. Si supiéramos la probabilidad condicional $f(x) = E(Y| X = x)$, la usaríamos. Pero dado que no conocemos esta expectativa condicional, tenemos que estimarla. Utilicemos regresión, ya que es el método que hemos aprendido hasta ahora.
 
-![Untitled](./imagenes/Untitled%2017.png)
+![Untitled](./imagenes/Untitled17.png)
 
 La línea que vemos no parece describir muy bien la tendencia. Por ejemplo, el 4 de septiembre (día -62) se llevó a cabo la Convención Republicana y los datos sugieren que le dio un impulso a John McCain en las encuestas. Sin embargo, la línea de regresión no captura esta posible tendencia. Para ver la falta de ajuste con mayor claridad, observamos que los puntos por encima de la línea ajustada (azul) y los puntos por debajo (rojo) no están distribuidos de manera uniforme a lo largo de los días. Por lo tanto, necesitamos un enfoque alternativo y más flexible.
 
@@ -209,11 +209,11 @@ $$
 
 La idea detrás del suavizado por segmento es realizar este cálculo con cada valor de $x$ como centro. En el ejemplo de la encuesta, para cada día, calcularíamos el promedio de los valores dentro de una semana con ese día en el centro. Aquí hay dos ejemplos: $x_0 = -125$ y $x_0 = -55$. El segmento azul representa el promedio resultante.
 
-![Untitled](./imagenes/Untitled%2018.png)
+![Untitled](./imagenes/Untitled18.png)
 
 Al calcular esta media para cada punto, formamos una estimación de la curva subyacente $f(x)$. A continuación, mostramos el procedimiento a medida que nos desplazamos desde -155 hasta 0. En cada valor de $x_0$, mantenemos la estimación y pasamos al siguiente punto, el resultado final es el siguiente
 
-![Untitled](./imagenes/Untitled%2019.png)
+![Untitled](./imagenes/Untitled19.png)
 
 ### Kernels
 
@@ -229,7 +229,7 @@ en el cual cada punto recibe un peso de 0 o $1/N_0$, siendo $N_0$ el número de 
 
 Si usamos la ponderación normal obtenemos una imagen como la de abajo:
 
-![Untitled](./imagenes/Untitled%2020.png)
+![Untitled](./imagenes/Untitled20.png)
 
 A continuación un ejemplo de suavizado por Kernel, usando la forma Box y Normal:
 
@@ -265,7 +265,7 @@ plt.show()
 
 En este ejemplo, generamos dos conjuntos de datos a partir de distribuciones normales con medias 0 y 5. Luego creamos dos modelos de s44uavizado por kernel, uno con un kernel Gaussiano y otro con un kernel box, y calculamos las densidades en un conjunto de puntos que abarcan el rango de los datos. Por último, graficamos las densidades calculadas junto con un histograma de los datos.
 
-![Untitled](./imagenes/Untitled%2021.png)
+![Untitled](./imagenes/Untitled21.png)
 
 ### Regresión Local Ponderada (loess)
 
@@ -284,11 +284,11 @@ $$
 
 Para cada punto $/x_0$, loess define una ventana y ajusta una línea dentro de esa ventana. Aquí hay un ejemplo que muestra los ajustes para x0 = -125 y x0 = -55:
 
-![Untitled](./imagenes/Untitled%2022.png)
+![Untitled](./imagenes/Untitled22.png)
 
 El valor estimado para $x_0$ se convierte en nuestra estimación $\hat{f}(x_0)$. Abajo se muestran los resultados para diferentes spans:
 
-![Untitled](./imagenes/Untitled%2023.png)
+![Untitled](./imagenes/Untitled23.png)
 
 <aside>
 💡 La principal ventaja de LOESS sobre el suavizado por segmentos es su flexibilidad. Puede manejar relaciones más complejas y no lineales entre las variables, mientras que el suavizado por segmentos puede estar limitado en este aspecto, especialmente si la elección de los puntos de quiebre o segmentos no es adecuada. Además, LOESS tiende a ser menos susceptible al sobreajuste que el suavizado por segmentos, especialmente si se elige un valor adecuado para el parámetro de suavizado.
@@ -327,7 +327,7 @@ plt.show()
 
 El resultado es el siguiente:
 
-![Untitled](./imagenes/Untitled%2024.png)
+![Untitled](./imagenes/Untitled24.png)
 
 ### Parábolas de ajuste
 
@@ -339,7 +339,7 @@ $$
 
 La imagen de abajo muestra una comparación de las líneas de ajuste (rojo discontinuo) y las parábolas de ajuste (naranja sólido):
 
-![Untitled](./imagenes/Untitled%2025.png)
+![Untitled](./imagenes/Untitled25.png)
 
 ## Splines polinómicas
 
@@ -347,7 +347,7 @@ Una spline polinómica es una función matemática que está definida de a segme
 
 Las splines se utilizan en interpolación, splines de interpolación, ya que nos permiten obtener una función que pase por todos los puntos de interés. En la imagen de abajo, [link](https://www.youtube.com/watch?v=queK1reC-ac&ab_channel=BrianZaharatos), vemos en línea de trazos una spline que puede servirnos para interpolación. Sin embargo, esta función, probablemente, no será muy útil para modelar nuestros datos puesto que claramente esta haciendo un overfitting de los mismos. Para el modelado de los datos se utiliza una spline suave, dibujado con un trazo lleno abajo.
 
-![Untitled](./imagenes/Untitled%2026.png)
+![Untitled](./imagenes/Untitled26.png)
 
 Para obtener la spline suave vamos a minimizar la siguiente función:
 
@@ -391,7 +391,7 @@ plt.show()
 
 Cuando usamos un $\lambda$, también llamado término de suavizado, igual a 0, obtenemos la spline de interpolación, en azul. A medida que vamos incrementando el valor de $\lambda$ obtenemos una función con cada vez menos curvatura.
 
-![Untitled](./imagenes/Untitled%2027.png)
+![Untitled](./imagenes/Untitled27.png)
 
 Esto que vimos arriba se llama regresión **no paramétrica** puesto que nosotros no sabemos cuál va a ser la función antes de la estimación, en contraste con la regresión lineal, paramétrica, donde sabíamos la forma de nuestra función y los parámetros que íbamos a estimar. 
 
@@ -401,7 +401,7 @@ La regresión es importante y conocer las métricas que se utilizan nos ayudan a
 
 El error es un concepto muy sencillo, simplemente es la diferencia que existe entre el valor que nuestro modelo ha predicho y el valor real de la observación con la que estamos haciendo el test.
 
-![Untitled](./imagenes/Untitled%2028.png)
+![Untitled](./imagenes/Untitled28.png)
 
 ### $R^2$  **(R cuadrado)**
 
@@ -433,7 +433,7 @@ Este coeficiente explica qué porcentaje de la variación de la variable dependi
 
 Para visualizar mejor como se obtiene el $R^2$ , veamos la siguiente gráfica:
 
-![Untitled](./imagenes/Untitled%2029.png)
+![Untitled](./imagenes/Untitled29.png)
 
 También les recomendamos mirar este [video](https://www.youtube.com/watch?v=2AQKmw14mHM&ab_channel=StatQuestwithJoshStarmer) que puede ayudar a interpretar la fórmula de $R^2$
 
@@ -461,7 +461,7 @@ El valor p nos sirve para determinar si una variable es estadísticamente signif
 
 image from: An Introduction to Mathematical Statistics and Its Applications. Larsen, R. and Marx, M. 2012
 
-![Untitled](./imagenes/Untitled%2030.png)
+![Untitled](./imagenes/Untitled30.png)
 
 Esta situación nos permite hacer inferencias sobre los coeficientes que estamos estimando, es decir, podemos calcular un intervalo de confianza para los mismos. Si dentro de nuestro intervalo encontramos al valor 0, entonces, puede ser que nuestro coeficiente sea 0, y por lo tanto, no sea de gran valor para explicar a nuestra variable dependiente y. 
 
@@ -469,7 +469,7 @@ Por otro lado, el valor p indica la probabilidad de haber obtenido un coeficient
 
 En el ejemplo de abajo vemos que la probabilidad de que el coeficiente para la variable `fem_dummy` sea igual a 0 es 3.2%.
 
-![Untitled](./imagenes/Untitled%2031.png)
+![Untitled](./imagenes/Untitled31.png)
 
 Los valores p en un modelo de regresión lineal tienen una importancia significativa, ya que ofrecen una forma de evaluar si las variables independientes en el modelo tienen un efecto estadísticamente significativo en la variable dependiente. Los valores p son importantes principalmente por los siguientes motivos:
 
@@ -666,7 +666,7 @@ plt.show()
 
 El resultado será el siguiente:
 
-![Untitled](./imagenes/Untitled%2032.png)
+![Untitled](./imagenes/Untitled32.png)
 
 Este gráfico ayudará a visualizar cómo de cerca están las predicciones de los valores reales. Si el modelo es perfecto, todos los puntos estarían sobre la línea roja. Desviaciones de esta línea representan errores en la predicción.
 

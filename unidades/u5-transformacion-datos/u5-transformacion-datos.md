@@ -43,11 +43,11 @@ df_cars
 
 El resultado es el siguiente:
 
-![Untitled](./imagenes/Untitled%201.png)
+![Untitled](./imagenes/Untitled1.png)
 
 Si realizamos la gráfica de los datos, obtendremos:
 
-![Untitled](./imagenes/Untitled%202.png)
+![Untitled](./imagenes/Untitled2.png)
 
 Como se puede observar, la lectura del odómetro varía de 120000 a 400000, mientras que la economía de combustible varía de 10 a 17. Un modelo predictivo de regresión lineal múltiple ponderará más la variable de lectura del odómetro, que el atributo de economía de combustible, debido a sus valores más altos. Sin embargo, esto no significa que el atributo de lectura del odómetro sea más importante como predictor. Para resolver este problema, tenemos que normalizar los valores de ambas variables.
 
@@ -55,7 +55,7 @@ Como se puede observar, la lectura del odómetro varía de 120000 a 400000, mien
 
 La escala máxima absoluta vuelve a escalar cada característica entre -1 y 1 dividiendo cada observación por su valor absoluto máximo.
 
-![Untitled](./imagenes/Untitled%203.png)
+![Untitled](./imagenes/Untitled3.png)
 
 Podemos aplicar el escalado absoluto máximo en Pandas usando los métodos .max() y .abs(), como se muestra a continuación.
 
@@ -77,7 +77,7 @@ df_cars_scaled
 
 Y el resultado obtenido es:
 
-![Untitled](./imagenes/Untitled%204.png)
+![Untitled](./imagenes/Untitled4.png)
 
 Alternativamente, podemos usar la biblioteca Scikit-learn para calcular la escala absoluta máxima. Primero, creamos un objeto abs_scaler con la clase `MaxAbsScaler`. Luego, usamos el método de ajuste (`fit`) para conocer los parámetros necesarios para escalar los datos (el valor absoluto máximo de cada característica). Finalmente, transformamos los datos usando esos parámetros.
 
@@ -104,11 +104,11 @@ df_scaled = pd.DataFrame(scaled_data, columns=df_cars.columns)
 df_scaled
 ```
 
-![Untitled](./imagenes/Untitled%205.png)
+![Untitled](./imagenes/Untitled5.png)
 
 Como se puede observar, obtenemos los mismos resultados utilizando Pandas y Scikit-learn. El siguiente gráfico muestra los datos transformados después de realizar el escalado absoluto máximo.
 
-![Untitled](./imagenes/Untitled%206.png)
+![Untitled](./imagenes/Untitled6.png)
 
 <aside>
 💡 Es importante destacar que esta técnica es útil cuando los datos tienen valores tanto positivos como negativos y se desea mantener esta distinción después de la normalización.
@@ -142,7 +142,7 @@ df_cars_normalized = min_max_scaling(df_cars)
 df_cars_normalized
 ```
 
-![Untitled](./imagenes/Untitled%207.png)
+![Untitled](./imagenes/Untitled7.png)
 
 Alternativamente, podemos usar la clase `MinMaxScaler` disponible en la biblioteca Scikit-learn. Primero, creamos un objeto escalador. Luego, ajustamos los parámetros del escalador, lo que significa que calculamos el valor mínimo y máximo para cada función. Finalmente, transformamos los datos usando esos parámetros.
 
@@ -157,7 +157,7 @@ df_norm = pd.DataFrame(scaler.fit_transform(df_cars), columns=df_cars.columns)
 df_norm
 ```
 
-![Untitled](./imagenes/Untitled%208.png)
+![Untitled](./imagenes/Untitled8.png)
 
 Además, podemos obtener los valores mínimos y máximos calculados por la función de ajuste para normalizar los datos con los atributos data_min_ y data_max_.
 
@@ -173,7 +173,7 @@ scaler.data_max_
 
 La siguiente gráfica muestra los datos después de aplicar la escala de características min-max. Como puede observar, esta técnica de normalización vuelve a escalar todos los valores de características para que estén dentro del rango de [0, 1].
 
-![Untitled](./imagenes/Untitled%209.png)
+![Untitled](./imagenes/Untitled9.png)
 
 Como puede observar, obtenemos los mismos resultados utilizando Pandas y Scikit-learn. Sin embargo, si desea realizar muchos pasos de transformación de datos, se recomienda utilizar `MinMaxScaler` como entrada en un constructor de Pipeline en lugar de realizar la normalización con Pandas.
 
@@ -189,7 +189,7 @@ $$
 
 A diferencia de la escala mínima-máxima, la puntuación z no vuelve a escalar la característica a un rango fijo. La puntuación z suele oscilar entre -3,00 y 3,00 (más del 99 % de los datos) si la entrada tiene una distribución normal. Sin embargo, los valores estandarizados también pueden ser más altos o más bajos, como se muestra en la imagen a continuación.
 
-![Untitled](./imagenes/Untitled%2010.png)
+![Untitled](./imagenes/Untitled10.png)
 
 Es importante tener en cuenta que las puntuaciones z no tienen necesariamente una distribución normal. Simplemente escalan los datos y siguen la misma distribución que la entrada original. Esta distribución transformada tiene una media de 0 y una desviación estándar de 1 y será la distribución normal estándar (vea la imagen de arriba) solo si la característica de entrada sigue una distribución normal.
 
@@ -212,7 +212,7 @@ df_cars_standardized = z_score(df_cars)
 df_cars_standardized
 ```
 
-![Untitled](./imagenes/Untitled%2011.png)
+![Untitled](./imagenes/Untitled11.png)
 
 Alternativamente, podemos usar la clase `StandardScaler` disponible en la biblioteca Scikit-learn para realizar el puntaje z. Primero, creamos un objeto standard_scaler. Luego, calculamos los parámetros de la transformación (en este caso la media y la desviación estándar) usando el método .fit(). A continuación, llamamos al método .transform() para aplicar la estandarización al marco de datos. El método .transform() utiliza los parámetros generados a partir del método .fit() para realizar la puntuación z.
 
@@ -228,17 +228,17 @@ df_std = pd.DataFrame(std_scaler.fit_transform(df_cars), columns=df_cars.columns
 df_std
 ```
 
-![Untitled](./imagenes/Untitled%2012.png)
+![Untitled](./imagenes/Untitled12.png)
 
 Para simplificar el código, hemos utilizado el método .fit_transform() que combina ambos métodos (ajuste y transformación).
 
 Como puede observar, los resultados difieren de los obtenidos con Pandas. La función `StandardScaler` calcula la desviación estándar de la población donde la suma de los cuadrados se divide por N (número de valores en la población).
 
-![Untitled](./imagenes/Untitled%2013.png)
+![Untitled](./imagenes/Untitled13.png)
 
 Por el contrario, el método .std() calcula la desviación estándar de la muestra donde el denominador de la fórmula es N-1 en lugar de N.
 
-![Untitled](./imagenes/Untitled%2014.png)
+![Untitled](./imagenes/Untitled14.png)
 
 Para obtener los mismos resultados con Pandas, establecemos el parámetro ddof igual a 0 (el valor predeterminado es ddof=1) que representa el divisor utilizado en los cálculos (N-ddof).
 
@@ -247,7 +247,7 @@ Para obtener los mismos resultados con Pandas, establecemos el parámetro ddof i
 df_cars.std(ddof=0)
 ```
 
-![Untitled](./imagenes/Untitled%2015.png)
+![Untitled](./imagenes/Untitled15.png)
 
 Podemos obtener los parámetros calculados por la función de ajuste para estandarizar los datos con los atributos mean_ y scale_. Como puede observar, obtenemos los mismos resultados en Scikit-learn y Pandas al establecer el parámetro ddof igual a 0 en el método .std().
 
@@ -263,7 +263,7 @@ std_scaler.mean_
 
 La siguiente gráfica muestra los datos después de aplicar el método de puntuación z que se calcula utilizando la desviación estándar de la población (dividida por N).
 
-![Untitled](./imagenes/Untitled%2016.png)
+![Untitled](./imagenes/Untitled16.png)
 
 La normalización de puntaje Z, es una técnica comúnmente utilizada en estadística y ciencia de datos por varias razones:
 
@@ -276,7 +276,7 @@ La normalización de puntaje Z, es una técnica comúnmente utilizada en estadí
 
 En el escalado robusto, escalamos cada característica del conjunto de datos restando la mediana y luego dividiendo por el rango intercuartílico. El rango intercuartílico (RIC) se define como la diferencia entre el tercer y el primer cuartil y representa el 50% central de los datos. Matemáticamente, el escalador robusto se puede expresar como:
 
-![Untitled](./imagenes/Untitled%2017.png)
+![Untitled](./imagenes/Untitled17.png)
 
 donde Q1(x) es el primer cuartil del atributo x, Q2(x) es la mediana y Q3(x) es el tercer cuartil.
 
@@ -284,7 +284,7 @@ Este método es útil cuando se trabaja con conjuntos de datos que contienen muc
 
 Veamos cómo los valores atípicos afectan los resultados después de escalar los datos con escalado mínimo-máximo y escalado robusto.
 
-![Untitled](./imagenes/Untitled%2018.png)
+![Untitled](./imagenes/Untitled18.png)
 
 Otro ejemplo: El siguiente conjunto de datos contiene 10 puntos de datos, uno de ellos es un valor atípico (variable1 = 30).
 
@@ -295,11 +295,11 @@ df_data = pd.DataFrame({'variable1':[1,2,3,4,5,6,7,30], 'variable2':[1,2,3,4,5,6
 df_data
 ```
 
-![Untitled](./imagenes/Untitled%2019.png)
+![Untitled](./imagenes/Untitled19.png)
 
 La escala min-max desplaza la variable 1 hacia 0 debido a la presencia de un valor atípico en comparación con la variable 2 donde los puntos se distribuyen uniformemente en un rango de 0 a 1.
 
-![Untitled](./imagenes/Untitled%2020.png)
+![Untitled](./imagenes/Untitled20.png)
 
 ```python
 # scatter plot of the data after applying min-max scaling
@@ -315,13 +315,13 @@ plt.ylabel('variable2', fontsize=14)
 plt.title('The min-max scaling', fontsize=20)
 ```
 
-![Untitled](./imagenes/Untitled%2021.png)
+![Untitled](./imagenes/Untitled21.png)
 
 Antes de escalar, el primer punto de datos tiene un valor de (1,1), tanto la variable 1 como la variable 2 tienen valores iguales. Una vez transformado, el valor de la variable 2 es mucho mayor que el de la variable 1 (0,034, 0,142). Esto se debe a que la variable 1 tiene un valor atípico.
 
 Por el contrario, si aplicamos un escalado robusto, ambas variables tienen los mismos valores (-1.00,-1.00) después de la transformación, ya que ambas características tienen la misma mediana y rango intercuartílico, siendo el valor atípico el que se desplaza.
 
-![Untitled](./imagenes/Untitled%2022.png)
+![Untitled](./imagenes/Untitled22.png)
 
 ```python
 # scatter plot of the data after applying min-max scaling
@@ -337,7 +337,7 @@ plt.ylabel('variable2', fontsize=14)
 plt.title('The robust scaling', fontsize=20)
 ```
 
-![Untitled](./imagenes/Untitled%2023.png)
+![Untitled](./imagenes/Untitled23.png)
 
 Ahora es el momento de aplicar la escala robusta al conjunto de datos de automóviles.
 Como hicimos anteriormente, podemos realizar un escalado robusto usando Pandas.
@@ -358,7 +358,7 @@ df_cars_robust = robust_scaling(df_cars)
 df_cars_robust
 ```
 
-![Untitled](./imagenes/Untitled%2024.png)
+![Untitled](./imagenes/Untitled24.png)
 
 La mediana se define como el punto medio de la distribución, lo que significa que el 50% de los valores de la distribución son más pequeños que la mediana. En Pandas, podemos calcularlo con los métodos .median() o .quantile(0.5). El primer cuartil es la mediana de la mitad inferior del conjunto de datos (el 25 % de los valores se encuentran por debajo del primer cuartil) y se puede calcular con el método .quantile(0.25). El tercer cuartil representa la mediana de la mitad superior del conjunto de datos (75 % de los valores se encuentran por debajo del tercer cuartil) y se puede calcular con el método .quantile(0.75).
 
@@ -375,13 +375,13 @@ df_robust = pd.DataFrame(scaler.fit_transform(df_cars), columns=df_cars.columns)
 df_robust
 ```
 
-![Untitled](./imagenes/Untitled%2025.png)
+![Untitled](./imagenes/Untitled25.png)
 
 Como se muestra arriba, obtenemos los mismos resultados que antes.
 
 El siguiente gráfico muestra los resultados después de transformar los datos con un escalado robusto.
 
-![Untitled](./imagenes/Untitled%2026.png)
+![Untitled](./imagenes/Untitled26.png)
 
 ### Resumen
 
@@ -407,7 +407,7 @@ Para entender mejor estos conceptos, es necesario entender qué es una distribuc
 **¿Qué es una distribución normal?**
 Antes de entrar en la transformación de registros, hablemos rápidamente sobre la distribución normal. La distribución normal es un concepto estadístico y de probabilidad ampliamente utilizado en estudios científicos por sus muchos beneficios. Solo por nombrar algunos de estos beneficios, la distribución normal es simple. Su media, mediana y moda tienen el mismo valor y se puede definir con solo dos parámetros: media y varianza. También tiene importantes implicaciones matemáticas como el Teorema del Límite Central.
 
-![Distribución normal](./imagenes/Untitled%2027.png)
+![Distribución normal](./imagenes/Untitled27.png)
 
 Distribución normal
 
@@ -420,14 +420,14 @@ Base 2: el logaritmo en base 2 de 8 es 3, porque 2³ = 8
 Base 10: el logaritmo en base 10 de 100 es 2, porque 10² = 100
 Logaritmo natural: la base del logaritmo natural es la constante matemática "e" o el número de Euler, que es igual a 2,718282. Entonces, el logaritmo natural de 7,389 es 2, porque e² = 7,389.
 
-![Untitled](./imagenes/Untitled%2028.png)
+![Untitled](./imagenes/Untitled28.png)
 
 **¿Qué es la transformación de registros?**
 La transformación de registro es un método de transformación de datos en el que reemplaza cada variable x con un registro (x). La elección de la base del logaritmo generalmente se deja en manos del analista y dependería de los propósitos del modelado estadístico. Por ahora, nos centraremos en la transformación del logaritmo natural. El registro de la naturaleza se denota como ln.
 
 Cuando nuestros datos continuos originales no siguen la curva de campana, podemos transformar estos datos para que sean lo más "normales" posibles, de modo que los resultados del análisis estadístico de estos datos sean más válidos. En otras palabras, la transformación de registro reduce o elimina la asimetría de nuestros datos originales. La advertencia importante aquí es que los datos originales deben si o si seguir aproximadamente una distribución logarítmica normal. De lo contrario, la transformación de registro no funcionará.
 
-![Izquierda: Distribución de la muestra original. Derecha: Distribución luego de la transformación logarítmica.](./imagenes/Untitled%2029.png)
+![Izquierda: Distribución de la muestra original. Derecha: Distribución luego de la transformación logarítmica.](./imagenes/Untitled29.png)
 
 Izquierda: Distribución de la muestra original. Derecha: Distribución luego de la transformación logarítmica.
 
@@ -451,11 +451,11 @@ fig = plt.figure()
 
 Los resultados obtenidos son:
 
-![Dataset original](./imagenes/Untitled%2030.png)
+![Dataset original](./imagenes/Untitled30.png)
 
 Dataset original
 
-![Precios transformados logarítmicamente](./imagenes/Untitled%2031.png)
+![Precios transformados logarítmicamente](./imagenes/Untitled31.png)
 
 Precios transformados logarítmicamente
 
@@ -488,7 +488,7 @@ df
 
 Obtendremos el siguiente DataFrame:
 
-![Untitled](./imagenes/Untitled%2032.png)
+![Untitled](./imagenes/Untitled32.png)
 
 ### **Binning (**o "bucketing")
 
@@ -522,7 +522,7 @@ df
 
 Obtendremos el siguiente DataFrame:
 
-![Untitled](./imagenes/Untitled%2033.png)
+![Untitled](./imagenes/Untitled33.png)
 
 ### Codificación de variables categóricas
 
@@ -530,7 +530,7 @@ La mayoría de los algoritmos de aprendizaje automático no pueden manejar varia
 
 Las variables categóricas se pueden dividir en dos categorías: nominales (sin orden particular) y ordinales (algunas ordenadas).
 
-![Untitled](./imagenes/Untitled%2034.png)
+![Untitled](./imagenes/Untitled34.png)
 
 Algunos ejemplos como a continuación para la variable Nominal:
 
@@ -554,7 +554,7 @@ Hay muchas maneras en que podemos codificar estas variables categóricas como n�
 
 Para la explicación, usaremos este marco de datos, que tiene dos variables o características independientes (Temperatura y Color) y una etiqueta (Objetivo). También tiene Rec-No, que es un número de secuencia del registro. Hay un total de 10 registros en este marco de datos. El código de Python se vería como se muestra a continuación.
 
-![Untitled](./imagenes/Untitled%2035.png)
+![Untitled](./imagenes/Untitled35.png)
 
 ```python
 import pandas as pd
@@ -569,29 +569,29 @@ df = pd.DataFrame(data, columns=['Temperature', 'Color', 'Target'])
 df
 ```
 
-![Untitled](./imagenes/Untitled%2036.png)
+![Untitled](./imagenes/Untitled36.png)
 
 Usaremos Pandas y Scikit-learn y [`category_encoders`](https://github.com/scikit-learn-contrib/category_encoders) (biblioteca de contribución de Scikit-learn) para mostrar diferentes métodos de codificación en Python.
 
 **One Hot Encoding**
 En este método, asignamos cada categoría a un vector que contiene 1 y 0, lo que denota la presencia o ausencia de la característica. El número de vectores depende del número de categorías de características. Este método produce muchas columnas que ralentizan significativamente el aprendizaje si el número de la categoría es muy alto para la función. Pandas tiene la función get_dummies, que es bastante fácil de usar. El código del marco de datos de muestra sería el siguiente:
 
-![Untitled](./imagenes/Untitled%2037.png)
+![Untitled](./imagenes/Untitled37.png)
 
 Scikit-learn tiene OneHotEncoder para este propósito, pero no crea una columna de función adicional (se necesita otro código, como se muestra en el ejemplo de código a continuación).
 
-![Untitled](./imagenes/Untitled%2038.png)
+![Untitled](./imagenes/Untitled38.png)
 
 One Hot Encoding es muy popular. Podemos representar todas las categorías por N-1 (N= Nro de Categoría) como suficiente para codificar la que no está incluida. Por lo general, para la regresión, usamos N-1 (eliminar la primera o la última columna de la nueva función One Hot Coded). Aún así, para la clasificación, la recomendación es usar todas las N columnas, ya que la mayoría de los algoritmos basados en árboles construyen un árbol basado en todas las variables disponibles. Se debe usar One Hot Encoding con N-1 variables binarias en la regresión lineal para garantizar el número correcto de grados de libertad (N-1). La regresión lineal tiene acceso a todas las funciones a medida que se entrena y, por lo tanto, examina todo el conjunto de variables ficticias. Esto significa que N-1 variables binarias brindan información completa sobre (representan completamente) la variable categórica original de la regresión lineal. Este enfoque se puede adoptar para cualquier algoritmo de aprendizaje automático que analice TODAS las características simultáneamente durante el entrenamiento, por ejemplo, máquinas de vectores de soporte (SVM) y redes neuronales, así como algoritmos de clustering.
 
 **Codificación de etiquetas (Label Encoding)**
 En esta codificación, a cada categoría se le asigna un valor de 1 a N (donde N es el número de categorías para la función. Un problema importante con este enfoque es que no hay relación ni orden entre estas clases, pero el algoritmo podría considerarlas como algún orden o alguna relación En el siguiente ejemplo, puede verse como (Cold<Hot<Very Hot<Warm….0 < 1 < 2 < 3) .Scikit-learn código para el marco de datos de la siguiente manera:
 
-![Untitled](./imagenes/Untitled%2039.png)
+![Untitled](./imagenes/Untitled39.png)
 
 `factorize` de Pandas también realizan la misma función:
 
-![Untitled](./imagenes/Untitled%2040.png)
+![Untitled](./imagenes/Untitled40.png)
 
 **Codificación ordinal**
 Realizamos la codificación ordinal para garantizar que la codificación de las variables conserve la naturaleza ordinal de la variable. Esto es razonable solo para variables ordinales, como mencionamos al principio de este artículo. Esta codificación se ve casi similar a la codificación de etiquetas, pero ligeramente diferente, ya que la codificación de etiquetas no consideraría si la variable es ordinal o no, y asignará una secuencia de números enteros.
@@ -601,7 +601,7 @@ Si consideramos la escala de temperatura como el orden, entonces el valor ordina
 
 Consulte este código usando Pandas, donde primero debemos asignar el orden original de la variable a través de un diccionario. Luego podemos mapear cada fila para la variable según el diccionario.
 
-![Untitled](./imagenes/Untitled%2041.png)
+![Untitled](./imagenes/Untitled41.png)
 
 Aunque es muy sencillo, requiere codificación para indicar los valores ordinales y la asignación real de texto a un número entero según el orden.
 
@@ -610,7 +610,7 @@ La versión en `category_encoders` a veces se denomina Codificación Helmert inv
 
 Esta codificación contrasta cada nivel de una variable categórica con el promedio de los niveles siguientes. Esta es una forma de codificación "contraste", que compara cada nivel de la variable categórica con un estándar de algún tipo.
 
-![Untitled](./imagenes/Untitled%2042.png)
+![Untitled](./imagenes/Untitled42.png)
 
 **Codificación binaria**
 La codificación binaria convierte una categoría en dígitos binarios. Cada dígito binario crea una columna de características. Si hay n categorías únicas, la codificación binaria da como resultado las únicas funciones de registro (base 2)ⁿ. En este ejemplo, tenemos cuatro características; por lo tanto, las características codificadas en binario serán tres características. En comparación con One Hot Encoding, esto requerirá menos columnas de funciones (para 100 categorías, One Hot Encoding tendrá 100 funciones, mientras que para la codificación binaria, necesitaremos solo siete funciones).
@@ -622,11 +622,11 @@ Luego, esos números enteros se convierten en código binario, por ejemplo, 3 se
 Luego, los dígitos del número binario forman columnas separadas.
 Consulte el siguiente diagrama para una mejor intuición.
 
-![Untitled](./imagenes/Untitled%2043.png)
+![Untitled](./imagenes/Untitled43.png)
 
 Usaremos el paquete `category_encoders` para esto, y el nombre de la función es BinaryEncoder.
 
-![Untitled](./imagenes/Untitled%2044.png)
+![Untitled](./imagenes/Untitled44.png)
 
 ## Operaciones con datos temporales
 
@@ -661,11 +661,11 @@ Dependiendo de cómo se coloque la ventana deslizante alrededor del punto de dat
 
 La media móvil para un enfoque unilateral se puede calcular mediante
 
-![Untitled](./imagenes/Untitled%2045.png)
+![Untitled](./imagenes/Untitled45.png)
 
 mientras que para un enfoque de dos lados o centrado, la media móvil se puede calcular mediante
 
-![Untitled](./imagenes/Untitled%2046.png)
+![Untitled](./imagenes/Untitled46.png)
 
 en el que *y* es el punto de datos de la serie de tiempo que queremos suavizar, *k* es el ancho de la ventana deslizante y *n* el número de pasos de tiempo en la serie de tiempo.
 
@@ -675,13 +675,13 @@ La media móvil se puede implementar fácilmente en Python utilizando el método
 smoothed_time_series = time_series.rolling(window=24, center=True).mean()
 ```
 
-![Ejemplo de cálculo del promedio móvil](./imagenes/Untitled%2047.png)
+![Ejemplo de cálculo del promedio móvil](./imagenes/Untitled47.png)
 
 Ejemplo de cálculo del promedio móvil
 
 La aplicación de la Media Móvil con diferentes anchos de la Ventana Deslizante en una serie de tiempo de carga de electricidad muestra que el suavizado aumenta cuanto más ancha es la Ventana Deslizante. También vemos que cuanto más ancha es la ventana deslizante, más reducimos la longitud de la serie temporal.
 
-![Efecto de suavizado de diferentes anchos de ventana deslizante en una media móvil.](./imagenes/Untitled%2048.png)
+![Efecto de suavizado de diferentes anchos de ventana deslizante en una media móvil.](./imagenes/Untitled48.png)
 
 Efecto de suavizado de diferentes anchos de ventana deslizante en una media móvil.
 
@@ -712,7 +712,7 @@ plt.show()
 
 Este script carga un conjunto de datos de pasajeros de aerolíneas, calcula un promedio móvil con una ventana de 12 meses, y luego traza los datos originales y el promedio móvil. Observarás cómo el promedio móvil suaviza las fluctuaciones en los datos y ayuda a resaltar la tendencia a largo plazo. Al visualizar el resultado obtenemos:
 
-![Untitled](./imagenes/Untitled%2049.png)
+![Untitled](./imagenes/Untitled49.png)
 
 ### **Suavizado por kernel (Kernel Smoothing)**
 
@@ -726,11 +726,11 @@ El ancho de la ventana deslizante se puede definir en función del ancho complet
 
 A menudo se utiliza un núcleo gaussiano, que representa una distribución gaussiana. Con esto, los puntos de datos cercanos al punto de datos en el que queremos suavizar la serie temporal obtienen un mayor peso. La ecuación para una distribución gaussiana es:
 
-![Untitled](./imagenes/Untitled%2050.png)
+![Untitled](./imagenes/Untitled50.png)
 
 Podemos determinar la desviación estándar dependiendo del ancho de nuestra Ventana Deslizante o FWHM por:
 
-![Untitled](./imagenes/Untitled%2051.png)
+![Untitled](./imagenes/Untitled51.png)
 
 El suavizado por kernel se puede implementar fácilmente en Python utilizando el método rolling() de panda. Solo necesitamos definir el kernel que queremos usar como parámetro win_type. Aquí, podemos elegir entre las funciones de ventana de scipy. Según el kernel que elijamos, es posible que debamos pasar parámetros adicionales, como la desviación estándar del kernel gaussiano.
 
@@ -741,7 +741,7 @@ smoothed_time_series = time_series.rolling(window=24, win_type="gaussian", cente
 
 Al observar los resultados de suavizado de la serie temporal de carga de electricidad, vemos resultados similares a los de la media móvil.
 
-![Efecto de suavizado de diferentes FWHM en un suavizado de kernel gaussiano.](./imagenes/Untitled%2052.png)
+![Efecto de suavizado de diferentes FWHM en un suavizado de kernel gaussiano.](./imagenes/Untitled52.png)
 
 Efecto de suavizado de diferentes FWHM en un suavizado de kernel gaussiano.
 
@@ -776,7 +776,7 @@ plt.show()
 
 Y el resultado será:
 
-![Untitled](./imagenes/Untitled%2053.png)
+![Untitled](./imagenes/Untitled53.png)
 
 ### **Suavizado exponencial (Exponential Smoothing)**
 
@@ -799,7 +799,7 @@ El suavizado está controlado por un factor de suavizado *α*. El factor de suav
 
 El punto de datos suavizado está determinado por:
 
-![Untitled](./imagenes/Untitled%2054.png)
+![Untitled](./imagenes/Untitled54.png)
 
 Podemos implementar el suavizado exponencial único en Python usando el paquete `statsmodel`. Para ello, importamos la clase `SimpleExpSmoothing` desde `statsmodels.tsa.api`.
 
@@ -819,7 +819,7 @@ smoothed_time_series = smoother.fit(method="basinhopping").fittedvalues
 
 Comparando diferentes factores de suavizado podemos ver que el suavizado tiene una disminución exponencial después de una fuerte disminución de la serie de tiempo original. Cuanto menor sea el factor de suavizado, más lenta será la descomposición.
 
-![Efecto de suavizado de diferentes factores de suavizado en un suavizado exponencial simple.](./imagenes/Untitled%2055.png)
+![Efecto de suavizado de diferentes factores de suavizado en un suavizado exponencial simple.](./imagenes/Untitled55.png)
 
 Efecto de suavizado de diferentes factores de suavizado en un suavizado exponencial simple.
 
@@ -854,7 +854,7 @@ plt.show()
 
 Y el resultado será:
 
-![Untitled](./imagenes/Untitled%2056.png)
+![Untitled](./imagenes/Untitled56.png)
 
 **Suavizado exponencial doble (DES)**
 El suavizado exponencial doble extiende el suavizado exponencial simple repitiendo el suavizado. Esto permite capturar la tendencia de una serie temporal, pero no se captura la estacionalidad.
@@ -865,7 +865,7 @@ Como la tendencia puede ser aditiva (es decir, una tendencia lineal) o multiplic
 
 En el caso de una tendencia aditiva, el Suavizado Exponencial Doble se puede calcular mediante:
 
-![Untitled](./imagenes/Untitled%2057.png)
+![Untitled](./imagenes/Untitled57.png)
 
 El suavizado exponencial doble para una tendencia aditiva se puede implementar en Python utilizando la clase Holt del paquete `statsmodels`. El uso es similar al suavizado exponencial simple. La única diferencia es que pasamos un factor de suavizado adicional.
 
@@ -883,7 +883,7 @@ Si queremos suavizar una serie de tiempo con una tendencia multiplicativa, neces
 
 Aunque no hay tendencia en la serie de tiempo de carga de electricidad, podemos ver el efecto del factor de suavizado *β*. Si el factor es cero, básicamente usamos un suavizado exponencial simple.
 
-![Efecto de suavizado de diferentes factores de suavizado en un Suavizado Exponencial Doble.](./imagenes/Untitled%2058.png)
+![Efecto de suavizado de diferentes factores de suavizado en un Suavizado Exponencial Doble.](./imagenes/Untitled58.png)
 
 Efecto de suavizado de diferentes factores de suavizado en un Suavizado Exponencial Doble.
 
@@ -913,7 +913,7 @@ plt.show()
 
 Y el resultado será:
 
-![Untitled](./imagenes/Untitled%2059.png)
+![Untitled](./imagenes/Untitled59.png)
 
 <aside>
 💡 El Suavizado exponencial doble extiende el suavizado exponencial simple para incluir la tendencia en los datos. Es útil cuando los datos tienen una tendencia pero no estacionalidad.
@@ -937,7 +937,7 @@ Si establecemos `smoothing_trend`  o `smoothing_seasonal` en cero, obtenemos un 
 
 Como no existe una tendencia o estacionalidad clara en la serie temporal de carga eléctrica, el efecto del factor de suavizado γ en este caso también es muy pequeño.
 
-![Efecto de suavizado de diferentes factores de suavizado en un suavizado exponencial triple.](./imagenes/Untitled%2060.png)
+![Efecto de suavizado de diferentes factores de suavizado en un suavizado exponencial triple.](./imagenes/Untitled60.png)
 
 Efecto de suavizado de diferentes factores de suavizado en un suavizado exponencial triple.
 
@@ -972,7 +972,7 @@ plt.show()
 
 Y el resultado será:
 
-![Untitled](./imagenes/Untitled%2061.png)
+![Untitled](./imagenes/Untitled61.png)
 
 <aside>
 💡 El suavizado exponencial triple extiende aún más el suavizado exponencial para incluir la estacionalidad en los datos. Es útil cuando los datos tienen tanto una tendencia como un componente estacional.
@@ -1120,7 +1120,7 @@ df_tokens
 
 Si ejecuta ese código, obtendrá un marco que cuenta la cantidad de veces que se menciona una palabra en ambos textos.
 
-![Untitled](./imagenes/Untitled%2062.png)
+![Untitled](./imagenes/Untitled62.png)
 
 Esto se vuelve extremadamente útil cuando el marco de datos contiene un gran corpus porque proporciona una matriz con palabras codificadas como valores enteros, que se utilizan como entradas en los algoritmos de aprendizaje automático.
 
