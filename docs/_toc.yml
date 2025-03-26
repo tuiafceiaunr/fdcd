@@ -12,15 +12,19 @@ parts:
   - caption: Manipulación de datos
     chapters:
       - file: unidades/u2-manipulacion-datos/unidad-2-manipulacion-datos.md
-      - file: unidades/u2-manipulacion-datos/unidad-2-slides-p1.md
-      - file: unidades/u2-manipulacion-datos/unidad-2-slides-p2.md
+      - file: unidades/u2-manipulacion-datos/unidad-2-diapositivas.md
+        sections:
+          - file: unidades/u2-manipulacion-datos/unidad-2-slides-p1.md
+          - file: unidades/u2-manipulacion-datos/unidad-2-slides-p2.md
       - file: unidades/u2-manipulacion-datos/unidad-2-practica.md
         title: Unidad 2 - Práctica - Manipulación de datos
       
   - caption: Análisis exploratorio de datos
     chapters:
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-analisis-exploratorio-datos.md
-      - file: unidades/u3-analisis-exploratorio-datos/unidad-3-slides-p1.md
+      - file: unidades/u3-analisis-exploratorio-datos/unidad-3-diapositivas.md
+        sections:
+          - file: unidades/u3-analisis-exploratorio-datos/unidad-3-slides-p1.md
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-practica.md
         title: Práctica - Análisis exploratorio de datos
 
