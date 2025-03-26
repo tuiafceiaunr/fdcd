@@ -36,7 +36,7 @@ La visualización de datos también es importante para explicar relaciones encon
 Consideremos el artículo "Conoce la cultura antes de un nuevo trabajo", que apareció en The Wall Street Journal. El artículo discute la importancia de encontrar un buen ajuste cultural al buscar un nuevo trabajo. La dificultad para entender una cultura empresarial o la falta de alineación con esa cultura puede llevar a la insatisfacción laboral. La figura 1.3 es una recreación de un gráfico de barras que apareció en este artículo. Un gráfico de barras muestra un resumen de datos categóricos utilizando la longitud de las barras horizontales para mostrar la magnitud de una variable cuantitativa.
 El gráfico mostrado en la figura 1.3 muestra el porcentaje de los 10.002 encuestados que enumeraron un factor como el más importante al buscar trabajo. Observe que nuestra atención se dirige a la barra azul oscuro, que es "Cultura de la empresa" (el enfoque del artículo). Inmediatamente vemos que solo "Salario y bonificación" se cita con más frecuencia que "Cultura de la empresa". Cuando se mira por primera vez el gráfico, el mensaje que se comunica es que la cultura empresarial es el segundo factor más importante citado por los solicitantes de empleo. Y como lector, en función de ese mensaje, decide si el artículo merece la pena leerlo.
 
-![Untitled](./imagenes/Untitled%201.png)
+![Untitled](./imagenes/Untitled1.png)
 
 ## Visualización de distribuciones: histogramas, densidades, boxplots, gráficos de violines, distribuciones acumuladas
 
@@ -72,7 +72,7 @@ print(age_distribution)
 
 Este procedimiento da como resultado una tabla como la siguiente:
 
-![Untitled](./imagenes/Untitled%202.png)
+![Untitled](./imagenes/Untitled2.png)
 
 Podemos visualizar esta tabla dibujando rectángulos rellenos cuyas alturas correspondan a los conteos y cuyo ancho corresponda al ancho de los intervalos de edad.
 Tal visualización se llama histograma. (Tener en cuenta que todos los contenedores deben tener el mismo ancho para que la visualización sea un histograma válido).
@@ -89,12 +89,12 @@ plt.ylabel('Cantidad de Pasajeros')
 plt.show()
 ```
 
-![Untitled](./imagenes/Untitled%203.png)
+![Untitled](./imagenes/Untitled3.png)
 
 Debido a que los histogramas se generan al agrupar los datos, su apariencia visual exacta depende de la elección del ancho del agrupamiento. La mayoría de los programas de visualización que generan histogramas elegirán un ancho de intervalo por defecto, pero lo más probable es que el ancho de intervalo no sea el más apropiado para cualquier histograma que desee crear. Por lo tanto, es fundamental probar siempre diferentes anchos de intervalo para verificar que el histograma resultante refleje los datos subyacentes con precisión. En general, si el ancho del intervalo es demasiado pequeño, entonces en el histograma se ven demasiados picos y visualmente confuso, y las principales tendencias en los datos pueden oscurecerse. Por otro lado, si el ancho del intervalo es demasiado grande, las características más pequeñas en la distribución de los datos, como la caída alrededor de los 10 años en este ejemplo, pueden desaparecer.
 Para la distribución por edades de los pasajeros del Titanic, podemos ver que un ancho de contenedor de 1 año es demasiado pequeño y un ancho de contenedor de 15 años es demasiado grande, mientras que los anchos de contenedor de entre 3 y 5 años funcionan bien.
 
-![Los histogramas dependen del ancho del contenedor elegido. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic con cuatro anchos de compartimiento diferentes: (a) 1 año; (b) 3 años; (c) 5 años; d) 15 años. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%204.png)
+![Los histogramas dependen del ancho del contenedor elegido. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic con cuatro anchos de compartimiento diferentes: (a) 1 año; (b) 3 años; (c) 5 años; d) 15 años. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled4.png)
 
 Los histogramas dependen del ancho del contenedor elegido. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic con cuatro anchos de compartimiento diferentes: (a) 1 año; (b) 3 años; (c) 5 años; d) 15 años. Fuente de datos: Enciclopedia Titanica.
 
@@ -118,7 +118,7 @@ plt.show()
 ```
 
 ![Estimación de la densidad del núcleo de la distribución por edades de los pasajeros del Titanic.
-La altura de la curva está escalada de manera que el área bajo la curva sea igual a 1. La estimación de la densidad se realizó con un núcleo gaussiano y un ancho de banda de 2. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%205.png)
+La altura de la curva está escalada de manera que el área bajo la curva sea igual a 1. La estimación de la densidad se realizó con un núcleo gaussiano y un ancho de banda de 2. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled5.png)
 
 Estimación de la densidad del núcleo de la distribución por edades de los pasajeros del Titanic.
 La altura de la curva está escalada de manera que el área bajo la curva sea igual a 1. La estimación de la densidad se realizó con un núcleo gaussiano y un ancho de banda de 2. Fuente de datos: Enciclopedia Titanica.
@@ -158,7 +158,7 @@ plt.xlim(0, 80)
 plt.show()
 ```
 
-![Las estimaciones de la densidad por kernel dependen del kernel y el ancho de banda elegidos. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic para cuatro combinaciones diferentes de estos parámetros: (a) núcleo gaussiano, ancho de banda = 0,5; (b) Kernel gaussiano, ancho de banda = 2; (c) Kernel gaussiano, ancho de banda = 5; (d) núcleo rectangular, ancho de banda = 2. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%206.png)
+![Las estimaciones de la densidad por kernel dependen del kernel y el ancho de banda elegidos. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic para cuatro combinaciones diferentes de estos parámetros: (a) núcleo gaussiano, ancho de banda = 0,5; (b) Kernel gaussiano, ancho de banda = 2; (c) Kernel gaussiano, ancho de banda = 5; (d) núcleo rectangular, ancho de banda = 2. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled6.png)
 
 Las estimaciones de la densidad por kernel dependen del kernel y el ancho de banda elegidos. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic para cuatro combinaciones diferentes de estos parámetros: (a) núcleo gaussiano, ancho de banda = 0,5; (b) Kernel gaussiano, ancho de banda = 2; (c) Kernel gaussiano, ancho de banda = 5; (d) núcleo rectangular, ancho de banda = 2. Fuente de datos: Enciclopedia Titanica.
 
@@ -167,7 +167,7 @@ Las curvas de densidad generalmente se escalan de manera que el área bajo la cu
 Las estimaciones de la densidad del kernel tienen una trampa que debemos tener en cuenta: tienden a producir la apariencia de datos donde no existen, en particular en las colas.
 Como consecuencia, el uso descuidado de las estimaciones de densidad puede conducir fácilmente a cifras que hacen afirmaciones sin sentido. Por ejemplo, si no prestamos atención, podríamos generar una visualización de una distribución de edades que incluya edades negativas:
 
-![Las estimaciones de la densidad del núcleo pueden extender las colas de la distribución a áreas donde no existen datos y ni siquiera es posible obtenerlos. Aquí, se ha permitido que la densidad estimada para las edades de los pasajeros del Titanic se extienda al rango de edad negativo. Esto no tiene sentido y debe evitarse. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%207.png)
+![Las estimaciones de la densidad del núcleo pueden extender las colas de la distribución a áreas donde no existen datos y ni siquiera es posible obtenerlos. Aquí, se ha permitido que la densidad estimada para las edades de los pasajeros del Titanic se extienda al rango de edad negativo. Esto no tiene sentido y debe evitarse. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled7.png)
 
 Las estimaciones de la densidad del núcleo pueden extender las colas de la distribución a áreas donde no existen datos y ni siquiera es posible obtenerlos. Aquí, se ha permitido que la densidad estimada para las edades de los pasajeros del Titanic se extienda al rango de edad negativo. Esto no tiene sentido y debe evitarse. Fuente de datos: Enciclopedia Titanica.
 
@@ -207,7 +207,7 @@ plt.legend()
 plt.show()
 ```
 
-![Histograma de las edades de los pasajeros del Titanic estratificados por género. Esta cifra se ha etiquetado como "mala" porque los histogramas apilados se confunden fácilmente con histogramas superpuestos (consulte la Figura 7-7). Además, las alturas de las barras que representan a las pasajeras no pueden compararse fácilmente entre sí. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%208.png)
+![Histograma de las edades de los pasajeros del Titanic estratificados por género. Esta cifra se ha etiquetado como "mala" porque los histogramas apilados se confunden fácilmente con histogramas superpuestos (consulte la Figura 7-7). Además, las alturas de las barras que representan a las pasajeras no pueden compararse fácilmente entre sí. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled8.png)
 
 Histograma de las edades de los pasajeros del Titanic estratificados por género. Esta cifra se ha etiquetado como "mala" porque los histogramas apilados se confunden fácilmente con histogramas superpuestos (consulte la Figura 7-7). Además, las alturas de las barras que representan a las pasajeras no pueden compararse fácilmente entre sí. Fuente de datos: Enciclopedia Titanica.
 
@@ -215,7 +215,7 @@ Este tipo de visualización puede provocar dos problemas. Primero, con solo mira
 (El primero es el caso.) En segundo lugar, las alturas de las barras para los conteos femeninos no se pueden comparar directamente entre sí, porque todas las barras comienzan a una altura diferente. Por ejemplo, los hombres eran en promedio mayores que las mujeres, y este hecho no es del todo visible en la figura.
 Podríamos tratar de abordar estos problemas haciendo que todas las barras comiencen en cero y haciendo que las barras sean parcialmente transparentes.
 
-![Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como dos histogramas superpuestos. Esta cifra ha sido etiquetada como "mala" porque no hay una indicación visual clara de que todas las barras azules comiencen en 0. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%209.png)
+![Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como dos histogramas superpuestos. Esta cifra ha sido etiquetada como "mala" porque no hay una indicación visual clara de que todas las barras azules comiencen en 0. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled9.png)
 
 Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como dos histogramas superpuestos. Esta cifra ha sido etiquetada como "mala" porque no hay una indicación visual clara de que todas las barras azules comiencen en 0. Fuente de datos: Enciclopedia Titanica.
 
@@ -250,11 +250,11 @@ plt.legend()
 plt.show()
 ```
 
-![Estimaciones de densidad de las edades de los pasajeros masculinos y femeninos del Titanic. Para resaltar que había más pasajeros hombres que mujeres, las curvas de densidad se escalaron de tal manera que el área bajo cada curva corresponde al número total de pasajeros hombres y mujeres con edad conocida (468 y 288, respectivamente). Fuente de datos: Enciclopedia Titánica.](./imagenes/Untitled%2010.png)
+![Estimaciones de densidad de las edades de los pasajeros masculinos y femeninos del Titanic. Para resaltar que había más pasajeros hombres que mujeres, las curvas de densidad se escalaron de tal manera que el área bajo cada curva corresponde al número total de pasajeros hombres y mujeres con edad conocida (468 y 288, respectivamente). Fuente de datos: Enciclopedia Titánica.](./imagenes/Untitled10.png)
 
 Estimaciones de densidad de las edades de los pasajeros masculinos y femeninos del Titanic. Para resaltar que había más pasajeros hombres que mujeres, las curvas de densidad se escalaron de tal manera que el área bajo cada curva corresponde al número total de pasajeros hombres y mujeres con edad conocida (468 y 288, respectivamente). Fuente de datos: Enciclopedia Titánica.
 
-![Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como proporciones del número total de pasajeros. Las áreas coloreadas muestran las estimaciones de densidad de las edades de los pasajeros masculinos y femeninos, respectivamente, y las áreas grises muestran la distribución general de edades de los pasajeros. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%2011.png)
+![Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como proporciones del número total de pasajeros. Las áreas coloreadas muestran las estimaciones de densidad de las edades de los pasajeros masculinos y femeninos, respectivamente, y las áreas grises muestran la distribución general de edades de los pasajeros. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled11.png)
 
 Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como proporciones del número total de pasajeros. Las áreas coloreadas muestran las estimaciones de densidad de las edades de los pasajeros masculinos y femeninos, respectivamente, y las áreas grises muestran la distribución general de edades de los pasajeros. Fuente de datos: Enciclopedia Titanica.
 
@@ -304,7 +304,7 @@ plt.xticks(np.arange(-max_population, max_population, step=10), np.abs(np.arange
 plt.show()
 ```
 
-![Las distribuciones de edad de los pasajeros masculinos y femeninos del Titanic se visualizan como una pirámide de edad. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled%2012.png)
+![Las distribuciones de edad de los pasajeros masculinos y femeninos del Titanic se visualizan como una pirámide de edad. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled12.png)
 
 Las distribuciones de edad de los pasajeros masculinos y femeninos del Titanic se visualizan como una pirámide de edad. Fuente de datos: Enciclopedia Titanica.
 
@@ -315,7 +315,7 @@ Es importante destacar que este truco no funciona cuando hay más de dos distrib
 
 </aside>
 
-![Estimaciones de densidad del porcentaje de grasa butírica en la leche de cuatro razas de ganado. Fuente de datos: Registro Canadiense de Desempeño para Ganado Lechero de Pura Raza.](./imagenes/Untitled%2013.png)
+![Estimaciones de densidad del porcentaje de grasa butírica en la leche de cuatro razas de ganado. Fuente de datos: Registro Canadiense de Desempeño para Ganado Lechero de Pura Raza.](./imagenes/Untitled13.png)
 
 Estimaciones de densidad del porcentaje de grasa butírica en la leche de cuatro razas de ganado. Fuente de datos: Registro Canadiense de Desempeño para Ganado Lechero de Pura Raza.
 
@@ -333,7 +333,7 @@ Los boxplots son útiles para comparar la distribución de datos entre diferente
 
 Los diagramas de boxplots ayudan también a comprender como se distribuyen los valores con respecto a su **simetría**, por ejemplo: 
 
-![Untitled](./imagenes/Untitled%2014.png)
+![Untitled](./imagenes/Untitled14.png)
 
 Volviendo a nuestro dataset de ejemplo, al crear boxplots de las edades de los pasajeros que sobrevivieron y los que no, podemos explorar si la edad tuvo un impacto en la supervivencia durante el desastre. Por ejemplo, podríamos encontrar que los niños tuvieron una mayor tasa de supervivencia en comparación con los adultos mayores, a través del siguiente ejemplo:
 
@@ -356,7 +356,7 @@ plt.legend(title='Sexo')
 plt.show()
 ```
 
-![Untitled](./imagenes/Untitled%2015.png)
+![Untitled](./imagenes/Untitled15.png)
 
 El diagrama de caja mostró que las mujeres sobrevivientes tenían una mayor en las estadísticas de orden, lo que podría deberse a la ayuda de otros. Podría ser que se haya considerado un grupo de alta prioridad durante el rescate. Sobrevivieron más hombres jóvenes menores de 20 años, lo que podría deberse a que pudieron salvarse a sí mismos o recibieron ayuda en función de su edad más joven.
 
@@ -364,7 +364,7 @@ Otra hipótesis podría ser que la mayoría de las mujeres mayores tenían un he
 
 Los diagramas de caja son simples pero informativos y funcionan bien cuando se trazan uno al lado del otro para visualizar muchas distribuciones a la vez. Otro ejemplo: Para los datos de temperatura de Lincoln (hemisferio norte), el uso de diagramas de caja conduce a la siguiente figura. En esa figura, ahora podemos ver que la temperatura está muy sesgada en diciembre (la mayoría de los días son moderadamente fríos y algunos extremadamente fríos) y no muy sesgada en algunos otros meses, como en julio.
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de caja. Fuente de datos: Weather Underground.](./imagenes/Untitled%2016.png)
+![Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de caja. Fuente de datos: Weather Underground.](./imagenes/Untitled16.png)
 
 Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de caja. Fuente de datos: Weather Underground.
 
@@ -375,7 +375,7 @@ Los diagramas de caja fueron inventados por el estadístico **John Tukey** a pri
 Los diagramas de violines se pueden usar siempre que se use un diagrama de caja, y brindan una imagen mucho más matizada de los datos. En particular, los diagramas de violín representarán con precisión los datos bimodales, mientras que un diagrama de caja no lo hará.
 Solo los valores y de los puntos se visualizan en el gráfico de violín. El ancho del violín en un valor dado, representa la densidad de puntos en ese valor de y. Los violines son simétricos y  comienzan y terminan en los mínimos y máximos valores de datos, respectivamente. La parte más gruesa del violín corresponde a la densidad de puntos más alta en el conjunto de datos.
 
-![Anatomía de un diagrama de violín: Se muestra una nube de puntos (izquierda) y el diagrama de violín correspondiente (derecha).](./imagenes/Untitled%2017.png)
+![Anatomía de un diagrama de violín: Se muestra una nube de puntos (izquierda) y el diagrama de violín correspondiente (derecha).](./imagenes/Untitled17.png)
 
 Anatomía de un diagrama de violín: Se muestra una nube de puntos (izquierda) y el diagrama de violín correspondiente (derecha).
 
@@ -420,11 +420,11 @@ plt.ylabel('Temperatura Promedio')
 plt.show()
 ```
 
-![Untitled](./imagenes/Untitled%2018.png)
+![Untitled](./imagenes/Untitled18.png)
 
 Para el caso de las temperaturas de Lincoln con violines, se obtiene la figura siguiente.
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de violín. Fuente de datos: Weather Underground](./imagenes/Untitled%2019.png)
+![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de violín. Fuente de datos: Weather Underground](./imagenes/Untitled19.png)
 
 Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de violín. Fuente de datos: Weather Underground
 
@@ -432,13 +432,13 @@ Ahora podemos ver que algunos meses tienen datos moderadamente bimodales. Por ej
 Debido a que las gráficas de violín se derivan de estimaciones de densidad, tienen deficiencias similares.
 En particular, pueden generar la apariencia de que hay datos donde no los hay, o que el conjunto de datos es muy denso cuando en realidad es bastante escaso. Podemos tratar de eludir estos problemas simplemente trazando todos los puntos de datos individuales directamente, como puntos. Tal figura se llama un gráfico de tiras. 
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Cada punto representa la temperatura media de un día. Esta cifra está etiquetada como "mala" porque se trazan tantos puntos uno encima del otro que no es posible determinar qué temperaturas fueron las más comunes en cada mes. Fuente de datos: Weather Underground.](./imagenes/Untitled%2020.png)
+![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Cada punto representa la temperatura media de un día. Esta cifra está etiquetada como "mala" porque se trazan tantos puntos uno encima del otro que no es posible determinar qué temperaturas fueron las más comunes en cada mes. Fuente de datos: Weather Underground.](./imagenes/Untitled20.png)
 
 Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Cada punto representa la temperatura media de un día. Esta cifra está etiquetada como "mala" porque se trazan tantos puntos uno encima del otro que no es posible determinar qué temperaturas fueron las más comunes en cada mes. Fuente de datos: Weather Underground.
 
 Los gráficos de tiras están bien en principio, siempre y cuando nos aseguremos de no trazar demasiados puntos uno encima del otro. Una solución simple para la sobregraficación es esparcir los puntos un poco a lo largo del eje x, agregando algo de ruido aleatorio en la dimensión x. Esta técnica se llama **jittering**:
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Los puntos se han alterado a lo largo del eje x para mostrar mejor la densidad de puntos en cada valor de temperatura. Fuente de datos: Weather Underground.](./imagenes/Untitled%2021.png)
+![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Los puntos se han alterado a lo largo del eje x para mostrar mejor la densidad de puntos en cada valor de temperatura. Fuente de datos: Weather Underground.](./imagenes/Untitled21.png)
 
 Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Los puntos se han alterado a lo largo del eje x para mostrar mejor la densidad de puntos en cada valor de temperatura. Fuente de datos: Weather Underground.
 
@@ -449,7 +449,7 @@ Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franj
 
 Finalmente, podemos combinar lo mejor de ambos mundos extendiendo los puntos en proporción a la densidad de puntos en una coordenada y dada. Este método, llamado sina plot, y se puede considerar como un híbrido entre un diagrama de violín y puntos jittered, y muestra cada punto individual al mismo tiempo que visualiza las distribuciones. En la figura, se ven los diagramas de sina plot encima de los violines, para resaltar la relación entre estos dos enfoques.
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de senos (una combinación de puntos individuales y violines). Los puntos se han alterado a lo largo del eje x en proporción a la densidad de puntos a la temperatura respectiva. Aquí, las gráficas de sina se muestran superpuestas a las gráficas de violín. Fuente de datos: Weather Underground.](./imagenes/Untitled%2022.png)
+![Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de senos (una combinación de puntos individuales y violines). Los puntos se han alterado a lo largo del eje x en proporción a la densidad de puntos a la temperatura respectiva. Aquí, las gráficas de sina se muestran superpuestas a las gráficas de violín. Fuente de datos: Weather Underground.](./imagenes/Untitled22.png)
 
 Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de senos (una combinación de puntos individuales y violines). Los puntos se han alterado a lo largo del eje x en proporción a la densidad de puntos a la temperatura respectiva. Aquí, las gráficas de sina se muestran superpuestas a las gráficas de violín. Fuente de datos: Weather Underground.
 
@@ -457,13 +457,13 @@ Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de senos
 Para ilustrar las FDAE (Empirical Cumulative Distribution Functions en inglés), comenzaremos con un ejemplo: un conjunto de datos de las calificaciones de los estudiantes. Supongamos que nuestra clase hipotética tiene 50 estudiantes, y los estudiantes acaban de completar un examen en el que podían obtener entre 0 y 100 puntos. ¿Cómo podemos visualizar mejor el desempeño de la clase, por ejemplo, para determinar los límites de calificación apropiados?
 Podemos trazar el número total de estudiantes que han recibido como máximo un cierto número de puntos frente a todas las puntuaciones posibles. Esta gráfica será una función ascendente, comenzando en 0 para 0 puntos y terminando en 50 para 100 puntos. Una forma diferente de pensar en esta visualización es la siguiente: podemos clasificar a todos los estudiantes por la cantidad de puntos que obtuvieron, en orden ascendente (de modo que el estudiante con la menor cantidad de puntos recibe la clasificación más baja y el estudiante con la mayor cantidad de puntos la más alta), y luego represente la clasificación frente a los puntos reales obtenidos. El resultado es una función de distribución acumulativa empírica, o simplemente distribución acumulativa. Cada punto representa a un estudiante y las líneas visualizan el rango de estudiante más alto observado para cualquier valor de punto posible.
 
-![Función de distribución acumulativa empírica de las calificaciones de los estudiantes para una clase hipotética de 50 estudiantes.](./imagenes/Untitled%2023.png)
+![Función de distribución acumulativa empírica de las calificaciones de los estudiantes para una clase hipotética de 50 estudiantes.](./imagenes/Untitled23.png)
 
 Función de distribución acumulativa empírica de las calificaciones de los estudiantes para una clase hipotética de 50 estudiantes.
 
 Quizás se pregunten qué sucede si clasificamos a los estudiantes al revés, en orden descendente. Esta clasificación simplemente le da la vuelta a la función. El resultado sigue siendo una función de distribución acumulativa empírica, pero las líneas ahora representan el rango de estudiante más bajo observado para cualquier valor de punto posible.
 
-![Distribución de las calificaciones de los estudiantes representadas como FDAE descendente](./imagenes/Untitled%2024.png)
+![Distribución de las calificaciones de los estudiantes representadas como FDAE descendente](./imagenes/Untitled24.png)
 
 Distribución de las calificaciones de los estudiantes representadas como FDAE descendente
 
@@ -471,7 +471,7 @@ Las funciones de distribución acumulativa ascendente son más conocidas y más 
 
 En aplicaciones prácticas, es bastante común dibujar el FDAE sin resaltar los puntos individuales y normalizar los rangos por el rango máximo, de modo que el eje y represente la frecuencia acumulada.
 
-![FDAE de las calificaciones de los estudiantes. Las clasificaciones de los estudiantes se han normalizado al número total de estudiantes, de modo que los valores de y graficados corresponden a la fracción de estudiantes en la clase con, como máximo, esa cantidad de puntos.](./imagenes/Untitled%2025.png)
+![FDAE de las calificaciones de los estudiantes. Las clasificaciones de los estudiantes se han normalizado al número total de estudiantes, de modo que los valores de y graficados corresponden a la fracción de estudiantes en la clase con, como máximo, esa cantidad de puntos.](./imagenes/Untitled25.png)
 
 FDAE de las calificaciones de los estudiantes. Las clasificaciones de los estudiantes se han normalizado al número total de estudiantes, de modo que los valores de y graficados corresponden a la fracción de estudiantes en la clase con, como máximo, esa cantidad de puntos.
 
@@ -483,7 +483,7 @@ La visualización de datos es una herramienta fundamental para comprender y anal
 
 Algunos ejemplos comunes de gráficos de cantidades y proporciones incluyen gráficos circulares, gráficos de barras apiladas y gráficos de área apilada. Cada uno de estos gráficos tiene sus propias ventajas y desventajas, y la elección del gráfico adecuado dependerá del contexto y los objetivos específicos de la visualización.
 
-![Algunos ejemplos de visualización de proporciones o partes de un “todo”.](./imagenes/Untitled%2026.png)
+![Algunos ejemplos de visualización de proporciones o partes de un “todo”.](./imagenes/Untitled26.png)
 
 Algunos ejemplos de visualización de proporciones o partes de un “todo”.
 
@@ -523,7 +523,7 @@ plt.axis('equal')
 plt.show()
 ```
 
-![Figura 10-1. Composición del partido del octavo Bundestag alemán, 1976–1980, visualizada como un gráfico circular. Esta visualización destaca que la coalición gobernante de SPD y FDP tenía una pequeña mayoría sobre la oposición CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled%2027.png)
+![Figura 10-1. Composición del partido del octavo Bundestag alemán, 1976–1980, visualizada como un gráfico circular. Esta visualización destaca que la coalición gobernante de SPD y FDP tenía una pequeña mayoría sobre la oposición CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled27.png)
 
 Figura 10-1. Composición del partido del octavo Bundestag alemán, 1976–1980, visualizada como un gráfico circular. Esta visualización destaca que la coalición gobernante de SPD y FDP tenía una pequeña mayoría sobre la oposición CDU/CSU. Fuente de datos: Wikipedia.
 
@@ -566,7 +566,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-![Figura 10-2. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras apiladas. (a) Barras apiladas verticalmente. (b) Barras apiladas horizontalmente. No es inmediatamente obvio que el SPD y el FDP tuvieran conjuntamente más escaños que la CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled%2028.png)
+![Figura 10-2. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras apiladas. (a) Barras apiladas verticalmente. (b) Barras apiladas horizontalmente. No es inmediatamente obvio que el SPD y el FDP tuvieran conjuntamente más escaños que la CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled28.png)
 
 Figura 10-2. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras apiladas. (a) Barras apiladas verticalmente. (b) Barras apiladas horizontalmente. No es inmediatamente obvio que el SPD y el FDP tuvieran conjuntamente más escaños que la CDU/CSU. Fuente de datos: Wikipedia.
 
@@ -602,7 +602,7 @@ agregar_etiquetas_votos(bar_plot)
 plt.show()
 ```
 
-![Figura 10-3. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras una al lado de la otra. Como en la Figura 10-2,, no es inmediatamente obvio que SPD y FDP en conjunto tuvieran más escaños que CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled%2029.png)
+![Figura 10-3. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras una al lado de la otra. Como en la Figura 10-2,, no es inmediatamente obvio que SPD y FDP en conjunto tuvieran más escaños que CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled29.png)
 
 Figura 10-3. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras una al lado de la otra. Como en la Figura 10-2,, no es inmediatamente obvio que SPD y FDP en conjunto tuvieran más escaños que CDU/CSU. Fuente de datos: Wikipedia.
 
@@ -646,7 +646,7 @@ for i, year in enumerate(data.keys()):
 plt.show()
 ```
 
-![Figura 10-4. Cuota de mercado de cinco empresas hipotéticas, A–E, para los años 2015–2017, visualizadas como gráficos circulares. Esta visualización tiene dos problemas principales: (i) una comparación de la participación de mercado relativa dentro de los años es casi imposible, y (ii) los cambios en la participación de mercado a lo largo de los años son difíciles de ver.](./imagenes/Untitled%2030.png)
+![Figura 10-4. Cuota de mercado de cinco empresas hipotéticas, A–E, para los años 2015–2017, visualizadas como gráficos circulares. Esta visualización tiene dos problemas principales: (i) una comparación de la participación de mercado relativa dentro de los años es casi imposible, y (ii) los cambios en la participación de mercado a lo largo de los años son difíciles de ver.](./imagenes/Untitled30.png)
 
 Figura 10-4. Cuota de mercado de cinco empresas hipotéticas, A–E, para los años 2015–2017, visualizadas como gráficos circulares. Esta visualización tiene dos problemas principales: (i) una comparación de la participación de mercado relativa dentro de los años es casi imposible, y (ii) los cambios en la participación de mercado a lo largo de los años son difíciles de ver.
 
@@ -691,7 +691,7 @@ ax.legend()
 plt.show()
 ```
 
-![Figura 10-5. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras apiladas. Esta visualización tiene dos problemas principales: (i) es difícil comparar las cuotas de mercado relativas dentro de los años, y (ii) los cambios en la cuota de mercado a lo largo de los años son difíciles de ver para las empresas medianas (B, C y D) porque la ubicación de las barras cambia a lo largo de los años.](./imagenes/Untitled%2031.png)
+![Figura 10-5. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras apiladas. Esta visualización tiene dos problemas principales: (i) es difícil comparar las cuotas de mercado relativas dentro de los años, y (ii) los cambios en la cuota de mercado a lo largo de los años son difíciles de ver para las empresas medianas (B, C y D) porque la ubicación de las barras cambia a lo largo de los años.](./imagenes/Untitled31.png)
 
 Figura 10-5. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras apiladas. Esta visualización tiene dos problemas principales: (i) es difícil comparar las cuotas de mercado relativas dentro de los años, y (ii) los cambios en la cuota de mercado a lo largo de los años son difíciles de ver para las empresas medianas (B, C y D) porque la ubicación de las barras cambia a lo largo de los años.
 
@@ -735,7 +735,7 @@ ax.legend()
 plt.show()
 ```
 
-![Figura 10-6. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras de lado a lado.](./imagenes/Untitled%2032.png)
+![Figura 10-6. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras de lado a lado.](./imagenes/Untitled32.png)
 
 Figura 10-6. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras de lado a lado.
 
@@ -744,26 +744,26 @@ Figura 10-6. Cuota de mercado de cinco empresas hipotéticas para los años 2015
 Las barras una al lado de la otra tienen el problema de que no visualizan el tamaño de las partes individuales en relación con el todo, y las barras apiladas tienen el problema de que las diferentes barras no se pueden comparar fácilmente porque tienen líneas de base diferentes. Podemos resolver estos dos problemas haciendo una gráfica separada para cada parte y en cada gráfica mostrando la respectiva parte relativa al todo. Para el conjunto de datos de salud de la Figura 10-8, este procedimiento da como resultado la Figura 10-9. La distribución de edad general en el conjunto de datos se muestra como áreas grises sombreadas, y las distribuciones de edad para cada estado de salud se muestran en azul.
 Esta cifra destaca que, en términos absolutos, la cantidad de personas con una salud excelente o buena disminuye después de los 30 a 40 años, mientras que la cantidad de personas con una salud regular permanece aproximadamente constante en todas las edades.
 
-![Figura 10-9. Estado de salud por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado de salud y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.](./imagenes/Untitled%2033.png)
+![Figura 10-9. Estado de salud por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado de salud y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.](./imagenes/Untitled33.png)
 
 Figura 10-9. Estado de salud por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado de salud y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.
 
 Para dar un segundo ejemplo, consideremos una variable diferente de la misma encuesta: el estado civil. El estado civil cambia mucho más drásticamente con la edad que el estado de salud, y una gráfica de densidades apiladas del estado civil versus la edad no es muy esclarecedora (Figura 10-10).
 
-![Figura 10-10. Estado civil por edad. Para simplificar la figura, se ha eliminado una pequeña cantidad de casos que se notifican como separados. Se ha etiquetado esta gráfica como "mala" porque la frecuencia de personas que nunca se han casado o que son viudas cambia tan drásticamente con la edad que las distribuciones por edad de las personas casadas y divorciadas están muy distorsionadas y son difíciles de interpretar. Fuente de datos: SGS.](./imagenes/Untitled%2034.png)
+![Figura 10-10. Estado civil por edad. Para simplificar la figura, se ha eliminado una pequeña cantidad de casos que se notifican como separados. Se ha etiquetado esta gráfica como "mala" porque la frecuencia de personas que nunca se han casado o que son viudas cambia tan drásticamente con la edad que las distribuciones por edad de las personas casadas y divorciadas están muy distorsionadas y son difíciles de interpretar. Fuente de datos: SGS.](./imagenes/Untitled34.png)
 
 Figura 10-10. Estado civil por edad. Para simplificar la figura, se ha eliminado una pequeña cantidad de casos que se notifican como separados. Se ha etiquetado esta gráfica como "mala" porque la frecuencia de personas que nunca se han casado o que son viudas cambia tan drásticamente con la edad que las distribuciones por edad de las personas casadas y divorciadas están muy distorsionadas y son difíciles de interpretar. Fuente de datos: SGS.
 
 El mismo conjunto de datos visualizado como densidades parciales es mucho más claro (Figura 10-11). En particular, vemos que la proporción de personas casadas alcanza su punto máximo alrededor de los 30 años, la proporción de personas divorciadas alcanza su punto máximo alrededor de los 40 y la proporción de viudos alcanza su punto máximo a mediados de los 70.
 
-![Figura 10-11. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado civil, y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.](./imagenes/Untitled%2035.png)
+![Figura 10-11. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado civil, y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.](./imagenes/Untitled35.png)
 
 Figura 10-11. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado civil, y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.
 
 Sin embargo, una desventaja de la figura 10-11 es que esta representación no facilita la determinación de proporciones relativas en un momento determinado. Por ejemplo, si quisiéramos saber a qué edad están casados más del 50% de todas las personas encuestadas, no podríamos saberlo fácilmente con la figura 10-11. Para responder a esta pregunta, podemos usar el mismo
 tipo de pantalla pero muestran proporciones relativas en lugar de conteos absolutos a lo largo del eje y (Figura 10-12). Ahora vemos que los casados son mayoría a partir de finales de los 20 y los viudos son mayoría a partir de mediados de los 70.
 
-![Figura 10-12. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas en azul muestran el porcentaje de personas a la edad dada con el estado respectivo, y las áreas coloreadas en gris muestran el porcentaje de personas con todos los demás estados civiles. Fuente de datos: SGS.](./imagenes/Untitled%2036.png)
+![Figura 10-12. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas en azul muestran el porcentaje de personas a la edad dada con el estado respectivo, y las áreas coloreadas en gris muestran el porcentaje de personas con todos los demás estados civiles. Fuente de datos: SGS.](./imagenes/Untitled36.png)
 
 Figura 10-12. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas en azul muestran el porcentaje de personas a la edad dada con el estado respectivo, y las áreas coloreadas en gris muestran el porcentaje de personas con todos los demás estados civiles. Fuente de datos: SGS.
 
@@ -778,7 +778,7 @@ Muchos conjuntos de datos contienen dos o más variables cuantitativas, y podemo
 Mostraré el gráfico de dispersión básico y varias de sus variaciones utilizando un conjunto de datos de medidas realizadas en 123 pájaros jay azules. El conjunto de datos contiene información como la longitud de la cabeza (medida desde la punta del pico hasta la parte posterior de la cabeza), el tamaño del cráneo (longitud de la cabeza menos la longitud del pico) y la masa corporal de cada pájaro. Esperamos que haya relaciones entre estas variables. Por ejemplo, se esperaría que los pájaros con picos más largos tuvieran tamaños de cráneo más grandes, y que los pájaros con mayor masa corporal tuvieran picos y cráneos más grandes que los pájaros con menor masa corporal.
 Para explorar estas relaciones, comienzo con un gráfico de la longitud de la cabeza frente a la masa corporal (Figura 12-1). En este gráfico, la longitud de la cabeza se muestra a lo largo del eje y y la masa corporal a lo largo del eje x, y cada pájaro está representado por un punto. (Tenga en cuenta la terminología: decimos que graficamos la variable que se muestra a lo largo del eje y en contra de la variable que se muestra a lo largo del eje x). Los puntos forman una nube dispersa (de ahí el término gráfico de dispersión), pero sin duda hay una tendencia a que los pájaros con mayor masa corporal tengan cabezas más largas. El pájaro con la cabeza más larga cae cerca de la masa corporal máxima observada, y el pájaro con la cabeza más corta cae cerca de la masa corporal mínima observada.
 
-![Untitled](./imagenes/Untitled%2037.png)
+![Untitled](./imagenes/Untitled37.png)
 
 *Figura 12-1. Longitud de la cabeza (medida desde la punta del pico hasta la parte posterior de la cabeza, en mm) versus masa corporal (en gramos), para 123 urracas azules. Cada punto corresponde a un pájaro. Existe una tendencia moderada a que los pájaros más pesados tengan cabezas más largas. Fuente de datos: Keith Tarvin, Oberlin College*.
 
@@ -802,7 +802,7 @@ plt.close() #cerramos la imagen porque una imgen abierta puede interferir con ot
 
 El conjunto de datos de los jay azules contiene tanto aves macho como hembra, y puede que queramos saber si la relación general entre la longitud de la cabeza y la masa corporal se sostiene por separado para cada sexo. Para abordar esta pregunta, podemos colorear los puntos en el gráfico de dispersión según el sexo del ave (Figura 12-2). Esta figura revela que la tendencia general en la longitud de la cabeza y la masa corporal está al menos parcialmente impulsada por el sexo de las aves. A la misma masa corporal, las hembras tienden a tener cabezas más cortas que los machos. Al mismo tiempo, las hembras tienden a ser más ligeras que los machos en promedio.
 
-![Untitled](./imagenes/Untitled%2038.png)
+![Untitled](./imagenes/Untitled38.png)
 
 *Figura 12-2. Longitud de cabeza versus masa corporal para 123 urracas azules. El sexo de las aves está indicado por el color. A la misma masa corporal, los machos tienden a tener cabezas más largas (y específicamente, picos más largos) que las hembras. Fuente de datos: Keith Tarvin, Oberlin College.*
 
@@ -832,7 +832,7 @@ plt.close()
 
 Dado que la longitud de la cabeza se define como la distancia desde la punta del pico hasta la parte posterior de la cabeza, una mayor longitud de la cabeza podría implicar un pico más largo, un cráneo más grande o ambos. Podemos separar la longitud del pico y el tamaño del cráneo mirando otra variable en el conjunto de datos, el tamaño del cráneo, que es similar a la longitud de la cabeza pero excluye el pico. Como ya estamos usando la posición x para la masa corporal, la posición y para la longitud de la cabeza y el color del punto para el sexo del ave, necesitamos otra estética a la que podamos asignar el tamaño del cráneo. Una opción es usar el tamaño de los puntos, lo que resulta en una visualización llamada gráfico de burbujas (Figura 12-3).
 
-![Untitled](./imagenes/Untitled%2039.png)
+![Untitled](./imagenes/Untitled39.png)
 
 *Figura 12-3. Longitud de la cabeza versus masa corporal para 123 urracas azules. El sexo de las aves se indica por color y el tamaño del cráneo por el tamaño del símbolo. Las mediciones de longitud de la cabeza incluyen la longitud del pico, mientras que las mediciones de tamaño del cráneo no lo hacen. La longitud de la cabeza y el tamaño del cráneo tienden a estar correlacionados, pero hay algunas aves con picos inusualmente largos o cortos en relación a su tamaño de cráneo. Fuente de datos: Keith Tarvin, Oberlin College.*
 
@@ -865,7 +865,7 @@ Los gráficos de burbujas tienen la desventaja de que muestran los mismos tipos 
 
 Como alternativa a un gráfico de burbujas, puede ser preferible mostrar una matriz de gráficos de dispersión de todos contra todos, donde cada trama individual muestra dos dimensiones de datos (Figura 12-4). Esta figura muestra claramente que la relación entre el tamaño del cráneo y el peso corporal es comparable para las aves macho y hembra, excepto que las aves hembra tienden a ser un poco más pequeñas. Sin embargo, lo mismo no es cierto para la relación entre la longitud de la cabeza y el peso corporal. Hay una clara separación por sexo. Las aves macho tienden a tener picos más largos que las aves hembra, todo lo demás siendo igual.
 
-![Untitled](./imagenes/Untitled%2040.png)
+![Untitled](./imagenes/Untitled40.png)
 
 Para crear una gráfica similar en Python podemos usar el siguiente código:
 
@@ -902,26 +902,26 @@ Cuando tenemos más de tres o cuatro variables cuantitativas, las matrices de di
 
 El coeficiente de correlación r es un número entre -1 y 1 que mide en qué medida covarían dos variables. Un valor de r = 0 significa que no hay asociación alguna, y un valor de 1 o -1 indica una asociación perfecta. El signo del coeficiente de correlación indica si las variables están correlacionadas (los valores más grandes de una variable coinciden con los valores más grandes de la otra) o anticorrelacionadas (los valores más grandes de una variable coinciden con los valores más pequeños de la otra). Para proporcionar ejemplos visuales de cómo se ven las diferentes intensidades de correlación, en la Figura 12-5 muestro conjuntos de puntos generados aleatoriamente que difieren ampliamente en el grado en que los valores de x e y están correlacionados.
 
-![Figura 12-5. Ejemplos de correlaciones de distinta magnitud y dirección, con coeficiente de correlación r asociado. En ambas filas, de izquierda a derecha, las correlaciones van de débil a fuerte. En la fila superior, las correlaciones son positivas (los valores más grandes para una cantidad se asocian con valores más grandes para la otra) y en la fila inferior son negativas (los valores más grandes para una cantidad se asocian con valores más pequeños para la otra). En los seis paneles, los conjuntos de valores de x e y son idénticos, pero los emparejamientos entre los valores individuales de x e y se han reorganizado para generar los coeficientes de correlación especificados.](./imagenes/Untitled%2041.png)
+![Figura 12-5. Ejemplos de correlaciones de distinta magnitud y dirección, con coeficiente de correlación r asociado. En ambas filas, de izquierda a derecha, las correlaciones van de débil a fuerte. En la fila superior, las correlaciones son positivas (los valores más grandes para una cantidad se asocian con valores más grandes para la otra) y en la fila inferior son negativas (los valores más grandes para una cantidad se asocian con valores más pequeños para la otra). En los seis paneles, los conjuntos de valores de x e y son idénticos, pero los emparejamientos entre los valores individuales de x e y se han reorganizado para generar los coeficientes de correlación especificados.](./imagenes/Untitled41.png)
 
 Figura 12-5. Ejemplos de correlaciones de distinta magnitud y dirección, con coeficiente de correlación r asociado. En ambas filas, de izquierda a derecha, las correlaciones van de débil a fuerte. En la fila superior, las correlaciones son positivas (los valores más grandes para una cantidad se asocian con valores más grandes para la otra) y en la fila inferior son negativas (los valores más grandes para una cantidad se asocian con valores más pequeños para la otra). En los seis paneles, los conjuntos de valores de x e y son idénticos, pero los emparejamientos entre los valores individuales de x e y se han reorganizado para generar los coeficientes de correlación especificados.
 
 El coeficiente de correlación ([Pearson](https://es.wikipedia.org/wiki/Coeficiente_de_correlaci%C3%B3n_de_Pearson)) se define como:
 
-![Untitled](./imagenes/Untitled%2042.png)
+![Untitled](./imagenes/Untitled42.png)
 
 donde xi y yi son dos conjuntos de observaciones y x e y son las medias muestrales correspondientes. Podemos hacer una serie de observaciones a partir de esta fórmula. Primero, la fórmula es simétrica en xi y yi, por lo que la correlación de x con y es la misma que la correlación de y con x. En segundo lugar, los valores individuales xi y yi solo ingresan a la fórmula en el contexto de las diferencias de la media de la muestra respectiva, por lo que si cambiamos un conjunto de datos completo en una cantidad constante, por ejemplo, si reemplazamos xi con xi′ = xi + C para alguna C constante: el coeficiente de correlación permanece sin cambios. En tercer lugar, el coeficiente de correlación también permanece sin cambios si cambiamos la escala de los datos (por ejemplo, xi′ = Cxi), ya que la constante C aparecerá tanto en el numerador como en el denominador de la fórmula y, por lo tanto, se puede cancelar.
 
 Las visualizaciones de los coeficientes de correlación se denominan correlogramas. Para ilustrar el uso de un correlograma, consideraremos un conjunto de datos de más de 200 fragmentos de vidrio obtenidos durante el trabajo forense. Para cada fragmento de vidrio, tenemos medidas sobre su composición, expresada como el porcentaje en peso de varios óxidos minerales. Hay siete óxidos diferentes para los que tenemos medidas, dando un total de 6 + 5 + 4 + 3 + 2 + 1 = 21 correlaciones por pares. Podemos mostrar estas 21 correlaciones a la vez como una matriz de mosaicos de colores, donde cada mosaico representa un coeficiente de correlación (Figura 12-6). Este correlograma nos permite captar rápidamente las tendencias en los datos, como que el magnesio tiene una correlación negativa con casi todos los demás óxidos, y que el aluminio y el bario tienen una fuerte correlación positiva.
 
-![Figura 12-6. Correlaciones en contenido mineral para 214 muestras de fragmentos de vidrio obtenidos durante trabajo forense. El conjunto de datos contiene siete variables que miden las cantidades de magnesio (Mg), calcio (Ca), hierro (Fe), potasio (K), sodio (Na), aluminio (Al) y bario (Ba) que se encuentran en cada fragmento de vidrio. Los mosaicos de colores representan las correlaciones entre pares de estas variables. Fuente de datos: B. Alemán.](./imagenes/Untitled%2043.png)
+![Figura 12-6. Correlaciones en contenido mineral para 214 muestras de fragmentos de vidrio obtenidos durante trabajo forense. El conjunto de datos contiene siete variables que miden las cantidades de magnesio (Mg), calcio (Ca), hierro (Fe), potasio (K), sodio (Na), aluminio (Al) y bario (Ba) que se encuentran en cada fragmento de vidrio. Los mosaicos de colores representan las correlaciones entre pares de estas variables. Fuente de datos: B. Alemán.](./imagenes/Untitled43.png)
 
 Figura 12-6. Correlaciones en contenido mineral para 214 muestras de fragmentos de vidrio obtenidos durante trabajo forense. El conjunto de datos contiene siete variables que miden las cantidades de magnesio (Mg), calcio (Ca), hierro (Fe), potasio (K), sodio (Na), aluminio (Al) y bario (Ba) que se encuentran en cada fragmento de vidrio. Los mosaicos de colores representan las correlaciones entre pares de estas variables. Fuente de datos: B. Alemán.
 
 Una debilidad del correlograma de la figura 12-6 es que las correlaciones bajas, es decir, las correlaciones con un valor absoluto cercano a cero, no se suprimen visualmente como deberían.
 Por ejemplo, el magnesio (Mg) y el potasio (K) no están en absoluto correlacionados, pero la figura 12-6 no muestra esto inmediatamente. Para superar esta limitación, podemos mostrar las correlaciones como círculos de colores y escalar el tamaño del círculo con el valor absoluto del coeficiente de correlación (Figura 12-7). De esta forma, se suprimen las correlaciones bajas y se destacan mejor las correlaciones altas.
 
-![Figura 12-7. Correlaciones en contenido mineral para muestras de vidrio forense. La escala de colores es idéntica a la de la Figura 12-6. Sin embargo, ahora la magnitud de cada correlación también está codificada en el tamaño de los círculos de colores. Esta opción quita énfasis visualmente a los casos con correlaciones cercanas a cero. Fuente de datos: B. Alemán.](./imagenes/Untitled%2044.png)
+![Figura 12-7. Correlaciones en contenido mineral para muestras de vidrio forense. La escala de colores es idéntica a la de la Figura 12-6. Sin embargo, ahora la magnitud de cada correlación también está codificada en el tamaño de los círculos de colores. Esta opción quita énfasis visualmente a los casos con correlaciones cercanas a cero. Fuente de datos: B. Alemán.](./imagenes/Untitled44.png)
 
 Figura 12-7. Correlaciones en contenido mineral para muestras de vidrio forense. La escala de colores es idéntica a la de la Figura 12-6. Sin embargo, ahora la magnitud de cada correlación también está codificada en el tamaño de los círculos de colores. Esta opción quita énfasis visualmente a los casos con correlaciones cercanas a cero. Fuente de datos: B. Alemán.
 
@@ -971,7 +971,7 @@ plt.yticks(df_2007_america.index, df_2007_america['pais'])
 plt.show()
 ```
 
-![Figura 6-11. Esperanza de vida de los países de las Américas, para el año 2007. Fuente de datos: Gapminder.](./imagenes/Untitled%2045.png)
+![Figura 6-11. Esperanza de vida de los países de las Américas, para el año 2007. Fuente de datos: Gapminder.](./imagenes/Untitled45.png)
 
 Figura 6-11. Esperanza de vida de los países de las Américas, para el año 2007. Fuente de datos: Gapminder.
 
@@ -992,13 +992,13 @@ plt.yticks(df_2007_america.index, df_2007_america['pais'])
 plt.show()
 ```
 
-![Figura 6-12. Esperanza de vida de los países de las Américas, para el año 2007, mostradas como barras. Este conjunto de datos no es adecuado para ser visualizado con barras. Las barras son demasiado largas y desvían la atención de la característica clave de los datos, las diferencias en la esperanza de vida entre los distintos países. Fuente de datos: Gapminder.](./imagenes/Untitled%2046.png)
+![Figura 6-12. Esperanza de vida de los países de las Américas, para el año 2007, mostradas como barras. Este conjunto de datos no es adecuado para ser visualizado con barras. Las barras son demasiado largas y desvían la atención de la característica clave de los datos, las diferencias en la esperanza de vida entre los distintos países. Fuente de datos: Gapminder.](./imagenes/Untitled46.png)
 
 Figura 6-12. Esperanza de vida de los países de las Américas, para el año 2007, mostradas como barras. Este conjunto de datos no es adecuado para ser visualizado con barras. Las barras son demasiado largas y desvían la atención de la característica clave de los datos, las diferencias en la esperanza de vida entre los distintos países. Fuente de datos: Gapminder.
 
 Sin embargo, independientemente de si usamos barras o puntos, debemos prestar atención al orden de los valores de los datos. En las Figuras 6-11 y 6-12, los países están ordenados en orden descendente de esperanza de vida. Si en cambio los ordenáramos alfabéticamente, terminaríamos con una nube de puntos desordenada que es confusa y no transmite un mensaje claro (Figura 6-13).
 
-![Figura 6-13. Esperanza de vida de los países de las Américas, para el año 2007. Aquí, los países están ordenados alfabéticamente, lo que hace que los puntos formen una nube de puntos desordenada. Esto hace que la figura sea difícil de leer y, por lo tanto, merece ser etiquetada como "mala". Fuente de datos: Gapminder.](./imagenes/Untitled%2047.png)
+![Figura 6-13. Esperanza de vida de los países de las Américas, para el año 2007. Aquí, los países están ordenados alfabéticamente, lo que hace que los puntos formen una nube de puntos desordenada. Esto hace que la figura sea difícil de leer y, por lo tanto, merece ser etiquetada como "mala". Fuente de datos: Gapminder.](./imagenes/Untitled47.png)
 
 Figura 6-13. Esperanza de vida de los países de las Américas, para el año 2007. Aquí, los países están ordenados alfabéticamente, lo que hace que los puntos formen una nube de puntos desordenada. Esto hace que la figura sea difícil de leer y, por lo tanto, merece ser etiquetada como "mala". Fuente de datos: Gapminder.
 
@@ -1046,13 +1046,13 @@ plt.title('Mapa de calor de usuarios de Internet a lo largo de los años en Amé
 plt.show()
 ```
 
-![Figura 6-14. Adopción de Internet a lo largo del tiempo, para países seleccionados. El color representa el porcentaje de usuarios de Internet para el respectivo país y año. Los países fueron ordenados por porcentaje de usuarios de Internet en 2016. Fuente de datos: Banco Mundial.](./imagenes/Untitled%2048.png)
+![Figura 6-14. Adopción de Internet a lo largo del tiempo, para países seleccionados. El color representa el porcentaje de usuarios de Internet para el respectivo país y año. Los países fueron ordenados por porcentaje de usuarios de Internet en 2016. Fuente de datos: Banco Mundial.](./imagenes/Untitled48.png)
 
 Figura 6-14. Adopción de Internet a lo largo del tiempo, para países seleccionados. El color representa el porcentaje de usuarios de Internet para el respectivo país y año. Los países fueron ordenados por porcentaje de usuarios de Internet en 2016. Fuente de datos: Banco Mundial.
 
 Como es el caso con todos los demás enfoques de visualización discutidos en este capítulo, debemos prestar atención al orden de los valores de datos categóricos al hacer mapas de calor. En la Figura 6-14, los países están ordenados por el porcentaje de usuarios de Internet en 2016. Este orden coloca al Reino Unido, Japón, Canadá y Alemania por encima de Estados Unidos, porque todos estos países tuvieron una mayor penetración de Internet en 2016 que Estados Unidos., a pesar de que Estados Unidos vio un uso significativo de Internet en un momento anterior. Alternativamente, podríamos ordenar los países por qué tan temprano comenzaron a ver un uso significativo de Internet. En la Figura 6-15, los países están ordenados por año en el que el uso de Internet aumentó por primera vez por encima del 20 %. En esta figura, Estados Unidos cae en la tercera posición desde arriba y se destaca por tener un uso de Internet relativamente bajo en 2016 en comparación con lo temprano que comenzó el uso de Internet allí. Se puede ver un patrón similar para Italia. Israel y Francia, por el contrario, comenzaron relativamente tarde pero ganaron terreno rápidamente.
 
-![Figura 6-15. Adopción de Internet a lo largo del tiempo, para países seleccionados. Los países se ordenaron por el año en que su uso de Internet superó por primera vez el 20 %. Fuente de datos: Banco Mundial.](./imagenes/Untitled%2049.png)
+![Figura 6-15. Adopción de Internet a lo largo del tiempo, para países seleccionados. Los países se ordenaron por el año en que su uso de Internet superó por primera vez el 20 %. Fuente de datos: Banco Mundial.](./imagenes/Untitled49.png)
 
 Figura 6-15. Adopción de Internet a lo largo del tiempo, para países seleccionados. Los países se ordenaron por el año en que su uso de Internet superó por primera vez el 20 %. Fuente de datos: Banco Mundial.
 
@@ -1068,7 +1068,7 @@ En la sección anterior se discutieron los gráficos de dispersión, donde se tr
 
 Como primera demostración de una serie temporal, consideraremos el patrón de presentaciones mensuales de preprints en biología. Los preprints son artículos científicos que los investigadores publican en línea antes de la revisión formal por pares y la publicación en una revista científica. El servidor de preprints bioRxiv, fundado en noviembre de 2013 específicamente para investigadores que trabajan en ciencias biológicas, ha visto un crecimiento sustancial en las presentaciones mensuales desde entonces. Podemos visualizar este crecimiento mediante la creación de una forma de gráfico de dispersión (Capítulo 12) donde dibujamos puntos que representan el número de presentaciones en cada mes (Figura 13-1).
 
-![Figura 13-1. Presentaciones mensuales en el servidor de preprints bioRxiv, desde su inicio en noviembre de 2013 hasta abril de 2018. Cada punto representa el número de presentaciones en un mes. Ha habido un aumento constante en el volumen de presentaciones durante todo el período de 4.5 años. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled%2050.png)
+![Figura 13-1. Presentaciones mensuales en el servidor de preprints bioRxiv, desde su inicio en noviembre de 2013 hasta abril de 2018. Cada punto representa el número de presentaciones en un mes. Ha habido un aumento constante en el volumen de presentaciones durante todo el período de 4.5 años. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled50.png)
 
 Figura 13-1. Presentaciones mensuales en el servidor de preprints bioRxiv, desde su inicio en noviembre de 2013 hasta abril de 2018. Cada punto representa el número de presentaciones en un mes. Ha habido un aumento constante en el volumen de presentaciones durante todo el período de 4.5 años. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
 
@@ -1078,7 +1078,7 @@ Sin embargo, hay una diferencia importante entre la Figura 13-1 y los gráficos 
 mostradas como puntos conectados por líneas. Las líneas no representan datos y sólo se
 pretenden como una guía visual. Al conectar los puntos individuales con líneas, enfatiza‐
 mos que hay un orden entre ellos: cada punto tiene exactamente un vecino que viene
-antes y otro que viene después. Fuente de datos: Jordan Anaya [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled%2051.png)
+antes y otro que viene después. Fuente de datos: Jordan Anaya [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled51.png)
 
 Figura 13-2. Presentación de las entregas mensuales al servidor de preprints bioRxiv,
 mostradas como puntos conectados por líneas. Las líneas no representan datos y sólo se
@@ -1094,7 +1094,7 @@ El uso de líneas para representar series de tiempo es una práctica generalment
 mostradas como un gráfico de línea sin puntos. Omitir los puntos enfatiza la tendencia
 temporal general mientras se reduce la importancia de las observaciones individuales en
 puntos de tiempo específicos. Es particularmente útil cuando los puntos de tiempo están
-muy densamente espaciados. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/) ](./imagenes/Untitled%2052.png)
+muy densamente espaciados. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/) ](./imagenes/Untitled52.png)
 
 Figura 13-3. Presentación de las entregas mensuales al servidor de preprints bioRxiv
 mostradas como un gráfico de línea sin puntos. Omitir los puntos enfatiza la tendencia
@@ -1104,7 +1104,7 @@ muy densamente espaciados. Fuente de datos: Jordan Anaya, [**http://www.prepubme
 
 Podemos también rellenar el área bajo la curva con un color sólido (Figura 13-4). Esta elección enfatiza aún más la tendencia general de los datos, ya que separa visualmente el área por encima de la curva del área por debajo de ella. Sin embargo, esta visualización solo es válida si el eje y comienza en cero, de modo que la altura del área sombreada en cada punto de tiempo representa el valor de los datos en ese punto de tiempo.
 
-![Figura 13-4. Envíos mensuales al servidor de preprints bioRxiv, representados como un gráfico de línea con el área debajo de la curva rellena. Al rellenar el área debajo de la curva, se enfatiza aún más la tendencia temporal general que si solo dibujáramos una línea (Figura 13-3). Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled%2053.png)
+![Figura 13-4. Envíos mensuales al servidor de preprints bioRxiv, representados como un gráfico de línea con el área debajo de la curva rellena. Al rellenar el área debajo de la curva, se enfatiza aún más la tendencia temporal general que si solo dibujáramos una línea (Figura 13-3). Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled53.png)
 
 Figura 13-4. Envíos mensuales al servidor de preprints bioRxiv, representados como un gráfico de línea con el área debajo de la curva rellena. Al rellenar el área debajo de la curva, se enfatiza aún más la tendencia temporal general que si solo dibujáramos una línea (Figura 13-3). Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
 
@@ -1148,23 +1148,23 @@ plt.fill_between(dates, values, alpha = 0.3)
 
 A menudo tenemos múltiples series de tiempo que queremos mostrar al mismo tiempo. En este caso, tenemos que ser más cuidadosos en cómo representamos los datos, porque la figura puede volverse confusa o difícil de leer. Por ejemplo, si queremos mostrar las presentaciones mensuales en múltiples servidores de preprints, un diagrama de dispersión no es una buena idea, porque las series temporales individuales se superponen (Figura 13-5). Conectar los puntos con líneas alivia este problema (Figura 13-6).
 
-![Figura 13-5. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Cada punto representa el número de envíos en un mes al respectivo servidor de preprints. Esta figura se etiqueta como "mala" porque los tres cursos de tiempo interfieren visualmente entre sí y son difíciles de leer. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled%2054.png)
+![Figura 13-5. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Cada punto representa el número de envíos en un mes al respectivo servidor de preprints. Esta figura se etiqueta como "mala" porque los tres cursos de tiempo interfieren visualmente entre sí y son difíciles de leer. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled54.png)
 
 Figura 13-5. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Cada punto representa el número de envíos en un mes al respectivo servidor de preprints. Esta figura se etiqueta como "mala" porque los tres cursos de tiempo interfieren visualmente entre sí y son difíciles de leer. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
 
-![Figura 13-6. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección de q-bio de arXiv y PeerJ Preprints. Al conectar los puntos de la figura 13-5 con líneas, ayudamos al espectador a seguir cada una de las series de tiempo individuales. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled%2055.png)
+![Figura 13-6. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección de q-bio de arXiv y PeerJ Preprints. Al conectar los puntos de la figura 13-5 con líneas, ayudamos al espectador a seguir cada una de las series de tiempo individuales. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled55.png)
 
 Figura 13-6. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección de q-bio de arXiv y PeerJ Preprints. Al conectar los puntos de la figura 13-5 con líneas, ayudamos al espectador a seguir cada una de las series de tiempo individuales. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
 
 La Figura 13-6 representa una visualización aceptable del conjunto de datos de preprints. Sin embargo, la leyenda separada crea una carga cognitiva innecesaria. Podemos reducir esta carga cognitiva etiquetando las líneas directamente (Figura 13-7). También he eliminado los puntos individuales en esta figura, para obtener un resultado que es mucho más simplificado y fácil de leer que el punto de partida original, Figura 13-5.
 
-![Figura 13-7. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Etiquetar directamente las líneas en lugar de proporcionar una leyenda reduce la carga cognitiva necesaria para leer la figura, y eliminar la leyenda elimina la necesidad de puntos de diferentes formas. Esto nos permite simplificar aún más la Figura 13-6 eliminando los puntos. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled%2056.png)
+![Figura 13-7. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Etiquetar directamente las líneas en lugar de proporcionar una leyenda reduce la carga cognitiva necesaria para leer la figura, y eliminar la leyenda elimina la necesidad de puntos de diferentes formas. Esto nos permite simplificar aún más la Figura 13-6 eliminando los puntos. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled56.png)
 
 Figura 13-7. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Etiquetar directamente las líneas en lugar de proporcionar una leyenda reduce la carga cognitiva necesaria para leer la figura, y eliminar la leyenda elimina la necesidad de puntos de diferentes formas. Esto nos permite simplificar aún más la Figura 13-6 eliminando los puntos. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
 
 Los gráficos de líneas no se limitan a series de tiempo. Son apropiados siempre que los puntos de datos tengan un orden natural que se refleje en la variable mostrada en el eje x, de modo que los puntos adyacentes puedan conectarse con una línea. Esta situación surge, por ejemplo, en las curvas dosis-respuesta, donde medimos cómo el cambio de algún parámetro numérico en un experimento (la dosis) afecta un resultado de interés (la respuesta). La figura 13-8 muestra un experimento clásico de este tipo, midiendo el rendimiento de avena en respuesta a cantidades crecientes de fertilización. La visualización del gráfico de líneas destaca cómo las curvas dosis-respuesta tienen una forma similar para las tres variedades de avena consideradas, pero difieren en el punto de partida en ausencia de fertilización (es decir, algunas variedades tienen un rendimiento naturalmente mayor que otras).
 
-![Figura 13-8. Curva de dosis-respuesta que muestra el rendimiento medio de variedades de avena después de la fertilización con estiércol. El estiércol sirve como fuente de nitrógeno y los rendimientos de la avena generalmente aumentan a medida que hay más nitrógeno disponible, independientemente de la variedad. Aquí, la aplicación de estiércol se mide en cwt (peso del centenar) por acre. El peso del centenar es una antigua unidad imperial que equivale a 112 libras o 50,8 kg. Fuente de datos: [Yates 1935].](./imagenes/Untitled%2057.png)
+![Figura 13-8. Curva de dosis-respuesta que muestra el rendimiento medio de variedades de avena después de la fertilización con estiércol. El estiércol sirve como fuente de nitrógeno y los rendimientos de la avena generalmente aumentan a medida que hay más nitrógeno disponible, independientemente de la variedad. Aquí, la aplicación de estiércol se mide en cwt (peso del centenar) por acre. El peso del centenar es una antigua unidad imperial que equivale a 112 libras o 50,8 kg. Fuente de datos: [Yates 1935].](./imagenes/Untitled57.png)
 
 Figura 13-8. Curva de dosis-respuesta que muestra el rendimiento medio de variedades de avena después de la fertilización con estiércol. El estiércol sirve como fuente de nitrógeno y los rendimientos de la avena generalmente aumentan a medida que hay más nitrógeno disponible, independientemente de la variedad. Aquí, la aplicación de estiércol se mide en cwt (peso del centenar) por acre. El peso del centenar es una antigua unidad imperial que equivale a 112 libras o 50,8 kg. Fuente de datos: [Yates 1935].
 
@@ -1219,13 +1219,13 @@ En los ejemplos anteriores, tratamos con series temporales de solo una variable 
 
 Con las herramientas de las secciones anteriores, podemos visualizar estos datos como dos gráficas de línea separadas y apiladas una encima de la otra (Figura 13-9). Esta visualización muestra directamente las dos variables de interés y es fácil de interpretar. Sin embargo, como las dos variables se muestran como gráficas de línea separadas, compararlas puede ser engorroso. Si queremos identificar regiones temporales en las que ambas variables se muevan en la misma o en direcciones opuestas, necesitamos alternar entre las dos gráficas y comparar las pendientes relativas de las dos curvas.
 
-![Figura 13-9. Cambio de doce meses en los precios de las casas (a) y la tasa de desempleo (b) a lo largo del tiempo, desde enero de 2001 hasta diciembre de 2017. Fuentes de datos: índice de precios de las casas Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled%2058.png)
+![Figura 13-9. Cambio de doce meses en los precios de las casas (a) y la tasa de desempleo (b) a lo largo del tiempo, desde enero de 2001 hasta diciembre de 2017. Fuentes de datos: índice de precios de las casas Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled58.png)
 
 Figura 13-9. Cambio de doce meses en los precios de las casas (a) y la tasa de desempleo (b) a lo largo del tiempo, desde enero de 2001 hasta diciembre de 2017. Fuentes de datos: índice de precios de las casas Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.
 
 Como alternativa para mostrar dos gráficas de línea separadas, podemos trazar las dos variables juntas, dibujando un camino que va desde el punto de tiempo más temprano hasta el más reciente (Figura 13-10). Esta visualización se llama gráfico de dispersión conectado, porque técnicamente estamos haciendo un gráfico de dispersión de las dos variables entre sí y luego conectando los puntos vecinos. Los físicos e ingenieros a menudo lo llaman retrato de fase, porque en sus disciplinas se utiliza comúnmente para representar el movimiento en el espacio de fase. 
 
-![Figura 13-10. Cambio de doce meses en los precios de la vivienda versus la tasa de desempleo, desde enero de 2001 hasta diciembre de 2017, se muestra como un gráfico de dispersión conectado. Las tonalidades más oscuras representan meses más recientes. La anticorrelación vista en la Figura 13-9 entre el cambio en los precios de la vivienda y la tasa de desempleo hace que el gráfico de dispersión conectado forme dos círculos en sentido antihorario. Concepto original de la figura: Len Kiefer. Fuentes de datos: índice de precios de la vivienda Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled%2059.png)
+![Figura 13-10. Cambio de doce meses en los precios de la vivienda versus la tasa de desempleo, desde enero de 2001 hasta diciembre de 2017, se muestra como un gráfico de dispersión conectado. Las tonalidades más oscuras representan meses más recientes. La anticorrelación vista en la Figura 13-9 entre el cambio en los precios de la vivienda y la tasa de desempleo hace que el gráfico de dispersión conectado forme dos círculos en sentido antihorario. Concepto original de la figura: Len Kiefer. Fuentes de datos: índice de precios de la vivienda Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled59.png)
 
 Figura 13-10. Cambio de doce meses en los precios de la vivienda versus la tasa de desempleo, desde enero de 2001 hasta diciembre de 2017, se muestra como un gráfico de dispersión conectado. Las tonalidades más oscuras representan meses más recientes. La anticorrelación vista en la Figura 13-9 entre el cambio en los precios de la vivienda y la tasa de desempleo hace que el gráfico de dispersión conectado forme dos círculos en sentido antihorario. Concepto original de la figura: Len Kiefer. Fuentes de datos: índice de precios de la vivienda Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.
 
@@ -1233,7 +1233,7 @@ En un gráfico de dispersión conectado, las líneas que van en dirección de la
 Al dibujar un gráfico de dispersión conectado, es importante que indiquemos tanto la dirección como la escala temporal de los datos. Sin tales indicaciones, el gráfico puede convertirse en un garabato sin sentido (Figura 13-11). En la Figura 13-10, utilicé un oscurecimiento gradual del color para indicar la dirección; alternativamente, se podrían dibujar flechas a lo largo del camino.
 ¿Es mejor utilizar un gráfico de dispersión conectado o dos gráficos de líneas separados? Los gráficos de líneas separados tienden a ser más fáciles de leer, pero una vez que las personas se acostumbran a los gráficos de dispersión conectados, pueden extraer ciertos patrones (como comportamiento cíclico con cierta irregularidad) que pueden ser difíciles de detectar en los gráficos de líneas. De hecho, para mí, la relación cíclica entre el cambio en los precios de las viviendas y la tasa de desempleo es difícil de detectar en la Figura 13-9, pero la espiral en sentido contrario de las manecillas del reloj en la Figura 13-10 la revela. La investigación muestra que los lectores son más propensos a confundir el orden y la dirección en un gráfico de dispersión conectado que en los gráficos de líneas, y menos propensos a informar correlación [Haroz, Kosara y Franconeri 2016]. Por otro lado, los gráficos de dispersión conectados parecen generar un mayor compromiso, por lo que estos gráficos pueden ser herramientas efectivas para atraer a los lectores a una historia.
 
-![Figura 13-11. Cambio de los precios de la vivienda en un periodo de doce meses en comparación con la tasa de desempleo, de enero de 2001 a diciembre de 2017. Esta figura se etiqueta como "mala" porque sin los marcadores de fecha y sombreado de color de la Figura 13-10, no se puede ver ni la dirección ni la velocidad del cambio en los datos. Fuentes de datos: Índice de precios de la vivienda de Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled%2060.png)
+![Figura 13-11. Cambio de los precios de la vivienda en un periodo de doce meses en comparación con la tasa de desempleo, de enero de 2001 a diciembre de 2017. Esta figura se etiqueta como "mala" porque sin los marcadores de fecha y sombreado de color de la Figura 13-10, no se puede ver ni la dirección ni la velocidad del cambio en los datos. Fuentes de datos: Índice de precios de la vivienda de Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled60.png)
 
 Figura 13-11. Cambio de los precios de la vivienda en un periodo de doce meses en comparación con la tasa de desempleo, de enero de 2001 a diciembre de 2017. Esta figura se etiqueta como "mala" porque sin los marcadores de fecha y sombreado de color de la Figura 13-10, no se puede ver ni la dirección ni la velocidad del cambio en los datos. Fuentes de datos: Índice de precios de la vivienda de Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.
 
@@ -1307,7 +1307,7 @@ En nuestro caso no lo creo necesario porque ya agregamos la barra de colores'''
 
 Muchos datos con los que se van a encontrar hoy en día tienen información georeferenciada, es decir nos dicen de que lugar en el mundo proviene ese dato. Por ejemplo, el siguiente mapa muestra las ciclovías y bicisendas junto con los centros culturales de la ciudad de Rosario ([link](https://datosabiertos.rosario.gob.ar/dataset/ciclov%C3%ADas-y-bicisendas) y [link](https://datosabiertos.rosario.gob.ar/dataset/centros-culturales-municipales), respectivamente)
 
-![Untitled](./imagenes/Untitled%2061.png)
+![Untitled](./imagenes/Untitled61.png)
 
 Pero antes de poder hacer estas visualizaciones tenemos que entender algunos conceptos. 
 
@@ -1317,15 +1317,15 @@ El **geoide** se define como la superficie del campo de gravedad de la Tierra, q
 
 Para simplificar el modelo, se han ideado varios **esferoides** o **elipsoides**. Estos términos se utilizan de forma intercambiable. Un esferoide es una forma de tres dimensiones creada a partir de una elipse de dos dimensiones. En el caso de la Tierra, el semieje mayor es el radio desde el centro de la Tierra hasta el ecuador, mientras que el semieje menor es el radio desde el centro de la Tierra hasta el polo. 
 
-![Untitled](./imagenes/Untitled%2062.png)
+![Untitled](./imagenes/Untitled62.png)
 
 Un esferoide determinado se distingue de otro por las longitudes de los semiejes mayores y menores. Por ejemplo, compare el esferoide Clarke 1866 con los esferoides GRS 1980 y WGS 1984, sobre la base de las siguientes mediciones (en metros).
 
-![Untitled](./imagenes/Untitled%2063.png)
+![Untitled](./imagenes/Untitled63.png)
 
 Se puede seleccionar un esferoide determinado para su uso en un área geográfica concreta, porque ese esferoide concreto funciona excepcionalmente bien imitando el geoide para esa parte del mundo. En el caso de América del Norte, el esferoide preferido es GRS 1980, en el que se basa el Datum de Norteamérica de 1983 (NAD83). [arcgis](https://desktop.arcgis.com/es/arcmap/latest/map/projections/about-the-geoid-ellipsoid-spheroid-and-datum-and-h.htm)
 
-![Untitled](./imagenes/Untitled%2064.png)
+![Untitled](./imagenes/Untitled64.png)
 
 Geoide, [Fuente](https://upload.wikimedia.org/wikipedia/commons/c/c2/Geoide.jpg)
 
@@ -1333,11 +1333,11 @@ Un **datum** se genera sobre el esferoide seleccionado y puede incorporar variac
 
 El datum más usado es el [WSG84](https://es.wikipedia.org/wiki/WGS84) que es el que se usa en el Sistema de Posicionamiento Global (GPS).
 
-![Datum local, seleccionado para representar mejor las coordenadas de un país o región](./imagenes/Untitled%2065.png)
+![Datum local, seleccionado para representar mejor las coordenadas de un país o región](./imagenes/Untitled65.png)
 
 Datum local, seleccionado para representar mejor las coordenadas de un país o región
 
-![A nivel global, se utiliza el Datum WGS84 (GPS), el cual está indicado en rojo en el gráfico](./imagenes/Untitled%2066.png)
+![A nivel global, se utiliza el Datum WGS84 (GPS), el cual está indicado en rojo en el gráfico](./imagenes/Untitled66.png)
 
 A nivel global, se utiliza el Datum WGS84 (GPS), el cual está indicado en rojo en el gráfico
 
@@ -1349,13 +1349,13 @@ El sistema de coordenadas geográficas consta de líneas de latitud y de longitu
 
 El ecuador se encuentra en un ángulo de 0 grados de latitud. Generalmente, el hemisferio norte posee mediciones de latitud positivas y el hemisferio sur posee mediciones de latitud negativas. La longitud mide ángulos en una dirección de este-oeste. Las mediciones de longitud comúnmente se basan en el meridiano de Greenwich, que es una línea imaginaria que realiza un recorrido desde el Polo Norte, a través de Greenwich, Inglaterra, hasta el Polo Sur. Este ángulo es de longitud 0. El oeste del meridiano de Greenwich se registra normalmente como longitud negativa y el este como longitud positiva. Por ejemplo, la ubicación de Los Ángeles, California, tiene una latitud de aproximadamente "más 33 grados, 56 minutos" y una longitud de "menos 118 grados, 24 minutos". [arcgis](https://desktop.arcgis.com/es/arcmap/10.7/map/projections/geographic-coordinate-system.htm)
 
-![Untitled](./imagenes/Untitled%2067.png)
+![Untitled](./imagenes/Untitled67.png)
 
 ### Sistemas de Coordenadas Proyectadas
 
 Muchas veces necesitamos representar la posición de los puntos de interés sobre una superficie plana, en 2D, y no con ángulos como vimos arriba. Entonces, al problema que nos enfrentamos es a pasar información que está sobre una superficie curva a una superficie plana, algo parecido a tratar de poner en un plano toda la cáscara de una mandarina.
 
-![Untitled](./imagenes/Untitled%2068.png)
+![Untitled](./imagenes/Untitled68.png)
 
 El proceso de pasar de tener la ubicación de un objeto sobre la superficie de la tierra a una superficie plana se llama “proyección”. Al igual que con la cáscara de la mandarina, el proceso incluye distorsiones puesto que es imposible pasar de forma perfecta desde una superficie curva a una plana, se puede conservar ángulos o áreas, pero no ambas. 
 
@@ -1373,7 +1373,7 @@ Se utilizan fórmulas matemáticas para convertir un sistema de coordenadas geog
 
 **Proyecciones de dirección verdadera o azimutales:** Estas proyecciones conservan la dirección de un punto a otros puntos manteniendo algunos de los arcos de círculo grandes. Estas proyecciones dan correctamente las direcciones o azimuts de todos los puntos del mapa respecto al centro. Los mapas azimutales se pueden combinar con proyecciones de áreas iguales, conformes y equidistantes. La proyección *azimutal* *de igual área de Lambert* y la proyección *azimutal equidistante* son ejemplos de proyecciones azimutales. [ibm](https://www.ibm.com/docs/es/db2woc?topic=SS6NHC/com.ibm.db2.luw.spatial.topics.doc/doc/csb3022b.html)
 
-![Untitled](./imagenes/Untitled%2069.png)
+![Untitled](./imagenes/Untitled69.png)
 
 ### Geopandas
 
@@ -1393,11 +1393,11 @@ barrios.head()
 
 Cuando miramos el geodataframe vemos la columna `geometry`. Esta columna es lo que diferencia a una geodataframe de un dataframe y la misma contiene la referencia espacial la cual puede ser un punto, una línea o polígono. En el dataframe de las ciclovías y bicisendas vemos que el objeto que guarda `geometry`es de tipo `shapely.geometry.linestring.LineString`, mientras que el objeto en los centros de salud es `shapely.geometry.point.Point` y en el de barrios vemos `shapely.geometry.point.Polygons`
 
-![Untitled](./imagenes/Untitled%2070.png)
+![Untitled](./imagenes/Untitled70.png)
 
-![Untitled](./imagenes/Untitled%2071.png)
+![Untitled](./imagenes/Untitled71.png)
 
-![Untitled](./imagenes/Untitled%2072.png)
+![Untitled](./imagenes/Untitled72.png)
 
 Para poder trabajar con los geodataframe también necesitamos saber su sistema de coordenadas de referencia, el cual podemos consultar escribiendo `gdf.crs`
 
@@ -1430,7 +1430,7 @@ Para visualizar estos datos con geopandas podemos usar la opción `.plot()` y ve
 ciclo.plot()
 ```
 
-![Untitled](./imagenes/Untitled%2073.png)
+![Untitled](./imagenes/Untitled73.png)
 
 Si queremos colorear a cada barrio con un color podemos hacer lo siguiente:
 
@@ -1438,7 +1438,7 @@ Si queremos colorear a cada barrio con un color podemos hacer lo siguiente:
 barrios.plot(column = 'BARRIO', figsize =(10,10), cmap = 'inferno')
 ```
 
-![Untitled](./imagenes/Untitled%2074.png)
+![Untitled](./imagenes/Untitled74.png)
 
 <aside>
 💡 La visualización de arriba no es muy recomendable porque hay demasiados barrios y los colores no se distinguen bien.
@@ -1447,7 +1447,7 @@ barrios.plot(column = 'BARRIO', figsize =(10,10), cmap = 'inferno')
 
 También podemos visualizar variables continuas como por ejemplo la porción de trigo que cultiva cada departamento de la provincia de Córdoba ([datos](https://www.mapascordoba.gob.ar/#/descargas)). En el gráfico de abajo podemos ver que muy pocos departamentos cultivan trigo y que Córdoba Capital es el que más lo hace. 
 
-![Untitled](./imagenes/Untitled%2075.png)
+![Untitled](./imagenes/Untitled75.png)
 
 <aside>
 💡 Como se comentó arriba, este tipo de gráficos no es el ideal para presentar en un informe porque el tamaño de cada departamento puede dar una idea errónea, pero, puede ser de utilidad para nuestro análisis exploratorio de datos
@@ -1458,7 +1458,7 @@ Los mapas de arriba se verían más atractivos si tuvieran un mapa de fondo, lo 
 
 Por ejemplo, podríamos plotear la superficie cultivada de cada departamento de la provincia de Córdoba
 
-![Untitled](./imagenes/Untitled%2076.png)
+![Untitled](./imagenes/Untitled76.png)
 
 ```python
 m = folium.Map(location=[-31.715057, -63.671522], zoom_start=6)
@@ -1479,7 +1479,7 @@ m
 
 O plotear que superficie del total disponible cultiva cada departamento para detectar cuáles son los que más atención le prestan a la agricultura. También podemos agregarle a este mapa un pop-up para tener información de cada departamento, por ejemplo, nombre del departamento, superficie total, superficie cultivada y porcentaje de superficie cultivada
 
-![Untitled](./imagenes/Untitled%2077.png)
+![Untitled](./imagenes/Untitled77.png)
 
 ```python
 m = folium.Map(location=[-31.715057, -63.671522], zoom_start=6)
@@ -1504,7 +1504,7 @@ m
 
 Cuando ploteamos los centros culturales, es útil agregarle un pop-up con el nombre y la dirección para localizar más fácilmente cada centro:
 
-![Untitled](./imagenes/Untitled%2078.png)
+![Untitled](./imagenes/Untitled78.png)
 
 ```python
 m = folium.Map(location=[-32.952601, -60.643213], zoom_start=12)
@@ -1542,19 +1542,19 @@ Los UpSet plots pueden ser creados y personalizados utilizando varias herramient
 **Uso de los UpSet plots**
 Se muestra una matriz de UpSet en la parte izquierda, donde cada fila corresponde a una intersección de múltiples conjuntos, que se muestran en las columnas. Se destacan en color tres intersecciones (solo en B; en A y B, pero no en C; y en todos A, B y C) y se muestran los segmentos correspondientes en un diagrama de Venn. El diagrama de Venn muestra con el mismo color, las intersecciones que están etiquetadas en el diagrama de la izquierda, para mostrar cuál es el conjunto al cual se hace referencia:
 
-![Ilustración que muestra cómo las filas de un gráfico UpSet se corresponden con los segmentos de un diagrama de Venn.](./imagenes/Untitled%2079.png)
+![Ilustración que muestra cómo las filas de un gráfico UpSet se corresponden con los segmentos de un diagrama de Venn.](./imagenes/Untitled79.png)
 
 Ilustración que muestra cómo las filas de un gráfico UpSet se corresponden con los segmentos de un diagrama de Venn.
 
 Los gráficos de UpSet visualizan intersecciones entre conjuntos en una matriz. En un gráfico de UpSet vertical, las columnas de la matriz corresponden a los conjuntos y las filas corresponden a las intersecciones. Para cada fila, las celdas que forman parte de una intersección se rellenan. Si hay varias celdas rellenas, se conectan con una línea para enfatizar la dirección de lectura del gráfico. Como los conjuntos varían en tamaño, el tamaño del conjunto se representa como gráficos de barras en la parte superior de las columnas. El tamaño de las intersecciones (cardinalidad) se muestra alineado con las filas, también como gráficos de barras. Este diseño facilita la comparación entre los tamaños de las intersecciones individuales, ya que el tamaño de las barras es fácil de comparar. Los gráficos de UpSet se pueden usar horizontal y verticalmente.
 
-![Una gráfica de UpSet que muestra tres conjuntos y el diagrama de Venn correspondiente](./imagenes/Untitled%2080.png)
+![Una gráfica de UpSet que muestra tres conjuntos y el diagrama de Venn correspondiente](./imagenes/Untitled80.png)
 
 Una gráfica de UpSet que muestra tres conjuntos y el diagrama de Venn correspondiente
 
 Los gráficos de UpSet se pueden ordenar de varias maneras. Un enfoque común de ordenación, por ejemplo, es ordenar por cardinalidad (el tamaño de una intersección), lo que coloca las intersecciones más grandes en la parte superior. Las clasificaciones alternativas son por grado de intersección o por conjuntos.
 
-![Una trama UpSet que muestra cómo se cruzan los géneros cinematográficos. La intersección más grande de dos conjuntos es la intersección Comedia-Drama.](./imagenes/Untitled%2081.png)
+![Una trama UpSet que muestra cómo se cruzan los géneros cinematográficos. La intersección más grande de dos conjuntos es la intersección Comedia-Drama.](./imagenes/Untitled81.png)
 
 Una trama UpSet que muestra cómo se cruzan los géneros cinematográficos. La intersección más grande de dos conjuntos es la intersección Comedia-Drama.
 
@@ -1590,7 +1590,7 @@ plt.show()
 
 Donde se obtiene un gráfico como el siguiente:
 
-![Untitled](./imagenes/Untitled%2082.png)
+![Untitled](./imagenes/Untitled82.png)
 
 - La columna 1 tiene tamaño 3, ya que el conjunto 1 tiene los elementos {1, 2, 3} que están solamente en dicho conjunto.
 - La columna 2 tiene tamaño 2, ya que el conjunto 2 tiene los elementos {7, 8} que están solamente en dicho conjunto.
@@ -1611,7 +1611,7 @@ visualization](https://europepmc.org/backend/ptpmcrender.fcgi?accid=PMC6480976&b
 
 La visualización efectiva de datos es esencial para la interpretación y comunicación del análisis de datos. La herramienta "raincloud plot" es una solución de código abierto y multiplataforma que combina diferentes enfoques de visualización para ofrecer una representación de datos más robusta y comprensible. A diferencia de los gráficos de barras, que pueden ser propensos a distorsiones y malinterpretaciones, el gráfico de nube de lluvia combina elementos de gráficos de violín, puntos de datos sin procesar con dispersión aleatoria y una visualización estándar de tendencia central (como la media o mediana) y error, como un diagrama de caja, aprovechando técnicas conocidas para lograr una representación más clara de los datos.
 
-![Ejemplo de gráfico de nubes de lluvia. El diagrama de nubes de lluvia combina una ilustración de la distribución de datos (la "nube") con datos sin procesar alterados (la "lluvia"). Esto se puede complementar aún más agregando diagramas de caja u otras medidas estándar de tendencia central y error.](./imagenes/Untitled%2083.png)
+![Ejemplo de gráfico de nubes de lluvia. El diagrama de nubes de lluvia combina una ilustración de la distribución de datos (la "nube") con datos sin procesar alterados (la "lluvia"). Esto se puede complementar aún más agregando diagramas de caja u otras medidas estándar de tendencia central y error.](./imagenes/Untitled83.png)
 
 Ejemplo de gráfico de nubes de lluvia. El diagrama de nubes de lluvia combina una ilustración de la distribución de datos (la "nube") con datos sin procesar alterados (la "lluvia"). Esto se puede complementar aún más agregando diagramas de caja u otras medidas estándar de tendencia central y error.
 
@@ -1621,7 +1621,7 @@ Los gráficos de nube de lluvia (raincloud plots) tienen ventajas sobre otros ti
 - Mayor información estadística: Estos gráficos combinan diferentes enfoques de visualización, como gráficos de violín y de caja, lo que proporciona información adicional sobre la distribución, la tendencia central y la dispersión de los datos. Esta combinación de elementos ofrece una visión más completa de la naturaleza de los datos en comparación con otros gráficos tradicionales.
 - Flexibilidad y modularidad: Los raincloud plots permiten a los usuarios adaptar el gráfico a sus necesidades específicas y preferencias personales. Por ejemplo, pueden incluir o excluir ciertos elementos, como gráficos de violín, puntos de datos individuales o diagramas de caja, según la información que deseen destacar en su presentación.
 
-![Las gráficas de Raincloud dejan poco librado a la imaginación: Al reemplazar la distribución de probabilidad reflejada de manera redundante con un gráfico de caja y puntos de datos sin procesar, el gráfico de nubes de lluvia brinda al usuario información sobre observaciones individuales y patrones entre ellos (como estriación o agrupación) y tendencias generales en la distribución. Como se ilustra aquí, incluso un diagrama de caja más datos sin procesar pueden ocultar la bimodalidad u otras facetas cruciales de los datos.](./imagenes/Untitled%2084.png)
+![Las gráficas de Raincloud dejan poco librado a la imaginación: Al reemplazar la distribución de probabilidad reflejada de manera redundante con un gráfico de caja y puntos de datos sin procesar, el gráfico de nubes de lluvia brinda al usuario información sobre observaciones individuales y patrones entre ellos (como estriación o agrupación) y tendencias generales en la distribución. Como se ilustra aquí, incluso un diagrama de caja más datos sin procesar pueden ocultar la bimodalidad u otras facetas cruciales de los datos.](./imagenes/Untitled84.png)
 
 Las gráficas de Raincloud dejan poco librado a la imaginación: Al reemplazar la distribución de probabilidad reflejada de manera redundante con un gráfico de caja y puntos de datos sin procesar, el gráfico de nubes de lluvia brinda al usuario información sobre observaciones individuales y patrones entre ellos (como estriación o agrupación) y tendencias generales en la distribución. Como se ilustra aquí, incluso un diagrama de caja más datos sin procesar pueden ocultar la bimodalidad u otras facetas cruciales de los datos.
 
@@ -1678,7 +1678,7 @@ plt.show()
 
 Y el resultado será algo como:
 
-![Untitled](./imagenes/Untitled%2085.png)
+![Untitled](./imagenes/Untitled85.png)
 
 ### **Diagramas de cuerdas (Chord diagrams)**
 
@@ -1686,7 +1686,7 @@ Los diagramas de cuerdas, son una creación de un científico y artista llamado 
 
 Los diagramas de cuerdas (chord diagrams) son una representación visual utilizada para mostrar relaciones o conexiones entre elementos dentro de un conjunto de datos. Estos diagramas son útiles para visualizar datos multidimensionales y se utilizan comúnmente para representar relaciones complejas, como correlaciones, similitudes, flujos y conexiones entre diferentes nodos o entidades.
 
-![Diagrama de cuerdas que muestra el comercio de electricidad acumulado (2015-2065) entre países africanos (TWh)](./imagenes/Untitled%2086.png)
+![Diagrama de cuerdas que muestra el comercio de electricidad acumulado (2015-2065) entre países africanos (TWh)](./imagenes/Untitled86.png)
 
 Diagrama de cuerdas que muestra el comercio de electricidad acumulado (2015-2065) entre países africanos (TWh)
 
@@ -1694,7 +1694,7 @@ Un diagrama de cuerdas se representa típicamente como un círculo dividido en s
 
 Los diagramas, son muy flexibles, ya que se pueden combinar con diagramas de otros tipos, por ejemplo de barras, de área, de densidad, etc. 
 
-![Algunos ejemplos de tramas de Circos. (A) glifo (B) resaltado con control de profundidad (C) dispersión (D) ubicación emparejada (E) cinta (F) histograma (G) mosaico (H) resaltado con profundidad automática (I) texto con organización automática (J) mapa de calor (K) texto de alta densidad (L) glifo de alta densidad (M) compuesto de varios tipos (N) control de escala variable (O) control de geometría fina (P) texto flexible y colocación de elementos (Q) cintas transparentes (R ) histograma apilado (S) conectores (T) anillos de graduación.](./imagenes/Untitled%2087.png)
+![Algunos ejemplos de tramas de Circos. (A) glifo (B) resaltado con control de profundidad (C) dispersión (D) ubicación emparejada (E) cinta (F) histograma (G) mosaico (H) resaltado con profundidad automática (I) texto con organización automática (J) mapa de calor (K) texto de alta densidad (L) glifo de alta densidad (M) compuesto de varios tipos (N) control de escala variable (O) control de geometría fina (P) texto flexible y colocación de elementos (Q) cintas transparentes (R ) histograma apilado (S) conectores (T) anillos de graduación.](./imagenes/Untitled87.png)
 
 Algunos ejemplos de tramas de Circos. (A) glifo (B) resaltado con control de profundidad (C) dispersión (D) ubicación emparejada (E) cinta (F) histograma (G) mosaico (H) resaltado con profundidad automática (I) texto con organización automática (J) mapa de calor (K) texto de alta densidad (L) glifo de alta densidad (M) compuesto de varios tipos (N) control de escala variable (O) control de geometría fina (P) texto flexible y colocación de elementos (Q) cintas transparentes (R ) histograma apilado (S) conectores (T) anillos de graduación.
 
@@ -1731,7 +1731,7 @@ circos.savefig("example02.png")
 
 Y obtendremos un diagrama como el siguiente:
 
-![Untitled](./imagenes/Untitled%2088.png)
+![Untitled](./imagenes/Untitled88.png)
 
 ## Gráficos interactivos y dashboards
 
@@ -1746,11 +1746,11 @@ Por lo tanto, las visualizaciones interactivas son representaciones gráficas de
 La capacidad de un gráfico para brindar más información sobre un punto de datos, cuando hay una acción del usuario (como el mouse sobre él), es lo que lo hace interactivo.
 Un ejemplo de esto se puede ver en los siguientes diagramas:
 
-![Visualización interactiva de datos](./imagenes/Untitled%2089.png)
+![Visualización interactiva de datos](./imagenes/Untitled89.png)
 
 Visualización interactiva de datos
 
-![Pasar el cursor sobre algo, proporciona más información al respecto.](./imagenes/Untitled%2090.png)
+![Pasar el cursor sobre algo, proporciona más información al respecto.](./imagenes/Untitled90.png)
 
 Pasar el cursor sobre algo, proporciona más información al respecto.
 
@@ -1771,19 +1771,19 @@ Son más fáciles de explorar ya que le permiten interactuar con los datos cambi
 
 Comencemos con un ejemplo para comprender lo que podemos lograr a través de la visualización interactiva. Consideremos un conjunto de datos para miembros inscritos en un gimnasio:
 
-![Dataset de clientes de gimnasio](./imagenes/Untitled%2091.png)
+![Dataset de clientes de gimnasio](./imagenes/Untitled91.png)
 
 Dataset de clientes de gimnasio
 
 La siguiente es una visualización de datos estáticos en forma de diagrama de caja que describe el peso de las personas clasificadas por su sexo (0 es hombre, 1 es mujer y 2 es otro):
 
-![Una visualización estática que muestra el peso frente al sexo de los clientes del gimnasio](./imagenes/Untitled%2092.png)
+![Una visualización estática que muestra el peso frente al sexo de los clientes del gimnasio](./imagenes/Untitled92.png)
 
 Una visualización estática que muestra el peso frente al sexo de los clientes del gimnasio
 
 La única información que podemos obtener de este gráfico es la relación entre el peso y el sexo: los clientes masculinos que visitan este gimnasio pesan entre 62 kg y 91 kg, las clientes mujeres pesan entre 57 kg y 86 kg, y las/los clientes que se identifican como otras/os pesan entre 61 kg y 90 kg. Sin embargo, hay una tercera característica presente en el conjunto de datos que se usa para generar este diagrama de caja: la edad. Agregar esta característica al gráfico estático anterior puede generar confusión en términos de comprensión de los datos. Entonces, estamos un poco atascados con respecto a mostrar la relación entre las tres características usando una visualización estática. Este problema se puede resolver fácilmente creando una visualización interactiva, como se muestra aquí:
 
-![Una visualización interactiva que muestra el peso y el sexo de clientes de gimnasio de 46 años](./imagenes/Untitled%2093.png)
+![Una visualización interactiva que muestra el peso y el sexo de clientes de gimnasio de 46 años](./imagenes/Untitled93.png)
 
 Una visualización interactiva que muestra el peso y el sexo de clientes de gimnasio de 46 años
 
@@ -1792,7 +1792,7 @@ En el diagrama de caja anterior, se introdujo un control deslizante para la func
 El diagrama de caja anterior describe que, en este gimnasio, los únicos clientes de 46 años son lxs que se identifican como otrxs, y el más pesado de 46 años pesa 82 kilogramos, mientras que el más liviano pesa 56 kilogramos.
 El usuario puede deslizar a otra posición para observar la relación entre peso y sexo a una edad diferente, como se muestra en el siguiente gráfico:
 
-![Una visualización interactiva que muestra el peso y el sexo de clientes de gimnasio de 34 años](./imagenes/Untitled%2094.png)
+![Una visualización interactiva que muestra el peso y el sexo de clientes de gimnasio de 34 años](./imagenes/Untitled94.png)
 
 Una visualización interactiva que muestra el peso y el sexo de clientes de gimnasio de 34 años
 
@@ -1932,7 +1932,7 @@ Los beneficios de usar paneles digitales incluyen:
 
 Los tableros ofrecen una visión holística de todo el negocio ya que proporcionan a la dirección de una visión panorámica del rendimiento de las ventas, el inventario de datos, el tráfico web, las analíticas de redes sociales y otros datos asociados que se presentan visualmente en un único panel. Las analíticas web juegan un papel crucial en la configuración de la estrategia de marketing de muchas empresas. Los paneles también facilitan un mejor seguimiento de las ventas y la presentación de informes financieros ya que los datos son más precisos y están en una sola área. Por último, los paneles ofrecen un mejor servicio al cliente a través del seguimiento porque mantienen tanto a los gerentes como a los clientes actualizados sobre el progreso del proyecto a través de correos electrónicos y notificaciones automatizadas.
 
-![Tablero de seguimiento de marketing](./imagenes/Untitled%2095.png)
+![Tablero de seguimiento de marketing](./imagenes/Untitled95.png)
 
 Tablero de seguimiento de marketing
 
@@ -1966,27 +1966,27 @@ En el Cuadrante Mágico, Gartner evalúa a los proveedores de BI en base a su in
 3. **Jugadores de Nicho**: Los jugadores de nicho se centran con éxito en un segmento pequeño del mercado, o están enfocados en una funcionalidad específica, pero no muestran la capacidad de innovar o de influir en la dirección general del mercado.
 4. **Retadores**: Los retadores tienen la capacidad de ejecutar bien hoy en día, pero no tienen una visión tan desarrollada como los líderes. A menudo tienen una gran presencia en el mercado, pero carecen de la profundidad de funcionalidad o capacidad para mantenerse al día con las tendencias del mercado.
 
-![Untitled](./imagenes/Untitled%2096.png)
+![Untitled](./imagenes/Untitled96.png)
 
 Existen varias soluciones de Business Intelligence (BI) de código abierto que pueden ser una excelente opción para las empresas que buscan flexibilidad y control sobre su software. Por ejemplo [Apache Superset](https://superset.apache.org/), [Redash](https://redash.io/), [Metabase](https://www.metabase.com/), [Grafana](https://grafana.com/), [Kibana](https://www.elastic.co/es/kibana/), entre otras.
 
-![Apache Superset](./imagenes/Untitled%2097.png)
+![Apache Superset](./imagenes/Untitled97.png)
 
 Apache Superset
 
-![Redash](./imagenes/Untitled%2098.png)
+![Redash](./imagenes/Untitled98.png)
 
 Redash
 
-![Metabase](./imagenes/Untitled%2099.png)
+![Metabase](./imagenes/Untitled99.png)
 
 Metabase
 
-![Grafana](./imagenes/Untitled%20100.png)
+![Grafana](./imagenes/Untitled100.png)
 
 Grafana
 
-![Kibana](./imagenes/Untitled%20101.png)
+![Kibana](./imagenes/Untitled101.png)
 
 Kibana
 
@@ -1999,13 +1999,13 @@ El diseño y la visualización son componentes esenciales para la interacción d
 El color es una de las cosas más importantes para entender en la visualización de datos y con frecuencia se utiliza incorrectamente. No debe usar el color solo para darle vida a una visualización aburrida. De hecho, muchas visualizaciones de datos excelentes no usan color en absoluto y son informativas y hermosas.
 En la Figura 1.15, vemos la visualización de Shine Pulikathara que ganó la competencia Tableau Iron Viz de 2015. Notar el simple uso del color.
 
-![Figure 1.15 Winning visualization by Shine Pulikathara during the 2015 Tableau Iron Viz competition. Source: Used with permission from Shine Pulikathara.](./imagenes/Untitled%20102.png)
+![Figure 1.15 Winning visualization by Shine Pulikathara during the 2015 Tableau Iron Viz competition. Source: Used with permission from Shine Pulikathara.](./imagenes/Untitled102.png)
 
 Figure 1.15 Winning visualization by Shine Pulikathara during the 2015 Tableau Iron Viz competition. Source: Used with permission from Shine Pulikathara.
 
 El color debe usarse con un propósito. Por ejemplo, el color se puede utilizar para llamar la atención del lector, resaltar una parte de los datos o distinguir entre diferentes categorías. El color debe usarse en la visualización de datos de tres formas principales: secuencial, divergente y categórico. Además, a menudo existe la necesidad de resaltar datos o alertar al lector de algo importante. La Figura 1.16 ofrece un ejemplo de cada uno de estos esquemas de color.
 
-![Untitled](./imagenes/Untitled%20103.png)
+![Untitled](./imagenes/Untitled103.png)
 
 ### **Contraste**
 
@@ -2015,7 +2015,7 @@ El nivel AA requiere una relación de contraste de al menos 4.5:1 para el texto 
 El nivel AAA requiere una relación de contraste de al menos 7:1 para el texto normal y 4.5:1 para el texto grande.
 Hay muchos comprobadores de contraste de color que pueden ayudarte a seguir las pautas: [Colorable](https://colorable.jxnblk.com/000000/ffffff), [WebAIM](https://webaim.org/resources/contrastchecker/), [Coolors](https://coolors.co/contrast-checker/000000-ffffff), [ColorContrast](https://colourcontrast.cc/), y muchos más. Pero recuerda hacer una revisión manual y probarlo con los usuarios, porque las pautas a veces pueden ser defectuosas.
 
-![Untitled](./imagenes/Untitled%20104.png)
+![Untitled](./imagenes/Untitled104.png)
 
 ### Tamaño del texto y tipos de letra
 
@@ -2032,7 +2032,7 @@ Los tipos de letra que se utilizan en la visualización también pueden tener un
 7. La altura de las letras mayúsculas y los ascendentes deben variar. Como ejemplo, la "i" mayúscula y la "l" minúscula deben tener una altura diferente.
 8. Probar el tipo de letra en el contexto en el que lo vayas a utilizar.
 
-![Untitled](./imagenes/Untitled%20105.png)
+![Untitled](./imagenes/Untitled105.png)
 
 ### Generar información accesible para todo el público
 
@@ -2054,16 +2054,16 @@ De hecho, las personas que padecen CVD pueden ver el color, pero no pueden disti
 3. Tritanopia es la falta de conos de onda corta (azul).
 (Esto es muy raro y afecta a menos del 0,5 por ciento de la población).
 
-![Untitled](./imagenes/Untitled%20106.png)
+![Untitled](./imagenes/Untitled106.png)
 
 La CVD es principalmente hereditaria y, como puede ver en los números, afecta principalmente a los hombres. En empresas más grandes o cuando se presenta una visualización de datos al público en general, los diseñadores deben comprender el CVD y diseñar con eso en mente.
 El principal problema entre las personas con CVD es con los colores rojo y verde. Por eso es mejor evitar el uso conjunto de rojo y verde y, en general, evitar los colores de semáforo de uso común.
 
-![Figura 1.24 Gráfico de barras usando los colores del semáforo y una simulación de protanopia. Observe que las barras rojas y verdes en el panel de la derecha son muy difíciles de diferenciar entre sí para una persona con protanopia.](./imagenes/Untitled%20107.png)
+![Figura 1.24 Gráfico de barras usando los colores del semáforo y una simulación de protanopia. Observe que las barras rojas y verdes en el panel de la derecha son muy difíciles de diferenciar entre sí para una persona con protanopia.](./imagenes/Untitled107.png)
 
 Figura 1.24 Gráfico de barras usando los colores del semáforo y una simulación de protanopia. Observe que las barras rojas y verdes en el panel de la derecha son muy difíciles de diferenciar entre sí para una persona con protanopia.
 
-![Figura 1.25 Gráfico de barras que usa una paleta azul y naranja para daltónicos y una simulación de protanopia.](./imagenes/Untitled%20108.png)
+![Figura 1.25 Gráfico de barras que usa una paleta azul y naranja para daltónicos y una simulación de protanopia.](./imagenes/Untitled108.png)
 
 Figura 1.25 Gráfico de barras que usa una paleta azul y naranja para daltónicos y una simulación de protanopia.
 

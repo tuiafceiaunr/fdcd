@@ -42,7 +42,7 @@ Una variable es una característica, cualidad o propiedad observada que puede as
 
 En el ejemplo anterior, la variable de interés es “estatura de las mujeres adultas de un país” y se trata de una variable cuantitativa continua.
 
-![Untitled](./imagenes/Untitled%201.png)
+![Untitled](./imagenes/Untitled1.png)
 
 ### Medición
 
@@ -58,7 +58,7 @@ distancias entre cada nivel. Ej: orden de llegada en una carrera, grado de dolor
 
 La siguiente tabla muestra las transformaciones y estadísticas aplicables a cada tipo:
 
-![Untitled](./imagenes/Untitled%202.png)
+![Untitled](./imagenes/Untitled2.png)
 
 ## Medidas de centralidad
 
@@ -259,7 +259,7 @@ Es el valor de la variable que se presenta un mayor número de veces, es decir, 
 
 El comportamiento de una variable a nivel poblacional se encuentra descripto por su **distribución de probabilidad**, la cual indica el rango de valores que ésta puede asumir junto con sus respectivas probabilidades. El concepto de moda puede trasladarse a esta situación y corresponde a aquel valor de la variable en el que la función densidad de probabilidad (en el caso de que la variable sea continua) alcanza un máximo. En función del número de modas que pose, una distribución de probabilidad puede ser unimodal, bimodal o multimodal:  
 
-![Untitled](./imagenes/Untitled%203.png)
+![Untitled](./imagenes/Untitled3.png)
 
 Libro “Hands-On Data Analysis with Pandas” Stefanie Molin.
 
@@ -338,13 +338,13 @@ Una desviación estándar baja indica que la mayor parte de los datos de una mue
 
 Gráficamente, considerando que las representaciones de la figura corresponden a gráficos de densidad de los datos observados de una variable (ya los trabajaremos en profundidad en la próxima Unidad):
 
-![Una desviación estándar alta indica una mayor variabilidad en los datos, mientras que una desviación estándar baja indica una menor variabilidad.](./imagenes/Untitled%204.png)
+![Una desviación estándar alta indica una mayor variabilidad en los datos, mientras que una desviación estándar baja indica una menor variabilidad.](./imagenes/Untitled4.png)
 
 Una desviación estándar alta indica una mayor variabilidad en los datos, mientras que una desviación estándar baja indica una menor variabilidad.
 
 Pensando en la distribución de probabilidad de la variable, si ésta sigue una distribución normal:
 
-![Una gráfica de la [distribución normal](https://es.wikipedia.org/wiki/Distribuci%C3%B3n_normal) (o curva en forma de campana, o curva de Gauss), donde cada banda tiene un ancho de una vez la desviación estándar](./imagenes/Untitled%205.png)
+![Una gráfica de la [distribución normal](https://es.wikipedia.org/wiki/Distribuci%C3%B3n_normal) (o curva en forma de campana, o curva de Gauss), donde cada banda tiene un ancho de una vez la desviación estándar](./imagenes/Untitled5.png)
 
 Una gráfica de la [distribución normal](https://es.wikipedia.org/wiki/Distribuci%C3%B3n_normal) (o curva en forma de campana, o curva de Gauss), donde cada banda tiene un ancho de una vez la desviación estándar
 
@@ -388,7 +388,7 @@ El rango intercuartílico es una medida de dispersión resistente a la presencia
 
 Como veremos debajo, corresponde al ancho de la caja que constituye una parte central del gráfico conocido como **boxplot**.
 
-![Untitled](./imagenes/Untitled%206.png)
+![Untitled](./imagenes/Untitled6.png)
 
 ### Desviación Mediana Absoluta (MAD)
 
@@ -440,7 +440,7 @@ plt.show()
 
 Y el diagrama resultante es:
 
-![Untitled](./imagenes/Untitled%207.png)
+![Untitled](./imagenes/Untitled7.png)
 
 ### Consideraciones importantes sobre el ploteo de los *outliers*
 
@@ -473,7 +473,7 @@ sns.boxplot(data.biaf02_m)
 plt.ylabel('Minutos por semana en actividad física intensa')
 ```
 
-![Untitled](./imagenes/Untitled%208.png)
+![Untitled](./imagenes/Untitled8.png)
 
 En este caso vemos que por encima de 720 minutos (12 horas) seaborn comienza a plotear los valores atípicos. Sin embargo, es nuestra decisión si queremos incluirlos en el análisis o no, o si queremos considerar otra medida para distinguir valores atípicos. Por ejemplo, puede ser que en nuestro estudio no queramos considerar deportistas profesionales. Entonces, deberíamos buscar un valor de minutos de entrenamiento semanal por el cual rechazamos a la observación si esta se encuentra por encima de ese valor, por ejemplo 1000 minutos. 
 
@@ -485,7 +485,7 @@ La **tabla de frecuencias** constituye una forma sencilla y efectiva para resumi
 
 En el caso de una **variable cualitativa**, la tabla contiene las diferentes categorías de la misma junto con la frecuencia absoluta de cada una de ellas en el dataset. Un ejemplo de este tipo de variable en la encuesta de Factores de Riesgo lo constituye la provincia a la que pertenece cada persona que respondió la encuesta. Entonces, podemos elaborar una tabla que nos indique cuántas personas fueron encuestadas por provincia:
 
-![Untitled](./imagenes/Untitled%209.png)
+![Untitled](./imagenes/Untitled9.png)
 
 Para obtener la tabla de arriba usamos el siguiente código:
 
@@ -529,7 +529,7 @@ df.rename(columns = {'index': 'provincia', 'provincia': 'frecuencia'}, inplace =
 df.set_index('provincia', inplace = True)
 ```
 
-![*Extracto de la tabla del ejemplo anterior*](./imagenes/Untitled%2010.png)
+![*Extracto de la tabla del ejemplo anterior*](./imagenes/Untitled10.png)
 
 *Extracto de la tabla del ejemplo anterior*
 
@@ -543,7 +543,7 @@ df['proporción'] = df['frecuencia'] / df['frecuencia'].sum()
 df['proporción'] = df['frecuencia'] / df['frecuencia'].sum() * 100
 ```
 
-![Untitled](./imagenes/Untitled%2011.png)
+![Untitled](./imagenes/Untitled11.png)
 
 ![Visualización gráfica de la frecuencia. Los valores fueron convertidos a % (de 0 100)](./imagenes/descarga.png)
 
@@ -711,7 +711,7 @@ Dado que se trata de una normalización de la covarianza, su valor está siempre
 - Un valor de r cercano a 0 no es necesariamente una evidencia de la falta de asociación entre las variables, sino sólo de la ausencia de una relación lineal, ya que este coeficiente no dice nada acerca de la intensidad de asociaciones diferentes a las lineales. En estos casos su cálculo e interpretación resultan inadecuados.
 - Existe una tendencia a asumir, implícita o explícitamente, que un alto valor de r implica causalidad, lo que constituye una interpretación errónea. El coeficiente de correlación de Pearson es simplemente una medida de la fuerza de la asociación lineal entre las dos variables.
 
-![Ejemplos de correlaciones de variables con el método de Pearson ](./imagenes/Untitled%2012.png)
+![Ejemplos de correlaciones de variables con el método de Pearson ](./imagenes/Untitled12.png)
 
 Ejemplos de correlaciones de variables con el método de Pearson 
 
@@ -867,7 +867,7 @@ La correlación de Spearman tiene una relación directa con los rankings (rangos
 
 Cuando comparamos dos conjuntos de rankings, la correlación de Spearman nos indica qué tan bien estos rankings concuerdan entre sí. Si los rankings de las dos variables son idénticos, la correlación de Spearman será 1, lo que indica una relación monotónica creciente perfecta. Si los rankings son exactamente opuestos, la correlación de Spearman será -1, lo que indica una relación monotónica decreciente perfecta. Un valor cercano a 0 sugiere que no hay una relación monotónica evidente entre los rankings de las dos variables.
 
-![Ejemplos de variables monotónicas y no monotónicas](./imagenes/Untitled%2013.png)
+![Ejemplos de variables monotónicas y no monotónicas](./imagenes/Untitled13.png)
 
 Ejemplos de variables monotónicas y no monotónicas
 
@@ -918,17 +918,17 @@ data.bhch04.corr(data.biaf02_m, method = 'spearman')
 
 Aquí vemos el valor del coeficiente con diferentes funciones como ejemplo ([fuente](https://stackabuse.com/calculating-spearmans-rank-correlation-coefficient-in-python-with-pandas/)):
 
-![Untitled](./imagenes/Untitled%2014.png)
+![Untitled](./imagenes/Untitled14.png)
 
-![Untitled](./imagenes/Untitled%2015.png)
+![Untitled](./imagenes/Untitled15.png)
 
-![Untitled](./imagenes/Untitled%2016.png)
+![Untitled](./imagenes/Untitled16.png)
 
 ## Matriz de Covarianza
 
 La matriz de covarianza es una matriz cuadrada donde se muestra el coeficiente de covarianza entre múltiples variables. En el ejemplo de abajo mostramos la matriz de covarianza entre edad (bhch04), minutos semanales de actividad intensa (biaf02_m), ingreso (bhih01), minutos de caminata semanal (biaf06_m) y edad en que comenzó a fumar (bita02).
 
-![Untitled](./imagenes/Untitled%2017.png)
+![Untitled](./imagenes/Untitled17.png)
 
 Esta matriz nos permite ver de forma rápida si existe alguna relación lineal entre las variables y nos puede servir en el futuro como guía para selección de atributos para nuestros modelos. 
 
@@ -947,7 +947,7 @@ La matriz de correlación es similar a la anterior pero en lugar de mostrar el c
 data[['bhch04', 'biaf02_m', 'bhih01', 'biaf06_m', 'bita02']].corr()
 ```
 
-![Untitled](./imagenes/Untitled%2018.png)
+![Untitled](./imagenes/Untitled18.png)
 
 La diagonal siempre tiene el valor de 1 puesto que es la correlación de una variable consigo misma. Tanto en esta matriz como en la anterior, solo nos interesa mirar la parte que está por encima o debajo de la diagonal, puesto que estas matrices son siempre simétricas. 
 
@@ -957,7 +957,7 @@ Una forma de visualizar rápidamente la correlación que existe entre un grupo d
 sns.heatmap(data[['bhch04', 'biaf02_m', 'bhih01', 'biaf06_m', 'bita02']].corr(), annot=True)
 ```
 
-![Untitled](./imagenes/Untitled%2019.png)
+![Untitled](./imagenes/Untitled19.png)
 
 ## Temas avanzados
 
@@ -975,7 +975,7 @@ $$
 d_{E(P,Q)}= \sqrt{\sum_{i = 1}^{n}(p_i - q_i)^2}
 $$
 
-![Untitled](./imagenes/Untitled%2020.png)
+![Untitled](./imagenes/Untitled20.png)
 
 **Desventajas**
 Aunque es una medida de distancia común, la distancia euclidiana no es una escala invariante, lo que significa que las distancias calculadas pueden estar sesgadas según las unidades de las entidades. Por lo general, uno necesita normalizar los datos antes de usar esta medida de distancia.
@@ -995,7 +995,7 @@ $$
 
 La distancia de Manhattan es la norma L1 de un vector mientras que la euclideana es la norma L2. 
 
-![Distancia Manhattan contra distancia Euclidiana: Las líneas roja, azul y amarilla tienen la misma longitud (12) en las geometrías Euclidiana y taxicab. En la geometría Euclidiana, la línea verde tiene longitud 6×√2 ≈ 8.48, y es el único camino más corto. En la geometría taxicab, la línea verde tiene longitud 12, por lo que no es más corta que los otros caminos.](./imagenes/Untitled%2021.png)
+![Distancia Manhattan contra distancia Euclidiana: Las líneas roja, azul y amarilla tienen la misma longitud (12) en las geometrías Euclidiana y taxicab. En la geometría Euclidiana, la línea verde tiene longitud 6×√2 ≈ 8.48, y es el único camino más corto. En la geometría taxicab, la línea verde tiene longitud 12, por lo que no es más corta que los otros caminos.](./imagenes/Untitled21.png)
 
 Distancia Manhattan contra distancia Euclidiana: Las líneas roja, azul y amarilla tienen la misma longitud (12) en las geometrías Euclidiana y taxicab. En la geometría Euclidiana, la línea verde tiene longitud 6×√2 ≈ 8.48, y es el único camino más corto. En la geometría taxicab, la línea verde tiene longitud 12, por lo que no es más corta que los otros caminos.
 
@@ -1029,14 +1029,14 @@ Mirando la gráfica de la función coseno podemos decir que:
 - Cuando $\theta$ es igual a $\pi/2$ , el coseno es igual a 0. En nuestro caso, los dos vectores son ortogonales
 - Cuando $\theta$ es igual a $\pi$, el coseno es igual a -1. En nuestro caso, los dos vectores se encuentran en posición diametralmente opuesta
 
-![Untitled](./imagenes/Untitled%2022.png)
+![Untitled](./imagenes/Untitled22.png)
 
 <aside>
 💡 Notar que la magnitud de los vectores no entra en juego para esta similaridad
 
 </aside>
 
-![Untitled](./imagenes/Untitled%2023.png)
+![Untitled](./imagenes/Untitled23.png)
 
 **Desventajas**
 Una de las principales desventajas de la similitud del coseno es que no se tiene en cuenta la magnitud de los vectores, sino simplemente su dirección. En la práctica, esto significa que las diferencias de valores no se tienen plenamente en cuenta. Si toma un sistema de recomendación, por ejemplo, la similitud del coseno no tiene en cuenta la diferencia en la escala de calificación entre diferentes usuarios.
@@ -1048,13 +1048,13 @@ Usamos la similitud del coseno a menudo cuando tenemos datos de alta dimensión 
 
 En estadística, la distancia de Mahalanobis es una medida de distancia introducida por Mahalanobis en 1936. Su utilidad radica en que es una forma de determinar la similitud entre dos variables aleatorias multidimensionales. Se diferencia de la distancia euclídea en que tiene en cuenta la correlación entre las variables aleatorias.
 
-![La distancia de Mahalanobis (MD) es una métrica de distancia efectiva que encuentra la distancia entre el punto y la distribución. Funciona con bastante eficacia en datos multivariados porque utiliza una matriz de covarianza de variables para encontrar la distancia entre los puntos de datos y el centro. Esto significa que MD detecta valores atípicos en función del patrón de distribución de los puntos de datos, a diferencia de la distancia euclidiana.](./imagenes/Untitled%2024.png)
+![La distancia de Mahalanobis (MD) es una métrica de distancia efectiva que encuentra la distancia entre el punto y la distribución. Funciona con bastante eficacia en datos multivariados porque utiliza una matriz de covarianza de variables para encontrar la distancia entre los puntos de datos y el centro. Esto significa que MD detecta valores atípicos en función del patrón de distribución de los puntos de datos, a diferencia de la distancia euclidiana.](./imagenes/Untitled24.png)
 
 La distancia de Mahalanobis (MD) es una métrica de distancia efectiva que encuentra la distancia entre el punto y la distribución. Funciona con bastante eficacia en datos multivariados porque utiliza una matriz de covarianza de variables para encontrar la distancia entre los puntos de datos y el centro. Esto significa que MD detecta valores atípicos en función del patrón de distribución de los puntos de datos, a diferencia de la distancia euclidiana.
 
 En la siguientes figuras, el punto negro representa el centroide de la distribución. En la gráfica de la izquierda, tenemos una distribución no correlacionada. En ese caso, los valores atípicos serían los más alejados del centroide y se podría usar la distancia euclidiana para detectarlos. En el caso de la derecha, cuando las variables están correlacionadas, tiene más sentido usar Mahalanobis, ya que tiene en cuenta la correlación entre ambas variables. Allí el punto 2 sería un outlier, mientras que el punto 1 es parte de la distribución. 
 
-![Untitled](./imagenes/Untitled%2025.png)
+![Untitled](./imagenes/Untitled25.png)
 
 La distancia de Mahalanobis mide la distancia entre un punto P y el centroide de una distribución D y es igual a la distancia euclideana cuando las variables no están correlacionadas. 
 
