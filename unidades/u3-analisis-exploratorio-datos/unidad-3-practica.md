@@ -17,7 +17,7 @@ El dataset `winequality-red.csv` contiene un conjunto de variables relacionadas 
 - ¿Cómo describiría ambas distribuciones en relación a sus características de simetría?
 - ¿Cuál de los dos conjuntos de observaciones (densidad o pH) presenta mayor variabilidad?
 
-4. Represente la distribución de las observaciones de la variable contenido de alcohol (alcohol) a través de un boxplot. *Sugerencia*: utilice la función `sns.boxplot()` de la librería  seaborn`. Basándose en el gráfico, ¿cuál de las siguientes medidas de posición o centralidad (media aritmética/mediana) le parece más adecuada para describir a esta variable?
+4. Represente la distribución de las observaciones de la variable contenido de alcohol (alcohol) a través de un boxplot. *Sugerencia*: utilice la función `sns.boxplot()` de la librería  `seaborn`. Basándose en el gráfico, ¿cuál de las siguientes medidas de posición o centralidad (media aritmética/mediana) le parece más adecuada para describir a esta variable?
 
 5. Realice una tabla de frecuencias para resumir la distribución de los vinos del dataset en función del puntaje asignado según su calidad (quality).
 
@@ -82,3 +82,50 @@ Importe y explore el conjunto de datos `titanic.csv`.
 6. Construya una tabla en la que se resuma la distribución de pasajeros del Titanic en función de la clase en la que viajaron. La misma debe contener la siguiente información (en distintas columnas): cantidad de pasajeros/as que viajaron en cada clase y porcentajes en relación al total. ¿A qué clase pertenecía la mayoría de los pasajeros del Titanic?
 
 7. Construya una tabla de contingencia cruzando las variables `survived` y `Pclass`. ¿Qué proporción de personas de cada clase sobrevivieron al naufragio del Titanic? Represente gráficamente esta información en un gráfico de barras.
+
+### **Ejercicio N°4**
+
+Teniendo en cuenta la variable `altura_m` que se encuentra en el dataset `pacientes.csv` trabajado en el **Ejercicio N°2**, genere una tabla de frecuencias en la que las observaciones se encuentren segmentadas en subintervalos de 10 cm de amplitud que estén “cerrados por izquierda”, es decir, que tengan la forma **[extremo_inferior, extremo_superior)**.
+
+La tabla de frecuencias generada deberá contener columnas en las que se especifiquen las frecuencias absolutas, relativas y relativas acumuladas correspondientes a cada subintervalo.
+¿Qué porcentaje de las personas del dataset tienen una altura **menor a 1.8 m**?
+
+### **Ejercicio N°5**
+
+El dataset `wine_quality.xlsx` contiene información acerca del puntaje que un panel de enólogos
+asignó a una serie de 76 vinos de tipo Pinot Noir. Las cualidades evaluadas incluyeron algunas
+propiedades organolépticas como claridad (*clarity*), aroma (*aroma*), cuerpo (*body*) y sabor (*flavor*) y una valoración de la calidad general del vino (*quality*). Adicionalmente, se recabó información sobre el grado de envejecimiento (*aging*) de cada uno de los productos evaluados, la cual se encuentra en el dataset `wine_aging.csv`.
+
+1. Importe ambos datasets y realice cualquier tarea de limpieza y adecuación de los mismos que
+considere necesaria para su posterior análisis.
+
+2. ¿Cuál es el tipo de vino (crianza/reserva/gran reserva) que presenta la mayor mediana para el sabor?
+
+3. Construya la matriz de covariancia de las distintas variables cuantitativas que componen el
+dataset y comente qué tipo de información le aporta acerca de la relación entre los distintos
+pares de variables cuantitativas del dataset.
+
+4. Construya la matriz de correlación de las distintas variables cuantitativas que componen el
+dataset. En base al mismo, identifique la/s variable/s que se encuentran más fuertemente
+correlacionadas e informe e interprete la medida de asociación lineal correspondiente
+
+5. Elija el par de variables que identificó en el ítem anterior como aquellas que se encuentran más fuertemente correlacionadas linealmente y realice un gráfico que le permita visualizar la relación general que existe entre las mismas.
+
+### **Ejercicio N°6**
+
+Utilizando el dataset `calidad_producto.csv`, que contiene dos variables registradas en el área de control de calidad de una industria:
+
+- `desviacion_largo`: desviación del largo del producto respecto a un valor estándar o deseado.
+- `indice_calidad_producto`: índice o puntuación que se construye a partir de una serie de
+aspectos relacionados a la calidad general del producto.
+
+1. Calcule los coeficientes de correlación de Pearson y Spearman entre ambas variables. Interprete los valores obtenidos en relación al tipo de información que le brinda cada uno acerca del grado de asociación entre las variables.
+
+2. Construya un gráfico que le permita visualizar la relación general que existe entre las variables analizadas. ¿Qué observa?
+
+3. Calcule nuevamente ambos coeficientes sin tomar en cuenta los registros que incluyan
+observaciones potencialmente atípicas. ¿Cómo resultan los valores obtenidos en comparación
+con los calculados en el ítem 1?
+
+4. En función de las características de la relación entre ambas variables que se observan
+gráficamente, ¿cuál de las dos métricas informaría para describir en forma cuantitativa el grado de asociación entre ellas?
