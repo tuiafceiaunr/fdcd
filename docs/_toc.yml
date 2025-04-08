@@ -19,7 +19,7 @@ parts:
       - file: unidades/u2-manipulacion-datos/unidad-2-practica.md
         title: Unidad 2 - Práctica - Manipulación de datos
       
-  - caption: Análisis exploratorio de datos
+  - caption: Análisis exploratorio de datos - Medidas de resumen
     chapters:
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-analisis-exploratorio-datos.md
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-diapositivas.md
@@ -27,11 +27,14 @@ parts:
           - file: unidades/u3-analisis-exploratorio-datos/unidad-3-slides-p1.md
           - file: unidades/u3-analisis-exploratorio-datos/unidad-3-slides-p2.md
       - file: unidades/u3-analisis-exploratorio-datos/unidad-3-practica.md
-        title: Práctica - Análisis exploratorio de datos
+        title: Práctica - Medidas de resumen
 
-  - caption: Visualización de datos
+  - caption: Análisis exploratorio de datos - Visualización de datos
     chapters:
       - file: unidades/u4-visualizacion-datos/unidad-4-visualizacion-datos.md
+      - file: unidades/u4-visualizacion-datos/unidad-4-diapositivas.md
+        sections:
+         - file: unidades/u4-visualizacion-datos/unidad-4-slides-p1.md
       - file: unidades/u4-visualizacion-datos/unidad-4-practica.md
         title: Práctica - Visualización de datos
       
