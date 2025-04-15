@@ -35,6 +35,7 @@ parts:
       - file: unidades/u4-visualizacion-datos/unidad-4-diapositivas.md
         sections:
          - file: unidades/u4-visualizacion-datos/unidad-4-slides-p1.md
+         - file: unidades/u4-visualizacion-datos/unidad-4-slides-p2.md
       - file: unidades/u4-visualizacion-datos/unidad-4-practica.md
         title: Práctica - Visualización de datos
       
