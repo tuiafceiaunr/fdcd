@@ -43,6 +43,10 @@ parts:
   - caption: Transformación de datos
     chapters:
       - file: unidades/u5-transformacion-datos/u5-transformacion-datos.md
+      - file: unidades/u5-transformacion-datos/unidad-5-diapositivas.md
+        sections:
+         - file: unidades/u5-transformacion-datos/unidad-5-slides-p1.md
+         - file: unidades/u5-transformacion-datos/unidad-5-slides-p2.md
       - file: unidades/u5-transformacion-datos/unidad-5-practica.md
         title: Práctica - Transformación de datos
 
