@@ -53,7 +53,7 @@ parts:
   - caption: Ajustes y modelos
     chapters:
       - file: unidades/u6-ajustes-y-modelos/unidad-6-ajustes-y-modelos.md
-      - file: unidades/u5-transformacion-datos/unidad-6-diapositivas.md
+      - file: unidades/u6-ajustes-y-modelos/unidad-6-diapositivas.md
         sections:
          - file: unidades/u6-ajustes-y-modelos/unidad-6-slides-p1.md
          - file: unidades/u6-ajustes-y-modelos/unidad-6-slides-p2.md
