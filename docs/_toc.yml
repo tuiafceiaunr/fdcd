@@ -53,6 +53,10 @@ parts:
   - caption: Ajustes y modelos
     chapters:
       - file: unidades/u6-ajustes-y-modelos/unidad-6-ajustes-y-modelos.md
+      - file: unidades/u5-transformacion-datos/unidad-6-diapositivas.md
+        sections:
+         - file: unidades/u5-transformacion-datos/unidad-6-slides-p1.md
+         - file: unidades/u5-transformacion-datos/unidad-6-slides-p2.md
       - file: unidades/u6-ajustes-y-modelos/unidad-6-practica1.md
         title: Práctica - Ajustes y modelos 1
       - file: unidades/u6-ajustes-y-modelos/unidad-6-practica2.md
