@@ -18,7 +18,7 @@ El dataset `student_data.csv` contiene información sobre el promedio de horas s
 
 ### **Ejercicio N°2**
 
-Supongamos que ajustamos un modelo de regresión lineal por mínimos cuadrados para el precio de una propiedad en moneda local ($, peso local) en función de los siguientes predictores: superficie en metros cuadrados ($x_1$), cantidad de habitaciones ($x_2$), antigüedad en años ($x_3$), y ubicación ($x_4$, codificada de la siguiente manera: 0 para ámbito urbano y 1 para suburbano). Obtenemos los siguientes coeficientes:
+Supongamos que ajustamos un modelo de regresión lineal por mínimos cuadrados para el precio de una propiedad en moneda local (\$, peso local) en función de los siguientes predictores: superficie en metros cuadrados ($x_1$), cantidad de habitaciones ($x_2$), antigüedad en años ($x_3$), y ubicación ($x_4$, codificada de la siguiente manera: 0 para ámbito urbano y 1 para suburbano). Obtenemos los siguientes coeficientes:
 
 - $\hat{\beta_0} = 10000$
 - $\hat{\beta_1} = 5000$
