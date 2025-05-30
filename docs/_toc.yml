@@ -57,6 +57,7 @@ parts:
         sections:
          - file: unidades/u6-ajustes-y-modelos/unidad-6-slides-p1.md
          - file: unidades/u6-ajustes-y-modelos/unidad-6-slides-p2.md
+         - file: unidades/u6-ajustes-y-modelos/unidad-6-slides-p3.md
       - file: unidades/u6-ajustes-y-modelos/unidad-6-practica1.md
         title: Práctica - Ajustes y modelos 1
       - file: unidades/u6-ajustes-y-modelos/unidad-6-practica2.md
