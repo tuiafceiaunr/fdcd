@@ -18,6 +18,10 @@ parts:
           - file: unidades/u2-manipulacion-datos/unidad-2-slides-p2.md
       - file: unidades/u2-manipulacion-datos/unidad-2-practica.md
         title: Unidad 2 - Práctica - Manipulación de datos
+      - file: unidades/u2-manipulacion-datos/ejemplos-apoyo.md
+        sections:
+          - file: unidades/u2-manipulacion-datos/combinacion-pandas.ipynb
+          - file: unidades/u2-manipulacion-datos/fuzzyjoins.ipynb
       
   - caption: Análisis exploratorio de datos - Medidas de resumen
     chapters:

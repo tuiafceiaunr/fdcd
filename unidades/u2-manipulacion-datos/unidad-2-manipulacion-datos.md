@@ -1763,6 +1763,16 @@ También la librería `thefuzz` (anteriormente `fuzzywuzzy`) permite trabajar co
 
 Utilizando estas herramientas en Python, podríamos fusionar Dataframes cuando tenemos datos “difusos” entre si, pero que se refieren a lo mismo. Por ejemplo, utilizando la librería `thefuzz` podemos hacer algo como lo siguiente:
 
+```python 
+from thefuzz import fuzz
+
+score_1 = fuzz.token_set_ratio('ARGENTINA', 'ARGENTENA')
+score_2 = fuzz.token_set_ratio('ARGENTINA', 'ARGENTINA')
+score_3 = fuzz.token_set_ratio('BOLIVIA', 'ARGENTINA')
+
+print(score_1, score_2, score_3)
+```
+
 ```python
 import pandas as pd
 from thefuzz import fuzz  # Instalar con pip install thefuzz[speedup]
