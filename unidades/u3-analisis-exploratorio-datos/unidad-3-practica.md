@@ -129,3 +129,10 @@ con los calculados en el ítem 1?
 
 4. En función de las características de la relación entre ambas variables que se observan
 gráficamente, ¿cuál de las dos métricas informaría para describir en forma cuantitativa el grado de asociación entre ellas?
+
+### **Ejercicio N°7**
+Utilice el dataset `estacion_meteorologica.csv`:
+
+1. Calcule y grafique las matrices de correlación y covariancia.
+2. Identifique las variables más correlacionadas y grafíquelas unas vs. la otra en un gráfico de dispersión. Luego grafique cada una a lo largo del tiempo (para todas las fechas).
+3. Identifique las variables menos correlacionadas y grafíquelas unas vs. la otra en un gráfico de dispersión. Luego grafique cada una a lo largo del tiempo (para todas las fechas).
