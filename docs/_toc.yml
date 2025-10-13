@@ -67,11 +67,9 @@ parts:
       - file: unidades/u6-ajustes-y-modelos/unidad-6-practica2.md
         title: Práctica - Ajustes y modelos 2
         
-  - caption: Métodos avanzados (material adicional)
+  - caption: Métodos avanzados - Medidas de similaridad y distancia
     chapters:
-      - file: unidades/metodos-avanzados/metodos-avanzados-diapositivas.md
-        sections:
-          - file: unidades/metodos-avanzados/metodos-avanzados-slides.md
+      - file: unidades/metodos-avanzados/metodos-avanzados-slides.md
       - file: unidades/metodos-avanzados/ejemplos-apoyo.md
         sections:
           - file: unidades/metodos-avanzados/notebooks/fuzzyjoins.ipynb
