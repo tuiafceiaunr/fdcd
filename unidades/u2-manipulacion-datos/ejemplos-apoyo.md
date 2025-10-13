@@ -1,2 +1,2 @@
-# Ejemplos Teóricos Prácticos de Apoyo
-A continuación les proporcionamos dos notebooks para explorar la combinación de tablas y fuzzy joins
+# Ejemplos teóricos-prácticos de apoyo
+A continuación les proporcionamos una *notebook* para explorar la combinación de tablas.
