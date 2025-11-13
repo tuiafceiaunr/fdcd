@@ -29,7 +29,7 @@ Los **exoplanetas o planetas extrasolares** son planetas que orbitan alrededor
 
 $$D^3 = kP^2$$
     
-    Realizando las transformaciones que considere necesarias sobre las variables, verifique gráficamente el cumplimiento de dicha ley para los planetas extrasolares.
+Realizando las transformaciones que considere necesarias sobre las variables, verifique gráficamente el cumplimiento de dicha ley para los planetas extrasolares.
     
 
 **Ejercicio N° 2**
