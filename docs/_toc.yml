@@ -53,7 +53,7 @@ parts:
          - file: unidades/u5-transformacion-datos/unidad-5-slides-p2.md
       - file: unidades/u5-transformacion-datos/unidad-5-practica.md
         title: Práctica - Transformación de datos
-
+      
   - caption: Ajustes y modelos
     chapters:
       - file: unidades/u6-ajustes-y-modelos/unidad-6-ajustes-y-modelos.md
@@ -66,6 +66,9 @@ parts:
         title: Práctica - Ajustes y modelos 1
       - file: unidades/u6-ajustes-y-modelos/unidad-6-practica2.md
         title: Práctica - Ajustes y modelos 2
+      - file: unidades/u6-ajustes-y-modelos/notebook-residuos.md
+        sections:
+          - file: unidades/u6-ajustes-y-modelos/regresion_lineal_interpretacions_residuos.ipynb
         
   - caption: Métodos avanzados - Medidas de similaridad y distancia
     chapters:
@@ -74,3 +77,4 @@ parts:
         sections:
           - file: unidades/metodos-avanzados/notebooks/fuzzyjoins.ipynb
         
+
