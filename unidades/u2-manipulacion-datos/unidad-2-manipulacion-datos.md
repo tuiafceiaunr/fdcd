@@ -129,7 +129,7 @@ hobbies:
       value: Guitar
 ```
 
-```{admonition} XML vs. JSON vs. YAML
+```{admonition} **XML vs. JSON vs. YAML**
 :class: note
 
 **XML.**
@@ -142,19 +142,40 @@ Formato liviano basado en pares clave–valor y listas. Estándar de facto para 
 Formato orientado a la legibilidad humana. Muy utilizado en archivos de configuración y automatización.
 ```
 
-## Datos Tabulares
+## Datos tabulares
 
-Los datos utilizados en el análisis de datos están generalmente representados en forma tabular, como una tabla, compuestos por filas y columnas. Para guardar los datos se pueden usar diferentes tipos de archivos:  .csv, .json, .txt, .html, .parquet.
+Aunque una gran proporción de los datos generados en el mundo real es no estructurada, en el análisis de datos es muy común trabajar con información representada en formato tabular, es decir, organizada en filas y columnas. Este será el tipo de datos con el que trabajaremos principalmente a lo largo de esta asignatura.
 
-### Archivo orientado a filas o a columnas
+Los datos tabulares pueden almacenarse en distintos tipos de archivos, entre ellos:
 
-Antes de revisar cada tipo de archivo en particular, es preciso establecer una diferenciación entre los archivos orientados a filas y los archivos orientados a columnas.
+- `.csv`
 
-En los **archivos orientados a filas,** los datos se organizan en registros y todos los datos asociados a un registro se guardan juntos en la memoria. Al guardarse la información por registro, un mismo registro puede tener diferentes tipos de datos, lo cual complejiza las consultas al mismo. Por lo tanto, realizar consultas sobre el valor de un atributo para diferentes registros resulta ineficiente ya que se debe cargar todo el registro con datos innecesarios. Este tipo de archivo está optimizado para leer y escribir filas de forma eficiente.
+- `.json`
 
-En los **archivos orientados a columnas**, en cambio, los datos se organizan por columna/campo/variable y todos los datos de la columna se guardan juntos en la memoria. Al guardar todos los datos de una columna juntos, cuando queremos consultar los valores de una columna solo necesitamos cargar esa columna sin necesidad de leer todo el archivo, como sucede con los archivos orientados a filas. Además, al ser todos los datos de una misma columna del mismo tipo, la compresión del archivo es mejor.
+- `.txt`
 
-Supongamos que tenemos una tabla como la que se muestra abajo:
+- `.html`
+
+- `.parquet`
+
+
+### Archivos orientados a filas y orientados a columnas
+
+Antes de revisar cada tipo de archivo en particular, es preciso establecer una diferenciación entre las formas generales de organizar físicamente los datos tabulares en un archivo o sistema de almacenamiento:
+
+#### Archivos orientados a filas (*row-oriented*)
+
+Los datos se organizan por registros. Todos los valores correspondientes a una misma fila se almacenan juntos. Esto resulta eficiente cuando se necesita leer registros completos o insertar o modificar filas individuales.
+
+Sin embargo, realizar consultas sobre un atributo específico para muchos registros (por ejemplo, leer solo la columna `anio_nacimiento` para todas las personas) puede ser menos eficiente, ya que es necesario leer también otros datos del registro que no se utilizarán.
+
+#### Archivos orientados a columnas (*column-oriented*)
+
+Los datos se organizan por columnas (campos o variables). Todos los valores de una misma columna se almacenan juntos. Esto es eficiente cuando se necesita acceder a una o pocas columnas o realizar operaciones analíticas sobre variables específicas.
+
+Además, como todos los valores de una columna suelen ser del mismo tipo, estos formatos permiten una mejor compresión del archivo.
+
+Para ilustrar lo anterior, supongamos que tenemos la siguiente tabla con información sobre un grupo de personas:
 
 | dni | nombre | apellido | año_nacimiento |
 | --- | --- | --- | --- |
@@ -162,7 +183,7 @@ Supongamos que tenemos una tabla como la que se muestra abajo:
 | 32492645 | Julia | Martinez | 1988 |
 | 30298710 | Camila | Suarez | 1985 |
 
-Si el archivo se guarda orientado a filas tendrá esta forma:
+Si el archivo se guarda **orientado a filas** tendrá esta forma:
 
 | row | value |
 | --- | --- |
@@ -179,7 +200,17 @@ Si el archivo se guarda orientado a filas tendrá esta forma:
 |  | Suarez |
 |  | 1985 |
 
-Mientras que si se guarda orientado a columnas tendrá esta otra:
+Por este motivo, desde un punto de vista conceptual, los datos se almacenarían de la siguiente manera:
+
+Fila 1 →
+40576890, Pedro, Aguirre, 1995
+
+Fila 2 →
+32492645, Julia, Martinez, 1988
+
+Es decir, cada registro contiene todos sus atributos consecutivos.
+
+Por el contrario, si el archivo se guarda **orientado a columnas** tendrá esta otra forma:
 
 | column | value |
 | --- | --- |
@@ -196,8 +227,29 @@ Mientras que si se guarda orientado a columnas tendrá esta otra:
 |  | 1988 |
 |  | 1985 |
 
-[El siguiente post](https://dataschool.com/data-modeling-101/row-vs-column-oriented-databases/#:~:text=Row%20oriented%20databases%20are%20databases,benefits%20for%20storing%20data%20quickly) muestra de forma clara las ventajas y desventajas de cada tipo de archivo.
+Conceptualmente, los datos se almacenarían así:
 
+Columna dni →
+40576890, 32492645
+
+Columna nombre →
+Pedro, Julia
+
+Columna apellido →
+Aguirre, Martinez
+
+Columna anio_nacimiento →
+1995, 1988
+
+Es decir, cada columna almacena consecutivamente los valores de ese atributo.
+
+```{dropdown} Más info
+:class: seealso
+
+Los formatos de archivo orientados a columnas (más adelante se verá que Parquet es uno de ellos) son ampliamente utilizados en entornos de análisis y big data, mientras que muchos formatos tradicionales (como CSV) son esencialmente orientados a filas.
+
+El siguiente [post](https://dataschool.com/data-modeling-101/row-vs-column-oriented-databases/#:~:text=Row%20oriented%20databases%20are%20databases,benefits%20for%20storing%20data%20quickly) muestra de forma clara las ventajas y desventajas de cada tipo de archivo.
+```
 ### Tipos de archivos para el almacenamiento de datos tabulares
 
 #### CSV
