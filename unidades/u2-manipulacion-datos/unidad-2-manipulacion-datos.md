@@ -127,8 +127,7 @@ hobbies:
       value: Guitar
 ```
 
-```{admonition} 
-XML vs. JSON vs. YAML
+```{admonition} XML vs. JSON vs. YAML
 :class: note
 
 **XML.**
