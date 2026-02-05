@@ -458,7 +458,7 @@ En Pandas, los tipos numéricos suelen representarse explícitamente con tamaño
 - `float64`: flotantes de 64 bits
 ```
 
-#### Inferencia de tipos de datos al leer archivos
+### Inferencia de tipos de datos al leer archivos
 
 Como se comentó anteriormente, los archivos .csv no almacenan información explícita sobre el tipo de dato de cada columna, ya que todo el contenido se guarda como texto plano.
 
@@ -514,8 +514,73 @@ Esta salida muestra, para cada columna, la siguiente información:
 
 ```{admonition} **El método `info()`**
 :class: tip
+
 La utilización de este método es una buena práctica luego de importar los datos, ya que permite detectar inconsistencias entre el tipo de dato esperado y el tipo asignado e identificar columnas que contienen valores faltantes. Por este motivo, `info()` suele ser uno de los primeros comandos que se ejecutan al comenzar a explorar un nuevo conjunto de datos.
 ```
+
+#### `object` vs. `str`
+
+En Pandas, las columnas que contienen texto suelen representarse con el tipo de dato `object`, en lugar del tipo `str` de Python. Esto ocurre porque `object` es un tipo general que puede contener cualquier objeto de Python, incluyendo cadenas de texto. Además, las columnas de texto pueden contener valores faltantes (`NaN`), y el tipo `object` es compatible con esta situación.
+
+En términos prácticos, cuando una columna aparece como `object`, generalmente contiene texto. Sin embargo, también podría contener una mezcla de tipos, por lo que es importante inspeccionar los datos cuando sea necesario.
+
+*Nota: versiones recientes de pandas incorporan un tipo específico llamado string, orientado exclusivamente a texto, pero el uso de object sigue siendo muy común.*
+
+### Conversión de tipos de datos con `astype()`
+
+En muchos casos, al leer un conjunto de datos, el tipo asignado automáticamente por Pandas a una columna no coincide con el tipo deseado. Son ejemplos de estas situaciones los siguientes:
+
+- Números almacenados como texto.
+
+- Variables categóricas representadas como números.
+
+- Columnas que deberían ser booleanas.
+
+Para convertir explícitamente el tipo de una columna se utiliza el método **`astype()`**.
+
+#### Conversión de una columna
+
+A través de la siguiente línea, se convierte la columna `Age` al tipo entero de 64 bits:
+
+```python
+df['Age'] = df['Age'].astype('int64')
+```
+
+También es posible convertir a otros tipos, por ejemplo:
+
+```python
+df['price'] = df['price'].astype('float64')
+df['category'] = df['category'].astype('object')
+df['is_active'] = df['is_active'].astype('bool')
+```
+
+#### Conversión de varias columnas a la vez
+
+Se puede pasar un diccionario indicando el tipo deseado para cada columna:
+
+```python
+df = df.astype({
+    'Age': 'float64',
+    'Survived': 'int64',
+    'Sex': 'object'
+})
+```
+
+#### Errores en la conversión
+
+Si una columna contiene valores incompatibles con el tipo solicitado, `astype()` producirá un error. Por ejemplo, si en el caso de la conversión de la columna `Age` dicha columna contiene valores faltantes, esta conversión fallará, ya que los enteros estándar no admiten `NaN`.
+
+Por este motivo, suele ser necesario limpiar o tratar los datos faltantes antes de realizar la conversión.
+
+#### Conversión segura con `to_numeric()`
+
+En situaciones donde una columna contiene números almacenados como texto, puede utilizarse:
+
+```python
+pd.to_numeric(df['Age'], errors='coerce')
+```
+
+Este comando convierte valores numéricos válidos y reemplaza valores inválidos por `NaN`. Luego, si es necesario, se puede aplicar `astype()`.
 
 - **CSV.** 
 
