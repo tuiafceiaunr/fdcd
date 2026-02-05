@@ -512,7 +512,7 @@ Esta salida muestra, para cada columna, la siguiente información:
 
 - El tipo de dato asignado por Pandas
 
-```{admonition} **El método `info()`**
+```{admonition} **El método info()**
 :class: tip
 
 La utilización de este método es una buena práctica luego de importar los datos, ya que permite detectar inconsistencias entre el tipo de dato esperado y el tipo asignado e identificar columnas que contienen valores faltantes. Por este motivo, `info()` suele ser uno de los primeros comandos que se ejecutan al comenzar a explorar un nuevo conjunto de datos.
