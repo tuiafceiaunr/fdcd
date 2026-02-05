@@ -392,7 +392,132 @@ El formato HTML (Lenguaje de Marcado de Hipertexto o *HyperText Markup Language*
 - El formato HTML puede ser susceptible a cambios en la estructura de la página, lo que puede afectar la calidad y la precisión de los datos extraídos.
 - HTML no es un formato de almacenamiento de datos óptimo para grandes cantidades de datos o datos no estructurados.
 
+## Pandas
+
+``` {admonition} **Sobre este apartado**
+:class: important
+En esta sección se retoman conceptos vistos en Programación III y se incorporan nuevas ideas que serán fundamentales para el trabajo con datos tabulares.
+```
+
+**PANDAS** es una librería de Python para el análisis y manipulación de datos. Proporciona **estructuras de datos** eficientes para almacenar y organizar información, y un conjunto de **funciones** que permiten realizar una gran variedad de operaciones, como filtrar, transformar, agrupar o resumir datos, entre muchas otras.
+
+### Estructuras de datos básicas en Pandas
+
+Pandas proporciona dos estructuras principales para trabajar con datos:
+
+- **Series:** una serie de Pandas es una matriz unidimensional capaz de contener cualquier tipo de dato: números enteros, cadenas de texto, números decimales, objetos de Python, etc. Cada elemento de la serie posee un identificador único llamado **índice** (*index*).
+
+- **DataFrame:** un DataFrame es una estructura bidimensional tabular formada por filas y columnas. Cada fila está identificada por un índice, y las distintas columnas pueden almacenar datos de diferente tipo.
+
 ### Lectura de archivos con datos tabulares
+
+Pandas permite leer datos desde múltiples formatos de archivo y convertirlos directamente en DataFrames. Algunos de los formatos más comunes son: archivos CSV (.csv), archivos Excel (.xlsx, .xls), archivos JSON (.json), archivos de texto delimitados (.txt), archivos Parquet (.parquet). La lectura de datos se realiza mediante funciones específicas para cada tipo de archivo, por ejemplo:
+
+- **`read_csv()`**. Si bien el archivo .csv sigue siendo orientado a filas, la librería se encarga de ponerlo dentro de un objeto `DataFrame`. `read_csv()` también permite leer archivos .txt.
+
+- **`read_excel()`**. La función `read_excel()` nos permite leer archivos .xlsx o .xls. Si el archivo en cuestión tiene más de una hoja, se debe especificar el nombre de la hoja con la que se quiere trabajar en el argumento `sheet_name`.
+
+- **`read_json()`**. Pandas cuenta con la función `read_json()`, la cual posibilita la lectura/importación de archivos JSON al entorno de trabajo. Esta función convierte automáticamente los datos en un objeto `DataFrame`.
+
+- **`read_parquet()`**. Pandas cuenta con la función `read_parquet()` para la lectura de archivos con este formato. El parámetro `engine` nos permite seleccionar la librería específica de parquet para leer el archivo: io.parquet.engine (`auto`), `pyarrow`, `fastparquet`. Por ejemplo:
+
+```python
+
+import pandas as pd
+
+pd.read_parquet('datasets/datos.parquet', engine = 'auto', 
+columns = None, storage_options = None, use_nullable_dtypes = False)
+```
+
+Estas funciones permiten especificar opciones como el delimitador, la presencia de encabezados, el tipo de datos de las columnas o el manejo de valores faltantes.
+
+### Tipos de datos usuales
+
+En el trabajo con datos tabulares aparecen con frecuencia los siguientes tipos de datos:
+
+- `int`, para representar valores enteros.
+
+- `float`, para representar valores reales en coma flotante.
+
+- `str`, para representar cadenas de texto.
+
+- `bool`, para representar valores booleanos: `True` o `False`.
+
+- `NaN` / `None`, para representar valores faltantes (ausentes o desconocidos).
+
+```{dropdown} Una aclaración sobre tamaños en memoria
+
+En muchos lenguajes existen distintos tipos de enteros (por ejemplo, 8, 16, 32 o 64 bits). En Python, a partir de la versión 3, el tipo `int` utiliza precisión arbitraria, lo que significa que puede crecer dinámicamente según el valor que almacene, sin un límite fijo de bits como en otros lenguajes.
+
+En cambio, los valores de punto flotante (`float`) suelen almacenarse internamente en doble precisión (64 bits), siguiendo el estándar IEEE 754.
+
+En Pandas, los tipos numéricos suelen representarse explícitamente con tamaños fijos, como:
+
+- `int64`: enteros de 64 bits
+
+- `float64`: flotantes de 64 bits
+```
+
+#### Inferencia de tipos de datos al leer archivos
+
+Como se comentó anteriormente, los archivos .csv no almacenan información explícita sobre el tipo de dato de cada columna, ya que todo el contenido se guarda como texto plano.
+
+Cuando se lee un archivo CSV con herramientas básicas, toda la información se interpreta inicialmente como texto. Sin embargo, cuando se utiliza Pandas la librería intenta inferir automáticamente el tipo de dato más apropiado para cada columna. Además, es posible especificar manualmente los tipos deseados mediante el parámetro `dtype`:
+
+```python
+pd.read_csv('listings.csv', dtype={'price': 'float'})
+```
+
+Esto fuerza a que la columna `price` sea interpretada como número de punto flotante.
+
+### Inspección de tipos de datos en un DataFrame
+
+Pandas permite inspeccionar rápidamente los tipos de datos de cada columna utilizando el método **`info()`**.
+
+Ejemplo:
+
+```python
+import pandas as pd
+
+# Descarga el dataset "titanic.csv" y lo carga en un DataFrame
+df = pd.read_csv('https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv')
+
+# Imprime información del DataFrame
+print(df.info())
+```
+
+La salida, resumida, se muestra a continuación:
+
+```python
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 891 entries, 0 to 890
+Data columns (total 12 columns):
+ #   Column       Non-Null Count  Dtype  
+---  ------       --------------  -----  
+ 0   PassengerId  891 non-null    int64  
+ 1   Survived     891 non-null    int64  
+ 2   Pclass       891 non-null    int64  
+ 3   Name         891 non-null    object 
+ 4   Sex          891 non-null    object 
+ 5   Age          714 non-null    float64
+ ...
+dtypes: float64(2), int64(5), object(5)
+```
+
+Esta salida muestra, para cada columna, la siguiente información:
+
+- El nombre
+
+- La cantidad de valores no nulos
+
+- El tipo de dato asignado por Pandas
+
+```{admonition} **El método `info()`**
+:class: tip
+La utilización de este método es una buena práctica luego de importar los datos, ya que permite detectar inconsistencias entre el tipo de dato esperado y el tipo asignado e identificar columnas que contienen valores faltantes. Por este motivo, `info()` suele ser uno de los primeros comandos que se ejecutan al comenzar a explorar un nuevo conjunto de datos.
+```
+
+- **CSV.** 
 
 Existen muchas formas de leer archivos en Python. Hasta el momento, en cursos anteriores vimos como leer archivos .csv usando el paquete `csv` y `pandas`
 
@@ -765,7 +890,7 @@ En la siguiente tabla se puede ver cómo compatibilizar los tipos de datos de la
 
 El *Data Wrangling,* por su nombre en inglés, es el proceso de preparar los datos y ponerlos en el formato necesario para poder realizar un posterior análisis de los mismos. 
 
-![Untitled](./imagenes/dataset_wild.png)
+![](./imagenes/dataset_wild.png)
 
 ### Datos en forma larga o ancha
 
