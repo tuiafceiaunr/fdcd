@@ -127,8 +127,10 @@ hobbies:
       value: Guitar
 ```
 
-<aside>
-### XML vs. JSON vs. YAML 
+```{note}
+:title: Más información
+
+**XML vs. JSON vs. YAML** 
 
 **XML.**
 Formato basado en etiquetas. Más verboso. Usado históricamente en integración de sistemas y documentos estructurados.
@@ -138,27 +140,7 @@ Formato liviano basado en pares clave–valor y listas. Estándar de facto para 
 
 **YAML.**
 Formato orientado a la legibilidad humana. Muy utilizado en archivos de configuración y automatización.
-
-</aside>
-
-**Aplicaciones**:
-
-- El formato YAML es utilizado en configuraciones de software para almacenar datos de configuración y parámetros de sistema.
-- También se puede utilizar en aplicaciones de ciencia de datos para almacenar datos estructurados, como datos de sensores, registros de eventos, información de clientes, entre otros.
-- El formato YAML se puede utilizar como formato de intercambio de datos entre diferentes lenguajes de programación y plataformas.
-
-**Ventajas**:
-
-- El formato YAML es fácil de leer y editar por humanos, lo que lo hace conveniente para la configuración y manipulación de datos.
-- YAML es un formato de texto plano, lo que lo hace compatible con una amplia variedad de herramientas y lenguajes de programación.
-- El formato YAML es fácil de usar para estructurar y organizar datos complejos, lo que lo hace ideal para aplicaciones de ciencia de datos que requieren datos estructurados.
-- A diferencia de JSON, permite utilizar comentarios y resulta más compacto en tamaño.
-
-**Desventajas**:
-
-- El formato YAML no es eficiente para el almacenamiento de grandes cantidades de datos, ya que puede ser propenso a la redundancia de datos.
-- YAML puede tener problemas de compatibilidad en diferentes lenguajes de programación y plataformas. Puede que un [parseador](https://yaml.org/) determinado no soporte todas las versiones de [YAML](https://yaml.org/) disponibles.
-- La falta de estándares para el formato YAML puede generar ambigüedad en la interpretación de los datos.
+```
 
 ## Datos Tabulares
 
