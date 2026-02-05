@@ -48,9 +48,11 @@ Como resultado, mientras que en los datos estructurados la búsqueda se apoya pr
 
 **Flexibilidad.** Los datos no estructurados presentan menos restricciones sobre su formato, lo que facilita la incorporación de nueva información sin necesidad de modificar un esquema preexistente.
 
-#### La era de los datos no estructurados
+```{dropdown} La era de los datos no estructurados
+:class: seealso
 
-Diversas estimaciones ampliamente citadas indican que la mayoría de los datos generados a nivel mundial son no estructurados, y que una proporción significativa corresponde a datos textuales, como correos electrónicos, publicaciones en redes sociales, documentos y noticias.
+Se estima que **más del 80 % de los datos generados a nivel mundial son *no estructurados***, y que una proporción significativa corresponde a datos textuales, como correos electrónicos, publicaciones en redes sociales, documentos y noticias.
+```
 
 ### Datos semi-estructurados
 
