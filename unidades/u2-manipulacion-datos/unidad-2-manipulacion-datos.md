@@ -2,39 +2,67 @@
 
 ## ¿Qué son los datos?
 
-Los datos son una porción de información de algún tema en particular que se guardan para ser utilizados en futuros análisis. Los datos pueden venir de tres formas: estructurados, no estructurados y semi estructurados. Durante este curso vamos a utilizar mayormente datos estructurados y algunos semi estructurados.
-
-Esta sección es un resumen de lo presentado en el curso de ["Data Science for Beginners"](https://github.com/microsoft/Data-Science-For-Beginners/blob/main/1-Introduction/03-defining-data/README.md) de Microsoft y Microsoft Learn Unit ["Classify your Data"](https://learn.microsoft.com/en-us/training/modules/choose-storage-approach-in-azure/2-classify-data). Para más información, referirse a dichos links.
+Los datos son una porción de información de algún tema en particular que se guardan para ser utilizados en futuros análisis. Los datos pueden venir de tres formas: estructurados, no estructurados y semi-estructurados. Durante este curso, vamos a utilizar mayormente datos estructurados y algunos semi-estructurados.
 
 ## Datos estructurados, no estructurados y semi-estructurados
 
+![](imagenes/types_data.png)
+
 ### Datos estructurados
 
-Los datos estructurados, también llamados relacionales, son aquellos en los que los *data points* comparten los mismos campos o atributos. Generalmente, se encuentran organizados en filas y columnas, donde cada fila posee el mismo conjunto de columnas. Las columnas representan valores de algún tipo y se identifican con nombres que describen lo que dichos valores representan, mientras que las filas contienen los valores reales. 
+Los datos estructurados son aquellos que poseen un formato estandarizado o claramente definido, lo que permite que tanto los sistemas informáticos como las personas puedan almacenarlos, procesarlos y analizarlos de manera eficiente. 
 
-Una ventaja de los datos estructurados es que se pueden organizar de forma tal de poder relacionarse con otros datos estructurados. Sin embargo, esta estructura rígida no permite hacer cambios a la estructura de forma sencilla, y hace que la evolución de los datos sea más lenta. Por ejemplo, si se agregan o eliminan campos de datos se debe actualizar cada registro para que se ajuste a la nueva estructura.
+Habitualmente, este tipo de datos se organiza en forma de tablas compuestas por filas y columnas, donde cada fila representa un registro (u observación) y cada columna representa un atributo (o variable). Cada atributo tiene asociado un tipo de dato específico (por ejemplo, numérico, texto, fecha, lógico) y un formato consistente, lo que facilita su validación, consulta y análisis.
 
-En estos casos, los datos tienen la misma organización y forma, el mismo esquema de datos. Al compartir el mismo esquema los datos pueden ser consultados de forma sencilla con lenguajes como SQL (Structured Query Language).
+**Características más importantes:**
 
-Un ejemplo de datos estructurados puede ser la siguiente base de datos relacional con información de estudiantes:
+**Atributos definibles.** Los datos estructurados comparten un esquema fijo: todos los registros presentan el mismo conjunto de atributos y cada atributo cumple un rol claramente establecido.
 
-![https://s3.hedgedoc.org/demo/uploads/d34c1e4c-52df-4c71-a4b9-80a8d4cc1131.png](https://s3.hedgedoc.org/demo/uploads/d34c1e4c-52df-4c71-a4b9-80a8d4cc1131.png)
+**Atributos relacionales.** Las tablas de datos estructurados suelen contener campos comunes (claves o *keys*) que permiten establecer relaciones entre diferentes tablas, posibilitando la integración de múltiples conjuntos de datos.
+
+![](imagenes/structured_data.png)
+
+**Almacenamiento.** Los datos estructurados se almacenan típicamente en bases de datos relacionales y se gestionan mediante sistemas de gestión de bases de datos. Su consulta y manipulación se realiza de forma estándar a través de lenguajes como SQL (*Structured Query Language*).
 
 ### Datos no estructurados
 
-Los datos no estructurados generalmente no pueden representarse con filas y columnas y no poseen un formato o conjunto de reglas a seguir para su generación. Debido a que este tipo de datos tienen menos restricciones en su estructura, es más fácil agregar nueva información en comparación con un conjunto de datos estructurados. Sin embargo, esta falta de estructura hace que, al mismo tiempo, su análisis e investigación pueda demandar una mayor cantidad de tiempo. 
+Los datos no estructurados son información que no posee un modelo de datos predefinido ni un esquema fijo, y cuya organización interna no sigue una estructura tabular. Por esta razón, no pueden representarse naturalmente mediante filas y columnas. Este tipo de datos suele presentarse en formatos libres o complejos, donde el significado está implícito en el contenido más que en una estructura explícita.
 
-Los archivos de texto, videos y fotos son ejemplos de datos no estructurados.
+Ejemplos: correos electrónicos, mensajes de chat, documentos de texto, imágenes, audio, video, publicaciones en redes sociales, páginas web.
+
+**Algunas diferencias respecto a los datos estructurados:**
+
+**Facilidad de análisis.** Es considerablemente más difícil organizar, limpiar y analizar datos no estructurados, ya que no cuentan con un esquema explícito. Su procesamiento suele requerir técnicas específicas como procesamiento de lenguaje natural, visión por computadora o reconocimiento de patrones.
+
+**Capacidad de búsqueda.** En los datos estructurados es sencillo realizar búsquedas y filtros porque los valores se almacenan en campos bien definidos (columnas), lo que permite aplicar condiciones precisas, por ejemplo: buscar todas las filas donde *edad > 30* o donde *ciudad = "Córdoba"*.
+
+En los datos no estructurados, en cambio, no existen campos explícitos. Por ello, la búsqueda suele realizarse mediante:
+
+- Búsqueda de texto completo (*full-text search*): se analizan los documentos como texto, identificando palabras o frases dentro del contenido completo (por ejemplo, buscar la palabra contrato dentro de miles de documentos PDF o correos electrónicos).
+
+- Uso de metadatos: se agregan o extraen descriptores asociados a los archivos, como fecha de creación, autor, tipo de archivo, idioma o etiquetas asignadas manual o automáticamente, que permiten filtrar información sin analizar directamente el contenido principal.
+
+- Técnicas de indexación: se construyen estructuras especiales (índices) que permiten localizar rápidamente términos, patrones o características dentro de grandes volúmenes de datos, reduciendo el tiempo de búsqueda y habilitando funcionalidades como ranking de relevancia o coincidencias aproximadas.
+
+Como resultado, mientras que en los datos estructurados la búsqueda se apoya principalmente en el esquema y los campos, en los datos no estructurados la búsqueda depende de procesar el contenido, extraer información auxiliar y utilizar estructuras adicionales.
+
+**Flexibilidad.** Los datos no estructurados presentan menos restricciones sobre su formato, lo que facilita la incorporación de nueva información sin necesidad de modificar un esquema preexistente.
+
+#### La era de los datos no estructurados
+
+Diversas estimaciones ampliamente citadas indican que la mayoría de los datos generados a nivel mundial son no estructurados, y que una proporción significativa corresponde a datos textuales, como correos electrónicos, publicaciones en redes sociales, documentos y noticias.
 
 ### Datos semi-estructurados
 
-Los datos semi-estructurados son una combinación de datos estructurados y no estructurados. Por lo general, no se ajustan a un formato de filas y columnas, pero están organizados de una manera que se considera estructurada. Estos datos utilizan *tags* para darle organización y jerarquías a los datos. Los datos semi-estructurados también se conocen como datos no relacionales.
+Los datos semi-estructurados constituyen una categoría intermedia entre los datos estructurados y los no estructurados. Poseen una organización interna reconocible, pero no siguen un esquema rígido como el de las tablas en una base de datos relacional. Utilizan marcas, etiquetas (*tags*) o pares clave–valor para describir los datos, lo que permite representar jerarquías y relaciones simples.
 
-Los datos semiestructurados se construyen con lenguajes de serialización (en clasificación de datos, la serialización es el proceso mediante el cual se convierten los datos a un formato que permita su transmisión y/o almacenamiento), por ejemplo: **XML, JSON o YAML**, los cuales se describen a continuación.
+Ejemplos típicos: archivos XML, JSON y YAML.
 
 ### XML
 
-Extensible Markup Language (XML) está basado en texto, lo que lo hace fácil de leer para humanos y computadoras. El código de abajo representa el registro de una persona:
+XML es un formato basado en texto que utiliza etiquetas para describir la información. Es legible tanto por humanos como por computadoras y permite representar estructuras jerárquicas.
+
+El siguiente código representa el registro de una persona:
 
 ```xml
 <Person Age="23">
@@ -49,28 +77,23 @@ Extensible Markup Language (XML) está basado en texto, lo que lo hace fácil de
 
 ```
 
-XML utiliza *tags* para darle forma a los datos. Los tags pueden ser **elementos,** como `<First Name>` , o **atributos,** como `Age='23'` . A su vez, los elementos pueden tener elementos
-hijos que permiten expresar relaciones, como `Hobby` dentro del elemento `Hobbies`.
+Resulta intuitivo observar que el ejemplo anterior contiene información sobre el nombre, apellido, edad y una lista de hobbies, donde cada hobby posee un tipo asociado (*Sports* o *Leisure*).
 
-**Aplicaciones**:
+XML utiliza ***tags*** para darle forma a los datos. Los tags pueden ser:
 
-- El formato XML se utiliza para almacenar datos estructurados, como información de clientes, datos de sensores, registros de eventos, entre otros. También se utiliza mucho en el intercambiado entre diferentes aplicaciones y sistemas. Muchos servicios Web utilizan el protocolo [SOAP](https://es.wikipedia.org/wiki/Simple_Object_Access_Protocol) (Simple Object Access Protocol ) que está basado en mensajes XML.
-- El formato XML se puede combinar con otras tecnologías, como [XSLT](https://es.wikipedia.org/wiki/Extensible_Stylesheet_Language_Transformations) (Lenguaje de Transformación de Hojas de Estilo XML) y [XPath](https://es.wikipedia.org/wiki/XPath) (Lenguaje de Selección de Ruta XML), para manipular y transformar datos XML en diferentes formatos. También se combina con [XSD](https://es.wikipedia.org/wiki/XML_Schema) (XML Schema Definition), el cual es un [l](https://es.wikipedia.org/w/index.php?title=Lenguaje_de_esquema&action=edit&redlink=1)enguaje de esquema utilizado para describir la estructura y las restricciones de los contenidos de los documentos.
+- **Elementos,** como `<First Name>`.
 
-**Ventajas**:
+- **Atributos,** como `Age='23'`. 
 
-- El formato XML es un lenguaje de marcado ampliamente utilizado y bien documentado, lo que lo hace fácil de implementar con una gran cantidad de librerías disponibles en diversos lenguajes de programación.
-- El formato XML es flexible y extensible, lo que lo hace ideal para manejar datos estructurados y complejos.
+A su vez, los elementos pueden tener elementos hijos que permiten expresar relaciones, como `Hobby` dentro del elemento `Hobbies`.
 
-**Desventajas**:
+### JSON (JavaScript Object Notation)
 
-- El formato XML puede ser propenso a la redundancia de datos, lo que puede aumentar el tamaño del archivo XML.
-- XML puede ser difícil de manejar para archivos grandes, ya que puede requerir más recursos de procesamiento y almacenamiento que otros formatos.
-- La sintaxis XML puede tornarse compleja, sobre todo cuando se combina con XSD o XLST, lo que puede dificultar su comprensión y manipulación.
+JSON es un formato de datos liviano, ampliamente utilizado para almacenar e intercambiar información, especialmente en aplicaciones web y APIs. Está basado en una **estructura de pares clave–valor**, admite listas (arreglos) y soporta estructuras jerárquicas.
 
-### JSON
+Utiliza llaves `{}` para delimitar objetos y corchetes `[]` para listas.
 
-JSON (Notación de objetos de JavaScript o JavaScript Object Notation) es un formato de archivo liviano que se utiliza para almacenar e intercambiar datos y se basa en el lenguaje de programación **JavaScript**. Es un formato basado en texto que utiliza una estructura clave-valor para representar datos y soporta el manejo de listas y jerarquías. JSON usa llaves `{}` para indicar la estructura de los datos. Este lenguaje es más fácil de entender para los humanos. Por ejemplo:
+A continuación, un ejemplo conocido:
 
 ```json
 {
@@ -85,26 +108,11 @@ JSON (Notación de objetos de JavaScript o JavaScript Object Notation) es un for
 }
 ```
 
-**Aplicación**:
+### YAML (YAML Ain’t Markup Language)
 
-JSON se usa comúnmente para API web, bases de datos NoSQL y como formato de intercambio de datos entre diferentes aplicaciones. Es el formato más popular de intercambio con servicios web, habiendo desplazado al formato XML en muchos casos.
+YAML es un lenguaje de serialización de datos diseñado para ser altamente legible para humanos. La estructura se define principalmente mediante indentación y saltos de línea, reduciendo el uso de caracteres especiales.
 
-**Ventajas**:
-
-- Legible por humanos y fácil de entender.
-- Se puede analizar y manipular fácilmente con diferentes lenguajes de programación.
-- Admite tipos de datos complejos, como matrices y objetos anidados.
-
-**Desventajas**:
-
-- Puede ser menos eficiente para almacenar y procesar grandes conjuntos de datos en comparación con otros formatos binarios.
-- Soporte limitado para la compresión de datos.
-
-### YAML
-
-YAML Ain’t Markup Language (YAML) es un lenguaje de serialización más reciente. La estructura de los datos se da por la separación de las líneas y la indentación. De esta forma, se elimina la dependencia de caracteres especiales como los paréntesis, comas, corchetes y llaves.
-
-Este lenguaje es fácil de entender para los humanos y se utiliza generalmente como archivo de configuración.
+Ejemplo:
 
 ```yaml
 firstName: Quinn
@@ -120,7 +128,16 @@ hobbies:
 ```
 
 <aside>
-💡
+### XML vs. JSON vs. YAML 
+
+**XML.**
+Formato basado en etiquetas. Más verboso. Usado históricamente en integración de sistemas y documentos estructurados.
+
+**JSON.**
+Formato liviano basado en pares clave–valor y listas. Estándar de facto para intercambio de datos en la web y servicios REST.
+
+**YAML.**
+Formato orientado a la legibilidad humana. Muy utilizado en archivos de configuración y automatización.
 
 </aside>
 
