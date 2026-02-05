@@ -127,10 +127,9 @@ hobbies:
       value: Guitar
 ```
 
-```{note}
-:title: Más información
-
-**XML vs. JSON vs. YAML** 
+```{admonition} 
+XML vs. JSON vs. YAML
+:class: note
 
 **XML.**
 Formato basado en etiquetas. Más verboso. Usado históricamente en integración de sistemas y documentos estructurados.
