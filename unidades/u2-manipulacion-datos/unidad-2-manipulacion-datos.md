@@ -482,6 +482,21 @@ En el trabajo con datos tabulares aparecen con frecuencia los siguientes tipos d
 
 - `NaN` / `None`, para representar valores faltantes (ausentes o desconocidos).
 
+```{admonition} **Valores faltantes: NaN, None y NA**
+
+:class: tip 
+
+En el trabajo con datos tabulares es habitual encontrarse con valores faltantes. Dependiendo del contexto y de la herramienta utilizada, estos valores pueden representarse de distintas maneras:
+
+**`NaN` (*Not a Number*):** es un valor especial utilizado principalmente en contextos de cálculo numérico. Suele aparecer en datos de tipo flotante y representa resultados indefinidos o inválidos (por ejemplo, una división por cero). Una característica importante es que `NaN` no es igual a sí mismo: la comparación `NaN == NaN` siempre devuelve `False`.
+
+**`None`:** es el valor nulo propio de Python y se utiliza para indicar la ausencia de un valor en un sentido general. No está pensado específicamente para el análisis de datos y, cuando se trabaja con estructuras como DataFrame de Pandas, suele convertirse internamente en un valor faltante del tipo `NaN` o `NA`.
+
+**`NA`:** es una representación de valor faltante utilizada en el análisis de datos, originalmente asociada al lenguaje R. En Pandas existe como pd.NA y está diseñada para representar datos faltantes de manera explícita, independientemente del tipo de dato (numérico, texto o booleano).
+
+Comprender estas diferencias es importante, ya que la forma en que se representan los valores faltantes influye en las operaciones disponibles, las conversiones de tipo y el comportamiento de los métodos de análisis.
+```
+
 ```{dropdown} Una aclaración sobre tamaños en memoria
 
 En muchos lenguajes existen distintos tipos de enteros (por ejemplo, 8, 16, 32 o 64 bits). En Python, a partir de la versión 3, el tipo `int` utiliza precisión arbitraria, lo que significa que puede crecer dinámicamente según el valor que almacene, sin un límite fijo de bits como en otros lenguajes.
@@ -651,261 +666,245 @@ pd.to_numeric(df['Age'], errors='coerce')
 
 Este comando convierte valores numéricos válidos y reemplaza valores inválidos por `NaN`. Luego, si es necesario, se puede aplicar `astype()`.
 
-
-
-#### Paquete JSON
-
-La librería nativa `json` en Python proporciona herramientas para trabajar con datos JSON (Notación de Objetos JavaScript), que es un formato de intercambio de datos muy utilizado en aplicaciones web y móviles. 
-
-**Para leer un archivo JSON**, primero se debe abrir el archivo en modo de lectura y luego utilizar la función **`load()`** de la librería `json` para cargar los datos JSON del archivo en un objeto Python. Por ejemplo:
-
-```python
-import json
-
-# Abrir archivo JSON en modo lectura
-with open('datos.json', 'r') as f:
-    # Cargar los datos JSON del archivo en un objeto Python
-    datos = json.load(f)
-
-# Mostrar los datos cargados
-print(datos)
-```
-
-**Para escribir un archivo JSON**, primero se debe abrir el archivo en modo de escritura y luego utilizar la función **`dump()`**de la librería `json`. Por ejemplo:
-
-```python
-import json
-
-# Datos a escribir en el archivo
-datos = [
-					{'nombre': 'Juan', 'edad': 30, 'ciudad': 'Rosario'},
-					{'nombre': 'Marisa', 'edad': 50, 'ciudad': 'San Lorenzo'}
-				]
-
-# Abrir archivo JSON en modo escritura
-with open('datos.json', 'w') as f:
-    # Escribir los datos Python en formato JSON en el archivo
-    json.dump(datos, f)
-
-# Leer el archivo JSON recién escrito
-with open('datos.json', 'r') as f:
-    datos_leidos = json.load(f)
-
-# Mostrar los datos leídos
-print(datos_leidos)
-```
-
-En este ejemplo, se ha creado un diccionario Python llamado `datos` y se ha utilizado la función **`dump()`** para escribir los datos en un archivo **`datos.json`**. Luego, se ha utilizado la función **`load()`** para cargar los datos del archivo en un nuevo objeto Python `datos_leidos` y se han mostrado los datos en la consola.
-
-También es posible leer archivos JSON utilizando la librería `pandas` y la función **`read_json()`**. A continuación, se muestra un ejemplo de cómo leer un archivo JSON:
-
-```python
-import pandas as pd
-
-# Leer archivo JSON con Pandas
-datos = pd.read_json('datos.json')
-
-# Mostrar los datos cargados con Pandas
-print(datos)
-```
-
-En este ejemplo, el archivo `datos.json` es leído utilizando la función **`read_json()`** de `pandas` y se almacena en un objeto Pandas **DataFrame** llamado **`datos`**. La función **`read_json()`** convierte automáticamente los datos JSON en un **DataFrame** de `pandas` . Esto permite que podamos cargar los datos en la memoria, para luego realizar diversas operaciones y análisis con nuestros datos, como el filtrado de datos, el cálculo de estadísticas y la construcción de gráficos.
-
 ### Escritura de datos tabulares en archivos
 
-Desde Python, es posible realizar la escritura de datos tabulares (filas/columnas) en formatos como CSV y Parquet. 
+Desde Python es posible escribir datos tabulares en distintos formatos de archivo. Entre los más utilizados se encuentran CSV y Parquet, cada uno con objetivos y características diferentes.
+
+En la práctica, la escritura de datos suele realizarse a partir de estructuras como listas, diccionarios o —muy especialmente— objetos `pandas.DataFrame`.
 
 #### Escritura de datos en formato CSV
 
-Para escribir datos en un archivo CSV, primero debemos importar la librería `csv`. A continuación, podemos abrir el archivo en modo de escritura utilizando la función **`open()`**. Luego, creamos un objeto `csv.writer` que nos permitirá escribir los datos en el archivo en formato CSV. Por último, escribimos los datos en el archivo utilizando el método **`writerow()` .**
+El formato CSV es uno de los más simples y extendidos para almacenar datos tabulares. Como se mencionó anteriormente, se trata de archivos de texto plano, fácilmente legibles por humanos y compatibles con una gran variedad de programas (Excel, LibreOffice, R, Python, etc.).
+
+**Opción 1: Usando la librería estándar `csv`**
+
+Python incluye el módulo `csv`, que permite escribir archivos CSV sin depender de librerías externas.
 
 ```python
 import csv
 
 # Datos a escribir en el archivo CSV
 datos = [
-    ['Nombre', 'Edad', 'Ciudad'],    # Agregamos los nombres de las columnas en la primer file. Algunos CSV no lo utilizan
+    ['Nombre', 'Edad', 'Ciudad'],  # Encabezados (no todos los CSV los incluyen)
     ['Juan', 30, 'Rosario'],
     ['Ana', 25, 'Madrid'],
     ['Pedro', 40, 'Lima']
 ]
 
-# Escribir los datos en un archivo CSV
+# Escritura del archivo CSV
 with open('datos.csv', mode='w') as archivo:
-    # Nota: Para sistemas Windows es conveniente usar lineterminator='\n'
+    # En Windows es recomendable especificar lineterminator='\n'
     writer = csv.writer(archivo, lineterminator='\n')
     for fila in datos:
         writer.writerow(fila)
 ```
 
-En este ejemplo, se han creado los datos a escribir en formato de una lista de listas. Luego, se ha utilizado la librería `csv` para escribir los datos en un archivo CSV llamado `datos.csv`.
+En este ejemplo, los datos se organizan como una lista de listas, donde cada sublista representa una fila de la tabla. El objeto `csv.writer` se encarga de transformar esa estructura en el formato CSV correspondiente.
 
-Otra forma de hacerlo, es empleando la librería `pandas`:
+👉 Esta forma es útil para entender cómo funciona el formato CSV “desde abajo”, pero no es la más habitual cuando se trabaja con datos en análisis de datos.
+
+**Opción 2: usando Pandas (mucho más habitual)**
+
+En contextos de análisis de datos, la forma más común y conveniente de escribir un CSV es a partir de un `DataFrame` de Pandas.
 
 ```python
 import pandas as pd
+
 datos = [
-    ['Nombre', 'Edad', 'Ciudad'],    # Agregamos los nombres de las columnas en la primer file. Algunos CSV no lo utilizan
     ['Juan', 30, 'Rosario'],
     ['Ana', 25, 'Madrid'],
     ['Pedro', 40, 'Lima']
 ]
 
-df = pd.DataFrame(index = [], columns = datos[0]) #creamos un DataFrame vacío con las columnas necesarias
-j = 0
-for i in datos[1:]:
-    df.loc[j] = i #cargamos cada fila
-    j+=1
+df = pd.DataFrame(
+    datos,
+    columns=['Nombre', 'Edad', 'Ciudad']
+)
 
-df.to_csv('datos.csv', index = False) #guardamos los datos sin el índice 
+df.to_csv('datos.csv', index=False)
 
 print(pd.read_csv('datos.csv'))
 ```
+Aquí:
 
-#### **Escritura de datos en formato Parquet:**
+- Los datos se almacenan directamente en un DataFrame.
 
-Para escribir datos en un archivo Parquet, primero debemos importar la librería `pyarrow`. A continuación, podemos convertir los datos en un objeto `pandas.DataFrame`. Luego, utilizamos el método **`to_parquet()`** para escribir los datos en el archivo en formato Parquet.
+- El método **`to_csv()`** se encarga de la escritura.
+
+- El argumento `index=False` evita que se guarde el índice del DataFrame como una columna adicional.
+
+👉 Esta es la forma recomendada cuando los datos ya están en Pandas, ya que es más clara, menos propensa a errores y fácilmente extensible.
+
+#### Escritura de datos en formato Parquet
+Como se mencionó previamente, el formato Parquet es un formato binario, columnar y comprimido, muy utilizado en entornos de *Big Data* y análisis de grandes volúmenes de información. Para trabajar con Parquet en Python, suele utilizarse la librería `pyarrow` junto con `pandas`.
 
 ```python
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-# Creamos un Dataframe de pandas a partir de un diccionario Python
-# Son los datos a escribir en el archivo Parquet
+# Creamos un DataFrame de pandas
 datos = pd.DataFrame({
     'nombre': ['Juan', 'Ana', 'Pedro'],
     'edad': [30, 25, 40],
     'ciudad': ['Rosario', 'Madrid', 'Lima']
 })
 
-# Utilizamos pyarrow para escribir los datos en un archivo Parquet
+# Convertimos el DataFrame en una tabla de PyArrow
 tabla = pa.Table.from_pandas(datos)
+
+# Escribimos el archivo Parquet
 pq.write_table(tabla, 'datos.parquet')
 ```
 
-En este ejemplo, se han creado los datos en formato `pandas.DataFrame` ****. Luego, se ha utilizado la librería `pyarrow` para convertir los datos en un objeto `pa.Table` y, posteriormente, utilizar el método **`pq.write_table()`** para escribir los datos en un archivo Parquet llamado **`datos.parquet`** . El archivo resultante puede ser leído por cualquier aplicación que soporte el formato Parquet.
+En este ejemplo, los datos se crean como un DataFrame de Pandas y posteriormente se convierten a un objeto `pa.Table`, que es la estructura interna que utiliza `pyarrow`. Finalmente, se escriben en un archivo Parquet con `write_table()`. El archivo resultante puede ser leído por cualquier herramienta que soporte el formato Parquet, incluyendo Pandas, Spark y otros motores de procesamiento de datos.
 
+## Manejo de fechas
 
+El módulo `datetime` de Python provee clases para representar y manipular fechas y horas ((puede consultarse la documentación correspondiente en el siguiente [link](https://docs.python.org/3/library/datetime.html). Los objetos de fecha y hora pueden clasificarse en ***naive*** o ***aware***, dependiendo de si incluyen o no información sobre el huso horario.
 
-### **Diferencias Clave (NaN/None/NA)**
+### Fechas y horas *naive*
 
-- **Tipo de Datos**: **`NaN`** es específico para valores de punto flotante y se utiliza en cálculos numéricos. Tiene la particularidad de no ser igual a si mismo, es decir la comparacion NaN == NaN es Falsa. Se utiliza para resultado de operaciones indefinidas o erroneas como dividir por cero. **`None`** es un valor nulo en Python que puede representar la ausencia de cualquier tipo de datos. **`NA`** es utilizado en análisis de datos para representar valores faltantes en cualquier tipo de datos, no solo numéricos.
-- **Contexto de Uso**: **`NaN`** se encuentra en contextos de cálculo y análisis numérico. **`None`** es más general y se utiliza en programación para indicar la ausencia de valor. **`NA`** se utiliza específicamente en análisis de datos y estadísticas para manejar datos faltantes de manera explícita.
-- **Lenguajes y Herramientas**: **`NaN`** y **`None`** son conceptos presentes en varios lenguajes de programación, aunque **`None`** es específico de Python. **`NA`** es más común en el contexto de R y se ha incorporado en herramientas de análisis de datos en Python como pandas.
+Un objeto de fecha y hora de tipo *naive* no contiene información sobre la zona horaria. Representa una fecha y una hora determinadas, pero no queda especificado a qué huso horario se refiere. Este tipo de objetos es frecuente cuando se trabaja con datos simples o cuando la información proviene de archivos de texto, como archivos CSV. Sin embargo, puede generar ambigüedades en contextos internacionales.
 
-Python tiene tipos de datos nativos y luego cada librería tiene sus tipos de datos. Por ejemplo, arriba comentamos que la librería **Numpy** tiene los enteros **`np.int32`** y **`np.int64`** y que **Pandas**, por su parte, tiene un tipo de dato llamado **`object`** . Este último aparece, por lo general, cuando esta librería interpreta un archivo y se encuentra con una columna con texto. Como **Pandas** no sabe cómo asignar automáticamente el tipo de datos, utiliza **`object`** como genérico, y luego nosotros debemos indicar que se interprete a esa columna como un **`str`** o el tipo que corresponda.
-
-También vamos a encontrarnos con el tipo de columna **`object`** cuando tenemos datos de diferente tipo en una misma columna (*mixed*):
+Por ejemplo, podemos elegir representar la fecha y la hora del primer partido de Argentina en la Copa Mundial FIFA 2026, frente a Argelia en Kansas City, sin indicar el huso horario:
 
 ```python
-# Creamos un Dataframe. La columna 'rank' tiene datos mixtos
-df = pd.DataFrame([('sparrow', 30.0, 2),
-                   ('tiger', 90.5, '1')],
-                  columns=('name', 'max_speed', 'rank'))
+from datetime import datetime
 
-# Chequear el tipo de dato de la columna rank
-print(df['rank'].dtype)  # rank es de tipo 'object' ya que tiene los valores '1' y 2
-
-print(df['rank'][0], type(df['rank'][0]))  
-# Imprime: 2 <class 'int'>
-# Para Python, el valor rank del primer registro (0) es 2 y del tipo <class 'int'>
-
-print(df['rank'][1], type(df['rank'][1]))  
-# Imprime: 1 <class 'str'>
-# Para Python, el valor rank del primer registro (1) es '1' y del tipo <class 'str'>
+partido_naive = datetime(2026, 6, 16, 22, 0, 0)
+print(partido_naive)
 ```
 
-En muchas oportunidades vamos a intentar pasar de un tipo de dato a otro. Para eso podemos usar el método **`astype()` .** En el ejemplo a continuación, convertimos los datos de una columna llamada ‘columna’ al tipo **`int`.**
+Salida:
 
 ```python
-data['columna'] = data['columna'].astype('int')
+2026-06-16 22:00:00
 ```
 
+Este valor indica simplemente “las 22:00”, pero no especifica si se trata de la hora de Argentina, de Kansas City u otra zona horaria. En ausencia de esa información, el instante exacto del evento es ambiguo. 
 
+### Fechas y horas *aware*
 
-### Datetime
+Un objeto de tipo *aware* contiene información explícita sobre la zona horaria, lo que permite representar un instante específico en el tiempo de forma inequívoca. Para trabajar con este tipo de objetos es habitual utilizar la librería `pytz`, que provee una base completa de husos horarios.
 
-En la práctica, es común encontrarse con sets de datos que contienen información relativa a la fecha, hora o fecha y hora correspondiente a algún registro o evento particular. La forma más conveniente para manipular y utilizar estos datos es usar el tipo de dato específico para los mismos. El módulo `datetime` de Python nos provee clases para manipular fechas y horas (puede consultarse la documentación correspondiente en el siguiente [link](https://docs.python.org/3/library/datetime.html)).
+Retomando el ejemplo del primer partido de Argentina en el Mundial 2026, que se juega en Kansas City el martes 16 de junio a las 21 hs. (hora local), y se transmite en Argentina a las 22 hs., podemos representar correctamente este evento incluyendo el huso horario correspondiente:
 
-Los objetos de fecha y hora pueden ser categorizados como **aware** o **naive**, dependiendo de si incluyen o no información sobre el huso horario. En términos simples, un objeto de fecha y hora **aware** contiene información sobre la zona horaria, lo que lo hace inequívoco en cuanto a la representación de un momento específico en el tiempo. De esta forma, para crear este tipo de objetos es necesaria la ayuda de la librería `pytz` .
 
 ```python
 from datetime import datetime
 import pytz
 
-zona_horaria = pytz.timezone('America/Argentina/Buenos_Aires')
-fecha_naive = datetime(2024, 2, 12, 11, 30, 0)
-fecha_aware = zona_horaria.localize(fecha_naive)
+zona_arg = pytz.timezone('America/Argentina/Buenos_Aires')
 
-print(fecha_aware) 
+partido_aware = zona_arg.localize(
+    datetime(2026, 6, 16, 22, 0, 0)
+)
+
+print(partido_aware)
 ```
 
-El código anterior crea un objeto de fecha y hora **aware** que representa el 12 de febrero de 2024 a las 11:30 am., hora de Buenos Aires. La lista de husos horarios incluida dentro del módulo `pytz` puede consultarse en el siguiente [link](https://gist.github.com/heyalexej/8bf688fd67d7199be4a1682b3eec7568).
-
-Por el contrario, un objeto de fecha y hora **naive** no contiene información sobre el huso horario. Representa una fecha y hora determinadas, pero no está claro a qué zona horaria se refiere.
+Salida:
 
 ```python
-from datetime import datetime
-
-fecha_naive = datetime(2024, 2, 12, 11, 30, 0)
-
-print(fecha_naive) # 2024-02-12 11:30:00
+2026-06-16 22:00:00-03:00
 ```
 
-En este punto, vale la pena destacar que los objetos de fecha y hora **aware** siempre están en tiempo [UTC](https://es.wikipedia.org/wiki/Tiempo_universal_coordinado), y se ajustan a la zona horaria especificada cuando se muestran o se utilizan en cálculos. Esto implica que pueden compararse directamente objetos de fecha y hora aware de diferentes zonas horarias, ya que ambos se representan internamente utilizando el mismo tiempo de referencia. De esta forma, resulta ventajoso utilizar, siempre que sea posible, objetos de fecha y hora de este tipo, especialmente en aplicaciones que manejan datos de varias zonas horarias.
+En este caso, el objeto de fecha y hora contiene información explícita sobre la zona horaria de Argentina, lo que permite identificar sin ambigüedades el instante exacto en el que se disputa el partido (detalle no menor cuando se trata de un partido de la Selección, ya que podemos saber con exactitud a qué hora tenemos que tener lista la picada).
+
+Retomando lo dicho anteriormente, es evidente que este tipo de representación es especialmente importante en eventos internacionales, ya que un mismo evento ocurre en un único momento real, pero se manifiesta a distintas horas locales según la ubicación geográfica.
 
 ### Manejo de fechas en Pandas
 
-Cuando importamos un archivo CSV que contiene una columna con fechas utilizando Pandas, la librería le asigna automáticamente el tipo **`object`** . Por lo tanto, para un correcto tratamiento de esta información, es preciso indicar a **Pandas** que la columna en cuestión es del tipo **`datetime64`**. Por ejemplo, si tenemos el siguiente dataset almacenado en un archivo llamado `datos.csv`:
+Cuando los datos se leen desde archivos como .csv, no se conserva información sobre los tipos de datos de cada columna. Si una columna contiene fechas, Pandas la interpreta inicialmente como texto.
+
+Para convertir una columna a tipo fecha se utiliza la función **`pd.to_datetime()`:
 
 ```python
-fecha,valor
-2022-03-01,100
-2022-03-02,150
-2022-03-03,200
-2022-03-04,250
-2022-03-05,300
-2022-03-06,350
-```
-
-Luego de importarlo utilizando la función `read_csv()` podemos indicar que la columna ‘fecha’ es de tipo **`datetime64`** utilizando el método **`pd.to_datetime()`:**
-
-```python
-import pandas as pd
-from datetime import datetime
-
-# Cargar los datos en un dataframe de Pandas
-df = pd.read_csv('datos.csv')
-
-# Verificar el tipo de datos de la columna "fecha"
-print(df['fecha'].dtype)  # Tipo object
-
-# Convertir la columna "fecha" a un tipo datetime64
 df['fecha'] = pd.to_datetime(df['fecha'])
-
-# Verificar el tipo de datos de la columna "fecha"
-print(df['fecha'].dtype)  # Tipo datetime64[ns]
 ```
 
-El código anterior carga los datos en un **DataFrame** de **Pandas**, convierte la columna "fecha" a un tipo **`datetime64`** con el método **`pd.to_datetime()`**, y verifica que el tipo de datos de la columna sea correcto utilizando la propiedad `dtype`. Al convertir la columna a **`datetime64`**, se facilitará el tratamiento desde Python, ya que podríamos, por ejemplo, calcular la diferencia entre fechas de una manera más sencilla y directa que si la columna fuera considerada como una cadena de texto. La salida del programa es la siguiente:
+Como resultado, la columna se transforma a un tipo de dato especial de pandas llamado `datetime64`, que permite realizar operaciones temporales de manera eficiente.
 
+**Sobre `datetime64`:**
+
+`datetime64` es un tipo de dato numérico que se representa internamente como un entero de 64 bits. Cada valor corresponde a la cantidad de unidades de tiempo transcurridas desde una fecha de referencia, conocida como *epoch*, que es el 1 de enero de 1970.
+
+La precisión puede ajustarse según la unidad de tiempo utilizada, por ejemplo:
+
+`datetime64[s]`: precisión en segundos
+
+`datetime64[ms]`: precisión en milisegundos
+
+`datetime64[us]`: precisión en microsegundos
+
+Este tipo de dato está optimizado para trabajar con grandes volúmenes de datos y permite realizar operaciones vectorizadas, como ordenar fechas, calcular diferencias temporales o extraer componentes como año, mes o día.
+
+### Operaciones frecuentes con fechas en Pandas
+
+Una vez que una columna ha sido convertida al tipo `datetime64`, Pandas permite realizar de forma sencilla distintas operaciones temporales. Estas operaciones son muy habituales en el análisis de datos y justifican la importancia de convertir correctamente las fechas.
+
+Supongamos un `DataFrame` con una columna llamada `fecha`:
+
+```python
+df['fecha'] = pd.to_datetime(df['fecha'])
 ```
-object
-datetime64[ns]
+#### Extracción de componentes temporales
+
+Es posible extraer fácilmente partes de la fecha, como el año, el mes o el día, utilizando el atributo `.dt`:
+
+```python
+df['fecha'].dt.year
+df['fecha'].dt.month
+df['fecha'].dt.day
+```
+Esto resulta útil, por ejemplo, para agrupar observaciones por año o analizar comportamientos estacionales.
+
+#### Diferencias entre fechas
+
+ambién es posible calcular diferencias entre fechas. Por ejemplo, si queremos saber cuántos días faltan para el primer partido de la Selección Argentina en el Mundial 2026, podemos calcular la diferencia entre la fecha actual y la fecha del partido.
+
+Supongamos que:
+- `fecha_hoy` representa la fecha actual.
+- `fecha_partido` representa la fecha del partido Argentina vs. Argelia.
+
+```python
+from datetime import datetime
+import pytz
+
+zona_arg = pytz.timezone('America/Argentina/Buenos_Aires')
+
+fecha_hoy = zona_arg.localize(datetime.now())
+fecha_partido = zona_arg.localize(
+    datetime(2026, 6, 16, 22, 0, 0)
+)
+
+dias_hasta_partido = fecha_partido - fecha_hoy
+
+print(dias_hasta_partido)
 ```
 
-**`datetime64`** es un tipo de datos de Pandas que representa una fecha y hora con precisión de nanosegundos. Este tipo de datos se puede usar para almacenar fechas y horas en un formato compacto y eficiente, lo que lo hace ideal para trabajar con grandes conjuntos de datos. La precisión de **`datetime64`** se basa en el tipo de datos de arrays de **NumPy**, ya que **Pandas** se construye sobre esta biblioteca. **NumPy** también proporciona un tipo de datos similar llamado **`datetime64`**, que se utiliza para representar fechas y horas con precisión de nanosegundos.
+El resultado es un objeto de tipo `timedelta`, que representa la cantidad de tiempo que falta para el partido. A partir de este objeto es posible obtener, por ejemplo, el número de días:
 
-**`datetime64`** es un tipo de datos numérico que se representa internamente como un número entero de 64 bits. Cada unidad de fecha y hora (año, mes, día, hora, minuto, segundo, nanosegundo) se convierte en un número entero que representa la cantidad de esa unidad desde una fecha de referencia, que es el **1 de enero de 1970**. Esta fecha de referencia se utiliza como base para el cálculo de todas las demás fechas y horas.
+```python
+dias_hasta_partido.days
+```
 
-La precisión de **`datetime64`** se puede controlar mediante los modificadores de unidades de tiempo. Por ejemplo, **`datetime64[s]`** representa una fecha y hora con precisión de segundos, **`datetime64[ms]`** representa una fecha y hora con precisión de milisegundos y **`datetime64[us]`** representa una fecha y hora con precisión de microsegundos.
+Este tipo de cálculo es habitual en aplicaciones que trabajan con eventos futuros, como calendarios, recordatorios o sistemas de planificación.
 
-### **Equivalencias de tipos de datos**
+#### Ordenamiento temporal
 
-En la siguiente tabla se puede ver cómo compatibilizar los tipos de datos de las diferentes librerías:
+Ordenamiento temporal
 
-![Untitled](./imagenes/Untitled.png)
+Al tratarse de un tipo de dato específico, las fechas pueden ordenarse cronológicamente sin necesidad de conversiones adicionales:
+
+```python
+df.sort_values('fecha')
+```
+
+Esto permite analizar la evolución temporal de los datos o preparar series de tiempo para visualización y modelado.
+
+Para concluir esta sección, es oportuno mencionar que el manejo adecuado de fechas es fundamental en muchos problemas reales, como el análisis de series temporales, el estudio de eventos en el tiempo o la comparación entre períodos.
 
 ## Manipulación de datos
 
