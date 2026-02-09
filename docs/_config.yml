@@ -1,7 +1,7 @@
 # Book settings
 title:
-author: Cátedra de Fundamentos de la Ciencia de Datos
-logo: docs/images/unr_logo.png
+author: Cátedra de Fundamentos de Ciencia de Datos
+logo: docs/images/fdcd_logo.png
 only_build_toc_files: false
 
 repository:
