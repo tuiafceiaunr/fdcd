@@ -246,15 +246,31 @@ Es decir, cada columna almacena consecutivamente los valores de ese atributo.
 ```{dropdown} Más info
 :class: seealso
 
-Los formatos de archivo orientados a columnas (más adelante se verá que Parquet es uno de ellos) son ampliamente utilizados en entornos de análisis y big data, mientras que muchos formatos tradicionales (como CSV) son esencialmente orientados a filas.
+Los formatos de archivo orientados a columnas (más adelante se verá que Parquet es uno de ellos) son ampliamente utilizados en entornos de análisis y *Big Data*, mientras que muchos formatos tradicionales (como CSV) son esencialmente orientados a filas.
 
 El siguiente [post](https://dataschool.com/data-modeling-101/row-vs-column-oriented-databases/#:~:text=Row%20oriented%20databases%20are%20databases,benefits%20for%20storing%20data%20quickly) muestra de forma clara las ventajas y desventajas de cada tipo de archivo.
 ```
 ### Tipos de archivos para el almacenamiento de datos tabulares
 
-#### CSV
+Existen distintos formatos de archivo para almacenar datos tabulares. A lo largo de esta materia trabajaremos principalmente con los siguientes:
 
-*Comma-Separated Values* (CSV) es un tipo de archivo que sirve para guardar y transferir datos tabulares. Los diferentes registros (las filas) se separan entre sí mediante saltos de líneas, mientras que los atributos/variables (las columnas) se separan usando la coma (también se pueden usar otros símbolos como el punto y coma o el *tab*). Hoy en día es uno de los formatos más utilizados en el análisis de datos.
+- .csv
+
+- .json
+
+- .txt
+
+- .html
+
+- .parquet
+
+Cada uno de estos formatos presenta características, ventajas y limitaciones que los hacen más o menos adecuados según el contexto y el tipo de análisis a realizar.
+
+#### CSV (*Comma-Separated Values*)
+
+En los archivos CSV, los diferentes registros (las filas) se separan entre sí mediante **saltos de líneas**, mientras que los atributos O variables (las columnas) se separan mediante un **delimitador**, que habitualmente es la coma, aunque también pueden utilizarse otros caracteres como el punto y coma o el tabulador. Hoy en día, es uno de los formatos más utilizados para el análisis de datos debido a su simplicidad y amplia compatibilidad.
+
+Ejemplo:
 
 ```
 Name, Age, Gender
@@ -262,80 +278,111 @@ John, 25, Male
 Jane, 30, Female
 Bob, 40, Male
 ```
+**Dos cuestiones importantes a tener en cuenta:** 
 
-*Ejemplo de archivo CSV*
+- Los archivos CSV poseen un formato de almacenamiento **orientado a filas.**
 
-**Aplicación**: el formato CSV se usa comúnmente para pequeños conjuntos de datos y como formato estándar para el intercambio de datos entre diferentes aplicaciones.
+- Los archivos CSV **no almacenan información sobre los tipos de datos**, ya que todo su contenido se guarda como texto plano.
 
-**Ventajas**:
+**Ventajas:**
 
-- Casi todos los softwares que realizan tratamiento de datos pueden leerlos y escribirlos con facilidad, y además son fáciles de leer para las personas. Además, resulta sencillo generarlos desde casi cualquier lenguaje de programación.
-- Se puede importar fácilmente a una amplia gama de herramientas de análisis de datos.
+- Son ampliamente soportados por prácticamente todas las herramientas y lenguajes de análisis de datos.
 
-**Desventajas**:
+- Son legibles por humanos y fáciles de generar desde casi cualquier lenguaje de programación.
 
-- No es eficiente para almacenar grandes conjuntos de datos con tipos de datos complejos.
-- Puede provocar la pérdida de datos si los valores contienen comas o saltos de línea.
-Soporte limitado para la codificación.
-- El formato está orientado a filas y por lo tanto realizar consultas de agregación, que interesan en la ciencia de datos, tiende a ser poco eficiente.
-- Los archivos CSV no guardan información acerca del tipo de dato de su contenido puesto que todo se guarda en texto simple. Por lo tanto, el tipo de dato debe ser especificado al leer el archivo.
-- Si bien los archivos CSV son de rápida lectura, cuando tienen un tamaño considerable (por contener un gran número de registros y/o columnas) este proceso puede volverse bastante lento.
+- Pueden importarse fácilmente en hojas de cálculo, bases de datos y librerías de análisis.
+
+**Desventajas:**
+
+- No resultan eficientes para conjuntos de datos grandes o con tipos de datos complejos.
+
+- Pueden generar ambigüedades si los valores contienen el carácter separador o saltos de línea (aunque existen mecanismos de escape).
+
+- Al estar orientados a filas, no son ideales para consultas analíticas que operan sobre columnas específicas.
+
+- No almacenan información de tipos de datos, por lo que esta debe inferirse o especificarse al momento de la lectura.
+
+- En archivos de gran tamaño, los tiempos de lectura pueden ser elevados.
 
 #### TXT
 
-El tipo de archivo de texto sin formato, también conocido como formato .txt, es uno de los formatos más simples y ampliamente utilizados para el almacenamiento de datos. Este formato se utiliza con frecuencia en el campo de la ciencia de datos debido a su facilidad de uso y compatibilidad con una amplia variedad de herramientas y lenguajes de programación. Cuando se almacenan datos tabulares, los archivos TXT suelen ser muy similares a CSV.
+El formato .txt es uno de los más simples y generales para el almacenamiento de información. Cuando se utilizan para datos tabulares, los archivos de texto suelen ser conceptualmente similares a los CSV, aunque no existe una convención estricta sobre cómo deben estructurarse.
 
-**Aplicaciones**
+**Aplicaciones:**
 
-El formato .txt se utiliza comúnmente para almacenar grandes conjuntos de datos de texto, como documentos, transcripciones, registros de chat, mensajes de correo electrónico, etc.
-Se utiliza en el procesamiento de lenguaje natural (NLP) para almacenar y analizar conjuntos de texto, como textos médicos, noticias, redes sociales, entre otros.
-También es utilizado para el almacenamiento y procesamiento de datos estructurados, y también en el etiquetado de conjuntos de datos para procesamiento en el ámbito del *machine learning*.
+Los archivos de texto plano se utilizan comúnmente para almacenar grandes volúmenes de datos textuales, tales como documentos, transcripciones, registros de chat y correos electrónicos. También son ampliamente utilizados en tareas de procesamiento de lenguaje natural (NLP) para el análisis de textos provenientes de noticias, redes sociales, documentos médicos, entre otros.
 
-**Ventajas**:
+**Ventajas:**
 
-- Los archivos .txt son simples, lo que los hace fáciles de crear y manipular con una variedad de herramientas de programación.
-- El formato es legible por humanos, lo que permite una fácil inspección y edición de datos.
-- Los archivos de texto sin formato son adecuados para el intercambio de datos entre sistemas, dada la simplicidad para leerlos y generarlos, aunque es necesario conocer como están estructurados los datos para poder luego procesar su información.
+- Son simples de crear, leer y manipular.
 
-**Desventajas**:
+- Son completamente legibles por humanos.
 
-- La falta de estructura en los archivos de texto sin formato puede dificultar su procesamiento automatizado. Esto puede hacer que el análisis de datos sea más lento y menos preciso en algunos casos y que se requiera de validaciones o de la construcción de funciones especiales para interpretarlos (parseo).
-- El formato .txt no es adecuado para almacenar datos complejos o información multimedia, como imágenes, audio o video. Tampoco resulta eficiente para almacenar grandes cantidades de datos con una alta densidad de información.
+- Resultan adecuados para el intercambio de información entre sistemas, siempre que se conozca la estructura del contenido.
+
+**Desventajas:**
+
+- La falta de una estructura formal (como un esquema fijo de columnas o delimitadores estandarizados) dificulta el procesamiento automático de los datos, ya que muchas veces los programas no pueden interpretarlos de manera directa.
+
+- Suelen requerir tareas adicionales de *parseo* y validación, es decir, analizar el texto para identificar campos y transformarlo en una estructura de datos utilizable, y verificar que los valores cumplan con el formato esperado.
+
+- No son adecuados para almacenar datos complejos ni grandes volúmenes de información estructurada.
+
+- No resultan eficientes en términos de espacio o rendimiento para análisis a gran escala.
 
 #### Apache Parquet
 
-Parquet es un formato para el almacenamiento de datos tabulares orientado a columnas y está optimizado para grandes cargas de datos. En este sentido, es de uso común en sistemas de procesamiento de *Big Data* basados en [Hadoop](https://hadoop.apache.org/)**,** como [Hive](https://hive.apache.org/), [Impala](https://impala.apache.org/) y [Spark](https://spark.apache.org/). ****Fue desarrollado por Cloudera y Twitter en 2013 como un proyecto de código abierto. 
+Apache Parquet es un formato de almacenamiento de datos tabulares orientado a columnas, diseñado y optimizado para cargas de datos de gran tamaño y consultas analíticas. Fue desarrollado como proyecto de código abierto en 2013 y es ampliamente utilizado en ecosistemas de *Big Data*, especialmente en conjunto con herramientas como Hadoop, Hive, Impala y Spark.
 
-Parquet se basa en una representación de datos en columnas comprimidas, lo que lo hace muy eficiente para consultas analíticas que involucran grandes cantidades de datos, en comparación con otros formatos como CSV. 
+Parquet almacena los datos en columnas comprimidas, lo que lo hace mucho más eficiente que formatos como CSV cuando se trabaja con grandes volúmenes de información.
 
-**Aplicaciones**: 
+**Ventajas:**
 
-Parquet es un formato popular para el procesamiento de *Big Data* y se utiliza en una variedad de aplicaciones analíticas y de ciencia de datos. Algunos casos de uso específico incluyen:
+- **Compresión eficiente:** Parquet utiliza técnicas de compresión a nivel de columna (por ejemplo, Snappy o Gzip), lo que reduce significativamente el espacio de almacenamiento requerido. Además, al disminuir la cantidad de datos que deben leerse desde disco, mejora el rendimiento de las consultas.
 
-- Almacenamiento y procesamiento de conjuntos de datos a gran escala en sistemas basados en Hadoop como Hive e Impala, y en plataformas de almacenamiento en la nube como AWS S3.
-- Análisis de datos con Spark y otros sistemas de procesamiento de *Big Data*.
-- Aplicaciones de almacenamiento de datos e inteligencia empresarial que implican el análisis de grandes conjuntos de datos.
+- **Almacenamiento orientado a columnas:** al guardar los datos por columnas en lugar de filas, Parquet permite leer únicamente las variables necesarias para un análisis. Esto resulta especialmente eficiente en tareas típicas de ciencia de datos, donde suelen analizarse subconjuntos de columnas sobre grandes volúmenes de registros.
 
-**Ventajas**:
+- **Soporte de tipos de datos y metadatos:** a diferencia de formatos como CSV, Parquet almacena información sobre los tipos de datos de cada columna, lo que evita ambigüedades al leer los datos y reduce errores en los procesos de análisis.
 
-- Compresión eficiente: Parquet es muy eficiente en lo que respecta a la compresión. Utiliza varios algoritmos de compresión como Snappy, LZO y Gzip para comprimir datos, lo que reduce los requisitos de almacenamiento y mejora el rendimiento de las consultas.
-- Almacenamiento en columnas: Parquet almacena datos en columnas en lugar de filas, lo que lo hace más eficiente para consultas analíticas que generalmente implican leer sólo un subconjunto de columnas de un gran conjunto de datos.
-- Evolución del esquema: Parquet admite la evolución del esquema, lo que significa que puede agregar, eliminar o modificar columnas sin romper la compatibilidad con los datos existentes. Esto facilita la actualización de los modelos de datos a lo largo del tiempo.
-- Soporte multiplataforma: Parquet es un proyecto de código abierto y es compatible con una variedad de sistemas de procesamiento de *Big Data*, incluidos Hadoop, Spark e Impala.
+- **Evolución del esquema:** Parquet permite modificar el esquema de los datos (agregar o eliminar columnas) sin necesidad de reescribir completamente los archivos existentes, lo que facilita el mantenimiento de conjuntos de datos a lo largo del tiempo.
+
+- **Integración con ecosistemas de *Big Data*:** es ampliamente soportado por herramientas como Spark, Hive y sistemas de almacenamiento en la nube, lo que lo convierte en un estándar de facto para el análisis de datos a gran escala.
 
 **Desventajas**:
 
-- Rendimiento de escritura: el formato de almacenamiento en columnas de Parquet puede ser más lento que los formatos basados en filas para escrituras, especialmente cuando se agregan datos a columnas existentes.
-- No apto para conjuntos de datos pequeños: Parquet está optimizado para consultas analíticas a gran escala y no es adecuado para conjuntos de datos pequeños.
-- Sobrecarga de planificación de consultas: el almacenamiento en columnas requiere más sobrecarga de planificación de consultas que los formatos de almacenamiento basados en filas. Esto puede aumentar el tiempo de planificación de la consulta y hacerla más compleja.
+- **Menor eficiencia en escrituras:** debido a su estructura orientada a columnas, Parquet no es ideal para escenarios donde se realizan escrituras frecuentes o incrementales. Su rendimiento es mejor cuando los datos se escriben en bloques grandes y luego se consultan muchas veces.
+
+- **No resulta conveniente para conjuntos de datos pequeños:** en archivos de tamaño reducido, el costo adicional de almacenar metadatos y organizar los datos por columnas puede superar los beneficios, haciendo que formatos más simples como CSV sean más prácticos.
+
+- **Mayor complejidad conceptual y técnica:** el uso de Parquet requiere herramientas específicas para su lectura y escritura, y una comprensión básica de conceptos como esquemas, compresión y almacenamiento columnar, lo que puede representar una barrera inicial para principiantes.
+
+- **No es legible por humanos:** a diferencia de archivos de texto plano, los archivos Parquet son binarios, por lo que no pueden inspeccionarse o editarse fácilmente sin herramientas especializadas.
 
 #### JSON
 
-Explicados en detalle en la sección de datos semi-estructurados
+El formato JSON fue presentado previamente en la sección de datos semi-estructurados. En el contexto de datos tabulares, puede utilizarse cuando los registros presentan una estructura homogénea, aunque no es su uso principal.
 
-#### HTML
+#### HTML (*HyperText Markup Language*)
 
-El formato HTML (Lenguaje de Marcado de Hipertexto o *HyperText Markup Language*) es un lenguaje utilizado principalmente para crear páginas web y documentos de hipertexto. En el campo de la ciencia de datos, se puede utilizar como un formato de almacenamiento de datos estructurados y no estructurados.
+El formato HTML es un lenguaje de marcado utilizado principalmente para la creación y estructuración de páginas web. En el contexto de la ciencia de datos, no se utiliza como un formato de almacenamiento primario de datos, sino como una fuente frecuente de extracción de información, ya que la mayoría de los datos disponibles en la Web se publican en este formato.
+
+En particular, HTML permite representar datos tabulares mediante tablas, lo que lo convierte en un formato común de origen para tareas de *web scraping* y recolección de datos.
+
+**Sintaxis de marcado en HTML:**
+
+HTML (al igual que XML) utiliza una sintaxis de marcado, basada en etiquetas (*tags*), para estructurar el contenido. Las etiquetas “marcan” o delimitan distintas partes del documento y definen su significado.
+
+📌 Elementos clave para tablas en HTML:
+
+`<table>`: define el inicio y el fin de una tabla.
+
+`<tr>` (*table row*): representa una fila de la tabla.
+
+`<th>` (*table header*): representa una celda de encabezado.
+
+`<td>` (*table data*): representa una celda de datos.
+
+Ejemplo de una tabla HTML:
 
 ```html
 <html>
@@ -374,23 +421,35 @@ El formato HTML (Lenguaje de Marcado de Hipertexto o *HyperText Markup Language*
 </html>
 ```
 
-**Aplicaciones**:
+**Aplicaciones en ciencia de datos:**
 
-- El formato HTML se puede utilizar para almacenar datos de páginas web y documentos de hipertexto, como artículos, noticias, blogs, etc. Esto lo convierte en una opción popular para el análisis de medios sociales, análisis de sentimientos y análisis de opiniones en línea.
-- El formato HTML se puede combinar con CSS (*Cascading Style Sheets*) y JavaScript para crear visualizaciones interactivas y aplicaciones web.
-- Dado que HTML es el formato de las páginas Web, es común realizar *Web Scraping,* la cual es una técnica para extraer información de las mismas.
+- Extracción de datos desde páginas web mediante técnicas de *web scraping*.
 
-**Ventajas**:
+- Análisis de contenido textual publicado en sitios web, como artículos, noticias, blogs y foros.
 
-- HTML es un lenguaje ampliamente utilizado y bien documentado, lo que lo hace fácil de entender y manipular.
-- HTML es compatible con una amplia variedad de herramientas y lenguajes de programación, lo que lo hace una opción conveniente para la integración en flujos de trabajo de ciencia de datos.
-- Los datos HTML se pueden analizar para extraer información estructurada y no estructurada.
+- Fuente de datos para análisis de opinión, análisis de sentimiento y minería de texto.
+
+- Generación de reportes o visualizaciones simples en formato web.
+
+**Ventajas:**
+
+- Es un estándar ampliamente utilizado y bien documentado.
+
+- Compatible con una gran variedad de lenguajes y herramientas de análisis de datos.
+
+- Permite acceder a una enorme cantidad de datos disponibles públicamente en la Web.
+
+- Las tablas HTML pueden convertirse relativamente fácil a formatos tabulares como DataFrames.
 
 **Desventajas**:
 
-- El formato HTML puede ser complejo, lo que puede dificultar la extracción de datos específicos de páginas web grandes y complejas.
-- El formato HTML puede ser susceptible a cambios en la estructura de la página, lo que puede afectar la calidad y la precisión de los datos extraídos.
-- HTML no es un formato de almacenamiento de datos óptimo para grandes cantidades de datos o datos no estructurados.
+- No es un formato diseñado para el almacenamiento eficiente de datos.
+
+- La estructura de los documentos HTML puede ser compleja o inconsistente.
+
+- Cambios en la estructura de una página web pueden romper los procesos de extracción.
+
+- Requiere tareas adicionales de parseo para transformar la información en datos tabulares utilizables.
 
 ## Pandas
 
@@ -408,28 +467,6 @@ Pandas proporciona dos estructuras principales para trabajar con datos:
 - **Series:** una serie de Pandas es una matriz unidimensional capaz de contener cualquier tipo de dato: números enteros, cadenas de texto, números decimales, objetos de Python, etc. Cada elemento de la serie posee un identificador único llamado **índice** (*index*).
 
 - **DataFrame:** un DataFrame es una estructura bidimensional tabular formada por filas y columnas. Cada fila está identificada por un índice, y las distintas columnas pueden almacenar datos de diferente tipo.
-
-### Lectura de archivos con datos tabulares
-
-Pandas permite leer datos desde múltiples formatos de archivo y convertirlos directamente en DataFrames. Algunos de los formatos más comunes son: archivos CSV (.csv), archivos Excel (.xlsx, .xls), archivos JSON (.json), archivos de texto delimitados (.txt), archivos Parquet (.parquet). La lectura de datos se realiza mediante funciones específicas para cada tipo de archivo, por ejemplo:
-
-- **`read_csv()`**. Si bien el archivo .csv sigue siendo orientado a filas, la librería se encarga de ponerlo dentro de un objeto `DataFrame`. `read_csv()` también permite leer archivos .txt.
-
-- **`read_excel()`**. La función `read_excel()` nos permite leer archivos .xlsx o .xls. Si el archivo en cuestión tiene más de una hoja, se debe especificar el nombre de la hoja con la que se quiere trabajar en el argumento `sheet_name`.
-
-- **`read_json()`**. Pandas cuenta con la función `read_json()`, la cual posibilita la lectura/importación de archivos JSON al entorno de trabajo. Esta función convierte automáticamente los datos en un objeto `DataFrame`.
-
-- **`read_parquet()`**. Pandas cuenta con la función `read_parquet()` para la lectura de archivos con este formato. El parámetro `engine` nos permite seleccionar la librería específica de parquet para leer el archivo: io.parquet.engine (`auto`), `pyarrow`, `fastparquet`. Por ejemplo:
-
-```python
-
-import pandas as pd
-
-pd.read_parquet('datasets/datos.parquet', engine = 'auto', 
-columns = None, storage_options = None, use_nullable_dtypes = False)
-```
-
-Estas funciones permiten especificar opciones como el delimitador, la presencia de encabezados, el tipo de datos de las columnas o el manejo de valores faltantes.
 
 ### Tipos de datos usuales
 
@@ -458,9 +495,31 @@ En Pandas, los tipos numéricos suelen representarse explícitamente con tamaño
 - `float64`: flotantes de 64 bits
 ```
 
-### Inferencia de tipos de datos al leer archivos
+### Lectura de archivos con datos tabulares
 
-Como se comentó anteriormente, los archivos .csv no almacenan información explícita sobre el tipo de dato de cada columna, ya que todo el contenido se guarda como texto plano.
+Pandas permite leer datos desde múltiples formatos de archivo y convertirlos directamente en DataFrames. Algunos de los formatos más comunes son: archivos CSV (.csv), archivos Excel (.xlsx, .xls), archivos JSON (.json), archivos de texto delimitados (.txt), archivos Parquet (.parquet). La lectura de datos se realiza mediante funciones específicas para cada tipo de archivo, por ejemplo:
+
+- **`read_csv()`**. Si bien el archivo .csv sigue siendo orientado a filas, la librería se encarga de ponerlo dentro de un objeto `DataFrame`. `read_csv()` también permite leer archivos .txt.
+
+- **`read_excel()`**. La función `read_excel()` nos permite leer archivos .xlsx o .xls. Si el archivo en cuestión tiene más de una hoja, se debe especificar el nombre de la hoja con la que se quiere trabajar en el argumento `sheet_name`.
+
+- **`read_json()`**. Pandas cuenta con la función `read_json()`, la cual posibilita la lectura/importación de archivos JSON al entorno de trabajo. Esta función convierte automáticamente los datos en un objeto `DataFrame`.
+
+- **`read_parquet()`**. Pandas cuenta con la función `read_parquet()` para la lectura de archivos con este formato. El parámetro `engine` nos permite seleccionar la librería específica de parquet para leer el archivo: io.parquet.engine (`auto`), `pyarrow`, `fastparquet`. Por ejemplo:
+
+```python
+
+import pandas as pd
+
+pd.read_parquet('datasets/datos.parquet', engine = 'auto', 
+columns = None, storage_options = None, use_nullable_dtypes = False)
+```
+
+Estas funciones permiten especificar opciones como el delimitador, la presencia de encabezados, el tipo de datos de las columnas o el manejo de valores faltantes.
+
+#### Inferencia de tipos de datos al leer archivos
+
+Como se comentó anteriormente, los archivos CSV no almacenan información explícita sobre el tipo de dato de cada columna, ya que todo el contenido se guarda como texto plano.
 
 Cuando se lee un archivo CSV con herramientas básicas, toda la información se interpreta inicialmente como texto. Sin embargo, cuando se utiliza Pandas la librería intenta inferir automáticamente el tipo de dato más apropiado para cada columna. Además, es posible especificar manualmente los tipos deseados mediante el parámetro `dtype`:
 
@@ -518,7 +577,7 @@ Esta salida muestra, para cada columna, la siguiente información:
 La utilización de este método es una buena práctica luego de importar los datos, ya que permite detectar inconsistencias entre el tipo de dato esperado y el tipo asignado e identificar columnas que contienen valores faltantes. Por este motivo, `info()` suele ser uno de los primeros comandos que se ejecutan al comenzar a explorar un nuevo conjunto de datos.
 ```
 
-#### `object` vs. `str`
+#### object *vs.* str
 
 En Pandas, las columnas que contienen texto suelen representarse con el tipo de dato `object`, en lugar del tipo `str` de Python. Esto ocurre porque `object` es un tipo general que puede contener cualquier objeto de Python, incluyendo cadenas de texto. Además, las columnas de texto pueden contener valores faltantes (`NaN`), y el tipo `object` es compatible con esta situación.
 
@@ -526,7 +585,7 @@ En términos prácticos, cuando una columna aparece como `object`, generalmente 
 
 *Nota: versiones recientes de pandas incorporan un tipo específico llamado string, orientado exclusivamente a texto, pero el uso de object sigue siendo muy común.*
 
-### Conversión de tipos de datos con `astype()`
+### Conversión de tipos de datos
 
 En muchos casos, al leer un conjunto de datos, el tipo asignado automáticamente por Pandas a una columna no coincide con el tipo deseado. Son ejemplos de estas situaciones los siguientes:
 
@@ -538,7 +597,7 @@ En muchos casos, al leer un conjunto de datos, el tipo asignado automáticamente
 
 Para convertir explícitamente el tipo de una columna se utiliza el método **`astype()`**.
 
-#### Conversión de una columna
+**Conversión de una columna:**
 
 A través de la siguiente línea, se convierte la columna `Age` al tipo entero de 64 bits:
 
@@ -554,7 +613,7 @@ df['category'] = df['category'].astype('object')
 df['is_active'] = df['is_active'].astype('bool')
 ```
 
-#### Conversión de varias columnas a la vez
+**Conversión de varias columnas a la vez:**
 
 Se puede pasar un diccionario indicando el tipo deseado para cada columna:
 
@@ -566,13 +625,23 @@ df = df.astype({
 })
 ```
 
-#### Errores en la conversión
+#### Errores frecuentes en la conversión
 
-Si una columna contiene valores incompatibles con el tipo solicitado, `astype()` producirá un error. Por ejemplo, si en el caso de la conversión de la columna `Age` dicha columna contiene valores faltantes, esta conversión fallará, ya que los enteros estándar no admiten `NaN`.
+Definir el tipo de dato de una columna suele ser una tarea intuitiva y, en muchos casos, Pandas (u otras librerías) realiza una inferencia adecuada de forma automática. Sin embargo, en la práctica aparecen situaciones en las que una elección incorrecta del tipo de dato puede conducir a errores o a la pérdida de información.
 
-Por este motivo, suele ser necesario limpiar o tratar los datos faltantes antes de realizar la conversión.
+Algunos problemas habituales son los siguientes:
 
-#### Conversión segura con `to_numeric()`
+- **Pérdida de información al leer identificadores numéricos como enteros.** En muchos conjuntos de datos existen columnas numéricas que representan identificadores o códigos y no cantidades. Por ejemplo, una columna de seis dígitos que codifica una localización con la estructura ***ccdddd***, donde los primeros dos dígitos representan la ciudad y los últimos cuatro el distrito.
+Si el código de ciudad puede comenzar con 0 y la columna se lee como `int`, ese cero inicial se pierde. Por ejemplo, el valor 013349 pasará a leerse como 13349. Luego, al intentar recuperar la ciudad extrayendo los dos primeros dígitos, se obtendrá 13 en lugar de 01, introduciendo un error en la información.
+En estos casos, el tipo de dato adecuado es `str`, ya que el valor debe interpretarse como un código y no como un número.
+
+- **Conversión a texto en presencia de valores faltantes.**
+Intentar convertir una columna completa a `str` cuando contiene valores faltantes puede generar comportamientos no deseados. Los valores nulos (`NaN`) pueden coexistir naturalmente con datos numéricos, pero no con cadenas de texto estándar.
+Una estrategia recomendada es tratar primero los valores faltantes (por ejemplo, imputándolos o eliminándolos, acciones que se abordarán más adelante) y luego realizar la conversión al tipo `str`.
+
+Además, si una columna contiene valores incompatibles con el tipo solicitado, el método `astype()` producirá un error. Por ejemplo, si se intenta convertir una columna con valores faltantes a un tipo entero (`int`), la conversión fallará, ya que los enteros estándar no admiten `NaN`. Por este motivo, suele ser necesario limpiar o tratar los datos faltantes antes de realizar la conversión de tipos.
+
+#### Conversión segura con **to_numeric()**
 
 En situaciones donde una columna contiene números almacenados como texto, puede utilizarse:
 
@@ -582,54 +651,7 @@ pd.to_numeric(df['Age'], errors='coerce')
 
 Este comando convierte valores numéricos válidos y reemplaza valores inválidos por `NaN`. Luego, si es necesario, se puede aplicar `astype()`.
 
-- **CSV.** 
 
-Existen muchas formas de leer archivos en Python. Hasta el momento, en cursos anteriores vimos como leer archivos .csv usando el paquete `csv` y `pandas`
-
-#### Paquete csv
-
-El siguiente código muestra cómo abrir el archivo de `listings.csv` de Airbnb, que usamos en Programación I, a través del paquete `csv`. Aquí podemos ver con claridad que el archivo .csv es un archivo orientado a filas, ya que, para poder acceder a los datos que se encuentran en su interior, `csv` tiene que recorrer con un *for-loop* cada una de las filas del archivo. Por ejemplo, para calcular el precio promedio de los alojamientos, debe entrar a cada registro, extraer el precio (que se encuentra en la posición #9) y guardarlo en la lista `lista_precios`. Sólo una vez que se ha completado esta secuencia de pasos, puede calcularse el precio promedio como la suma de todos los precios dividida entre la longitud de la lista.
-
-```python
-import csv
-lista_precios = []
-
-with open('listings.csv') as File:
-    next(File)
-    reader = csv.reader(File, delimiter=',')
-    for fila in reader:
-        precio = float(fila[9].replace('$', '').replace(',',''))
-        lista_precios.append(precio)
-precio_prom = sum(lista_precios)/len(lista_precios)
-```
-
-#### Paquete pandas
-
-El paquete `pandas` que aprendimos a usar en Programación II nos permite leer los datos de un archivo .csv de una forma mucho más sencilla. Si bien el archivo .csv sigue siendo orientado a filas, la librería se encarga de ponerlo dentro de un objeto **DataFrame**, que nos evita tener que escribir el código necesario para extraer la información, como en el caso anterior.
-
-```python
-import pandas as pd
-data = pd.read_csv('listings.csv')
-data.price.mean()
-```
-
-`pd.read_csv` también nos permite leer archivos .txt.
-
-`pandas` también nos permite leer archivos de Excel, `.xlsx` o `.xls`. Si el archivo en cuestión tiene más de una hoja, se debe especificar el nombre de la hoja con la que se quiere trabajar.
-
-```python
-import pandas as pd
-data = pd.read_excel('archivo_excel.xlsx', sheet_name = 'hoja1')
-```
-
-Los archivos en formato `parquet` también pueden leerse usando la librería `pandas`. Según la documentación, se realiza de la siguiente manera:
-
-```python
-pandas.read_parquet(path, engine = 'auto', columns = None, 
-storage_options = None, use_nullable_dtypes = False, **kwargs)
-```
-
-El parámetro `engine` nos permite seleccionar la librería específica de `parquet` para leer el archivo: io.parquet.engine (’auto’), ‘pyarrow’, ‘fastparquet’. 
 
 #### Paquete JSON
 
@@ -764,70 +786,7 @@ pq.write_table(tabla, 'datos.parquet')
 
 En este ejemplo, se han creado los datos en formato `pandas.DataFrame` ****. Luego, se ha utilizado la librería `pyarrow` para convertir los datos en un objeto `pa.Table` y, posteriormente, utilizar el método **`pq.write_table()`** para escribir los datos en un archivo Parquet llamado **`datos.parquet`** . El archivo resultante puede ser leído por cualquier aplicación que soporte el formato Parquet.
 
-## Tipos de datos
 
-Como se comentó anteriormente, los archivos .csv no guardan información sobre el tipo de datos que contienen, ya que toda la información se guarda en texto simple. Cuando leemos un archivo con el paquete `csv` , todo se lee como texto, mientras que cuando lo abrimos con `pandas` , la librería misma asigna un tipo de dato, o bien nosotros podemos explicitarlo mediante un parámetro en el comando de lectura. Por ejemplo:
-
-```python
-pd.read_csv('listings.csv', dtype = {'price': 'float'})
-```
-
-También es posible inspeccionar los tipo de datos de las columnas de un Dataframe `pandas` :
-
-```python
-import pandas as pd
-
-# Descarga el dataset "titanic.csv" y lo carga en un DataFrame
-df = pd.read_csv('https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv')
-
-# Imprime información del DataFrame
-print(df.info())
-```
-
- Obtenemos el siguiente resultado:
-
-```python
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 891 entries, 0 to 890
-Data columns (total 12 columns):
- #   Column       Non-Null Count  Dtype  
----  ------       --------------  -----  
- 0   PassengerId  891 non-null    int64  
- 1   Survived     891 non-null    int64  
- 2   Pclass       891 non-null    int64  
- 3   Name         891 non-null    object 
- 4   Sex          891 non-null    object 
- 5   Age          714 non-null    float64
- 6   SibSp        891 non-null    int64  
- 7   Parch        891 non-null    int64  
- 8   Ticket       891 non-null    object 
- 9   Fare         891 non-null    float64
- 10  Cabin        204 non-null    object 
- 11  Embarked     889 non-null    object 
-dtypes: float64(2), int64(5), object(5)
-memory usage: 83.7+ KB
-None
-
-Process finished with exit code 0
-```
-
-**Tipo de datos *object* vs. *str*.**
-
-En `pandas`, las columnas que contienen valores de texto se representan como el tipo de datos **`object`** en lugar del tipo de datos **`str`**. Esto se debe a que `str` es un tipo de datos específico en Python que sólo puede contener caracteres alfanuméricos y algunos caracteres especiales, mientras que **`object`** puede contener cualquier tipo de objeto de Python, incluyendo cadenas de texto.
-
-Además, las columnas de texto en un **DataFrame** de `pandas` pueden contener valores faltantes (por ejemplo, NaN), y **`object`** es un tipo de datos compatible con valores faltantes, lo que permite que una columna de texto contenga valores faltantes sin afectar su tipo de datos.
-
-En resumen, aunque las columnas de texto se pueden representar como **`str`** en Python, en `pandas` se representan como **`object`** para permitir la inclusión de valores faltantes y cualquier otro tipo de objeto de Python.
-
-### Tipos de datos usuales
-
-Los tipos de datos que más van a utilizar son:
-
-- **`int`**: para representar valores enteros. En general, el tipo de dato entero puede ser *byte*, *short*, *int* o *long,* y cada uno se corresponde con el volumen de memoria que puede ocupar el dato: 8, 16, 32 o 64 bits respectivamente. A partir de Python 3, todos los enteros son de formato `long`, es decir que ocupan 64 bits de memoria. Sin embargo, algunas librerías tienen sus propios tipos de datos y utilizan diferentes tipos de enteros. Por ejemplo, la librería **Numpy** tiene el tipo de dato **`np.int32`** e **`np.int64`**. [Este post](https://numpy.org/doc/stable/user/basics.types.html#overflow-errors) de la documentación de **Numpy** explica, por ejemplo, el comportamiento de los enteros de **Numpy** en comparación de los enteros nativos de Python ante un error de overflow.
-- **`float`**: para representar valores reales de coma flotante. Existe el `float` *single precision* (32 bits) y el *double precision* (64 bits).
-- **`str`**: sirve para representar texto.
-- **`bool`**: para representar valores booleanos de True/False
-- NaN/None
 
 ### **Diferencias Clave (NaN/None/NA)**
 
@@ -863,10 +822,7 @@ En muchas oportunidades vamos a intentar pasar de un tipo de dato a otro. Para e
 data['columna'] = data['columna'].astype('int')
 ```
 
-Definir el tipo de dato para una columna es intuitivo la mayoría de las veces. Incluso **Pandas** o algún otro paquete con el que leamos el archivo nos va a ayudar en la tarea. A continuación enumeramos algunos problemas que se presentan en la práctica basados en nuestra experiencia:
 
-- **Perder datos por no leerlos con el tipo de dato apropiado.** Es posible que, en la práctica, nos encontremos con sets de datos formados por columnas que contienen datos con una longitud fija de dígitos numéricos. Por ejemplo, una columna de 6 dígitos que indique la localización del dato, con una estructura como la siguiente: `xxxxxx` . Además, esta estructura puede estar constituida por la combinación de dos valores diferentes: los primeros 2 dígitos indican la ciudad, y los últimos 4 el distrito: `ccdddd`. Si el código de la ciudad puede comenzar con el valor 0 y leemos el dato como **`int`**, entonces perderemos el primer caracter. Por ejemplo, para un dato proveniente de la ciudad `01`, en vez de leer `013349` (dato correcto) vamos a leer `13349`. Luego, cuando queramos recuperar la ciudad de donde proviene un dato a partir de la columna de localización extrayendo los primeros 2 dígitos, obtendremos el valor `13` en lugar del `01`esperado y estaremos accediento a información errónea. En este caso, el tipo de dato óptimo es el **`str`** .
-- **Intentar convertir todos los datos de una columna a `str`cuando existen valores faltantes en una columna de un `pd.DataFrame`.** Los valores faltantes pueden coexistir con los valores numéricos pero no con las cadenas. Una recomendación para estos casos es darle un trato a los valores nulos primero (*ver más adelante*) y luego definir el tipo de dato como **`str`** .
 
 ### Datetime
 
