@@ -11,14 +11,14 @@ repository:
 # Execution Settings
 execute:
   execute_notebooks: force
-  exclude_patterns:
-    - "*/fuzzyjoins.ipynb"
 
 html:
   use_repository_button: true
   use_thebe: false  # Enable Thebe
 
 launch_buttons:
+  binder: true
+  notebook_interface: "jupyterlab"
   thebe: true
 
 
