@@ -1063,7 +1063,7 @@ memory usage: 12.6+ KB
 :class: seealso
 
 🤔 ¿Por qué el DataFrame en formato largo contiene 400 filas si contamos con la información de sólo 100 personas?
-```
+
 
 #### De formato largo a formato ancho
 
@@ -1135,7 +1135,6 @@ modo  index  persona_id modo_elegido  auto  bici  bus  moto
 
 [100 rows x 7 columns]
 ```
-```
 
 **¿Por qué volver al formato ancho?**
 
@@ -1149,104 +1148,225 @@ Este tipo de operaciones resulta mucho más simple cuando cada modo de transport
 
 ### Manejo de datos faltantes
 
-Es común que en el análisis de datos nos encontremos con columnas con datos faltantes. Su presencia en los datasets puede venir ligada a errores en la recolección de datos o en la elaboración de la base, o simplemente están allí porque no es esperable que el registro tenga un valor para esa columna. Por ejemplo, si tenemos una tabla con información acerca de las personas que viven en un hogar, no es esperable que los niños informen cantidad de horas trabajadas en la semana. 
+![](./missing_values.png)
 
-Dependiendo del origen de los datos faltantes, el tratamiento que les demos va a ser diferente. A continuación listamos algunas de los recursos que podemos utilizar para lidiar con los datos faltantes.
+En el análisis de datos es muy común encontrarnos con valores faltantes, usualmente representados como `NaN` (*Not a Number*) en Pandas. La presencia de estos valores puede deberse a múltiples razones: errores en la recolección de datos, problemas en la carga de la base, o simplemente al hecho de que no todas las variables son relevantes o aplicables para todos los registros. Un ejemplo de esto último podría ser el caso de una base de datos compuesta por información recolectada a partir de una encuesta a todas las personas que componen un grupo de hogares. Si en una de las preguntas se indaga a cada persona acerca de la edad a la cual consiguió su primer trabajo, no sería esperable recibir una respuesta en el caso de un niño de 5 años.
 
-**Eliminar registros con datos faltantes**
+```{admonition} Importante
+:class: important
 
-Esta opción es la más sencilla, ya que implica eliminar cualquier registro que tenga algún dato de interés faltante. Sin embargo, esta opción reduce el tamaño de nuestra muestra, por lo tanto es viable cuando el número de registros con datos faltantes no es elevado.
+Antes de realizar cualquier análisis estadístico o construir modelos, es fundamental identificar y tratar adecuadamente los datos faltantes, ya que su presencia puede afectar resultados, estimaciones y conclusiones.
 
-Supongamos que realizamos una encuesta para recolectar datos con el objetivo de estimar un modelo que nos informe la probabilidad de que una persona compre un celular. En la encuesta se pregunta acerca del ingreso mensual de cada persona, puesto que es un atributo que esperamos que sea una buena variable explicativa de la decisión de comprar o no un celular. Sin embargo, también sabemos que muchas personas deciden no contestar preguntas relacionadas a sus ingresos. Por lo tanto, cuando estemos estimando el modelo, vamos a descartar a todas las personas que no incluyeron su ingreso en su respuesta. Esta es una forma de hacerlo:
 
-```python
-import pandas as pd
-data = pd.read_csv('compra_celular.csv')
-#eliminamos los registros con valores nulos
-data = data[data.ingreso.notnull()].copy() 
-```
+#### Estrategias generales frente a los datos faltantes
 
-Otra forma de remover registros con datos faltantes es utilizar el método **`dropna()`** . Por default, este método elimina **cualquier fila del DataFrame que contenga, al menos, un valor faltante**:
+A grandes rasgos, existen dos enfoques principales para manejar valores faltantes:
+
+- Eliminar los registros (o columnas) que contienen datos faltantes.
+
+- Imputar los valores faltantes, es decir, reemplazarlos por valores plausibles según algún criterio.
+
+La elección entre una u otra estrategia dependerá del contexto del problema, de la cantidad de datos faltantes y del rol que cumpla la variable en el análisis.
+
+#### Eliminación de registros con datos faltantes
+
+Por defecto, el método `dropna()` elimina cualquier fila del DataFrame que contenga al menos un valor faltante.
+
+Consideremos el siguiente DataFrame de ejemplo:
 
 ```python
 import numpy as np
 import pandas as pd
 
-# Definimos DataFrame "de juguete"
-data = pd.DataFrame([[1., 6.5, 3.], [1., np.nan, np.nan], [np.nan, np.nan, np.nan], [np.nan, 6.5, 3.]],
-columns = ['ColA', 'ColB', 'ColC'])
+data = pd.DataFrame(
+    [[1., 6.5, 3.],
+     [1., np.nan, np.nan],
+     [np.nan, np.nan, np.nan],
+     [np.nan, 6.5, 3.]],
+    columns=['ColA', 'ColB', 'ColC']
+)
 
-# Vemos cómo luce nuestro set de datos
 print(data)
 
-	 ColA  ColB  ColC
+   ColA  ColB  ColC
 0   1.0   6.5   3.0
 1   1.0   NaN   NaN
 2   NaN   NaN   NaN
 3   NaN   6.5   3.0
+```
 
-# Si aplicamos dropna() sobre data, el resultado es el siguiente:
-print(data.dropna())
+Si aplicamos `dropna()` sin especificar particularmente ningún parámetro:
 
-	 ColA  ColB  ColC
+```python
+data_dropped = data.dropna()
+print(data_dropped)
+
+   ColA  ColB  ColC
 0   1.0   6.5   3.0
 ```
 
-Si agregamos el argumento `how = 'all'` , eliminaremos únicamente aquellos registros que están formados por completo por NaN. Y si estamos interesados en realizar la misma operación por columnas, debemos incluir `axis = 'columns'`.
+Observamos que sólo se conserva la fila que no contiene ningún valor faltante.
 
-**Reemplazar los datos faltantes por algún valor resumen**
+**Eliminación selectiva con `how = 'all'`**
 
-En lugar de eliminar los registros con datos faltantes y potencialmente descartar otros datos junto con ellos, podríamos “llenar” los huecos, reemplazando los valores faltantes por medidas de resumen o, de forma más general, por cualquier valor particular.
-
-Por ejemplo, supongamos que tenemos una muestra de hogares de la ciudad de Rosario y una de las variables con datos faltantes es `precio_alquiler`. Entonces, podríamos pensar en imputar los datos que nos faltan con el precio medio de los alquileres del resto de la muestra. También podríamos imputar los valores faltantes usando la mediana, o la moda o algún otro valor resumen que se adapte a nuestro estudio y que tenga sentido.
-
-<aside>
-💡 Antes de realizar esta operación (al igual que la siguiente) hay que evaluar cuántos datos hay disponibles para calcular la medida de resumen. Si tenemos pocos valores para calcular la medida de resumen, esta puede no ser una opción viable, ya que podríamos alterar considerablemente la información que contiene el dataset.
-
-</aside>
+En algunos casos, puede resultar excesivo eliminar registros que tengan sólo uno o dos valores faltantes. Si nuestro interés es eliminar únicamente aquellas filas que estén **completamente compuestas por `NaN`**, podemos usar el argumento `how='all'`:
 
 ```python
-import pandas as pd
+data_dropped = data.dropna(how='all')
+print(data_dropped)
 
-# Importamos el dataset hogares.csv
-data = pd.read_csv('hogares.csv')
-
-# Calculamos el precio de alquiler promedio
-alquiler_medio = data[data['precio_alquiler'].notnull()].mean()
-
-# Reemplazamos los valores faltantes con el precio de alquiler promedio
-data.precio_alquiler.fillna(alquiler_medio, inplace = True)
+   ColA  ColB  ColC
+0   1.0   6.5   3.0
+1   1.0   NaN   NaN
+3   NaN   6.5   3.0
 ```
 
-<aside>
-👌 En relación al código anterior, es preciso destacar que una de las potencialidades de `pandas` es que facilita el trabajo con valores faltantes, y permite realizar el cálculo de todas medidas resumen descriptivas (media, mediana, desviación estándar, etc.) excluyendo ese tipo de datos por *default.*
-En este sentido, en la línea en la que se calcula el precio de alquiler promedio, podría haberse omitido el **`.notnull()`** para filtrar los registros con datos faltantes.
+En este caso, sólo se elimina la fila cuyo contenido es enteramente faltante.
 
-</aside>
+Si quisiéramos realizar una operación análoga sobre columnas en lugar de filas, podemos incluir el argumento `axis='columns'`.
 
-**Reemplazar por valor más cercano**
+```{admonition} Comentario importante
+:class: warning
 
-Podemos mejorar el tratamiento anterior si en lugar de imputar los valores faltantes usando una medida de resumen extraída de la muestra general (en nuestro caso, la media aritmética),  lo hacemos a través de una medida de resumen calculada para puntos **“cercanos”** a dichos valores faltantes. En nuestro ejemplo, si el valor faltante pertenece a un hogar de Barrio Alberdi, para imputar el valor nos conviene usar el `precio_alquiler`informado por otros hogares de ese mismo barrio y no de Rosario en general. Siguiendo el ejemplo anterior, podemos hacer esto con el siguiente código:
+Eliminar registros con datos faltantes es una estrategia sencilla y, en muchos casos, válida. Sin embargo, puede implicar la pérdida de información relevante, especialmente si los valores faltantes son frecuentes o no se distribuyen aleatoriamente. Por este motivo, en muchos contextos resulta preferible considerar el uso de alguna estrategia de imputación.
+
+#### Imputación de datos faltantes
+
+La imputación consiste en reemplazar los valores faltantes por valores estimados o plausibles, con el objetivo de conservar la mayor cantidad posible de información.
+
+Algunas estrategias comunes de imputación incluyen:
+
+- Reemplazar por una medida resumen (media, mediana o moda)
+
+- Utilizar valores segmentados por grupos (por ejemplo, promedios por categoría)
+
+- Reemplazar por valores aleatorios dentro del rango observado
+
+- Estimar los valores mediante técnicas de interpolación o modelos estadísticos
+
+En este apartado nos enfocaremos en las estrategias más simples y habituales.
+
+**Ejemplo: imputación del precio de viviendas**
+
+Supongamos que contamos con un dataset de propiedades en la ciudad de Rosario ([aquí](https://drive.google.com/drive/u/1/folders/1yM-pDArLgGsHi3SQPv5zxIQToFVuPWu9?usp=sharing) puede descargarse el utilizado en el ejemplo). El resumen de la información del DataFrame muestra que existen valores faltantes en la variable `precio_usd`:
 
 ```python
-# Importamos el dataset
-data = pd.read_csv('hogares.csv')
+data = pd.read_excel('datasets/hogares.xlsx')
+data.info()
 
-# Imputamos los valores faltantes en 'precio_alquiler' utilizando la media calculada por barrio
-data['precio_alquiler'] = df['precio_alquiler'].fillna(df.groupby('barrio')['precio_alquiler'].transform('mean'))
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 50 entries, 0 to 49
+Data columns (total 5 columns):
+ #   Column        Non-Null Count  Dtype  
+---  ------        --------------  -----  
+ 0   id_propiedad  50 non-null     int64  
+ 1   distrito      50 non-null     object 
+ 2   barrio        50 non-null     object 
+ 3   ambientes     50 non-null     int64  
+ 4   precio_usd    48 non-null     float64
+dtypes: float64(1), int64(2), object(2)
+memory usage: 2.1+ KB
 ```
 
-La idea de “cercanía” es un concepto muy utilizado en el análisis de datos y no sólo hace referencia a una cercanía espacial o en distancia, sino que para definir la cercanía se pueden considerar diferentes aristas. También podemos pensarlo como clases/segmentos en los que dividimos el espacio. A continuación listamos algunos ejemplos de cercanía que pueden considerarse juntos o separados a la hora de imputar datos:
+Haciendo el filtrado correspondiente podemos identificar que son las propiedades sobre las que no se tiene información del precio son aquellas que poseen los ID 11 y 14:
 
-- **Cercanía espacial**: dos puntos de medición se encuentran a una distancia X uno de otro. Si la distancia X no supera un límite establecido anteriormente, esos dos puntos pueden considerarse cercanos y usar los datos de uno para imputar datos faltantes del otro
-- **Clase socioeconómica**: dos datos pueden considerarse cercanos si pertenecen al mismo segmento socioeconómico. Los segmentos se definen de forma arbitraria o puede usarse algún modelo acorde al estudio que se esté realizando. Por ejemplo, un segmento podría incluir a aquellas personas de entre 25-35 años que son mujeres y no tienen hijos.
-- **Cercanía temporal**: dos puntos de datos pueden considerarse cercanos si fueron recolectados o registrados en momentos similares. Por ejemplo, en un estudio sobre las temperaturas diarias de una ciudad, los datos de las temperaturas registradas en días consecutivos podrían considerarse cercanos temporalmente. Este tipo de cercanía es particularmente útil en series temporales y análisis de tendencias, donde los cambios en el tiempo pueden influir en las observaciones.
+```python
+data.loc[data['precio_usd'].isna()]
 
-<aside>
-🤔 **Para pensar…**
-¿Cómo resolvería por cercanía cuando en un dataset de valores de propiedades nos falta el valor de mercado de una casa o un departamento?
+    id_propiedad distrito   barrio  ambientes  precio_usd
+10            11   centro   martin          2         NaN
+13            14    norte  alberdi          2         NaN
+```
 
-</aside>
+##### Imputación mediante fillna()
+
+**Imputación con el promedio general**
+
+Una primera alternativa consiste en reemplazar los valores faltantes por el precio promedio del resto de las propiedades:
+
+```python
+data_mean = data.copy()
+
+# Calculamos el precio promedio de todos los departamentos del dataset
+precio_promedio = data_mean['precio_usd'].mean()
+
+# Realizamos la imputación con fillna()
+data_mean['precio_usd'].fillna(precio_promedio, inplace=True)
+
+# Corroboramos la imputacicón
+data_mean.iloc[[10, 13]]
+
+    id_propiedad distrito   barrio  ambientes    precio_usd
+10            11   centro   martin          2  84555.052083
+13            14    norte  alberdi          2  84555.052083
+```
+
+Esta estrategia es sencilla y rápida, pero ignora posibles diferencias sistemáticas entre barrios, que pueden ser relevantes en este contexto. En este punto, resulta interesante preguntarse, por ejemplo, si tiene sentido haber imputado el mismo valor para dos departamentos que están ubicados en barrios diferentes.
+
+**Imputación con promedio segmentado por barrio**
+
+Una alternativa más informativa consiste en imputar los valores faltantes utilizando el precio promedio dentro de cada barrio.
+
+Primero, calculamos los precios promedio por barrio:
+
+```python
+data.groupby('barrio')['precio_usd'].mean()
+
+barrio
+alberdi           128280.100000
+bella_vista        87000.500000
+centro             76372.222222
+cinco_esquinas     67525.000000
+echesortu          36500.000000
+hospitales         90100.000000
+martin             80120.000000
+parque             92180.200000
+refineria         104000.000000
+saladillo          71666.666667
+san_martin         78000.000000
+Name: precio_usd, dtype: float64
+```
+
+Luego, utilizamos `groupby()` junto con `transform()` para imputar los valores faltantes manteniendo la estructura original del DataFrame:
+
+```python
+data_grouped_mean = data.copy()
+
+data_grouped_mean['precio_usd'].fillna(
+    data.groupby('barrio')['precio_usd'].transform('mean'),
+    inplace=True
+)
+
+data_grouped_mean.iloc[[10, 13]]
+
+    id_propiedad distrito   barrio  ambientes  precio_usd
+10            11   centro   martin          2     80120.0
+13            14    norte  alberdi          2    128280.1
+```
+
+En este caso, cada valor faltante se reemplaza por el precio promedio del barrio correspondiente. Esta elección se apoya en el supuesto de que propiedades ubicadas en el mismo barrio tienden a tener precios similares, por lo que la imputación resulta más realista.
+
+```{admonition} **Nota sobre transform()**
+:class: info
+
+El método `transform()` permite aplicar una operación por grupos y devolver un objeto con el mismo índice y tamaño que el original. Esto lo hace especialmente útil para tareas de imputación, ya que permite combinar información agregada con el DataFrame original sin perder alineación entre observaciones.
+
+##### La idea de cercanía en la imputación de datos
+
+La estrategia de imputar valores faltantes utilizando el promedio por barrio se apoya en la noción de cercanía entre observaciones. En este contexto, dos propiedades se consideran cercanas si se encuentran ubicadas en el mismo barrio, bajo el supuesto de que comparten características relevantes que influyen en su precio.
+
+Es importante destacar que la cercanía en análisis de datos no se limita únicamente a la distancia física o espacial. En un sentido más general, la cercanía puede definirse a partir de distintos criterios, según el problema y la información disponible. En muchos casos, puede pensarse como una forma de segmentar el espacio de datos en clases o grupos relativamente homogéneos.
+
+Algunos ejemplos de criterios de cercanía que pueden utilizarse al momento de imputar datos faltantes son:
+
+- **Cercanía espacial:** dos observaciones pueden considerarse cercanas si se encuentran a una distancia menor que un umbral previamente definido. En ese caso, los valores observados en una ubicación pueden utilizarse para imputar valores faltantes en otra cercana.
+
+- **Pertenencia a un mismo segmento o clase:** dos registros pueden considerarse cercanos si pertenecen al mismo grupo definido por ciertas características. Por ejemplo, individuos de un mismo segmento socioeconómico, o propiedades con características similares.
+
+- **Cercanía temporal:** dos observaciones pueden considerarse cercanas si fueron registradas en momentos próximos en el tiempo. Este criterio es especialmente relevante en el análisis de series temporales, donde las observaciones cercanas en el tiempo suelen presentar valores similares.
+
+En todos los casos, la imputación se basa en el supuesto de que observaciones cercanas según algún criterio relevante tienden a presentar valores similares. Por este motivo, la elección del criterio de cercanía debe estar guiada por el conocimiento del fenómeno que se está analizando y por los objetivos del estudio.
+
 
 **Estimar una función y predecir valor**
 
