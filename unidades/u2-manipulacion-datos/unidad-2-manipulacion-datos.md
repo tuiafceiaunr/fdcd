@@ -483,16 +483,15 @@ En el trabajo con datos tabulares aparecen con frecuencia los siguientes tipos d
 - `NaN` / `None`, para representar valores faltantes (ausentes o desconocidos).
 
 ```{admonition} **Valores faltantes: NaN, None y NA**
-
 :class: tip 
 
 En el trabajo con datos tabulares es habitual encontrarse con valores faltantes. Dependiendo del contexto y de la herramienta utilizada, estos valores pueden representarse de distintas maneras:
 
-**`NaN` (*Not a Number*):** es un valor especial utilizado principalmente en contextos de cálculo numérico. Suele aparecer en datos de tipo flotante y representa resultados indefinidos o inválidos (por ejemplo, una división por cero). Una característica importante es que `NaN` no es igual a sí mismo: la comparación `NaN == NaN` siempre devuelve `False`.
+**NaN (*Not a Number*):** es un valor especial utilizado principalmente en contextos de cálculo numérico. Suele aparecer en datos de tipo flotante y representa resultados indefinidos o inválidos (por ejemplo, una división por cero). Una característica importante es que `NaN` no es igual a sí mismo: la comparación `NaN == NaN` siempre devuelve `False`.
 
-**`None`:** es el valor nulo propio de Python y se utiliza para indicar la ausencia de un valor en un sentido general. No está pensado específicamente para el análisis de datos y, cuando se trabaja con estructuras como DataFrame de Pandas, suele convertirse internamente en un valor faltante del tipo `NaN` o `NA`.
+**None:** es el valor nulo propio de Python y se utiliza para indicar la ausencia de un valor en un sentido general. No está pensado específicamente para el análisis de datos y, cuando se trabaja con estructuras como DataFrame de Pandas, suele convertirse internamente en un valor faltante del tipo `NaN` o `NA`.
 
-**`NA`:** es una representación de valor faltante utilizada en el análisis de datos, originalmente asociada al lenguaje R. En Pandas existe como pd.NA y está diseñada para representar datos faltantes de manera explícita, independientemente del tipo de dato (numérico, texto o booleano).
+**NA:** es una representación de valor faltante utilizada en el análisis de datos, originalmente asociada al lenguaje R. En Pandas existe como pd.NA y está diseñada para representar datos faltantes de manera explícita, independientemente del tipo de dato (numérico, texto o booleano).
 
 Comprender estas diferencias es importante, ya que la forma en que se representan los valores faltantes influye en las operaciones disponibles, las conversiones de tipo y el comportamiento de los métodos de análisis.
 ```
@@ -894,8 +893,6 @@ Este tipo de cálculo es habitual en aplicaciones que trabajan con eventos futur
 
 #### Ordenamiento temporal
 
-Ordenamiento temporal
-
 Al tratarse de un tipo de dato específico, las fechas pueden ordenarse cronológicamente sin necesidad de conversiones adicionales:
 
 ```python
@@ -906,26 +903,53 @@ Esto permite analizar la evolución temporal de los datos o preparar series de t
 
 Para concluir esta sección, es oportuno mencionar que el manejo adecuado de fechas es fundamental en muchos problemas reales, como el análisis de series temporales, el estudio de eventos en el tiempo o la comparación entre períodos.
 
+![](./imagenes/date.png)
+
+## Manos a la obra 1 
+
+1. Leé el archivo [`lista_personas.csv`](https://drive.google.com/drive/folders/1ZBdU_g8DXv4-8_ubM5gpeML4BZVYMHKP?usp=sharing).
+
+2. ¿Cuántas filas y columnas tiene el dataset?
+
+3. ¿Hay alguna columna que contenga datos faltantes?
+
+4. Observá los nombres de las columnas.  
+   ¿Detectás alguna inconsistencia?
+
+5. ¿Qué tipo de dato contiene cada columna?  
+   ¿Es el esperado en cada caso?
+
+6. ¿Cuántos nombres diferentes de personas hay en el dataset?  
+   ¿Observás algún error?
+   
+7. ¿Quién es la persona de mayor edad entre las personas del dataset?
+
+8. Extraer el mes de nacimiento de cada persona en una nueva columna. ¿Cuál fue el mes con mayor cantidad de nacimientos
+
 ## Manipulación de datos
 
-El *Data Wrangling,* por su nombre en inglés, es el proceso de preparar los datos y ponerlos en el formato necesario para poder realizar un posterior análisis de los mismos. 
+El *Data Wrangling*, por su nombre en inglés, es el proceso de limpiar, transformar y reorganizar los datos para dejarlos en un formato adecuado para su posterior análisis. En la práctica, los datos rara vez vienen listos para ser utilizados: suelen contener inconsistencias, valores faltantes o estructuras poco convenientes.
 
 ![](./imagenes/dataset_wild.png)
 
 ### Datos en forma larga o ancha
 
-Reformar un **DataFrame** de `pandas` es una de las tareas de manipulación de datos más comunes en el mundo del análisis de datos y consiste en su transposición desde un formato ancho (*wide*) a uno largo (*long*) o viceversa.
+Reformar un **DataFrame** de Pandas es una de las tareas de manipulación de datos más comunes en el mundo del análisis de datos y consiste en su transposición desde un **formato ancho** (*wide*) a uno **largo** (*long*) o viceversa. A continuación, abordaremos esta operación trabajando con un ejemplo concreto.
 
-Una forma sencilla de entender la forma larga o ancha es con un ejemplo como el de abajo, en el que contamos con la información de una encuesta de movilidad en la que a cada persona se le pregunta cuál es el tiempo de viaje para ir de su casa al trabajo para 4 modos de transporte diferentes: auto, moto, bus y bici, y cuál es el modo elegido por la persona. En el **formato ancho** podemos ver que tenemos un solo registro por persona, mientras que en el **formato largo** tenemos un registro por cada persona y cada modo de transporte por el cual fue consultada. 
+Supongamos una encuesta de movilidad urbana en la que a cada persona se le pregunta cuánto tiempo tarda en ir de su casa al trabajo utilizando distintos medios de transporte: auto, moto, colectivo y bicicleta. Además, se registra cuál es el modo de transporte que la persona utiliza habitualmente.
 
-Los datos en **forma ancha** son aquellos en los que la columna que identifica al dato no tiene valores repetidos, en nuestro ejemplo la `persona_id`:
+**Formato ancho**
+
+En el formato ancho, cada fila corresponde a una persona y cada variable ocupa su propia columna. En este caso, el identificador `persona_id` no se repite. Este formato suele ser cómodo para la carga de datos o para su inspección inicial.
 
 | **persona_id** | **tiempo_viaje_auto** | **tiempo_viaje_moto** | **tiempo_viaje_bus** | **tiempo_viaje_bici** | **modo_elegido** |
 | --- | --- | --- | --- | --- | --- |
 | 1 | 10 | 8 | 15 | 20 | bici |
 | 2 | 20 | 15 | 45 | 50 | auto |
 
-Por el contrario, en la **forma larga** la columna que identifica al registro (persona_id) tiene valores repetidos y ya no puede utilizarse por sí misma como identificación inequívoca del registro, sino que debe combinarse con otra columna, en este caso, el modo. 
+**Formato largo**
+
+En el formato largo, cada fila representa una observación individual. En este ejemplo, eso implica una fila por persona y por modo de transporte. Por este motivo, el identificador `persona_id` aparece repetido y deja de ser suficiente por sí solo para identificar un registro.
 
 | **persona_id** | **modo** | **tiempo_viaje** | **modo_elegido** |
 | --- | --- | --- | --- |
@@ -938,9 +962,37 @@ Por el contrario, en la **forma larga** la columna que identifica al registro (p
 | 2 | bus | 45 | auto |
 | 2 | bici | 50 | auto |
 
-**Cómo pasar de un formato al otro**
+Este formato es especialmente útil para realizar agrupamientos, generar visualizaciones y aplicar modelos estadísticos o de *machine learning*.
 
-Para pasar nuestra tabla **de formato ancho a formato largo** podemos utilizar la operación `pd.melt` de **Pandas** que nos permite agrupar varias columnas en una sola, produciendo un DataFrame que es más largo que el de partida. 
+#### De formato ancho a formato largo
+
+Para pasar de formato ancho a formato largo en Pandas se utiliza la función **`pd.melt()`**, que permite agrupar varias columnas en una sola, generando un DataFrame con mayor cantidad de filas.
+
+A continuación, generamos un conjunto de datos sintético que representa la encuesta de movilidad en formato ancho:
+
+```{code-cell} python
+import pandas as pd
+import random
+
+
+modos = ['auto', 'moto', 'bus', 'bici']
+
+
+# Generamos datos de ejemplo en formato ancho
+data = pd.DataFrame({
+'persona_id': range(100),
+'tiempo_viaje_auto': [random.randint(5, 90) for _ in range(100)],
+'tiempo_viaje_moto': [random.randint(5, 90) for _ in range(100)],
+'tiempo_viaje_bus': [random.randint(10, 120) for _ in range(100)],
+'tiempo_viaje_bici': [random.randint(10, 150) for _ in range(100)],
+'modo_elegido': [random.choice(modos) for _ in range(100)]
+})
+
+
+data.head()
+```
+
+Para pasar nuestra tabla **de formato ancho a formato largo** podemos utilizar la operación **`pd.melt()`** de **Pandas** que nos permite agrupar varias columnas en una sola, produciendo un DataFrame que es más largo que el de partida. 
 
 ```python
 import pandas as pd
