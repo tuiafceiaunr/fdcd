@@ -944,23 +944,23 @@ En el formato ancho, cada fila corresponde a una persona y cada variable ocupa s
 
 | **persona_id** | **tiempo_viaje_auto** | **tiempo_viaje_moto** | **tiempo_viaje_bus** | **tiempo_viaje_bici** | **modo_elegido** |
 | --- | --- | --- | --- | --- | --- |
-| 1 | 10 | 8 | 15 | 20 | bici |
-| 2 | 20 | 15 | 45 | 50 | auto |
+| 1 | 29 | 25 | 39 | 24 | moto |
+| 2 | 29 | 29 | 60 | 18 | bici |
 
 **Formato largo**
 
 En el formato largo, cada fila representa una observación individual. En este ejemplo, eso implica una fila por persona y por modo de transporte. Por este motivo, el identificador `persona_id` aparece repetido y deja de ser suficiente por sí solo para identificar un registro.
 
-| **persona_id** | **modo** | **tiempo_viaje** | **modo_elegido** |
+| **persona_id** | **modo** | **tiempo_viaje** | **modo_elegido**
 | --- | --- | --- | --- |
-| 1 | auto | 10 | bici |
-| 1 | moto | 8 | bici |
-| 1 | bus | 15 | bici |
-| 1 | bici | 20 | bici |
-| 2 | auto | 20 | auto |
-| 2 | moto | 15 | auto |
-| 2 | bus | 45 | auto |
-| 2 | bici | 50 | auto |
+| 1 | auto | 29 | moto |
+| 1 | moto | 25 | moto |
+| 1 | bus | 39 | moto |
+| 1 | bici | 24 | moto |
+| 2 | auto | 29 | bici |
+| 2 | moto | 29 | bici |
+| 2 | bus | 60 | bici |
+| 2 | bici | 18 | bici |
 
 Este formato es especialmente útil para realizar agrupamientos, generar visualizaciones y aplicar modelos estadísticos o de *machine learning*.
 
@@ -970,21 +970,21 @@ Para pasar de formato ancho a formato largo en Pandas se utiliza la función **`
 
 A continuación, generamos un conjunto de datos sintético que representa la encuesta de movilidad en formato ancho:
 
-```{code-cell} python
+```python
 import pandas as pd
 import random
 
-
 modos = ['auto', 'moto', 'bus', 'bici']
 
-
 # Generamos datos de ejemplo en formato ancho
+random.seed(2020)
+
 data = pd.DataFrame({
-'persona_id': range(100),
-'tiempo_viaje_auto': [random.randint(5, 90) for _ in range(100)],
-'tiempo_viaje_moto': [random.randint(5, 90) for _ in range(100)],
-'tiempo_viaje_bus': [random.randint(10, 120) for _ in range(100)],
-'tiempo_viaje_bici': [random.randint(10, 150) for _ in range(100)],
+'persona_id': range(1,101),
+'tiempo_viaje_auto': [random.randint(10, 30) for _ in range(100)],
+'tiempo_viaje_moto': [random.randint(10, 30) for _ in range(100)],
+'tiempo_viaje_bus': [random.randint(10, 60) for _ in range(100)],
+'tiempo_viaje_bici': [random.randint(10, 70) for _ in range(100)],
 'modo_elegido': [random.choice(modos) for _ in range(100)]
 })
 
@@ -992,105 +992,160 @@ data = pd.DataFrame({
 data.head()
 ```
 
-Para pasar nuestra tabla **de formato ancho a formato largo** podemos utilizar la operación **`pd.melt()`** de **Pandas** que nos permite agrupar varias columnas en una sola, produciendo un DataFrame que es más largo que el de partida. 
+Obtenemos el siguiente DataFrame:
+
+| **persona_id** | **tiempo_viaje_auto** | **tiempo_viaje_moto** | **tiempo_viaje_bus** | **tiempo_viaje_bici** | **modo_elegido** |
+| --- | --- | --- | --- | --- | --- |
+| 1 | 29 | 25 | 39 | 24 | moto |
+| 2 | 29 | 29 | 60 | 18 | bici |
+| 3 | 15 | 30 | 33 | 47 | auto |
+| 4 | 24 | 29 | 45 | 26 | auto |
+| 5 | 24 | 29 | 23 | 48 | moto |
+
+Transformamos ahora el DataFrame al formato largo:
 
 ```python
-import pandas as pd
-import random
 
-## Generamos datos "de juguete" para el ejemplo que están en formato ancho
-data = pd.DataFrame(index = range(100), columns=['tiempo_viaje_auto', 'tiempo_viaje_moto', 'tiempo_viaje_bus', 'tiempo_viaje_bici', 'modo_elegido'])
-data['tiempo_viaje_auto'] = [random.randint(1,100) for x in range(0,100)]
-data['tiempo_viaje_moto'] = [random.randint(1,100) for x in range(0,100)]
-data['tiempo_viaje_bus'] = [random.randint(1,100) for x in range(0,100)]
-data['tiempo_viaje_bici'] = [random.randint(1,100) for x in range(0,100)]
-data['modo_elegido'] = [random.randint(1,4) for x in range(0,100)]
-data.index.name = 'person_id'
-data.reset_index(inplace = True)
+# Pasamos de formato ancho a formato largo
+df_largo = pd.melt(
+data,
+id_vars=['persona_id', 'modo_elegido'],
+value_vars=[
+'tiempo_viaje_auto',
+'tiempo_viaje_moto',
+'tiempo_viaje_bus',
+'tiempo_viaje_bici'
+],
+var_name='modo',
+value_name='tiempo_viaje'
+)
 
-## Generamos la tabla en formato largo usando el método melt()
-df = pd.melt(data, id_vars = ['person_id','modo_elegido'], value_vars = ['tiempo_viaje_auto','tiempo_viaje_moto','tiempo_viaje_bus','tiempo_viaje_bici']).set_index('person_id')
+# Limpiamos el nombre del modo de transporte utilizando el método replace
+df_largo['modo'] = df_largo['modo'].str.replace('tiempo_viaje_', '')
 
-## Renombramos las columnas 
-df.rename(columns = {'variable': 'modo', 'value': 'tiempo_viaje'}, inplace = True)
 
-## Corregimos la información presentada en la columna 'modo'
-df['modo'] = df['modo'].str.replace('tiempo_viaje_','')
-
-## Mostramos cómo queda el dataset en formato largo:
-print(df)
-
-					 modo_elegido  modo  tiempo_viaje
-person_id                                  
-0                     4  auto            17
-1                     3  auto            29
-2                     2  auto            79
-3                     1  auto            86
-4                     2  auto            78
-...                 ...   ...           ...
-95                    1  bici            84
-96                    1  bici            34
-97                    2  bici            40
-98                    3  bici            59
-99                    3  bici            84
-
-[400 rows x 3 columns]
+print(df_largo)
 ```
-
-<aside>
-🤔 **Para pensar…**
-¿Por qué el DataFrame en formato largo contiene 400 filas si contamos con la información de sólo 100 personas?
-
-</aside>
-
-En algunas ocasiones, puede ser más dificultoso trabajar con los datos en este formato y puede preferirse el **formato ancho**. Para pasar **de formato largo a formato ancho** podemos usar la operación de **Pandas** llamada `pivot` , que realiza esta transformación sobre un DataFrame. Continuando con nuestro ejemplo de arriba:
+La salida es la siguiente:
 
 ```python
-					 modo_elegido  modo  tiempo_viaje
-person_id                                  
-0                     4  auto            17
-1                     3  auto            29
-2                     2  auto            79
-3                     1  auto            86
-4                     2  auto            78
-...                 ...   ...           ...
-95                    1  bici            84
-96                    1  bici            34
-97                    2  bici            40
-98                    3  bici            59
-99                    3  bici            84
+     persona_id modo_elegido  modo  tiempo_viaje
+0             1         moto  auto            29
+1             2         bici  auto            29
+2             3         auto  auto            15
+3             4         auto  auto            24
+4             5         moto  auto            24
+..          ...          ...   ...           ...
+395          96         moto  bici            52
+396          97         bici  bici            30
+397          98         bici  bici            30
+398          99         moto  bici            51
+399         100         auto  bici            10
 
-[400 rows x 3 columns]
-
-## Reseteamos el índice
-df.reset_index(inplace = True)
-
-## Pivoteamos la tabla. Notar que se genera una columna multinivel
-pivoteada = df.pivot(index = 'person_id', columns = 'modo', values = ['tiempo_viaje'])
-
-## La operación anterior nos hizo perder el modo que eligió cada persona. 
-df.drop_duplicates('person_id', inplace = True)
-df.set_index('person_id', inplace = True)
-pivoteada['modo_elegido'] = df['modo_elegido']
-print(pivoteada)
-
-         tiempo_viaje               modo_elegido
-modo              auto bici bus moto             
-person_id                                        
-0                   33  100  61   95            4
-1                   60   21  18   35            2
-2                    6   78  21   88            1
-3                   99   43  11   30            2
-4                   83   76  41   41            2
-...                ...  ...  ..  ...          ...
-95                  39   21  48   36            3
-96                   4   30  78   30            4
-97                  37   75  97   24            2
-98                 100    9  30   47            3
-99                  67   64  21   53            3
-
-[100 rows x 5 columns]
+[400 rows x 4 columns]
 ```
+Si exploramos la estructura del DataFrame resultante utilizando el método `info` presentado anteriormente, nos encontramos con la siguiente salida:
+
+```python
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 400 entries, 0 to 399
+Data columns (total 4 columns):
+ #   Column        Non-Null Count  Dtype 
+---  ------        --------------  ----- 
+ 0   persona_id    400 non-null    int64 
+ 1   modo_elegido  400 non-null    object
+ 2   modo          400 non-null    object
+ 3   tiempo_viaje  400 non-null    int64 
+dtypes: int64(2), object(2)
+memory usage: 12.6+ KB
+```
+```{dropdown} Para pensar…
+:class: seealso
+
+🤔 ¿Por qué el DataFrame en formato largo contiene 400 filas si contamos con la información de sólo 100 personas?
+```
+
+#### De formato largo a formato ancho
+
+En algunas situaciones, el formato largo no resulta el más conveniente. Al momento de comparar los tiempos de viaje entre distintos modos para cada persona, calcular diferencias entre ellos, o construir tablas resumen donde cada modo de transporte aparezca como una columna, resulta más conveniente trabajar con los datos en formato ancho.
+
+En Pandas, esta transformación puede realizarse mediante la función **`pivot()`, que reorganiza un DataFrame a partir de tres componentes clave:
+
+- un índice, que identifica las filas,
+
+- una columna, cuyos valores pasan a convertirse en nombres de columnas,
+
+- y una variable de valores, que completa la tabla resultante.
+
+Continuando con el ejemplo anterior, partimos del DataFrame `df_largo`, que se encuentra en formato largo y contiene una fila por persona y por modo de transporte.
+
+```python
+# Pasamos de formato largo a formato ancho utilizando pivot
+df_ancho = df_largo.pivot(
+    index=['persona_id', 'modo_elegido'],
+    columns='modo',
+    values='tiempo_viaje'
+)
+
+print(df_ancho)
+```
+Como resultado, obtenemos un DataFrame en el que cada fila corresponde a una persona y cada columna representa el tiempo de viaje asociado a un modo de transporte:
+
+```python
+modo                     auto  bici  bus  moto
+persona_id modo_elegido                       
+1          moto            29    24   39    25
+2          bici            29    18   60    29
+3          auto            15    47   33    30
+4          auto            24    26   45    29
+5          moto            24    48   23    29
+...                       ...   ...  ...   ...
+96         moto            16    52   16    23
+97         bici            20    30   56    20
+98         bici            21    30   19    21
+99         moto            10    51   10    25
+100        auto            26    10   48    19
+
+[100 rows x 4 columns]
+```
+
+```{admonition} **Punto importante**
+:class: important
+
+Notar que el DataFrame generado presenta un **índice multinivel**, ya que cada observación está identificada simultáneamente por `persona_id` y por `modo_elegido`. Este tipo de índice surge de manera natural cuando se combinan múltiples variables para identificar las filas.
+
+En muchos casos, puede resultar más cómodo trabajar con un índice simple. Para ello, podemos restablecer el índice y volver a convertir estas variables en columnas explícitas:
+
+```python
+df_ancho = df_ancho.reset_index()
+df_ancho.head()
+
+modo  index  persona_id modo_elegido  auto  bici  bus  moto
+0         0           1         moto    29    24   39    25
+1         1           2         bici    29    18   60    29
+2         2           3         auto    15    47   33    30
+3         3           4         auto    24    26   45    29
+4         4           5         moto    24    48   23    29
+..      ...         ...          ...   ...   ...  ...   ...
+95       95          96         moto    16    52   16    23
+96       96          97         bici    20    30   56    20
+97       97          98         bici    21    30   19    21
+98       98          99         moto    10    51   10    25
+99       99         100         auto    26    10   48    19
+
+[100 rows x 7 columns]
+```
+```
+
+**¿Por qué volver al formato ancho?**
+
+Una ventaja clara del formato ancho es que facilita la comparación directa entre modos de transporte. Por ejemplo, podemos calcular la diferencia entre el tiempo de viaje en auto y en colectivo para cada persona de manera inmediata:
+
+```python
+df_ancho['diferencia_auto_bus'] = df_ancho['auto'] - df_ancho['bus']
+```
+
+Este tipo de operaciones resulta mucho más simple cuando cada modo de transporte se encuentra en su propia columna.
 
 ### Manejo de datos faltantes
 
