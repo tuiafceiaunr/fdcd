@@ -14,7 +14,7 @@ execute:
 
 html:
   use_repository_button: true
-  use_thebe: false  # Enable Thebe
+  use_thebe: true  # Enable Thebe
 
 launch_buttons:
   binder: true
