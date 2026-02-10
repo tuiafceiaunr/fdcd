@@ -21,6 +21,12 @@ launch_buttons:
   notebook_interface: "jupyterlab"
   thebe: true
 
+parse:
+  myst_enable_extensions:
+    - colon_fence
+
+mystnb:
+  execution_mode: force
 
 # Bibliography settings
 bibtex_bibfiles:
