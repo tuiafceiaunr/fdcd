@@ -23,6 +23,9 @@ parse:
   myst_enable_extensions:
     - dollarmath
     - amsmath
+    - html_image
+    - colon_fence
+    - attrs_inline
 
 # Bibliography settings
 bibtex_bibfiles:
