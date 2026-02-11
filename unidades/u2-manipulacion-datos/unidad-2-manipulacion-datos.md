@@ -9,11 +9,6 @@ kernelspec:
   name: python3
 ---
 
-```{code-cell} python3
-import pandas as pd
-print("This will now show automatically!")
-```
-
 # Unidad 2 - Manipulación de datos
 
 ## ¿Qué son los datos?
@@ -22,7 +17,13 @@ Los datos son una porción de información de algún tema en particular que se g
 
 ## Datos estructurados, no estructurados y semi-estructurados
 
-![](imagenes/types_data.png)
+```{figure} imagenes/types_data.png
+---
+width: 80%
+align: center
+---
+Representación esquemática de datos no estructurados (*unstructured*), semi-estructurados (*semi structured*) y estructurados (*structured*).
+```
 
 ### Datos estructurados
 
@@ -36,7 +37,13 @@ Habitualmente, este tipo de datos se organiza en forma de tablas compuestas por 
 
 **Atributos relacionales.** Las tablas de datos estructurados suelen contener campos comunes (claves o *keys*) que permiten establecer relaciones entre diferentes tablas, posibilitando la integración de múltiples conjuntos de datos.
 
-![](imagenes/structured_data.png)
+```{figure} imagenes/structured_data.png
+---
+width: 80%
+align: center
+---
+Bases de datos relacionales.
+```
 
 **Almacenamiento.** Los datos estructurados se almacenan típicamente en bases de datos relacionales y se gestionan mediante sistemas de gestión de bases de datos. Su consulta y manipulación se realiza de forma estándar a través de lenguajes como SQL (*Structured Query Language*).
 
@@ -537,7 +544,8 @@ Pandas permite leer datos desde múltiples formatos de archivo y convertirlos di
 
 - **`read_parquet()`**. Pandas cuenta con la función `read_parquet()` para la lectura de archivos con este formato. El parámetro `engine` nos permite seleccionar la librería específica de parquet para leer el archivo: io.parquet.engine (`auto`), `pyarrow`, `fastparquet`. Por ejemplo:
 
-```python
+```{code-cell} python3
+:tags: ["skip-execution"]
 
 import pandas as pd
 
@@ -553,7 +561,9 @@ Como se comentó anteriormente, los archivos CSV no almacenan información expl�
 
 Cuando se lee un archivo CSV con herramientas básicas, toda la información se interpreta inicialmente como texto. Sin embargo, cuando se utiliza Pandas la librería intenta inferir automáticamente el tipo de dato más apropiado para cada columna. Además, es posible especificar manualmente los tipos deseados mediante el parámetro `dtype`:
 
-```python
+```{code-cell} python3
+:tags: ["skip-execution"]
+
 pd.read_csv('listings.csv', dtype={'price': 'float'})
 ```
 
@@ -565,7 +575,7 @@ Pandas permite inspeccionar rápidamente los tipos de datos de cada columna util
 
 Ejemplo:
 
-```python
+```{code-cell} python3
 import pandas as pd
 
 # Descarga el dataset "titanic.csv" y lo carga en un DataFrame
@@ -573,24 +583,6 @@ df = pd.read_csv('https://raw.githubusercontent.com/datasciencedojo/datasets/mas
 
 # Imprime información del DataFrame
 print(df.info())
-```
-
-La salida, resumida, se muestra a continuación:
-
-```python
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 891 entries, 0 to 890
-Data columns (total 12 columns):
- #   Column       Non-Null Count  Dtype  
----  ------       --------------  -----  
- 0   PassengerId  891 non-null    int64  
- 1   Survived     891 non-null    int64  
- 2   Pclass       891 non-null    int64  
- 3   Name         891 non-null    object 
- 4   Sex          891 non-null    object 
- 5   Age          714 non-null    float64
- ...
-dtypes: float64(2), int64(5), object(5)
 ```
 
 Esta salida muestra, para cada columna, la siguiente información:
