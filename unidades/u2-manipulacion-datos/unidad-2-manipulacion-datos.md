@@ -1136,6 +1136,7 @@ modo  index  persona_id modo_elegido  auto  bici  bus  moto
 [100 rows x 7 columns]
 ```
 
+
 **¿Por qué volver al formato ancho?**
 
 Una ventaja clara del formato ancho es que facilita la comparación directa entre modos de transporte. Por ejemplo, podemos calcular la diferencia entre el tiempo de viaje en auto y en colectivo para cada persona de manera inmediata:
@@ -1148,14 +1149,14 @@ Este tipo de operaciones resulta mucho más simple cuando cada modo de transport
 
 ### Manejo de datos faltantes
 
-![](./missing_values.png)
+![](imagenes/missing_values.png)
 
 En el análisis de datos es muy común encontrarnos con valores faltantes, usualmente representados como `NaN` (*Not a Number*) en Pandas. La presencia de estos valores puede deberse a múltiples razones: errores en la recolección de datos, problemas en la carga de la base, o simplemente al hecho de que no todas las variables son relevantes o aplicables para todos los registros. Un ejemplo de esto último podría ser el caso de una base de datos compuesta por información recolectada a partir de una encuesta a todas las personas que componen un grupo de hogares. Si en una de las preguntas se indaga a cada persona acerca de la edad a la cual consiguió su primer trabajo, no sería esperable recibir una respuesta en el caso de un niño de 5 años.
 
 ```{admonition} Importante
 :class: important
 
-Antes de realizar cualquier análisis estadístico o construir modelos, es fundamental identificar y tratar adecuadamente los datos faltantes, ya que su presencia puede afectar resultados, estimaciones y conclusiones.
+Antes de realizar cualquier análisis estadístico o construir modelos, es fundamental identificar y tratar adecuadamente los datos faltantes, ya que su presencia puede afectar resultados, estimaciones y conclusiones.```
 
 
 #### Estrategias generales frente a los datos faltantes
@@ -1228,7 +1229,8 @@ Si quisiéramos realizar una operación análoga sobre columnas en lugar de fila
 ```{admonition} Comentario importante
 :class: warning
 
-Eliminar registros con datos faltantes es una estrategia sencilla y, en muchos casos, válida. Sin embargo, puede implicar la pérdida de información relevante, especialmente si los valores faltantes son frecuentes o no se distribuyen aleatoriamente. Por este motivo, en muchos contextos resulta preferible considerar el uso de alguna estrategia de imputación.
+Eliminar registros con datos faltantes es una estrategia sencilla y, en muchos casos, válida. Sin embargo, puede implicar la pérdida de información relevante, especialmente si los valores faltantes son frecuentes o no se distribuyen aleatoriamente. Por este motivo, en muchos contextos resulta preferible considerar el uso de alguna estrategia de imputación.```
+
 
 #### Imputación de datos faltantes
 
@@ -1347,9 +1349,10 @@ data_grouped_mean.iloc[[10, 13]]
 En este caso, cada valor faltante se reemplaza por el precio promedio del barrio correspondiente. Esta elección se apoya en el supuesto de que propiedades ubicadas en el mismo barrio tienden a tener precios similares, por lo que la imputación resulta más realista.
 
 ```{admonition} **Nota sobre transform()**
-:class: info
+:class: tip
 
-El método `transform()` permite aplicar una operación por grupos y devolver un objeto con el mismo índice y tamaño que el original. Esto lo hace especialmente útil para tareas de imputación, ya que permite combinar información agregada con el DataFrame original sin perder alineación entre observaciones.
+El método `transform()` permite aplicar una operación por grupos y devolver un objeto con el mismo índice y tamaño que el original. Esto lo hace especialmente útil para tareas de imputación, ya que permite combinar información agregada con el DataFrame original sin perder alineación entre observaciones.```
+
 
 ##### La idea de cercanía en la imputación de datos
 
@@ -1367,69 +1370,84 @@ Algunos ejemplos de criterios de cercanía que pueden utilizarse al momento de i
 
 En todos los casos, la imputación se basa en el supuesto de que observaciones cercanas según algún criterio relevante tienden a presentar valores similares. Por este motivo, la elección del criterio de cercanía debe estar guiada por el conocimiento del fenómeno que se está analizando y por los objetivos del estudio.
 
+##### Imputación mediante estimación de una función (interpolación)
 
-**Estimar una función y predecir valor**
+Además de reemplazar valores faltantes utilizando medidas resumen o promedios por grupos, otra estrategia frecuente consiste en estimar una función a partir de los datos observados y utilizarla para predecir los valores faltantes.
 
-Otra forma de reemplazar los valores faltantes es estimar un modelo que tenga como variable dependiente a la variable con datos faltantes. Luego, podremos predecir los valores nulos utilizando el modelo estimado. 
+En este enfoque, la variable que presenta datos faltantes se trata como variable dependiente de un modelo, mientras que una o más variables explicativas se utilizan para estimar su comportamiento. Una vez estimado el modelo, los valores faltantes pueden imputarse utilizando las predicciones obtenidas.
 
-### Interpolación numérica
+Un caso particular y muy utilizado de este tipo de estrategias es la interpolación numérica, especialmente cuando los datos presentan un orden natural, como ocurre en series temporales o datos medidos sobre una escala continua.
 
-Supongamos que tenemos un conjunto de datos $(x_{1},y_{1}), (x_{2},y_{2}) ...(x_{n+1},y_{n+1})$ que fueron generados con una función desconocida. También supongamos que tenemos un valor de $x_{i}$ y queremos saber cuál es el correspondiente valor $y_{i}$. Para obtener el resultado vamos a buscar una función o un conjunto funciones que nos permitan calcular el valor deseado.
+**Interpolación numérica**
+
+Supongamos que disponemos de un conjunto de observaciones
+
+$$(x_1,y_1), (x_2, y_2), ..., (x_{n}, y_{n})$$
+
+generadas a partir de una función desconocida. Si conocemos un valor intermedio $x_i$, pero el correspondiente valor $y_i$ es desconocido, la interpolación busca aproximar ese valor faltante utilizando la información de los puntos observados.
+
+Desde el punto de vista del manejo de datos faltantes, la interpolación se apoya en la idea de cercanía numérica o temporal: se asume que valores de $x$ cercanos tienden a producir valores de $y$ similares.
 
 **Interpolación lineal**
 
-Es la forma más sencilla de realizar una interpolación. 
+La interpolación lineal es la forma más sencilla de interpolación. Dados dos puntos $(x_0,y_0)$ y $(x_1,y_1)$, puede construirse una única recta que pase por ambos. Esta recta se utiliza para estimar el valor de $y$ correspondiente a un valor intermedio $x_i$, siempre que $x_i \in \[x_0,x_1\]$.
 
-Teniendo dos puntos $(x_{0}, y_{0}),(x_{1}, y_{1})$ podemos calcular una única recta que pase por los mismos. La función obtenida sirve para calcular el valor de $y$ para cualquier valor de $x$ perteneciente al intervalo $[x_{0}, x_{1}]$:
+La relación utilizada es:
 
-$$
-\frac{x_{1} - x_{0}}{x_{i}-x_{0}} = \frac{y_{1} - y_{0}}{y_{i}-y_{0}}
-$$
+$$\frac{x_1 - x_0}{x_i - x_0} = \frac{y_1 - y_0}{y_i - y_0}$$
 
 ![Untitled](./imagenes/interpolacion.png)
 
-<aside>
-💡 Si el valor de x que queremos usar en la predicción se encuentra por fuera del rango establecido, esto deja de ser una interpolación y será una **extrapolación**.
+Este método es especialmente útil cuando los cambios entre observaciones consecutivas son suaves y aproximadamente lineales.
 
-</aside>
+```{admonition} **Interpolación vs. extrapolación**
+:class: tip
+
+i el valor de $x$ utilizado para la predicción se encuentra fuera del intervalo observado, el procedimiento deja de ser una interpolación y pasa a denominarse extrapolación, lo cual implica supuestos adicionales y mayor incertidumbre.```
 
 **Interpolación polinómica**
 
-Esta interpolación es global y va a buscar un polinomio que pase por todos los puntos que tenemos como dato para obtener una ecuación que estime $y_{i}$ como $f(x_{i})$. Dependiendo de la cantidad de puntos va a ser el grado del polinomio:
+En la interpolación polinómica se busca un único polinomio que pase exactamente por todos los puntos observados. El grado del polinomio depende de la cantidad de puntos disponibles:
 
-- 2 puntos: una recta, polinomio de grado 1
-- 3 puntos NO alineados: una parábola, polinomio de grado 2
-- 4 puntos NO alineados: un polinomio de grado 3
-- n + 1 puntos NO alineados: un polinomio de grado n
+- **2 puntos:** polinomio de grado 1 (recta)
+
+- **3 puntos no alineados:** polinomio de grado 2
+
+- **4 puntos no alineados:** polinomio de grado 3
+
+- **n+1 puntos no alineados:** polinomio de grado n
+
+Este enfoque utiliza toda la información disponible de manera global para construir una única función.
 
 ![Untitled](./imagenes/Untitled3.png)
 
-<aside>
-💡 Existen diversos métodos de interpolación no lineales, por ejemplo: Método de Newton, de Lagrange, interpolación de spline, etc. De acuerdo al método elegido, se pueden obtener valores de $y_{i}$ similares o por el contrario, bastante diferentes. Por eso es importante analizar en cada caso el método más apropiado.
+```{admonition} **Más allá de las interpolaciones lineales**
+:class: tip
 
-</aside>
+Existen diversos métodos de interpolación no lineales, como los métodos de Newton y de Lagrange, o la interpolación mediante *splines*. Según el método elegido, los valores imputados pueden diferir considerablemente, por lo que es importante evaluar cuál resulta más apropiado para cada aplicación.```
 
 **Interpolación por intervalos**
 
-La interpolación que vimos arriba es global, es decir, utilizan todos los datos para generar una sola función. Existe otro tipo de interpolación llamada interpolación por intervalos en la que generaremos, como su nombre lo indica, una función para cada intervalo de los datos.
+Las interpolaciones vistas anteriormente son globales, ya que utilizan todos los puntos para construir una única función. En contraste, la interpolación por intervalos consiste en definir una función distinta para cada intervalo entre observaciones consecutivas.
 
-Supongamos que tenemos los datos $(x_{1},y_{1}), (x_{2},y_{2}) ...(x_{n+1},y_{n+1})$  vamos a generar $n$ funciones. Estas funciones pueden ser lineales y para generarlas se sigue la misma lógica que vimos en la sección de interpolación lineal. A continuación mostramos la definición general: 
+Dado el conjunto de puntos
 
-$$
-y = f_{i}(x) \qquad , \qquad x_{i}\lt x \lt x_{i+1} 
-$$
+$$(x_1,y_1), (x_2, y_2), ..., (x_{n}, y_{n})$$
 
-Por ejemplo, supongamos que tenemos 3 puntos $(x_{1},y_{1}), (x_{2},y_{2}),(x_{3},y_{3})$ las ecuaciones para realizar la interpolación serán:
+se construyen $n$ funciones $f_i(x)$, cada una válida en el intervalo correspondiente:
 
-$$
-f_{1}(x) = y_{0} + \frac{y_{1}-y_{0}}{x_{1} - x_{0}}(x_{i} - x_{0})\qquad , \qquad x_{0}\lt x_{i} \lt x_{1} 
-$$
+$$y = f_i(x), \qquad x_i < x < x_{i+1}$$
 
-$$
-f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \qquad x_{1}\lt x_{i} \lt x_{2} 
-$$
+Por ejemplo, si se cuenta con tres puntos $(x_0,y_0)$, $(x_1,y_1)$ y $(x_2,y_2)$, las funciones de interpolación lineal por intervalos quedan definidas como:
+
+$$f_{1}(x) = y_{0} + \frac{y_{1}-y_{0}}{x_{1} - x_{0}}(x_{i} - x_{0})\qquad , \qquad x_{0}\lt x_{i} \lt x_{1}$$
+
+$$f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \qquad x_{1}\lt x_{i} \lt x_{2}$$
 
 ![Untitled](./imagenes/Untitled4.png)
+
+Este tipo de interpolación resulta especialmente útil cuando el comportamiento de los datos cambia entre distintos tramos, y es común en el análisis de series temporales.
+
 
 ## Convenciones de nombres y buenas prácticas
 
