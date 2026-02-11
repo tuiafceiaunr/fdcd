@@ -10,7 +10,7 @@ repository:
 
 # Execution Settings
 execute:
-  execute_notebooks: off
+  execute_notebooks: auto
 
 html:
   use_repository_button: true
