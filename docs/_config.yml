@@ -10,35 +10,30 @@ repository:
 
 # Execution Settings
 execute:
-  execute_notebooks: force
+  execute_notebooks: off
 
 html:
   use_repository_button: true
   use_thebe: true  # Enable Thebe
 
 launch_buttons:
-  binder: true
-  notebook_interface: "jupyterlab"
   thebe: true
 
 parse:
   myst_enable_extensions:
-    - colon_fence
-
-mystnb:
-  execution_mode: force
+    - dollarmath
+    - amsmath
 
 # Bibliography settings
 bibtex_bibfiles:
   - docs/bibliography.bib
 
-# # Sphinx settings
-# sphinx:
-#   config:
-#     html_show_copyright: false
-#     html_last_updated_fmt: "%b %d, %Y"
-#     html_js_files:
-#     - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js
-#     thebe_config:
-#       use_thebe_lite: true
-#       exclude_patterns: ["**/_*.yml", "**/*.md", "**/*.ipynb"]
+# Sphinx settings
+sphinx:
+  config:
+    html_show_copyright: false
+    html_last_updated_fmt: "%b %d, %Y"
+    html_js_files:
+    - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js
+    thebe_config:
+      use_thebe_lite: true
