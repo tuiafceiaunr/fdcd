@@ -194,9 +194,7 @@ Sin embargo, realizar consultas sobre un atributo específico para muchos regist
 
 #### Archivos orientados a columnas (*column-oriented*)
 
-Los datos se organizan por columnas (campos o variables). Todos los valores de una misma columna se almacenan juntos. Esto es eficiente cuando se necesita acceder a una o pocas columnas o realizar operaciones analíticas sobre variables específicas.
-
-Además, como todos los valores de una columna suelen ser del mismo tipo, estos formatos permiten una mejor compresión del archivo.
+Los datos se organizan por columnas (campos o variables). Todos los valores de una misma columna se almacenan juntos. Esto es eficiente cuando se necesita acceder a una o pocas columnas o realizar operaciones analíticas sobre variables específicas. Además, como todos los valores de una columna suelen ser del mismo tipo, estos formatos permiten una mejor compresión del archivo.
 
 Para ilustrar lo anterior, supongamos que tenemos la siguiente tabla con información sobre un grupo de personas:
 
@@ -573,7 +571,7 @@ Esto fuerza a que la columna `price` sea interpretada como número de punto flot
 
 Pandas permite inspeccionar rápidamente los tipos de datos de cada columna utilizando el método **`info()`**.
 
-Ejemplo:
+Tomemos como ejemplo el dataset que contiene información sobre los pasajeros que viajaban en el Titanic:
 
 ```{code-cell} python3
 import pandas as pd
@@ -621,25 +619,31 @@ Para convertir explícitamente el tipo de una columna se utiliza el método **`a
 
 **Conversión de una columna:**
 
-A través de la siguiente línea, se convierte la columna `Age` al tipo entero de 64 bits:
+A través de la siguiente línea, se convierte la columna `Age` del dataset de pasajeros del Titanic al tipo entero de 64 bits:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['Age'] = df['Age'].astype('int64')
 ```
 
-También es posible convertir a otros tipos, por ejemplo:
+También es posible convertir a otros tipos, como `float`, `object` o `bool` utilizando el mismo método. Tomando como ejemplo tres columnas de otro DataFrame:
 
-```python
-df['price'] = df['price'].astype('float64')
-df['category'] = df['category'].astype('object')
-df['is_active'] = df['is_active'].astype('bool')
+```{code-cell} python
+:tags: ["skip-execution"]
+
+data['price'] = data['price'].astype('float64')
+data['category'] = data['category'].astype('object')
+data['is_active'] = data['is_active'].astype('bool')
 ```
 
 **Conversión de varias columnas a la vez:**
 
 Se puede pasar un diccionario indicando el tipo deseado para cada columna:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df = df.astype({
     'Age': 'float64',
     'Survived': 'int64',
@@ -667,8 +671,10 @@ Además, si una columna contiene valores incompatibles con el tipo solicitado, e
 
 En situaciones donde una columna contiene números almacenados como texto, puede utilizarse:
 
-```python
-pd.to_numeric(df['Age'], errors='coerce')
+```{code-cell} python
+:tags: ["skip-execution"]
+
+pd.to_numeric(df['Age'], errors = 'coerce')
 ```
 
 Este comando convierte valores numéricos válidos y reemplaza valores inválidos por `NaN`. Luego, si es necesario, se puede aplicar `astype()`.
@@ -687,8 +693,8 @@ El formato CSV es uno de los más simples y extendidos para almacenar datos tabu
 
 Python incluye el módulo `csv`, que permite escribir archivos CSV sin depender de librerías externas.
 
-```python
-import csv
+```{code-cell} python
+:tags: ["skip-execution"]
 
 # Datos a escribir en el archivo CSV
 datos = [
@@ -714,7 +720,9 @@ En este ejemplo, los datos se organizan como una lista de listas, donde cada sub
 
 En contextos de análisis de datos, la forma más común y conveniente de escribir un CSV es a partir de un `DataFrame` de Pandas.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 import pandas as pd
 
 datos = [
@@ -725,10 +733,10 @@ datos = [
 
 df = pd.DataFrame(
     datos,
-    columns=['Nombre', 'Edad', 'Ciudad']
+    columns = ['Nombre', 'Edad', 'Ciudad']
 )
 
-df.to_csv('datos.csv', index=False)
+df.to_csv('datos.csv', index = False)
 
 print(pd.read_csv('datos.csv'))
 ```
@@ -738,14 +746,16 @@ Aquí:
 
 - El método **`to_csv()`** se encarga de la escritura.
 
-- El argumento `index=False` evita que se guarde el índice del DataFrame como una columna adicional.
+- El argumento `index = False` evita que se guarde el índice del DataFrame como una columna adicional.
 
 👉 Esta es la forma recomendada cuando los datos ya están en Pandas, ya que es más clara, menos propensa a errores y fácilmente extensible.
 
 #### Escritura de datos en formato Parquet
 Como se mencionó previamente, el formato Parquet es un formato binario, columnar y comprimido, muy utilizado en entornos de *Big Data* y análisis de grandes volúmenes de información. Para trabajar con Parquet en Python, suele utilizarse la librería `pyarrow` junto con `pandas`.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -776,19 +786,13 @@ Un objeto de fecha y hora de tipo *naive* no contiene información sobre la zona
 
 Por ejemplo, podemos elegir representar la fecha y la hora del primer partido de Argentina en la Copa Mundial FIFA 2026, frente a Argelia en Kansas City, sin indicar el huso horario:
 
-```python
+```{code-cell} python
+
 from datetime import datetime
 
 partido_naive = datetime(2026, 6, 16, 22, 0, 0)
 print(partido_naive)
 ```
-
-Salida:
-
-```python
-2026-06-16 22:00:00
-```
-
 Este valor indica simplemente “las 22:00”, pero no especifica si se trata de la hora de Argentina, de Kansas City u otra zona horaria. En ausencia de esa información, el instante exacto del evento es ambiguo. 
 
 ### Fechas y horas *aware*
@@ -798,7 +802,8 @@ Un objeto de tipo *aware* contiene información explícita sobre la zona horaria
 Retomando el ejemplo del primer partido de Argentina en el Mundial 2026, que se juega en Kansas City el martes 16 de junio a las 21 hs. (hora local), y se transmite en Argentina a las 22 hs., podemos representar correctamente este evento incluyendo el huso horario correspondiente:
 
 
-```python
+```{code-cell} python
+
 from datetime import datetime
 import pytz
 
@@ -811,12 +816,6 @@ partido_aware = zona_arg.localize(
 print(partido_aware)
 ```
 
-Salida:
-
-```python
-2026-06-16 22:00:00-03:00
-```
-
 En este caso, el objeto de fecha y hora contiene información explícita sobre la zona horaria de Argentina, lo que permite identificar sin ambigüedades el instante exacto en el que se disputa el partido (detalle no menor cuando se trata de un partido de la Selección, ya que podemos saber con exactitud a qué hora tenemos que tener lista la picada).
 
 Retomando lo dicho anteriormente, es evidente que este tipo de representación es especialmente importante en eventos internacionales, ya que un mismo evento ocurre en un único momento real, pero se manifiesta a distintas horas locales según la ubicación geográfica.
@@ -827,7 +826,9 @@ Cuando los datos se leen desde archivos como .csv, no se conserva información s
 
 Para convertir una columna a tipo fecha se utiliza la función **`pd.to_datetime()`:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['fecha'] = pd.to_datetime(df['fecha'])
 ```
 
@@ -853,14 +854,18 @@ Una vez que una columna ha sido convertida al tipo `datetime64`, Pandas permite 
 
 Supongamos un `DataFrame` con una columna llamada `fecha`:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['fecha'] = pd.to_datetime(df['fecha'])
 ```
 #### Extracción de componentes temporales
 
 Es posible extraer fácilmente partes de la fecha, como el año, el mes o el día, utilizando el atributo `.dt`:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['fecha'].dt.year
 df['fecha'].dt.month
 df['fecha'].dt.day
@@ -875,7 +880,9 @@ Supongamos que:
 - `fecha_hoy` representa la fecha actual.
 - `fecha_partido` representa la fecha del partido Argentina vs. Argelia.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 from datetime import datetime
 import pytz
 
@@ -887,13 +894,13 @@ fecha_partido = zona_arg.localize(
 )
 
 dias_hasta_partido = fecha_partido - fecha_hoy
-
-print(dias_hasta_partido)
 ```
 
 El resultado es un objeto de tipo `timedelta`, que representa la cantidad de tiempo que falta para el partido. A partir de este objeto es posible obtener, por ejemplo, el número de días:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 dias_hasta_partido.days
 ```
 
@@ -903,7 +910,9 @@ Este tipo de cálculo es habitual en aplicaciones que trabajan con eventos futur
 
 Al tratarse de un tipo de dato específico, las fechas pueden ordenarse cronológicamente sin necesidad de conversiones adicionales:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df.sort_values('fecha')
 ```
 
@@ -911,7 +920,12 @@ Esto permite analizar la evolución temporal de los datos o preparar series de t
 
 Para concluir esta sección, es oportuno mencionar que el manejo adecuado de fechas es fundamental en muchos problemas reales, como el análisis de series temporales, el estudio de eventos en el tiempo o la comparación entre períodos.
 
-![](./imagenes/date.png)
+```{figure} imagenes/date.png
+---
+width: 80%
+align: center
+---
+```
 
 ## Manos a la obra 1 
 
@@ -938,11 +952,15 @@ Para concluir esta sección, es oportuno mencionar que el manejo adecuado de fec
 
 El *Data Wrangling*, por su nombre en inglés, es el proceso de limpiar, transformar y reorganizar los datos para dejarlos en un formato adecuado para su posterior análisis. En la práctica, los datos rara vez vienen listos para ser utilizados: suelen contener inconsistencias, valores faltantes o estructuras poco convenientes.
 
-![](./imagenes/dataset_wild.png)
+```{figure} imagenes/dataset_wild.png
+---
+align: center
+---
+```
 
 ### Datos en forma larga o ancha
 
-Reformar un **DataFrame** de Pandas es una de las tareas de manipulación de datos más comunes en el mundo del análisis de datos y consiste en su transposición desde un **formato ancho** (*wide*) a uno **largo** (*long*) o viceversa. A continuación, abordaremos esta operación trabajando con un ejemplo concreto.
+Reformar un DataFrame de Pandas es una de las tareas de manipulación de datos más comunes en el mundo del análisis de datos y consiste en su transposición desde un **formato ancho** (*wide*) a uno **largo** (*long*), o viceversa. A continuación, abordaremos esta operación trabajando con un ejemplo concreto.
 
 Supongamos una encuesta de movilidad urbana en la que a cada persona se le pregunta cuánto tiempo tarda en ir de su casa al trabajo utilizando distintos medios de transporte: auto, moto, colectivo y bicicleta. Además, se registra cuál es el modo de transporte que la persona utiliza habitualmente.
 
@@ -954,6 +972,7 @@ En el formato ancho, cada fila corresponde a una persona y cada variable ocupa s
 | --- | --- | --- | --- | --- | --- |
 | 1 | 29 | 25 | 39 | 24 | moto |
 | 2 | 29 | 29 | 60 | 18 | bici |
+
 
 **Formato largo**
 
@@ -970,6 +989,7 @@ En el formato largo, cada fila representa una observación individual. En este e
 | 2 | bus | 60 | bici |
 | 2 | bici | 18 | bici |
 
+
 Este formato es especialmente útil para realizar agrupamientos, generar visualizaciones y aplicar modelos estadísticos o de *machine learning*.
 
 #### De formato ancho a formato largo
@@ -978,13 +998,14 @@ Para pasar de formato ancho a formato largo en Pandas se utiliza la función **`
 
 A continuación, generamos un conjunto de datos sintético que representa la encuesta de movilidad en formato ancho:
 
-```python
+```{code-cell} python
+
 import pandas as pd
 import random
 
 modos = ['auto', 'moto', 'bus', 'bici']
 
-# Generamos datos de ejemplo en formato ancho
+# Seteamos una semilla y generamos datos de ejemplo en formato ancho
 random.seed(2020)
 
 data = pd.DataFrame({
@@ -996,77 +1017,53 @@ data = pd.DataFrame({
 'modo_elegido': [random.choice(modos) for _ in range(100)]
 })
 
-
+# Extraemos las primeras filas del dataset generado
 data.head()
 ```
 
-Obtenemos el siguiente DataFrame:
-
-| **persona_id** | **tiempo_viaje_auto** | **tiempo_viaje_moto** | **tiempo_viaje_bus** | **tiempo_viaje_bici** | **modo_elegido** |
-| --- | --- | --- | --- | --- | --- |
-| 1 | 29 | 25 | 39 | 24 | moto |
-| 2 | 29 | 29 | 60 | 18 | bici |
-| 3 | 15 | 30 | 33 | 47 | auto |
-| 4 | 24 | 29 | 45 | 26 | auto |
-| 5 | 24 | 29 | 23 | 48 | moto |
-
 Transformamos ahora el DataFrame al formato largo:
 
-```python
+```{code-cell} python
 
 # Pasamos de formato ancho a formato largo
 df_largo = pd.melt(
 data,
-id_vars=['persona_id', 'modo_elegido'],
-value_vars=[
+id_vars = ['persona_id', 'modo_elegido'],
+value_vars = [
 'tiempo_viaje_auto',
 'tiempo_viaje_moto',
 'tiempo_viaje_bus',
 'tiempo_viaje_bici'
 ],
-var_name='modo',
-value_name='tiempo_viaje'
+var_name = 'modo',
+value_name = 'tiempo_viaje'
 )
 
 # Limpiamos el nombre del modo de transporte utilizando el método replace
 df_largo['modo'] = df_largo['modo'].str.replace('tiempo_viaje_', '')
 
-
 print(df_largo)
 ```
-La salida es la siguiente:
 
-```python
-     persona_id modo_elegido  modo  tiempo_viaje
-0             1         moto  auto            29
-1             2         bici  auto            29
-2             3         auto  auto            15
-3             4         auto  auto            24
-4             5         moto  auto            24
-..          ...          ...   ...           ...
-395          96         moto  bici            52
-396          97         bici  bici            30
-397          98         bici  bici            30
-398          99         moto  bici            51
-399         100         auto  bici            10
+**Sobre los parámetros de `pd.melt()`:**
 
-[400 rows x 4 columns]
-```
+- `data` es el DataFrame original
+
+- con `id_vars = ['persona_id', 'modo_elegido']` indicamos qué variables deben permanecer fijas y repetirse en cada nueva fila (identificando a cada persona y su modo efectivamente elegido)
+
+- `value_vars` especifica las columnas que se van a transponer, es decir, aquellas que contienen los tiempos de viaje para cada alternativa (auto, moto, bus y bici). 
+
+- el argumento `var_name = 'modo'` define el nombre de la nueva columna que almacenará los nombres originales de esas variables
+
+- `value_name = 'tiempo_viaje'` establece el nombre de la columna que contendrá los valores numéricos correspondientes. 
+
 Si exploramos la estructura del DataFrame resultante utilizando el método `info` presentado anteriormente, nos encontramos con la siguiente salida:
 
-```python
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 400 entries, 0 to 399
-Data columns (total 4 columns):
- #   Column        Non-Null Count  Dtype 
----  ------        --------------  ----- 
- 0   persona_id    400 non-null    int64 
- 1   modo_elegido  400 non-null    object
- 2   modo          400 non-null    object
- 3   tiempo_viaje  400 non-null    int64 
-dtypes: int64(2), object(2)
-memory usage: 12.6+ KB
+```{code-cell} python
+
+df_largo.info()
 ```
+
 ```{dropdown} Para pensar…
 :class: seealso
 
@@ -1087,7 +1084,8 @@ En Pandas, esta transformación puede realizarse mediante la función **`pivot()
 
 Continuando con el ejemplo anterior, partimos del DataFrame `df_largo`, que se encuentra en formato largo y contiene una fila por persona y por modo de transporte.
 
-```python
+```{code-cell} python
+
 # Pasamos de formato largo a formato ancho utilizando pivot
 df_ancho = df_largo.pivot(
     index=['persona_id', 'modo_elegido'],
@@ -1097,25 +1095,7 @@ df_ancho = df_largo.pivot(
 
 print(df_ancho)
 ```
-Como resultado, obtenemos un DataFrame en el que cada fila corresponde a una persona y cada columna representa el tiempo de viaje asociado a un modo de transporte:
-
-```python
-modo                     auto  bici  bus  moto
-persona_id modo_elegido                       
-1          moto            29    24   39    25
-2          bici            29    18   60    29
-3          auto            15    47   33    30
-4          auto            24    26   45    29
-5          moto            24    48   23    29
-...                       ...   ...  ...   ...
-96         moto            16    52   16    23
-97         bici            20    30   56    20
-98         bici            21    30   19    21
-99         moto            10    51   10    25
-100        auto            26    10   48    19
-
-[100 rows x 4 columns]
-```
+Como resultado, obtenemos un DataFrame en el que cada fila corresponde a una persona y cada columna representa el tiempo de viaje asociado a un modo de transporte.
 
 ```{admonition} **Punto importante**
 :class: important
@@ -1124,32 +1104,19 @@ Notar que el DataFrame generado presenta un **índice multinivel**, ya que cada 
 
 En muchos casos, puede resultar más cómodo trabajar con un índice simple. Para ello, podemos restablecer el índice y volver a convertir estas variables en columnas explícitas:
 
-```python
+```{code-cell} python
+
 df_ancho = df_ancho.reset_index()
 df_ancho.head()
-
-modo  index  persona_id modo_elegido  auto  bici  bus  moto
-0         0           1         moto    29    24   39    25
-1         1           2         bici    29    18   60    29
-2         2           3         auto    15    47   33    30
-3         3           4         auto    24    26   45    29
-4         4           5         moto    24    48   23    29
-..      ...         ...          ...   ...   ...  ...   ...
-95       95          96         moto    16    52   16    23
-96       96          97         bici    20    30   56    20
-97       97          98         bici    21    30   19    21
-98       98          99         moto    10    51   10    25
-99       99         100         auto    26    10   48    19
-
-[100 rows x 7 columns]
 ```
-
 
 **¿Por qué volver al formato ancho?**
 
 Una ventaja clara del formato ancho es que facilita la comparación directa entre modos de transporte. Por ejemplo, podemos calcular la diferencia entre el tiempo de viaje en auto y en colectivo para cada persona de manera inmediata:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df_ancho['diferencia_auto_bus'] = df_ancho['auto'] - df_ancho['bus']
 ```
 
@@ -1157,7 +1124,12 @@ Este tipo de operaciones resulta mucho más simple cuando cada modo de transport
 
 ### Manejo de datos faltantes
 
-![](imagenes/missing_values.png)
+```{figure} imagenes/missing_values.png
+---
+width: 80%
+align: center
+---
+```
 
 En el análisis de datos es muy común encontrarnos con valores faltantes, usualmente representados como `NaN` (*Not a Number*) en Pandas. La presencia de estos valores puede deberse a múltiples razones: errores en la recolección de datos, problemas en la carga de la base, o simplemente al hecho de que no todas las variables son relevantes o aplicables para todos los registros. Un ejemplo de esto último podría ser el caso de una base de datos compuesta por información recolectada a partir de una encuesta a todas las personas que componen un grupo de hogares. Si en una de las preguntas se indaga a cada persona acerca de la edad a la cual consiguió su primer trabajo, no sería esperable recibir una respuesta en el caso de un niño de 5 años.
 
@@ -1183,7 +1155,8 @@ Por defecto, el método `dropna()` elimina cualquier fila del DataFrame que cont
 
 Consideremos el siguiente DataFrame de ejemplo:
 
-```python
+```{code-cell} python
+
 import numpy as np
 import pandas as pd
 
@@ -1196,22 +1169,14 @@ data = pd.DataFrame(
 )
 
 print(data)
-
-   ColA  ColB  ColC
-0   1.0   6.5   3.0
-1   1.0   NaN   NaN
-2   NaN   NaN   NaN
-3   NaN   6.5   3.0
 ```
 
 Si aplicamos `dropna()` sin especificar particularmente ningún parámetro:
 
-```python
+```{code-cell} python
+
 data_dropped = data.dropna()
 print(data_dropped)
-
-   ColA  ColB  ColC
-0   1.0   6.5   3.0
 ```
 
 Observamos que sólo se conserva la fila que no contiene ningún valor faltante.
@@ -1220,14 +1185,10 @@ Observamos que sólo se conserva la fila que no contiene ningún valor faltante.
 
 En algunos casos, puede resultar excesivo eliminar registros que tengan sólo uno o dos valores faltantes. Si nuestro interés es eliminar únicamente aquellas filas que estén **completamente compuestas por `NaN`**, podemos usar el argumento `how='all'`:
 
-```python
-data_dropped = data.dropna(how='all')
-print(data_dropped)
+```{code-cell} python
 
-   ColA  ColB  ColC
-0   1.0   6.5   3.0
-1   1.0   NaN   NaN
-3   NaN   6.5   3.0
+data_dropped_all = data.dropna(how='all')
+print(data_dropped_all)
 ```
 
 En este caso, sólo se elimina la fila cuyo contenido es enteramente faltante.
@@ -1260,32 +1221,17 @@ En este apartado nos enfocaremos en las estrategias más simples y habituales.
 
 Supongamos que contamos con un dataset de propiedades en la ciudad de Rosario ([aquí](https://drive.google.com/drive/u/1/folders/1yM-pDArLgGsHi3SQPv5zxIQToFVuPWu9?usp=sharing) puede descargarse el utilizado en el ejemplo). El resumen de la información del DataFrame muestra que existen valores faltantes en la variable `precio_usd`:
 
-```python
-data = pd.read_excel('datasets/hogares.xlsx')
-data.info()
+```{code-cell} python
 
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 50 entries, 0 to 49
-Data columns (total 5 columns):
- #   Column        Non-Null Count  Dtype  
----  ------        --------------  -----  
- 0   id_propiedad  50 non-null     int64  
- 1   distrito      50 non-null     object 
- 2   barrio        50 non-null     object 
- 3   ambientes     50 non-null     int64  
- 4   precio_usd    48 non-null     float64
-dtypes: float64(1), int64(2), object(2)
-memory usage: 2.1+ KB
+data_hogares = pd.read_excel('datasets/hogares.xlsx')
+data_hogares.info()
 ```
 
 Haciendo el filtrado correspondiente podemos identificar que son las propiedades sobre las que no se tiene información del precio son aquellas que poseen los ID 11 y 14:
 
-```python
-data.loc[data['precio_usd'].isna()]
+```{code-cell} python
 
-    id_propiedad distrito   barrio  ambientes  precio_usd
-10            11   centro   martin          2         NaN
-13            14    norte  alberdi          2         NaN
+data_hogares.loc[data_hogares['precio_usd'].isna()]
 ```
 
 ##### Imputación mediante fillna()
@@ -1294,8 +1240,10 @@ data.loc[data['precio_usd'].isna()]
 
 Una primera alternativa consiste en reemplazar los valores faltantes por el precio promedio del resto de las propiedades:
 
-```python
-data_mean = data.copy()
+```{code-cell} python
+
+# Hacemos una copia del dataset original
+data_mean = data_hogares.copy()
 
 # Calculamos el precio promedio de todos los departamentos del dataset
 precio_promedio = data_mean['precio_usd'].mean()
@@ -1305,10 +1253,6 @@ data_mean['precio_usd'].fillna(precio_promedio, inplace=True)
 
 # Corroboramos la imputacicón
 data_mean.iloc[[10, 13]]
-
-    id_propiedad distrito   barrio  ambientes    precio_usd
-10            11   centro   martin          2  84555.052083
-13            14    norte  alberdi          2  84555.052083
 ```
 
 Esta estrategia es sencilla y rápida, pero ignora posibles diferencias sistemáticas entre barrios, que pueden ser relevantes en este contexto. En este punto, resulta interesante preguntarse, por ejemplo, si tiene sentido haber imputado el mismo valor para dos departamentos que están ubicados en barrios diferentes.
@@ -1319,28 +1263,16 @@ Una alternativa más informativa consiste en imputar los valores faltantes utili
 
 Primero, calculamos los precios promedio por barrio:
 
-```python
-data.groupby('barrio')['precio_usd'].mean()
+```{code-cell} python
 
-barrio
-alberdi           128280.100000
-bella_vista        87000.500000
-centro             76372.222222
-cinco_esquinas     67525.000000
-echesortu          36500.000000
-hospitales         90100.000000
-martin             80120.000000
-parque             92180.200000
-refineria         104000.000000
-saladillo          71666.666667
-san_martin         78000.000000
-Name: precio_usd, dtype: float64
+data_hogares.groupby('barrio')['precio_usd'].mean()
 ```
 
 Luego, utilizamos `groupby()` junto con `transform()` para imputar los valores faltantes manteniendo la estructura original del DataFrame:
 
-```python
-data_grouped_mean = data.copy()
+```{code-cell} python
+
+data_grouped_mean = data_hogares.copy()
 
 data_grouped_mean['precio_usd'].fillna(
     data.groupby('barrio')['precio_usd'].transform('mean'),
@@ -1348,10 +1280,6 @@ data_grouped_mean['precio_usd'].fillna(
 )
 
 data_grouped_mean.iloc[[10, 13]]
-
-    id_propiedad distrito   barrio  ambientes  precio_usd
-10            11   centro   martin          2     80120.0
-13            14    norte  alberdi          2    128280.1
 ```
 
 En este caso, cada valor faltante se reemplaza por el precio promedio del barrio correspondiente. Esta elección se apoya en el supuesto de que propiedades ubicadas en el mismo barrio tienden a tener precios similares, por lo que la imputación resulta más realista.
