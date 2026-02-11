@@ -1450,6 +1450,130 @@ $$f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \q
 
 Este tipo de interpolación resulta especialmente útil cuando el comportamiento de los datos cambia entre distintos tramos, y es común en el análisis de series temporales.
 
+### Listado de métodos útiles
+
+Además de las transformaciones estructurales (como cambiar entre formato largo y ancho) y el tratamiento de datos faltantes, existen numerosos métodos en Pandas que facilitan la limpieza, exploración y transformación de los datos. A continuación se presentan algunos de los más utilizados en tareas de *data wrangling*. No es una lista exhaustiva, pero sí reúne las herramientas más frecuentes en etapas iniciales de trabajo con datos.
+
+#### Renombrar columnas o índices
+
+Con frecuencia los nombres de las variables no son claros, contienen espacios o no siguen una convención consistente. El método `rename()` permite modificar esos nombres de forma explícita.
+
+```python
+df.rename(columns={'nombre_viejo': 'nombre_nuevo'})
+```
+
+Por defecto, el método devuelve una copia del DataFrame. Si se desea modificar el objeto original, puede utilizarse el argumento `inplace=True`.
+
+Renombrar columnas suele ser un primer paso importante para mejorar la legibilidad y evitar errores posteriores.
+
+#### Reemplazo de cadenas de texto
+
+Cuando trabajamos con variables categóricas o de texto, puede ser necesario reemplazar ciertos caracteres o estandarizar etiquetas.
+
+```python
+df['col'].str.replace('str_a_reemplazar', 'str_nuevo')
+```
+
+Este método resulta útil, por ejemplo, para unificar categorías escritas de distintas maneras o eliminar caracteres no deseados.
+
+#### Eliminación de espacios en blanco
+
+Es habitual que los datos importados contengan espacios al inicio o al final de las cadenas, lo que puede generar categorías duplicadas aparentemente distintas.
+
+```python
+df['col'].str.strip()
+```
+
+Esto elimina espacios en blanco al comienzo y al final de cada cadena.
+
+#### Conversión a minúsculas o mayúsculas
+
+Para evitar inconsistencias en variables de texto, puede ser útil homogeneizar el formato:
+
+```python
+df['col'].str.lower()
+df['col'].str.upper()
+```
+
+Estandarizar el uso de mayúsculas y minúsculas facilita comparaciones y agrupamientos posteriores.
+
+#### Cambio de tipo de dato
+
+En muchos casos, las variables no se importan con el tipo adecuado. Por ejemplo, una variable numérica puede haber sido leída como texto. El método `astype()`, presentado anteriormente en este apunte, permite convertir el tipo de dato:
+
+```python
+df['col'] = df['col'].astype(float)
+```
+
+La correcta definición del tipo de dato es clave para evitar errores en cálculos, gráficos o modelos.
+
+#### Detección de valores faltantes
+
+El tratamiento de datos faltantes comienza por su identificación. Para ello, además de las herramientas presentadas anteriormente, pueden utilizarse:
+
+```python
+df['col'].isna()
+df['col'].notna()
+```
+
+Los métodos `isna()` e `isnull()` son equivalentes en Pandas. Devuelven una Serie booleana que indica si cada observación es faltante (`True`) o no (`False`). Esto permite luego contar, filtrar o imputar valores faltantes según el caso.
+
+#### Valores únicos y frecuencias
+
+Explorar los valores presentes en una variable es un paso fundamental en cualquier proceso de limpieza. El método `unique()` devuelve un array con los valores únicos observados:
+
+```python
+df['col'].unique()
+```
+
+Por otro lado, el método `value_counts()` devuelve una Serie con la frecuencia de cada valor. Es especialmente útil en variables categóricas para detectar errores tipográficos o categorías inesperadas.
+
+```python
+df['col'].value_counts()
+```
+
+#### Eliminación de columnas o filas
+
+En ocasiones es necesario eliminar variables irrelevantes o registros específicos.
+
+```python
+df.drop(columns=['columna'])
+df.drop(index=[0, 1])
+```
+
+Este método devuelve una copia del DataFrame salvo que se indique `inplace=True`.
+
+#### Eliminación de duplicados
+
+Para detectar y eliminar observaciones repetidas puede utilizarse:
+
+```python
+df.drop_duplicates()
+```
+
+También puede especificarse un subconjunto de columnas para definir qué significa “duplicado”.
+
+#### Ordenamiento de datos
+
+Ordenar un dataset facilita la inspección y el análisis exploratorio.
+
+```python
+df.sort_values(by='col')
+```
+
+Puede indicarse `ascending=False` para ordenar de mayor a menor.
+
+#### Agrupamiento y agregación
+
+Uno de los métodos más potentes en Pandas, también mencionado anteriormente, es `groupby()`, que permite dividir el dataset en grupos y calcular estadísticas resumen.
+
+```python
+df.groupby('col').mean()
+df.groupby('col')['otra_col'].sum()
+```
+
+Es central en análisis descriptivo y preparación de datos.
+
 
 ## Convenciones de nombres y buenas prácticas
 
