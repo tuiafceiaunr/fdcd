@@ -1,3 +1,19 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
+```{code-cell} python3
+import pandas as pd
+print("This will now show automatically!")
+```
+
 # Unidad 2 - Manipulación de datos
 
 ## ¿Qué son los datos?
@@ -1396,7 +1412,8 @@ La relación utilizada es:
 
 $$\frac{x_1 - x_0}{x_i - x_0} = \frac{y_1 - y_0}{y_i - y_0}$$
 
-![Untitled](./imagenes/interpolacion.png)
+![Untitled](./imagenes/interpolacion.png){align=center}
+
 
 Este método es especialmente útil cuando los cambios entre observaciones consecutivas son suaves y aproximadamente lineales.
 
@@ -1420,7 +1437,8 @@ En la interpolación polinómica se busca un único polinomio que pase exactamen
 
 Este enfoque utiliza toda la información disponible de manera global para construir una única función.
 
-![Untitled](./imagenes/Untitled3.png)
+![Untitled](./imagenes/Untitled3.png){align=center}
+
 
 ```{admonition} **Más allá de las interpolaciones lineales**
 :class: tip
@@ -1446,9 +1464,351 @@ $$f_{1}(x) = y_{0} + \frac{y_{1}-y_{0}}{x_{1} - x_{0}}(x_{i} - x_{0})\qquad , \q
 
 $$f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \qquad x_{1}\lt x_{i} \lt x_{2}$$
 
-![Untitled](./imagenes/Untitled4.png)
+![Untitled](./imagenes/Untitled4.png){width=85% align=center}
 
 Este tipo de interpolación resulta especialmente útil cuando el comportamiento de los datos cambia entre distintos tramos, y es común en el análisis de series temporales.
+
+### Combinaciones de conjuntos de datos
+
+En muchos análisis, la información relevante no se encuentra en un único conjunto de datos, sino distribuida en múltiples tablas. La combinación de datasets permite integrar distintas fuentes de información para ampliar el análisis.
+
+Este tipo de operaciones es fundamental en el trabajo con datos y constituye el núcleo del funcionamiento de las bases de datos relacionales (como aquellas basadas en SQL).
+
+En Pandas, los métodos más utilizados para combinar DataFrames son:
+
+- `concat()`
+
+- `merge()`
+
+- `join()`
+
+Cada uno responde a una lógica diferente.
+
+![](imagenes/combine_pandas.png){width=85% align: center}
+
+#### Concatenación con concat()
+
+El método `concat()` se utiliza para combinar DataFrames a lo largo de un eje específico, ya sea horizontal o verticalmente. Esta información se especifica en el argumento `axis`:
+
+- `axis = 0`: concatenación vertical
+
+- `axis = 1`: concatenación horizontal
+
+Consideremos los siguientes DataFrames como ejemplo:
+
+```python
+df1 = pd.DataFrame({'A': [1,2,3], 'B': [4,5,6]}, index = [0,1,2])
+df2 = pd.DataFrame({'A': [4,5,6], 'B': [7,8,9], 'C': [10,11,12]}, index = [1,2,3])
+```
+
+```python
+print(df1)
+
+   A  B
+0  1  4
+1  2  5
+2  3  6
+```
+
+```python
+print(df2)
+
+   A  B   C
+1  4  7  10
+2  5  8  11
+3  6  9  12
+```
+
+**Concatenación vertical**
+
+```python
+nuevo_df = pd.concat([df1, df2], axis = 0)
+
+print(nuevo_df)
+
+   A  B     C
+0  1  4   NaN
+1  2  5   NaN
+2  3  6   NaN
+1  4  7  10.0
+2  5  8  11.0
+3  6  9  12.0
+```
+
+En este caso se agregan las filas de `df2` **debajo** de `df1`. Como `df1` no tiene la columna `C`, aparecen valores `NaN` (notar también que se modifica el tipo de dato de esa columna a *float* para que sea compatible con dichos valores faltantes).
+
+Por defecto, `concat()` realiza una **unión de tipo *outer***, es decir, conserva todas las columnas presentes en cualquiera de los DataFrames. Si especificamos el parámetro `join = 'inner'`, sólo se conservan las columnas comunes a ambos DataFrames:
+
+```python
+nuevo_df_inner = pd.concat([df1, df2], axis = 0, join = 'inner')
+
+print(nuevo_df_inner)
+
+   A  B
+0  1  4
+1  2  5
+2  3  6
+1  4  7
+2  5  8
+3  6  9
+```
+
+**Concatenación horizontal**
+
+```python
+nuevo_df_h = pd.concat([df1, df2], axis = 1)
+
+print(nuevo_df_h)
+
+     A    B    A    B     C
+0  1.0  4.0  NaN  NaN   NaN
+1  2.0  5.0  4.0  7.0  10.0
+2  3.0  6.0  5.0  8.0  11.0
+3  NaN  NaN  6.0  9.0  12.0
+```
+
+Aquí los DataFrames **se combinan por índice**. Si los índices no coinciden completamente, aparecerán valores faltantes.
+
+Si agregamos el parámetro `join = 'inner'`, sólo se conservan los índices compartidos por ambos DataFrames.
+
+```{admonition} **Idea clave sobre concat()**
+:class: tip
+
+`concat()` no busca correspondencias entre columnas específicas.
+Simplemente combina estructuras de datos respetando índices y columnas.
+
+Es útil cuando:
+
+- Tenemos datasets homogéneos (por ejemplo, distintas muestras del mismo formato).
+
+- Queremos agregar observaciones.
+
+- Queremos unir variables alineadas por índice.
+```
+
+#### Unión mediante claves con merge()
+
+El método `merge()` es la herramienta más flexible y utilizada para combinar DataFrames. Permite unir tablas en función de una o más columnas que actúan como claves (*keys*). Es el equivalente en Pandas a los JOIN de SQL. 
+
+##### Tipos de uniones
+
+![](imagenes/tipos_uniones.png){align=center}
+
+El parámetro `how` permite especificar el tipo de unión:
+
+- **'inner'** → conserva solo las coincidencias en ambas tablas.
+
+- **'left'** → conserva todas las filas del DataFrame izquierdo.
+
+- **'right'** → conserva todas las filas del DataFrame derecho.
+
+- **'outer'** → conserva todas las filas de ambos.
+
+- **'cross'** → realiza una unión cruzada (ver más adelante).
+
+##### Ejemplo: encuesta de hogares
+
+Supongamos que contamos con dos tablas provenientes de una encuesta de movilidad. A fines prácticos, ambas tienen escasa cantidad de registros pero podemos imaginar que son un extracto de tablas más grandes.
+
+**Tabla hogares**
+
+Notar que cada fila representa un hogar y cada hogar pertenece a un único barrio.
+
+| id_hogar | barrio   |
+| -------- | -------- |
+| 450956   | Centro   |
+| 450957   | Belgrano |
+| 450958   | Lourdes  |
+
+**Tabla personas**
+
+En la siguiente tabla, cada fila representa una persona encuestada, `id_persona` identifica a cada individuo y `id_hogar` indica a qué hogar pertenece
+
+| id_persona | motivo_viaje | genero    | id_hogar |
+| ---------- | ------------ | --------- | -------- |
+| 3449       | trabajo      | femenino  | 450956   |
+| 3450       | no_trabajo   | masculino | 450956   |
+| 3451       | trabajo      | masculino | 450958   |
+
+A continuación, creamos ambas tablas utilizando funciones de Pandas:
+
+```python
+tabla_hogares = pd.DataFrame({
+    'id_hogar': ['450956','450957','450958'],
+    'barrio': ['Centro','Belgrano','Lourdes']
+})
+
+tabla_personas = pd.DataFrame({
+    'id_persona': ['3449','3450','3451'],
+    'motivo_viaje': ['trabajo','no_trabajo','trabajo'],
+    'genero': ['femenino','masculino','masculino'],
+    'id_hogar': ['450956','450956','450958']
+})
+```
+
+El propósito es conocer en qué barrio vive cada una de las personas encuestadas. Como se observa, la información del barrio está en `tabla_hogares`, mientras que la información individual está en `tabla_personas`. **Necesitamos combinar ambas tablas usando la columna común `id_hogar`.** De esta forma. realizamos el *merge* utilizando la mencionada columna como *key*:
+
+```python
+df = pd.merge(
+    tabla_personas,
+    tabla_hogares,
+    on = 'id_hogar',
+    how = 'left'
+)
+
+print(df)
+
+  id_persona motivo_viaje     genero id_hogar   barrio
+0       3449      trabajo   femenino   450956   Centro
+1       3450   no_trabajo  masculino   450956   Centro
+2       3451      trabajo  masculino   450958  Lourdes
+```
+
+Aquí:
+
+- `tabla_personas` es el DataFrame izquierdo.
+
+- `tabla_hogares` es el derecho.
+
+- `on = 'id_hogar'` indica la clave de unión (*key*).
+
+- `how = 'left'` conserva todas las personas, incluso si algún hogar no tuviera correspondencia.
+
+```{dropdown} Para pensar…
+:class: seealso
+
+🤔 ¿Cómo cambiaría el dataset `df` si, sobre el mismo código utilizado actualmente, modificamos el parámetro `how` por cada una de las otras posibilidades?
+```
+
+#### Unión cruzada (*cross join*)
+
+Una unión cruzada genera todas las combinaciones posibles entre dos tablas.
+
+```python
+df1 = pd.DataFrame({'A': [1, 2]})
+df2 = pd.DataFrame({'B': ['a', 'b', 'c']})
+
+nuevo_df = pd.merge(df1, df2, how = 'cross')
+```
+
+Resultado:
+
+| A | B |
+| - | - |
+| 1 | a |
+| 1 | b |
+| 1 | c |
+| 2 | a |
+| 2 | b |
+| 2 | c |
+
+Como se puede ver, el nuevo DataFrame resultante contiene todas las combinaciones posibles entre los valores de ambas tablas, sin importar si los valores coinciden o no.
+
+![](imagenes/cross_join.png){align=center}
+
+La unión cruzada es útil cuando queremos construir el espacio completo de posibilidades antes de aplicar un modelo o una simulación. Por ejemplo, supongamos que una tienda en línea vende productos electrónicos y quiere diseñar paquetes promocionales combinando un producto principal (laptop, smartphone y tablet) y un accesorio complementario (cargador, auriculares, estuche). El objetivo es generar todas las combinaciones posibles entre productos y accesorios para evaluar qué paquetes podrían ofrecerse. Desde el punto de vista matemático, queremos construir el producto cartesiano entre ambos conjuntos.
+
+```python
+combinaciones = pd.merge(productos_electronicos, accesorios, how = 'cross')
+```
+
+El resultado es el siguiente:
+
+| Producto   | Accesorio   |
+| ---------- | ----------- |
+| Laptop     | Cargador    |
+| Laptop     | Auriculares |
+| Laptop     | Estuche     |
+| Smartphone | Cargador    |
+| Smartphone | Auriculares |
+| Smartphone | Estuche     |
+| Tablet     | Cargador    |
+| Tablet     | Auriculares |
+| Tablet     | Estuche     |
+
+En este ejemplo, se ha utilizado un *cross join* para generar todas las posibles combinaciones de productos electrónicos y accesorios que se podrían ofrecer juntos en un paquete promocional. Esto podría ayudar a identificar combinaciones de productos y accesorios que se venden bien juntos y a diseñar paquetes promocionales efectivos para los clientes.
+
+```{admonition} Importante
+:class: warning
+
+Este tipo de unión puede generar datasets muy grandes si las tablas originales tienen muchas filas. Para ilustrar esto, pensar cuántas filas tendría el DataFrame resultante de la unión cruzada entre una tabla que tiene 10000 filas y otra que tiene 5000.
+```
+
+#### Unión basada en índices con join()
+
+El método `join()` es similar a `merge()`, pero está orientado principalmente a combinar DataFrames en función de sus índices. Consideremos los siguientes dos DataFrames y combinémoslos utilizando este método:
+
+```python
+df1 = pd.DataFrame({'A':[1,2,3,4], 'B':[4,5,6,7]},
+                   index = ['a','b','c','d'])
+print(df1)
+
+  A  B
+a  1  4
+b  2  5
+c  3  6
+d  4  7
+```                   
+
+```python
+df2 = pd.DataFrame({'C':[7,8,9], 'D':[10,11,12]},
+                   index = ['a','b','c'])
+print(df2)
+
+   C   D
+a  7  10
+b  8  11
+c  9  12
+```
+
+Aplicamos `join()`:
+
+```python
+df = df1.join(df2)
+
+print(df)
+
+   A  B    C     D
+a  1  4  7.0  10.0
+b  2  5  8.0  11.0
+c  3  6  9.0  12.0
+d  4  7  NaN   NaN
+```
+
+Vemos que por defecto se realiza una unión de tipo *left*, ya que se conservaron todas las filas de `df1`. La aparición de valores `NaN` se debe a que el índice `'d'` no existe en el DataFrame `df2`.
+
+Podemos modificar el tipo de unión a través del parámetro `how`. En este sentido, la elección de una unión de tipo *inner* conservaría sólo los índices compartidos por ambos DataFrames, es decir: `'a'`, `'b'` y `'c'`.
+
+Aunque `join()` está pensado para índices, también puede usarse con columnas específicas.
+
+Supongamos:
+
+```python
+df3 = pd.DataFrame({
+    'A': [1,2,3],
+    'E': ['x','y','z']
+})
+
+print(df3)
+
+   A  E
+0  1  x
+1  2  y
+2  3  z
+```
+
+Si queremos unir usando la columna `A` de `df1`:
+
+```python
+df1.join(df3.set_index('A'), on='A')
+```
+
+Aquí ocurre lo siguiente: primero convertimos `A` en índice de `df3`, y posteriormente `join()` busca coincidencias entre la columna `A` de `df1` y el índice de `df3`.
+
+el índice de df3
+
+
+df1.join(df3.set_index('A'), on='A')
 
 ### Listado de métodos útiles
 
