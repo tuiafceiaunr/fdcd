@@ -10,7 +10,7 @@ repository:
 
 # Execution Settings
 execute:
-  execute_notebooks: force
+  execute_notebooks: off
 
 html:
   use_repository_button: true
@@ -23,9 +23,6 @@ parse:
   myst_enable_extensions:
     - dollarmath
     - amsmath
-
-mystnb:
-  execution_mode: force
 
 # Bibliography settings
 bibtex_bibfiles:
@@ -40,4 +37,3 @@ sphinx:
     - https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js
     thebe_config:
       use_thebe_lite: true
-      exclude_patterns: ["**/_*.yml", "**/*.md", "**/*.ipynb"]
