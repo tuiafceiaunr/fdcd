@@ -1156,8 +1156,8 @@ En el análisis de datos es muy común encontrarnos con valores faltantes, usual
 ```{admonition} Importante
 :class: important
 
-Antes de realizar cualquier análisis estadístico o construir modelos, es fundamental identificar y tratar adecuadamente los datos faltantes, ya que su presencia puede afectar resultados, estimaciones y conclusiones.```
-
+Antes de realizar cualquier análisis estadístico o construir modelos, es fundamental identificar y tratar adecuadamente los datos faltantes, ya que su presencia puede afectar resultados, estimaciones y conclusiones.
+```
 
 #### Estrategias generales frente a los datos faltantes
 
@@ -1229,8 +1229,8 @@ Si quisiéramos realizar una operación análoga sobre columnas en lugar de fila
 ```{admonition} Comentario importante
 :class: warning
 
-Eliminar registros con datos faltantes es una estrategia sencilla y, en muchos casos, válida. Sin embargo, puede implicar la pérdida de información relevante, especialmente si los valores faltantes son frecuentes o no se distribuyen aleatoriamente. Por este motivo, en muchos contextos resulta preferible considerar el uso de alguna estrategia de imputación.```
-
+Eliminar registros con datos faltantes es una estrategia sencilla y, en muchos casos, válida. Sin embargo, puede implicar la pérdida de información relevante, especialmente si los valores faltantes son frecuentes o no se distribuyen aleatoriamente. Por este motivo, en muchos contextos resulta preferible considerar el uso de alguna estrategia de imputación.
+```
 
 #### Imputación de datos faltantes
 
@@ -1351,8 +1351,8 @@ En este caso, cada valor faltante se reemplaza por el precio promedio del barrio
 ```{admonition} **Nota sobre transform()**
 :class: tip
 
-El método `transform()` permite aplicar una operación por grupos y devolver un objeto con el mismo índice y tamaño que el original. Esto lo hace especialmente útil para tareas de imputación, ya que permite combinar información agregada con el DataFrame original sin perder alineación entre observaciones.```
-
+El método `transform()` permite aplicar una operación por grupos y devolver un objeto con el mismo índice y tamaño que el original. Esto lo hace especialmente útil para tareas de imputación, ya que permite combinar información agregada con el DataFrame original sin perder alineación entre observaciones.
+```
 
 ##### La idea de cercanía en la imputación de datos
 
@@ -1403,7 +1403,8 @@ Este método es especialmente útil cuando los cambios entre observaciones conse
 ```{admonition} **Interpolación vs. extrapolación**
 :class: tip
 
-i el valor de $x$ utilizado para la predicción se encuentra fuera del intervalo observado, el procedimiento deja de ser una interpolación y pasa a denominarse extrapolación, lo cual implica supuestos adicionales y mayor incertidumbre.```
+i el valor de $x$ utilizado para la predicción se encuentra fuera del intervalo observado, el procedimiento deja de ser una interpolación y pasa a denominarse extrapolación, lo cual implica supuestos adicionales y mayor incertidumbre.
+```
 
 **Interpolación polinómica**
 
@@ -1424,7 +1425,8 @@ Este enfoque utiliza toda la información disponible de manera global para const
 ```{admonition} **Más allá de las interpolaciones lineales**
 :class: tip
 
-Existen diversos métodos de interpolación no lineales, como los métodos de Newton y de Lagrange, o la interpolación mediante *splines*. Según el método elegido, los valores imputados pueden diferir considerablemente, por lo que es importante evaluar cuál resulta más apropiado para cada aplicación.```
+Existen diversos métodos de interpolación no lineales, como los métodos de Newton y de Lagrange, o la interpolación mediante *splines*. Según el método elegido, los valores imputados pueden diferir considerablemente, por lo que es importante evaluar cuál resulta más apropiado para cada aplicación.
+```
 
 **Interpolación por intervalos**
 
