@@ -809,9 +809,7 @@ import pytz
 
 zona_arg = pytz.timezone('America/Argentina/Buenos_Aires')
 
-partido_aware = zona_arg.localize(
-    datetime(2026, 6, 16, 22, 0, 0)
-)
+partido_aware = zona_arg.localize(datetime(2026, 6, 16, 22, 0, 0))
 
 print(partido_aware)
 ```
@@ -824,7 +822,7 @@ Retomando lo dicho anteriormente, es evidente que este tipo de representación e
 
 Cuando los datos se leen desde archivos como .csv, no se conserva información sobre los tipos de datos de cada columna. Si una columna contiene fechas, Pandas la interpreta inicialmente como texto.
 
-Para convertir una columna a tipo fecha se utiliza la función **`pd.to_datetime()`:
+Para convertir una columna a tipo fecha se utiliza la función **`pd.to_datetime()`**:
 
 ```{code-cell} python
 :tags: ["skip-execution"]
@@ -889,9 +887,7 @@ import pytz
 zona_arg = pytz.timezone('America/Argentina/Buenos_Aires')
 
 fecha_hoy = zona_arg.localize(datetime.now())
-fecha_partido = zona_arg.localize(
-    datetime(2026, 6, 16, 22, 0, 0)
-)
+fecha_partido = zona_arg.localize(datetime(2026, 6, 16, 22, 0, 0))
 
 dias_hasta_partido = fecha_partido - fecha_hoy
 ```
@@ -922,7 +918,7 @@ Para concluir esta sección, es oportuno mencionar que el manejo adecuado de fec
 
 ```{figure} imagenes/date.png
 ---
-width: 80%
+width: 70%
 align: center
 ---
 ```
@@ -973,6 +969,7 @@ En el formato ancho, cada fila corresponde a una persona y cada variable ocupa s
 | 1 | 29 | 25 | 39 | 24 | moto |
 | 2 | 29 | 29 | 60 | 18 | bici |
 
+\
 
 **Formato largo**
 
@@ -1026,18 +1023,8 @@ Transformamos ahora el DataFrame al formato largo:
 ```{code-cell} python
 
 # Pasamos de formato ancho a formato largo
-df_largo = pd.melt(
-data,
-id_vars = ['persona_id', 'modo_elegido'],
-value_vars = [
-'tiempo_viaje_auto',
-'tiempo_viaje_moto',
-'tiempo_viaje_bus',
-'tiempo_viaje_bici'
-],
-var_name = 'modo',
-value_name = 'tiempo_viaje'
-)
+df_largo = pd.melt(data, id_vars = ['persona_id', 'modo_elegido'],
+value_vars = ['tiempo_viaje_auto', 'tiempo_viaje_moto', 'tiempo_viaje_bus', 'tiempo_viaje_bici'], var_name = 'modo', value_name = 'tiempo_viaje')
 
 # Limpiamos el nombre del modo de transporte utilizando el método replace
 df_largo['modo'] = df_largo['modo'].str.replace('tiempo_viaje_', '')
@@ -1047,13 +1034,13 @@ print(df_largo)
 
 **Sobre los parámetros de `pd.melt()`:**
 
-- `data` es el DataFrame original
+- `data` es el DataFrame original,
 
-- con `id_vars = ['persona_id', 'modo_elegido']` indicamos qué variables deben permanecer fijas y repetirse en cada nueva fila (identificando a cada persona y su modo efectivamente elegido)
+- con `id_vars = ['persona_id', 'modo_elegido']` indicamos qué variables deben permanecer fijas y repetirse en cada nueva fila (identificando a cada persona y su modo efectivamente elegido),
 
-- `value_vars` especifica las columnas que se van a transponer, es decir, aquellas que contienen los tiempos de viaje para cada alternativa (auto, moto, bus y bici). 
+- `value_vars` especifica las columnas que se van a transponer, es decir, aquellas que contienen los tiempos de viaje para cada alternativa (auto, moto, bus y bici), 
 
-- el argumento `var_name = 'modo'` define el nombre de la nueva columna que almacenará los nombres originales de esas variables
+- el argumento `var_name = 'modo'` define el nombre de la nueva columna que almacenará los nombres originales de esas variables,
 
 - `value_name = 'tiempo_viaje'` establece el nombre de la columna que contendrá los valores numéricos correspondientes. 
 
@@ -1068,13 +1055,13 @@ df_largo.info()
 :class: seealso
 
 🤔 ¿Por qué el DataFrame en formato largo contiene 400 filas si contamos con la información de sólo 100 personas?
-
+```
 
 #### De formato largo a formato ancho
 
 En algunas situaciones, el formato largo no resulta el más conveniente. Al momento de comparar los tiempos de viaje entre distintos modos para cada persona, calcular diferencias entre ellos, o construir tablas resumen donde cada modo de transporte aparezca como una columna, resulta más conveniente trabajar con los datos en formato ancho.
 
-En Pandas, esta transformación puede realizarse mediante la función **`pivot()`, que reorganiza un DataFrame a partir de tres componentes clave:
+En Pandas, esta transformación puede realizarse mediante la función **`pivot()`**, que reorganiza un DataFrame a partir de tres componentes clave:
 
 - un índice, que identifica las filas,
 
@@ -1087,11 +1074,8 @@ Continuando con el ejemplo anterior, partimos del DataFrame `df_largo`, que se e
 ```{code-cell} python
 
 # Pasamos de formato largo a formato ancho utilizando pivot
-df_ancho = df_largo.pivot(
-    index=['persona_id', 'modo_elegido'],
-    columns='modo',
-    values='tiempo_viaje'
-)
+df_ancho = df_largo.pivot(index = ['persona_id', 'modo_elegido'],
+    columns='modo', values='tiempo_viaje')
 
 print(df_ancho)
 ```
@@ -1104,10 +1088,17 @@ Notar que el DataFrame generado presenta un **índice multinivel**, ya que cada 
 
 En muchos casos, puede resultar más cómodo trabajar con un índice simple. Para ello, podemos restablecer el índice y volver a convertir estas variables en columnas explícitas:
 
-```{code-cell} python
-
+```python
 df_ancho = df_ancho.reset_index()
-df_ancho.head()
+
+print(df_ancho.head())
+
+modo  index  persona_id modo_elegido  auto  bici  bus  moto
+0         0           1         moto    29    24   39    25
+1         1           2         bici    29    18   60    29
+2         2           3         auto    15    47   33    30
+3         3           4         auto    24    26   45    29
+4         4           5         moto    24    48   23    29
 ```
 
 **¿Por qué volver al formato ancho?**
@@ -1314,8 +1305,6 @@ En este enfoque, la variable que presenta datos faltantes se trata como variable
 
 Un caso particular y muy utilizado de este tipo de estrategias es la interpolación numérica, especialmente cuando los datos presentan un orden natural, como ocurre en series temporales o datos medidos sobre una escala continua.
 
-**Interpolación numérica**
-
 Supongamos que disponemos de un conjunto de observaciones
 
 $$(x_1,y_1), (x_2, y_2), ..., (x_{n}, y_{n})$$
@@ -1326,21 +1315,25 @@ Desde el punto de vista del manejo de datos faltantes, la interpolación se apoy
 
 **Interpolación lineal**
 
-La interpolación lineal es la forma más sencilla de interpolación. Dados dos puntos $(x_0,y_0)$ y $(x_1,y_1)$, puede construirse una única recta que pase por ambos. Esta recta se utiliza para estimar el valor de $y$ correspondiente a un valor intermedio $x_i$, siempre que $x_i \in \[x_0,x_1\]$.
+La interpolación lineal es la forma más sencilla de interpolación. Dados dos puntos $(x_0,y_0)$ y $(x_1,y_1)$, puede construirse una única recta que pase por ambos. Esta recta se utiliza para estimar el valor de $y$ correspondiente a un valor intermedio $x_i$, siempre que $x_i \in [x_0,x_1]$.
 
 La relación utilizada es:
 
 $$\frac{x_1 - x_0}{x_i - x_0} = \frac{y_1 - y_0}{y_i - y_0}$$
 
-![Untitled](./imagenes/interpolacion.png){align=center}
-
+```{figure} imagenes/interpolacion_lineal.png
+---
+align: center
+---
+Interpolación lineal: estimación del valor desconocido $y_i$ mediante el segmento de recta que une los puntos observados más cercanos.
+```
 
 Este método es especialmente útil cuando los cambios entre observaciones consecutivas son suaves y aproximadamente lineales.
 
 ```{admonition} **Interpolación vs. extrapolación**
 :class: tip
 
-i el valor de $x$ utilizado para la predicción se encuentra fuera del intervalo observado, el procedimiento deja de ser una interpolación y pasa a denominarse extrapolación, lo cual implica supuestos adicionales y mayor incertidumbre.
+Si el valor de $x$ utilizado para la predicción se encuentra fuera del intervalo observado, el procedimiento deja de ser una interpolación y pasa a denominarse extrapolación, lo cual implica supuestos adicionales y mayor incertidumbre.
 ```
 
 **Interpolación polinómica**
@@ -1357,8 +1350,12 @@ En la interpolación polinómica se busca un único polinomio que pase exactamen
 
 Este enfoque utiliza toda la información disponible de manera global para construir una única función.
 
-![Untitled](./imagenes/Untitled3.png){align=center}
-
+```{figure} imagenes/interpolacion_polinomica.png
+---
+align: center
+---
+Interpolación polinómica: el polinomio de grado adecuado se ajusta de modo que atraviese todos los puntos observados.
+```
 
 ```{admonition} **Más allá de las interpolaciones lineales**
 :class: tip
@@ -1384,7 +1381,13 @@ $$f_{1}(x) = y_{0} + \frac{y_{1}-y_{0}}{x_{1} - x_{0}}(x_{i} - x_{0})\qquad , \q
 
 $$f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \qquad x_{1}\lt x_{i} \lt x_{2}$$
 
-![Untitled](./imagenes/Untitled4.png){width=85% align=center}
+```{figure} imagenes/interpolacion_intervalos.png
+---
+width: 85%
+align: center
+---
+Interpolación lineal por intervalos: en lugar de utilizar un único polinomio global, se construyen rectas independientes en cada intervalo entre puntos consecutivos.
+```
 
 Este tipo de interpolación resulta especialmente útil cuando el comportamiento de los datos cambia entre distintos tramos, y es común en el análisis de series temporales.
 
@@ -1404,7 +1407,12 @@ En Pandas, los métodos más utilizados para combinar DataFrames son:
 
 Cada uno responde a una lógica diferente.
 
-![](imagenes/combine_pandas.png){width=85% align: center}
+```{figure} imagenes/combine_pandas.png
+---
+width: 85%
+align: center
+---
+```
 
 #### Concatenación con concat()
 
@@ -1416,75 +1424,49 @@ El método `concat()` se utiliza para combinar DataFrames a lo largo de un eje e
 
 Consideremos los siguientes DataFrames como ejemplo:
 
-```python
+```{code-cell} python
+
 df1 = pd.DataFrame({'A': [1,2,3], 'B': [4,5,6]}, index = [0,1,2])
 df2 = pd.DataFrame({'A': [4,5,6], 'B': [7,8,9], 'C': [10,11,12]}, index = [1,2,3])
 ```
 
-```python
-print(df1)
+```{code-cell} python
 
-   A  B
-0  1  4
-1  2  5
-2  3  6
+print(df1)
 ```
 
-```python
-print(df2)
+```{code-cell} python
 
-   A  B   C
-1  4  7  10
-2  5  8  11
-3  6  9  12
+print(df2)
 ```
 
 **Concatenación vertical**
 
-```python
+```{code-cell} python
+
 nuevo_df = pd.concat([df1, df2], axis = 0)
 
 print(nuevo_df)
-
-   A  B     C
-0  1  4   NaN
-1  2  5   NaN
-2  3  6   NaN
-1  4  7  10.0
-2  5  8  11.0
-3  6  9  12.0
 ```
 
 En este caso se agregan las filas de `df2` **debajo** de `df1`. Como `df1` no tiene la columna `C`, aparecen valores `NaN` (notar también que se modifica el tipo de dato de esa columna a *float* para que sea compatible con dichos valores faltantes).
 
 Por defecto, `concat()` realiza una **unión de tipo *outer***, es decir, conserva todas las columnas presentes en cualquiera de los DataFrames. Si especificamos el parámetro `join = 'inner'`, sólo se conservan las columnas comunes a ambos DataFrames:
 
-```python
+```{code-cell} python
+
 nuevo_df_inner = pd.concat([df1, df2], axis = 0, join = 'inner')
 
 print(nuevo_df_inner)
-
-   A  B
-0  1  4
-1  2  5
-2  3  6
-1  4  7
-2  5  8
-3  6  9
 ```
 
 **Concatenación horizontal**
 
-```python
+```{code-cell} python
+
 nuevo_df_h = pd.concat([df1, df2], axis = 1)
 
 print(nuevo_df_h)
-
-     A    B    A    B     C
-0  1.0  4.0  NaN  NaN   NaN
-1  2.0  5.0  4.0  7.0  10.0
-2  3.0  6.0  5.0  8.0  11.0
-3  NaN  NaN  6.0  9.0  12.0
 ```
 
 Aquí los DataFrames **se combinan por índice**. Si los índices no coinciden completamente, aparecerán valores faltantes.
@@ -1512,8 +1494,6 @@ El método `merge()` es la herramienta más flexible y utilizada para combinar D
 
 ##### Tipos de uniones
 
-![](imagenes/tipos_uniones.png){align=center}
-
 El parámetro `how` permite especificar el tipo de unión:
 
 - **'inner'** → conserva solo las coincidencias en ambas tablas.
@@ -1525,6 +1505,14 @@ El parámetro `how` permite especificar el tipo de unión:
 - **'outer'** → conserva todas las filas de ambos.
 
 - **'cross'** → realiza una unión cruzada (ver más adelante).
+
+```{figure} imagenes/tipos_uniones.png
+---
+width: 80%
+align: center
+---
+Esquema visual de los distintos tipos de unión entre dos datasets (*inner*, *outer*, *left*, *right*). Las regiones sombreadas indican qué observaciones se conservan en cada caso.
+```
 
 ##### Ejemplo: encuesta de hogares
 
@@ -1552,7 +1540,8 @@ En la siguiente tabla, cada fila representa una persona encuestada, `id_persona`
 
 A continuación, creamos ambas tablas utilizando funciones de Pandas:
 
-```python
+```{code-cell} python
+
 tabla_hogares = pd.DataFrame({
     'id_hogar': ['450956','450957','450958'],
     'barrio': ['Centro','Belgrano','Lourdes']
@@ -1568,7 +1557,7 @@ tabla_personas = pd.DataFrame({
 
 El propósito es conocer en qué barrio vive cada una de las personas encuestadas. Como se observa, la información del barrio está en `tabla_hogares`, mientras que la información individual está en `tabla_personas`. **Necesitamos combinar ambas tablas usando la columna común `id_hogar`.** De esta forma. realizamos el *merge* utilizando la mencionada columna como *key*:
 
-```python
+```{code-cell} python
 df = pd.merge(
     tabla_personas,
     tabla_hogares,
@@ -1577,11 +1566,6 @@ df = pd.merge(
 )
 
 print(df)
-
-  id_persona motivo_viaje     genero id_hogar   barrio
-0       3449      trabajo   femenino   450956   Centro
-1       3450   no_trabajo  masculino   450956   Centro
-2       3451      trabajo  masculino   450958  Lourdes
 ```
 
 Aquí:
@@ -1604,27 +1588,22 @@ Aquí:
 
 Una unión cruzada genera todas las combinaciones posibles entre dos tablas.
 
-```python
+```{code-cell} python
+
 df1 = pd.DataFrame({'A': [1, 2]})
 df2 = pd.DataFrame({'B': ['a', 'b', 'c']})
 
-nuevo_df = pd.merge(df1, df2, how = 'cross')
+pd.merge(df1, df2, how = 'cross')
 ```
-
-Resultado:
-
-| A | B |
-| - | - |
-| 1 | a |
-| 1 | b |
-| 1 | c |
-| 2 | a |
-| 2 | b |
-| 2 | c |
 
 Como se puede ver, el nuevo DataFrame resultante contiene todas las combinaciones posibles entre los valores de ambas tablas, sin importar si los valores coinciden o no.
 
-![](imagenes/cross_join.png){align=center}
+```{figure} imagenes/cross_join.png
+---
+align: center
+---
+Esquema visual de la unión cruzada realizada en el ejemplo anterior.
+```
 
 La unión cruzada es útil cuando queremos construir el espacio completo de posibilidades antes de aplicar un modelo o una simulación. Por ejemplo, supongamos que una tienda en línea vende productos electrónicos y quiere diseñar paquetes promocionales combinando un producto principal (laptop, smartphone y tablet) y un accesorio complementario (cargador, auriculares, estuche). El objetivo es generar todas las combinaciones posibles entre productos y accesorios para evaluar qué paquetes podrían ofrecerse. Desde el punto de vista matemático, queremos construir el producto cartesiano entre ambos conjuntos.
 
@@ -1658,41 +1637,28 @@ Este tipo de unión puede generar datasets muy grandes si las tablas originales 
 
 El método `join()` es similar a `merge()`, pero está orientado principalmente a combinar DataFrames en función de sus índices. Consideremos los siguientes dos DataFrames y combinémoslos utilizando este método:
 
-```python
+```{code-cell} python
+
 df1 = pd.DataFrame({'A':[1,2,3,4], 'B':[4,5,6,7]},
                    index = ['a','b','c','d'])
-print(df1)
 
-  A  B
-a  1  4
-b  2  5
-c  3  6
-d  4  7
+print(df1)
 ```                   
 
-```python
+```{code-cell} python
+
 df2 = pd.DataFrame({'C':[7,8,9], 'D':[10,11,12]},
                    index = ['a','b','c'])
-print(df2)
 
-   C   D
-a  7  10
-b  8  11
-c  9  12
+print(df2)
 ```
 
 Aplicamos `join()`:
 
-```python
+```{code-cell} python
 df = df1.join(df2)
 
 print(df)
-
-   A  B    C     D
-a  1  4  7.0  10.0
-b  2  5  8.0  11.0
-c  3  6  9.0  12.0
-d  4  7  NaN   NaN
 ```
 
 Vemos que por defecto se realiza una unión de tipo *left*, ya que se conservaron todas las filas de `df1`. La aparición de valores `NaN` se debe a que el índice `'d'` no existe en el DataFrame `df2`.
@@ -1703,32 +1669,21 @@ Aunque `join()` está pensado para índices, también puede usarse con columnas 
 
 Supongamos:
 
-```python
-df3 = pd.DataFrame({
-    'A': [1,2,3],
-    'E': ['x','y','z']
-})
+```{code-cell} python
+
+df3 = pd.DataFrame({'A': [1,2,3], 'E': ['x','y','z']})
 
 print(df3)
-
-   A  E
-0  1  x
-1  2  y
-2  3  z
 ```
 
 Si queremos unir usando la columna `A` de `df1`:
 
-```python
+```{code-cell} python
+
 df1.join(df3.set_index('A'), on='A')
 ```
 
 Aquí ocurre lo siguiente: primero convertimos `A` en índice de `df3`, y posteriormente `join()` busca coincidencias entre la columna `A` de `df1` y el índice de `df3`.
-
-el índice de df3
-
-
-df1.join(df3.set_index('A'), on='A')
 
 ### Listado de métodos útiles
 
@@ -1738,7 +1693,9 @@ Además de las transformaciones estructurales (como cambiar entre formato largo 
 
 Con frecuencia los nombres de las variables no son claros, contienen espacios o no siguen una convención consistente. El método `rename()` permite modificar esos nombres de forma explícita.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df.rename(columns={'nombre_viejo': 'nombre_nuevo'})
 ```
 
@@ -1750,7 +1707,9 @@ Renombrar columnas suele ser un primer paso importante para mejorar la legibilid
 
 Cuando trabajamos con variables categóricas o de texto, puede ser necesario reemplazar ciertos caracteres o estandarizar etiquetas.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['col'].str.replace('str_a_reemplazar', 'str_nuevo')
 ```
 
@@ -1760,7 +1719,9 @@ Este método resulta útil, por ejemplo, para unificar categorías escritas de d
 
 Es habitual que los datos importados contengan espacios al inicio o al final de las cadenas, lo que puede generar categorías duplicadas aparentemente distintas.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['col'].str.strip()
 ```
 
@@ -1770,7 +1731,9 @@ Esto elimina espacios en blanco al comienzo y al final de cada cadena.
 
 Para evitar inconsistencias en variables de texto, puede ser útil homogeneizar el formato:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['col'].str.lower()
 df['col'].str.upper()
 ```
@@ -1781,7 +1744,9 @@ Estandarizar el uso de mayúsculas y minúsculas facilita comparaciones y agrupa
 
 En muchos casos, las variables no se importan con el tipo adecuado. Por ejemplo, una variable numérica puede haber sido leída como texto. El método `astype()`, presentado anteriormente en este apunte, permite convertir el tipo de dato:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['col'] = df['col'].astype(float)
 ```
 
@@ -1791,7 +1756,9 @@ La correcta definición del tipo de dato es clave para evitar errores en cálcul
 
 El tratamiento de datos faltantes comienza por su identificación. Para ello, además de las herramientas presentadas anteriormente, pueden utilizarse:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['col'].isna()
 df['col'].notna()
 ```
@@ -1802,13 +1769,17 @@ Los métodos `isna()` e `isnull()` son equivalentes en Pandas. Devuelven una Ser
 
 Explorar los valores presentes en una variable es un paso fundamental en cualquier proceso de limpieza. El método `unique()` devuelve un array con los valores únicos observados:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['col'].unique()
 ```
 
 Por otro lado, el método `value_counts()` devuelve una Serie con la frecuencia de cada valor. Es especialmente útil en variables categóricas para detectar errores tipográficos o categorías inesperadas.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df['col'].value_counts()
 ```
 
@@ -1816,7 +1787,9 @@ df['col'].value_counts()
 
 En ocasiones es necesario eliminar variables irrelevantes o registros específicos.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df.drop(columns=['columna'])
 df.drop(index=[0, 1])
 ```
@@ -1827,7 +1800,9 @@ Este método devuelve una copia del DataFrame salvo que se indique `inplace=True
 
 Para detectar y eliminar observaciones repetidas puede utilizarse:
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df.drop_duplicates()
 ```
 
@@ -1837,7 +1812,9 @@ También puede especificarse un subconjunto de columnas para definir qué signif
 
 Ordenar un dataset facilita la inspección y el análisis exploratorio.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df.sort_values(by='col')
 ```
 
@@ -1847,12 +1824,184 @@ Puede indicarse `ascending=False` para ordenar de mayor a menor.
 
 Uno de los métodos más potentes en Pandas, también mencionado anteriormente, es `groupby()`, que permite dividir el dataset en grupos y calcular estadísticas resumen.
 
-```python
+```{code-cell} python
+:tags: ["skip-execution"]
+
 df.groupby('col').mean()
 df.groupby('col')['otra_col'].sum()
 ```
 
 Es central en análisis descriptivo y preparación de datos.
+
+## Expresiones regulares
+
+Las expresiones regulares (regular expressions o *regex*) proporcionan una manera flexible y potente de buscar patrones dentro de cadenas de texto. 
+
+Una expresión regular es una cadena escrita según un lenguaje específico que describe un patrón de búsqueda. En lugar de buscar texto literal, podemos definir reglas: por ejemplo, buscar “una o más cifras”, “una palabra que comience con determinada letra”, o “una fecha con cierto formato”. Por ejemplo, podemos analizar si la subcadena `rr` aparece dentro de un texto como: *r con r guitarra, r con r barril, r con r que rápido ruedan las ruedas del ferrocarril*.
+
+La coincidencia puede ser simple (ver si aparece en algún lugar) o más compleja (por ejemplo, que aparezca al principio o al final de la cadena).
+
+### ¿Qué puede ser una expresión regular?
+
+Una expresión regular puede construirse a partir de:
+
+**1. Caracteres literales.** Todo carácter que no sea especial coincide consigo mismo.
+
+Por ejemplo:
+
+- `a` coincide con la letra “a”.
+
+- `casa` coincide con la palabra exacta “casa”.
+
+**2. Secuencias de caracteres.** Buscar la coincidencia de una cadena dentro de otra:
+
+- Buscar `casa` dentro de "Mi casa es naranja" → hay coincidencia.
+
+- Buscar `casa` dentro de "Mis flores florecieron" → no hay coincidencia.
+
+**3. Caracteres especiales.** Aquí está la verdadera potencia de las *regex*. Algunos de los más utilizados son:
+
+| Expresión | Significado                               |
+| --------- | ----------------------------------------- |
+| `.`       | Cualquier carácter excepto salto de línea |
+| `^`       | Inicio de la cadena                       |
+| `$`       | Final de la cadena                        |
+| `*`       | Cero o más ocurrencias                    |
+| `+`       | Una o más ocurrencias                     |
+| `?`       | Cero o una ocurrencia                     |
+| `{n}`     | Exactamente n ocurrencias                 |
+| `[ ]`     | Conjunto de caracteres                    |
+| `[^ ]`    | Negación de conjunto                      |
+| `\d`      | Dígito (0–9)                              |
+| `\D`      | No dígito                                 |
+| `\w`      | Carácter de palabra                       |
+| `\W`      | No carácter de palabra                    |
+| `\b`      | Límite de palabra                         |
+| `\A`      | Inicio absoluto de la cadena              |
+| `\`       | Escape de caracteres especiales           |
+
+Algunos ejemplos:
+
+- `[0-9]` → cualquier dígito.
+
+- `[039]` → 0, 3 ó 9.
+
+- `[^039]` → cualquier carácter que NO sea 0, 3 ó 9.
+
+- `c.sa` → coincide con “casa”, “cosa”, etc.
+
+- `^camino` → cadenas que comienzan con “camino”.
+
+- `camino$` → cadenas que terminan con “camino”.
+
+- `ca.+e` → “calle”, “carne”, etc.
+
+- `\d{4}` → secuencia de exactamente cuatro dígitos.
+
+Los caracteres especiales pueden combinarse para construir patrones más complejos. Por ejemplo, la siguiente expresión permite buscar fechas en formato DD/MM/YYYY correspondientes al mes de mayo:
+
+```python
+\b(?:0[1-9]|[12][0-9]|3[01])\/05\/\d{4}\b
+```
+
+### Expresiones regulares en Python
+
+Python incluye el módulo `re`, que proporciona un conjunto de funciones para trabajar con expresiones regulares. Estas funciones permiten realizar operaciones de búsqueda, extracción, división y sustitución de patrones dentro de cadenas de texto. A continuación, ilustramos las principales herramientas a partir de un ejemplo sencillo. 
+
+Trabajaremos con el siguiente *string*:
+
+```{code-cell} python
+texto = 'Se necesitan 30 azulejos para revestir 1 m2'
+```
+
+#### re.search()
+
+Busca la primera ocurrencia del patrón y devuelve un objeto `Match`, que contiene información sobre la coincidencia encontrada (posición, texto coincidente, etc.).
+
+```{code-cell} python
+re.search(r'\D+', texto)
+```
+
+La expresión regular `\D+` indica "uno o más caracteres que NO sean dígitos". Por lo tanto, la función devuelve la primera secuencia continua de caracteres no numéricos presente en la cadena.
+
+#### re.findall()
+
+A diferencia de `search()`, la función `re.findall()` devuelve todas las coincidencias del patrón en forma de lista.
+
+```{code-cell} python
+re.findall(r'\D+', texto)
+```
+
+De este modo, se obtienen todas las secuencias de caracteres no numéricos que aparecen en el texto. La diferencia fundamental es que `search()` se detiene en la primera coincidencia, mientras que `findall()` recorre la cadena completa.
+
+#### re.split()
+
+La función `re.split()` divide la cadena cada vez que encuentra una coincidencia del patrón especificado.
+
+```{code-cell} python
+re.split(r'\D+', texto)
+```
+
+En este caso, la división se realiza cada vez que aparece una secuencia de caracteres no numéricos, lo que permite aislar los valores numéricos contenidos en el texto.
+
+#### re.sub()
+
+re.sub() permite reemplazar las coincidencias del patrón por otro valor. Devuelve una nueva cadena con las sustituciones realizadas.
+
+```{code-cell} python
+re.sub(r'30', '15', texto)
+```
+
+#### Expresiones regulares en Pandas
+
+En análisis de datos es muy frecuente necesitar extraer información específica desde columnas que contienen texto. En muchos casos, los datos relevantes se encuentran formando parte de cadenas más largas (por ejemplo, valores numéricos acompañados de símbolos o unidades). Para este tipo de tareas, Pandas integra el uso de expresiones regulares a través del accesor `str`.
+
+Supongamos el siguiente DataFrame:
+
+```{code-cell} python
+
+precios_deptos = pd.DataFrame({'id': [1, 2, 3], 'precio': ['USD 87000', 'usd 104000', 'USD 95000']})
+
+precios_deptos
+```
+
+En este caso, la columna `precio` contiene tanto la moneda como el valor numérico. Si quisiéramos trabajar únicamente con el monto, resulta conveniente separarlo en una nueva columna. Podemos hacerlo utilizando el método `str.extract()`:
+
+```{code-cell} python
+precios_deptos['precio_usd'] = precios_deptos['precio'].str.extract(r'(\d+)')
+
+precios_deptos
+```
+
+La expresión regular (\d+) funciona de la siguiente manera: `\d+` busca una secuencia de uno o más dígitos consecutivos, mientras que los paréntesis `()` indican que esa parte del patrón constituye un grupo de captura, es decir, un fragmento cuya coincidencia se almacena y puede recuperarse posteriormente. 
+
+El método `str.extract()` devuelve un DataFrame con las capturas encontradas y permite asignarlas directamente a una nueva columna. Este tipo de operación es muy habitual en procesos de limpieza y estructuración de datos.
+
+```{admonition} Importante
+:class: tip
+
+Si dentro de una misma cadena existen múltiples coincidencias del patrón, `str.extract()` devuelve únicamente la primera.
+
+Por ejemplo:
+
+```python
+precios_deptos = pd.DataFrame({'id': [1, 2, 3], 'precio': ['USD 87000 EUR 78577', 'usd 104000 eur 93931', 'USD 95000 EUR 85803']})
+
+precios_deptos['precio_usd'] = precios_deptos['precio'].str.extract(r'(\d+)')
+
+print(precios_deptos)
+
+   id                precio   precio_usd
+0   1   USD 87000 EUR 78577        87000
+1   2  usd 104000 eur 93931       104000
+2   3   USD 95000 EUR 85803        95000
+```
+
+En cada fila existen dos valores numéricos, pero el método extrae únicamente el primero que coincide con el patrón. Cuando se requiere recuperar todas las coincidencias dentro de cada cadena, puede utilizarse la variante `str.extractall()`, que devuelve todas las capturas en una estructura indexada adecuadamente.
+```
+
+En la práctica, la combinación de expresiones regulares con los métodos del accesor `str` convierte a Pandas en una herramienta muy potente para el preprocesamiento de datos textuales, permitiendo transformar información no estructurada en variables listas para el análisis cuantitativo.
+
 
 
 ## Convenciones de nombres y buenas prácticas
@@ -1963,472 +2112,6 @@ print("Segundos en un día:", segundos_en_un_dia)
 ```
 
 ![Untitled](./imagenes/Untitled5.png)
-
-## Expresiones regulares
-
-Las expresiones regulares proporcionan una manera flexible de buscar o hacer coincidir patrones de cadenas en un texto. Una expresión única, comúnmente llamada *regex*, es una cadena formada según el lenguaje de expresiones regulares que especifica un patrón de búsqueda determinado. Por ejemplo, vamos a poder saber si la sub-cadena `rr` coincide de alguna manera con la cadena `r con r guitarra, r con r barril, r con r que rápido ruedan las ruedas del ferrocarril` . La coincidencia puede ser simple, es decir si la `rr`aparece en algún lugar de la cadena, o puede ser más compleja, por ejemplo si la `rr`aparece al principio o al final de la cadena.
-
-A continuación listamos algunos ejemplos de *regex:*
-
-- **Caracter**: todos los caracteres, excepto los especiales según RE, coinciden con ellos mismos, como en el ejemplo de arriba.
-- **Secuencia de caracteres:** buscar la coincidencia de una cadena dentro de otra. Por ejemplo, buscar `casa` dentro de otra cadena como `Mi casa es naranja` o `Mis flores florecieron`. En el primer caso tenemos una coincidencia y en el segundo ninguna.
-- **Caracteres especiales:**
-
-| **Caracter** | **Descripción** | **Ejemplos** |
-| --- | --- | --- |
-| \ | Para evadir a los caracteres especiales. |  + es un caracter especial, pero si deseamos buscarlo con una *regex* podemos hacerlo usando `\+`. Del mismo modo, si deseamos buscar a `\`debemos usar `\\` |
-| [ ] | Conjunto de caracteres.  | **[0-9]** acepta la coincidencia con cualquier caracter dentro del rango 0 a 9.
-**[0 3 9]** busca la coincidencia con 0, 3 y/o 9
-**[^ 0 3 9]** acepta a cualquiera que NO sea 0, 3 ó 9 |
-| . | Cualquier caracter excepto una nueva línea | **“c.sa”** acepta la coincidencia “cosa”, “casa”, etc.  |
-| ^ | Comienza con | **“^camino”** acepta cadenas que comienzan con la palabra camino |
-| $ | Termina con | **“camino$”** acepta cadenas que terminan con la palabra camino |
-| * | Cero o más ocurrencias | **“ca.*e”** acepta la cadena “calle” |
-| + | Una o más ocurrencias | **“ca.+e”** acepta la cadena “calle” |
-| ? | Cero o una ocurrencia | **“ca.?e”** NO acepta la cadena “calle” |
-| {} | Solamente el número especificado de ocurrencias | **“ca.{2}e”** acepta la cadena “calle, mientras que **”ca.{4}”** no la acepta |
-| | | Una o la otra | **“cuatro|4”** acepta la cadena “cuatro” o “4” |
-| \A | Devuelve un match si la coincidencia ocurre al principio de la cadena | **“\ALa”** acepta la cadena “La casa” |
-| \b  | Devuelve un match si el patrón aparece al principio o final de una palabra | **“\bsa”** NO acepta la palabra “cosa”
-**”sa\b”** acepta la palabra “cosa” |
-| \d | Devuelve un match si la cadena contiene dígitos | **“\d”** acepta “1” |
-| \D | Devuelve un match si la cadena NO contiene dígitos | **“\D”** no acepta “1” |
-| \w | Devuelve un match si la cadena contiene caracteres de palabras | **“\w”** acepta “A” |
-| \W | Devuelve un match si la cadena NO contiene caracteres de palabras | **“\W”** NO acepta “A” pero sí acepta “!!!” |
-
-**Raw String Notation**
-
-La raw string notation, `r"texto"` , permite que las expresiones regulares sean interpretadas tal cual fueron escritas. Sin esto, la barra `\`sería interpretada como un caracter especial y deberíamos agregarle otra barra para escapar del mismo.
-
-**Cómo aplicar *regex* en Python**
-
-Python cuenta con un paquete llamado `re` que incluye un conjunto de funciones para el trabajo con expresiones regulares, que pueden agruparse dentro de tres categorías diferentes: **coincidencia de patrones**, **sustitución** y **división,** aunque naturalmente están todas relacionadas.  Aquí presentaremos sólo algunas, pero puede consultarse la respectiva [documentación](https://docs.python.org/es/3/library/re.html) para conocer más al respecto. 
-
-- **re.search(pattern, string, flags = 0)**
-Busca la primera ocurrencia del patrón `pattern` en la cadena `string` y devuelve un objeto del tipo match.
-- **re.split(pattern, string, maxsplit = 0, flags = 0)**
-Parte la cadena en cada ocurrencia del patrón. Si el patrón está entre paréntesis, también se devuelve el texto en cada ocurrencia. Si `maxsplit` se configura como un valor diferente a cero, entonces, se devuelven como máximo ese número de *maxsplits* y el resto se devuelve como una cadena.
-- **re.findall(pattern, string, flags = 0)**
-Devuelve todas las ocurrencias del patrón encontradas en la cadena como una lista o una tupla.
-- **re.sub(pattern, repl, string, count = 0, flags = 0):**
-Se utiliza para realizar reemplazos en una cadena. Devuelve una cadena en la cual se produjo el reemplazo de cada ocurrencia del patrón `pattern` por el valor *repl*. Si no se encontró ningún valor, entonces se devuelve la cadena original sin modificar.
-
-Veamos un ejemplo:
-
-```python
-import re
-
->>> re.search(r'\D+', 'Se necesitan 30 azulejos para revestir 1 m2')
-<re.Match object; span=(0, 13), match='Se necesitan '>
-
->>> re.search(r'\d+', 'Se necesitan 30 azulejos para revestir 1 m2')
-<re.Match object; span=(13, 15), match='30'>
-
->>> re.findall(r'\D+', 'Se necesitan 30 azulejos para revestir 1 m2')
-['Se necesitan ', ' azulejos para revestir ', ' m']
-
->>> re.findall(r'\d+', 'Se necesitan 30 azulejos para revestir 1 m2')
-['30', '1', '2']
-
->>> re.split(r'\D+', 'Se necesitan 30 azulejos para revestir 1 m2')
-['', '30', '1', '2']
-
->>> re.split(r'\d+', 'Se necesitan 30 azulejos para revestir 1 m2')
-['Se necesitan ', ' azulejos para revestir ', ' m', '']
-
->>> re.sub(r'm2', 'sqm', 'Se necesitan 30 azulejos para revestir 1 m2')
-'Se necesitan 30 azulejos para revestir 1 sqm'
-```
-
-La *regex* `r'\D+'` va a buscar todo lo que **NO** sea un dígito que ocurra una o más veces, mientras que `r'\d+'` busca dígitos que ocurran una o más veces.
-
-**Editores de RegEx online**
-
-Dado que construir expresiones regulares pueden resultar tedioso según la complejidad de la búsqueda, es posible utilizar asistentes que facilitan el testeo de manera interactiva. Existen diversos sitios online que permiten probar expresiones, por ejemplo:
-
-- [https://regexr.com/](https://regexr.com/)
-- [https://regex101.com/](https://regex101.com/)
-- [https://www.regextester.com/](https://www.regextester.com/)
-
-Una vez construída la expresión regular, podremos trasladarla a Python sin inconvenientes.
-
-**Otras alternativas**
-
-RegEx no es la única manera de realizar búsquedas. Existen otras librerías de Python que pueden resultar más intuitivas, por ejemplo:
-
-- **pyparsing**: [https://github.com/pyparsing/pyparsing/](https://github.com/pyparsing/pyparsing/)
-- **simplematch**: [https://github.com/tfeldmann/simplematch](https://github.com/tfeldmann/simplematch)
-- **kleenexp:** [https://github.com/sonoflilit/kleenexp](https://github.com/sonoflilit/kleenexp)
-- **parse**: [https://github.com/r1chardj0n3s/parse](https://github.com/r1chardj0n3s/parse)
-- **pygrok**: [https://github.com/garyelephant/pygrok](https://github.com/garyelephant/pygrok)
-
-La ventaja de RegEx es su popularidad y soporte en la mayoría de los lenguajes de programación de hoy en día.
-
-## Combinaciones de conjuntos de datos
-
-Son operaciones que se realizan entre diferentes datasets para ampliar la información disponible para el análisis. Supongamos que queremos calcular el porcentaje del ingreso que una persona gastaría en promedio en transporte público por provincia. Para realizar el cálculo, tenemos una tabla con una muestra de personas de toda Argentina con sus ingresos y provincia y, por otro lado, una tabla con el costo promedio del pasaje en transporte público por provincia. Si unimos la información de estas dos tablas vamos a poder realizar el cálculo deseado. 
-
-**Tabla de personas**
-
-| **id_persona** | **ingreso** | **id_provincia** |
-| --- | --- | --- |
-| 1 | 100.000 | 1 |
-| 2 | 150.000 | 5 |
-| 3 | 300.000 | 8 |
-
-**Tabla de costos**
-
-| **id_provincia** | **costo_boleto** |
-| --- | --- |
-| 1 | 100 |
-| 2 | 90 |
-
-**Resultado final deseado**
-
-| **id_persona** | **ingreso** | **id_provincia** | **costo_boleto** |
-| --- | --- | --- | --- |
-| 1 | 100.000 | 1 | 100 |
-| 2 | 150.000 | 5 | NaN |
-| 3 | 300.000 | 8 | NaN |
-
-### Métodos más comunes de combinación de datos
-
-**Pandas** ofrece varios métodos de combinación de DataFrames. Aquí están algunos de los más comunes:
-
-1. **`merge()`**: el método **`merge()`** combina dos DataFrames basados en una o varias columnas compartidas. Es similar a la operación de "JOIN" en SQL. Puede especificar el tipo de unión (por ejemplo, 'inner', 'outer', 'left' o 'right') y cómo tratar los valores perdidos.
-2. **`concat()`**: el método **`concat()`** combina dos o más DataFrames uno encima del otro o uno al lado del otro a lo largo de un eje determinado (fila o columna). Los DataFrames deben tener la misma forma en el eje de concatenación.
-3. **`join()`**: el método **`join()`** combina dos DataFrames basándose en el índice de las filas. Es similar a la operación de "JOIN" en SQL. Puede especificar el tipo de unión (por ejemplo, 'inner', 'outer', 'left' o 'right') y cómo tratar los valores perdidos.
-4. **`merge_ordered()`**: el método **`merge_ordered()`** combina dos DataFrames basados en una o varias columnas compartidas y ordena el resultado en función de esas columnas. Es útil cuando se combinan datos temporales, como series de tiempo.
-5. **`merge_asof()`**: El método **`merge_asof()`** combina dos DataFrames basados en una o varias columnas compartidas y las fechas/horas más cercanas. Es útil cuando se combinan datos de series de tiempo que no están perfectamente alineados.
-
-También es posible combinar datos cuya coincidencia no es exacta (difusa). En esta sección veremos también opciones para realizar ese tipo de combinaciones o fusiones de datos.
-
-### concat()
-
-La función **`concat()`** en **Pandas** se utiliza para concatenar dos o más DataFrames a lo largo de un eje específico, ya sea horizontal o verticalmente.
-
-La sintaxis básica de la función **`concat()`** es la siguiente:
-
-```python
-pd.concat(objs, axis = 0, join = 'outer', ignore_index = False, keys = None)
-```
-
-donde:
-
-- `objs`: es una lista de objetos **Pandas** que se desean concatenar.
-- `axis`: es el eje a lo largo del cual se desea concatenar los DataFrames. Se debe especificar 0 para concatenar verticalmente y 1 para concatenar horizontalmente.
-- `join`: es el tipo de unión que se desea realizar, puede ser "outer", para una unión externa, o "inner", para una unión interna.
-- `ignore_index`: es un valor booleano que indica si se desea ignorar los índices originales de los DataFrames que se están concatenando.
-- `keys`: es una lista de claves que se pueden utilizar para identificar los DataFrames originales en el resultado.
-
-Por ejemplo, si se tienen dos DataFrames `df1` y `df2` con las mismas columnas y se desea concatenarlos verticalmente, se puede hacer de la siguiente manera:
-
-```python
-nuevo_df = pd.concat([df1, df2], axis = 0)
-```
-
-Si los DataFrames tienen diferentes columnas, se pueden concatenar horizontalmente utilizando el mismo enfoque, pero modificando el valor especificado en el argumento `axis`:
-
-```python
-nuevo_df = pd.concat([df1, df2], axis = 1)
-```
-
-También se puede utilizar la función **`concat()`** para concatenar más de dos DataFrames a la vez. Por ejemplo, si se tienen tres dataframes `df1`, `df2` y `df3` y se desea concatenarlos verticalmente, se puede hacer de la siguiente manera:
-
-```python
-nuevo_df = pd.concat([df1, df2, df3], axis = 0)
-```
-
-Aquí se muestra un ejemplo completo de cómo usar la función **`concat()`** en Pandas:
-
-```python
-import pandas as pd
-
-# Definir dos dataframes de ejemplo
-df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
-df2 = pd.DataFrame({'A': [4, 5, 6], 'B': [7, 8, 9], 'C': [10, 11, 12]})
-
-# Concatenar los dataframes verticalmente
-nuevo_df = pd.concat([df1, df2], axis=0)
-
-# Imprimir el nuevo dataframe
-print(nuevo_df)
-```
-
-En este ejemplo, se están definiendo dos DataFrames de ejemplo, `df1` y `df2`, con diferentes columnas. Luego, se está utilizando la función **`concat()`** para concatenarlos verticalmente utilizando el parámetro `axis = 0`. El resultado de esta operación se está almacenando en un nuevo DataFrame llamado `nuevo_df`.
-
-El resultado de la ejecución del código anterior se ría el siguiente:
-
-```python
-   A  B     C
-0  1  4   NaN
-1  2  5   NaN
-2  3  6   NaN
-0  4  7  10.0
-1  5  8  11.0
-2  6  9  12.0
-```
-
-Como se puede ver, el DataFrame resultante tiene todas las columnas de ambos DataFrames originales, y los valores de índice se han mantenido.
-
-También se puede utilizar la función **`concat()`** para concatenar los DataFrames  horizontalmente, como se muestra en el siguiente ejemplo:
-
-```python
-import pandas as pd
-
-# Definir dos dataframes de ejemplo
-df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]})
-df2 = pd.DataFrame({'C': [7, 8, 9], 'D': [10, 11, 12]})
-
-# Concatenar los dataframes horizontalmente
-nuevo_df = pd.concat([df1, df2], axis=1)
-
-# Imprimir el nuevo dataframe
-print(nuevo_df)
-```
-
-En este ejemplo, se están definiendo dos DataFrames `df1` y `df2`, con diferentes columnas. Luego, se está utilizando la función **`concat()`** para concatenarlos horizontalmente utilizando el parámetro `axis = 1`. El resultado de esta operación se está almacenando en un nuevo DataFrame llamado `nuevo_df`.
-
-El resultado de la ejecución del código anterior sería el siguiente:
-
-```python
-   A  B  C   D
-0  1  4  7  10
-1  2  5  8  11
-2  3  6  9  12
-```
-
-Como se puede ver, el DataFrame resultante tiene todas las filas de ambos DataFrames originales, y las columnas se han combinado en función de sus nombres.
-
-### merge()
-
-El método `merge()` es la opción más común y flexible para la combinación de DataFrames, permitiendo unir dos o más datasets en base a una o más columnas que funcionan como *keys*. Este tipo de operaciones es particularmente importantes en **bases de datos relacionales** (por ejemplo, aquellas basadas en SQL). 
-
-La sintaxis básica de la operación **`pandas.merge`** es la siguiente:
-
-```python
-pd.merge(left, right, how = 'inner', on = None, left_on = None, right_on = None, ...)
-```
-
-donde:
-
-- `left`: DataFrame que se va a combinar en el lado izquierdo.
-- `right`: DataFrame que se va a combinar en el lado derecho.
-- `how`: es el tipo de unión que se desea realizar. Puede elegirse entre las siguientes opciones (ver la imagen):
-    - `how = 'inner'` : devuelve únicamente las filas que cuentan con un valor en la *key* en ambos DataFrames
-    - `how = 'left'` : devuelve todas las filas del DataFrame izquierdo junto con las filas coincidentes del DataFrame de la derecha.
-    - `how = 'right'` : devuelve todas las filas del DataFrame derecho junto con las filas coincidentes del DataFrame de la izquierda.
-    - `how = 'outer'` : devuelve **todas las filas** de los dos DataFrames.
-    
-    ![Tipos de uniones entre datasets según lo especificado en el parámetro `how`.](Unidad%202%20-%20Manipulacio%CC%81n%20de%20datos%2057c6b9630a254b61b8e5ab68b0c372f3/imagen.png)
-    
-    Tipos de uniones entre datasets según lo especificado en el parámetro `how`.
-    
-- `on`: nombre/s de la/s columna/s para realizar la unión, la/s cual/es debe/n ser compartida/s por ambos datasets. Si no se especifica este argumento, se unirá de forma predeterminada utilizando los índices.
-- `left_on`: columnas en el DataFrame izquierdo (`left`) para usar como *keys*. Puede ser el nombre de una única columna o una lista de los nombres de varias columnas.
-- `right_on` : análogo a `left_on` para el DataFrame derecho (`right`).
-
-Estos últimos argumentos se utilizan si se desea unir ambos DataFrames a través de columnas que contienen el mismo tipo de información pero no comparten el mismo nombre. El resto de los argumentos pueden consultarse en la [Documentación](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.merge.html) de Pandas.
-
-**Ejemplo:**
-
-Como resultado de una encuesta de hogares obtenemos una tabla del hogar con las variables `id_hogar` y `barrio` y una tabla de personas con las variables `id_persona`, `motivo_viaje`, `genero` e `id_hogar`, como se muestra abajo.
-
-**Tabla de personas**
-
-| **id_persona** | **motivo_viaje** | **genero** | **id_hogar** |
-| --- | --- | --- | --- |
-| 3449 | trabajo | femenino | 450956 |
-| 3450 | no_trabajo | masculino | 450956 |
-
-**Tabla de hogares**
-
-| **id_hogar** | **barrio** |
-| --- | --- |
-| 450956 | Centro |
-| 450957 | Lourdes |
-
-Supongamos que queremos calcular la cantidad de viajes de trabajo por barrio. Para eso, necesitamos saber a qué barrio pertenece cada persona, lo que podemos averiguar utilizando el `id_hogar` que se encuentra en ambas tablas. Por ejemplo, la persona 3449 pertenece al hogar 450956, el cual se encuentra en el barrio Centro. De esta manera, la tabla personas pasa a tener la siguiente forma: 
-
-| **id_persona** | **motivo_viaje** | **género** | **id_hogar** | **barrio** |
-| --- | --- | --- | --- | --- |
-| 3449 | trabajo | femenino | 450956 | Centro |
-| 3450 | no_trabajo | masculino | 450956 | Centro |
-
-A continuación, se muestra cómo lograr la tabla deseada, partiendo de contar con los datasets `personas` y `hogares` y empleando el método **`merge`** de **Pandas.**
-
-```python
-import pandas as pd
-
-personas = pd.read_csv("datos_personas.csv")
-hogares = pd.read_csv("datos_hogares.csv")
-
-resultado = pd.merge(personas, hogares, left_on = 'id_hogar', right_on = 'id_hogar', how = 'left')
-
-id_persona	  motivo_viaje	 género	    id_hogar	barrio
-3449	        trabajo	       femenino	  450956	  Centro
-3450	        no_trabajo	   masculino	450956	  Centro
-```
-
-En nuestro ejemplo se dio el caso de que fue una unión de muchos a uno. La tabla de personas tiene muchas filas con la misma provincia, mientras que la tabla de provincias, como es de esperarse, solo tiene una fila por cada provincia. 
-
-<aside>
-🤔 **Para pensar…**
-¿Cómo cambiaría el dataset `resultado` si, sobre el mismo código utilizado actualmente, modificamos el parámetro `how` por cada una de las otras posibilidades?
-
-</aside>
-
-### **join()**
-
-La función `join()` en **Pandas** se utiliza para combinar dos o más dataframes ***en función de sus índices o columnas*.** La sintaxis básica de la función `join()` es la siguiente:
-
-```python
-pd.join(other, on=None, how='left', lsuffix='', rsuffix='', sort=False)
-```
-
-Donde:
-
-- `other`: es el DataFrame con el que se desea combinar.
-- `on`: es el nombre de la columna (o índice) en la que se desea realizar la unión.
-- `how`: es el tipo de unión que se desea realizar, puede ser "left", "right", "outer" o "inner".
-- `lsuffix`: sufijo a agregar a los nombres de las columnas del DataFrame original (izquierdo) en caso de conflictos.
-- `rsuffix`: sufijo a agregar a los nombres de las columnas del DataFrame que se está uniendo (derecho) en caso de conflictos.
-- `sort`: es un valor booleano que indica si se deben ordenar los índices antes de realizar la unión.
-
-A continuación se muestra un ejemplo de cómo utilizar la función `join()` en Pandas:
-
-```python
-import pandas as pd
-
-# Definir dos dataframes de ejemplo
-df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6]}, index=['a', 'b', 'c'])
-df2 = pd.DataFrame({'C': [7, 8, 9], 'D': [10, 11, 12]}, index=['a', 'b', 'c'])
-
-# Unir los dataframes utilizando la función join()
-nuevo_df = df1.join(df2)
-
-# Imprimir el nuevo dataframe
-print(nuevo_df)
-```
-
-En este ejemplo, se están definiendo dos DataFrames de ejemplo (`df1` y `df2`) con el mismo índice. Luego, se está utilizando la función `join()` para combinar los dos DataFrames en función de sus índices comunes. El resultado de esta operación se está almacenando en un nuevo DataFrame llamado `nuevo_df`.
-
-El resultado de la ejecución del código anterior sería el siguiente:
-
-```python
-   A  B  C   D
-a  1  4  7  10
-b  2  5  8  11
-c  3  6  9  12
-```
-
-Como se puede ver, el nuevo DataFrame resultante tiene todas las columnas de ambos DataFrames originales, y las filas se han combinado en función de sus índices comunes.
-
-También se puede utilizar la función `join()` para combinar DataFrames en función de columnas específicas. En este caso, se especifica la columna en la que se desea realizar la unión utilizando el parámetro `on`. Por ejemplo:
-
-```python
-import pandas as pd
-
-# Definir dos dataframes de ejemplo
-df1 = pd.DataFrame({'A': [1, 2, 3], 'B': [4, 5, 6], 'C': [7, 8, 9]})
-df2 = pd.DataFrame({'D': [4, 5, 6], 'C': [7, 8, 9], 'E': [10, 11, 12]})
-
-# Unir los dataframes utilizando la función join()
-nuevo_df = df1.join(df2.set_index('C'), on='C')
-
-# Imprimir el nuevo dataframe
-print(nuevo_df)
-```
-
-En este ejemplo, se están definiendo dos DataFrames (`df1` y `df2`) con una columna en común (`C`). Luego, se está utilizando la función `join()` para combinarlos en función de esa columna. El resultado de esta operación se está almacenando en un nuevo DataFrame llamado `nuevo_df`.
-
-El resultado de la ejecución del código anterior sería el siguiente:
-
-```python
-   A  B  C  D  E
-0  1  4  7  4  10
-1  2  5  8  5  11
-2  3  6  9  6  12
-```
-
-Como se puede ver, el nuevo DataFrame resultante tiene todas las columnas de ambos DataFrameS originales, y las filas se han combinado en función de sus valores comunes en la columna `C`.
-
-### Uniones cruzadas (Cross Joins)
-
-El método `merge()` presentado anteriormente también permite realizar una unión cruzada (*cross join*), la cual devuelve todas las combinaciones posibles entre los registros de dos DataFrames, independientemente de si los valores coinciden o no. Para realizar una unión cruzada, se puede establecer el parámetro `how` en "cross".
-
-A continuación se muestra un ejemplo de cómo realizar una unión cruzada entre dos DataFrames utilizando el método `merge()` con el parámetro `how ='cross'`:
-
-```python
-import pandas as pd
-
-# Definir dos dataframes de ejemplo
-df1 = pd.DataFrame({'A': [1, 2]})
-df2 = pd.DataFrame({'B': ['a', 'b', 'c']})
-
-# Realizar una unión cruzada entre los dataframes
-nuevo_df = pd.merge(df1, df2, how='cross')
-
-# Imprimir el nuevo dataframe resultante
-print(nuevo_df)
-```
-
-En este ejemplo, se están definiendo dos DataFrames llamados `df1` y `df2`, cada uno de los cuales contiene una sola columna. Luego, se está utilizando el método `merge()` para realizar una unión cruzada entre los dos DataFrames. El resultado se está almacenando en un nuevo DataFrame llamado `nuevo_df`.
-
-El resultado de la ejecución del código anterior sería el siguiente:
-
-```python
-   A  B
-0  1  a
-1  1  b
-2  1  c
-3  2  a
-4  2  b
-5  2  c
-```
-
-Como se puede ver, el nuevo DataFrame resultante contiene todas las combinaciones posibles entre los valores de ambas tablas, sin importar si los valores coinciden o no. 
-
-![Untitled](./imagenes/Untitled6.png)
-
-Es importante tener en cuenta que realizar una unión cruzada puede generar un DataFrame muy grande si los DataFrames originales son grandes. Por lo tanto, se debe tener cuidado al utilizar esta técnica y asegurarse de que sea realmente necesaria para el análisis que se está realizando.
-
-Supongamos que se tiene una tienda en línea que vende productos electrónicos y se quiere realizar un análisis para conocer todas las posibles combinaciones de productos que se pueden vender juntos en un paquete promocional. Para ello, se tiene un DataFrame con una lista de productos electrónicos y otro DataFrame con una lista de accesorios.
-
-Se puede utilizar un *cross join* para generar un DataFrame con todas las posibles combinaciones de productos y accesorios. Por ejemplo:
-
-```python
-import pandas as pd
-
-# Crear DataFrame de productos electrónicos
-productos_electronicos = pd.DataFrame({'Producto': ['Laptop', 'Smartphone', 'Tablet']})
-
-# Crear DataFrame de accesorios
-accesorios = pd.DataFrame({'Accesorio': ['Cargador', 'Auriculares', 'Estuche']})
-
-# Realizar cross join
-combinaciones = pd.merge(productos_electronicos.assign(key=0), accesorios.assign(key=0), on='key').drop('key', axis=1)
-
-# Mostrar DataFrame resultante
-print(combinaciones)
-```
-
-La salida del código anterior sería:
-
-```
-     Producto    Accesorio
-0      Laptop     Cargador
-1      Laptop  Auriculares
-2      Laptop      Estuche
-3  Smartphone     Cargador
-4  Smartphone  Auriculares
-5  Smartphone      Estuche
-6      Tablet     Cargador
-7      Tablet  Auriculares
-8      Tablet      Estuche
-```
-
-En este ejemplo, se ha utilizado un *cross join* para generar todas las posibles combinaciones de productos electrónicos y accesorios que se podrían ofrecer juntos en un paquete promocional. Esto podría ayudar a identificar combinaciones de productos y accesorios que se venden bien juntos y a diseñar paquetes promocionales efectivos para los clientes.
 
 ## Temas avanzados
 
