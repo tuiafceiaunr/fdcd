@@ -1240,7 +1240,7 @@ data_mean = data_hogares.copy()
 precio_promedio = data_mean['precio_usd'].mean()
 
 # Realizamos la imputación con fillna()
-data_mean['precio_usd'].fillna(precio_promedio, inplace=True)
+data_mean['precio_usd'] = data_mean['precio_usd'].fillna(precio_promedio)
 
 # Corroboramos la imputacicón
 data_mean.iloc[[10, 13]]
@@ -1263,13 +1263,16 @@ Luego, utilizamos `groupby()` junto con `transform()` para imputar los valores f
 
 ```{code-cell} python
 
+# Hacemos una copia del dataset original para no modificarlo
 data_grouped_mean = data_hogares.copy()
 
-data_grouped_mean['precio_usd'].fillna(
-    data.groupby('barrio')['precio_usd'].transform('mean'),
-    inplace=True
-)
+# Calculamos el precio promedio por barrio. La función transform('mean') devuelve una Serie del mismo tamaño que el DataFrame original, donde cada fila contiene el promedio correspondiente a su barrio.
+precio_promedio_barrio = data_grouped_mean.groupby('barrio')['precio_usd'].transform('mean')
 
+# Imputamos los valores faltantes de 'precio_usd' utilizando el promedio del barrio correspondiente
+data_grouped_mean['precio_usd'] =  data_grouped_mean['precio_usd'].fillna(precio_promedio_barrio)
+
+# Verificamos la imputación
 data_grouped_mean.iloc[[10, 13]]
 ```
 
