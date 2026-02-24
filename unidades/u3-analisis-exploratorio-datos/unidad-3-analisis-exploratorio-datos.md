@@ -151,10 +151,10 @@ En Pandas, la media puede calcularse fácilmente con el método `mean()`.
 ````{admonition} **Cálculo e interpretación de la media aritmética**
 :class: tip
 
-```python
+    ```{code-cell} python
 
-data.bhih01.mean()
-```
+    data.bhih01.mean()
+    ```
 
 **INTERPRETACIÓN:** en promedio, el ingreso total mensual de los hogares encuestados es de $ 22446.65.
 ````
@@ -170,10 +170,10 @@ A diferencia de la media, la mediana no depende de todos los valores en magnitud
 ````{admonition} **Cálculo e interpretación de la mediana**
 :class: tip
 
-```python
+    ```{code-cell} python
 
-data.bhih01.median()
-```
+    data.bhih01.median()
+    ```
 
 **INTERPRETACIÓN:** el 50 % de los hogares encuestados presenta un ingreso mensual total menor o igual a $18000.
 ````
@@ -235,16 +235,16 @@ En Pandas, cualquier cuantilo puede calcularse con el método `quantile()`. A co
 ````{admonition} **Cálculo e interpretación de los cuartilos**
 :class: tip
 
-```python
+    ```{code-cell} python
 
-q1 = data.bhih01.quantile(0.25)  # Q1
-q2 = data.bhih01.quantile(0.50)  # Q2
-q3 = data.bhih01.quantile(0.75)  # Q3  
+    q1 = data.bhih01.quantile(0.25)  # Q1
+    q2 = data.bhih01.quantile(0.50)  # Q2
+    q3 = data.bhih01.quantile(0.75)  # Q3  
 
-print(f"Q1: {q1}")
-print(f"Q2: {q2}")
-print(f"Q3: {q3}")
-```
+    print(f"Q1: {q1}")
+    print(f"Q2: {q2}")
+    print(f"Q3: {q3}")
+    ```
 
 **INTERPRETACIÓN DE LOS VALORES OBTENIDOS:** el 25% de los hogares encuestados reporta ingresos mensuales menores o iguales a \$10000. Por otro lado, la mitad de los hogares percibe ingresos menores o iguales a  \$18000, mientras que el 75% de los hogares reporta ingresos menores o iguales a $30 000.
 ````
@@ -307,10 +307,10 @@ En Pandas, puede calcularse con el método `mode()`:
 ````{admonition} **Cálculo e interpretación de la/las modas**
 :class: tip
 
-```python
+    ```{code-cell} python
 
-data.bhih01.mode()
-```
+    data.bhih01.mode()
+    ```
 
 **INTERPRETACIÓN DEL VALOR OBTENIDO:** el ingreso total mensual más frecuente entre los hogares encuestados es $20000.
 ````
