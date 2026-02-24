@@ -22,6 +22,12 @@ En esta unidad estudiaremos medidas de resumen, es decir, herramientas numérica
 
 Para trabajar los conceptos utilizaremos datos de la Encuesta Nacional de Factores de Riesgo (ENFR 2018, los datos pueden descargarse [acá](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-2)), una encuesta que releva información sobre condiciones de salud, hábitos y factores de riesgo en la población adulta argentina. 
 
+```{code-cell} python3
+import pandas as pd
+
+data = pd.read_csv('datasets/enfr2018.txt', delimiter = '|')
+```
+
 ## Algunos conceptos fundamentales
 
 Antes de avanzar con las medidas de resumen, es importante repasar algunos conceptos básicos de estadística.
@@ -52,15 +58,9 @@ Para que los resultados obtenidos a partir de una muestra puedan generalizarse v
 
 Por ejemplo, si deseamos estudiar la estatura de las mujeres adultas de un país, podríamos seleccionar una muestra aleatoria de mujeres adultas y medir su estatura. Si la muestra es suficientemente grande y representativa, podremos estimar la estatura promedio poblacional con cierto margen de error.
 
-### **Muestra**
-
-Por otro lado, una muestra se refiere a una porción o subconjunto seleccionado que se extrae de la población con el propósito de realizar inferencias sobre la población en su conjunto. El procedimiento por el cual se selecciona una muestra de una población determinada se denomina ***muestreo***. Existen diversos tipos de muestreo que, en términos generales, se clasifican en función de si interviene o no el azar en el proceso. Cabe destacar que para garantizar que los resultados obtenidos a partir de la muestra sean generalizables a la población en su conjunto, es requisito que la muestra sea seleccionada de manera aleatoria.
-
-Por ejemplo, si se desea estudiar la estatura de las mujeres adultas en un país en particular, se podría seleccionar una muestra aleatoria de mujeres adultas y medir su estatura. Si la muestra es representativa y suficientemente grande, se puede inferir información sobre la estatura promedio de todas las mujeres adultas en ese país.
-
 ```{figure} imagenes/poblacion-muestra.png
 ---
-width: 80%
+width: 70%
 align: center
 ---
 Representación esquemática de una población compuesta por individuos y de una muestra seleccionada a partir de ella.
@@ -68,7 +68,7 @@ Representación esquemática de una población compuesta por individuos y de una
 
 ### Variable
 
-Una variable es una característica o propiedad que puede observarse o medirse y que puede tomar distintos valores entre los individuos de la población. Las observaciones registradas de una o más variables conforman un conjunto de datos (**dataset**). En el formato largo presentado en la Unidad 2, cada fila del dataset constituye un registro y cada columna contiene la información correspondiente a una variable.
+Una variable es una característica o propiedad que puede observarse o medirse y que puede tomar distintos valores entre los elementos de la población. Las observaciones registradas de una o más variables conforman un conjunto de datos (**dataset**). En el formato largo presentado en la Unidad 2, cada fila del dataset constituye un registro y cada columna contiene la información correspondiente a una variable.
 
 Según su naturaleza, las variables pueden clasificarse en **cualitativas** o **cuantitativas**.
 
@@ -90,351 +90,191 @@ Son aquellas que toman valores numéricos para los cuales tiene sentido realizar
 
 Se dividen en:
 
-Discretas: toman valores aislados, generalmente enteros (por ejemplo, número de hijos).
+- **Discretas:** toman una cantidad finita de valores posibles. Ejemplos: número de hijos, número de miembros del hogar, número de intervenciones quirúrgicas.
 
-Continuas: pueden asumir cualquier valor dentro de un intervalo (por ejemplo, estatura, peso, presión arterial).
+- **Continuas:** pueden asumir cualquier valor dentro de un intervalo. Ejemplos: estatura, peso, presión arterial, tiempo hasta que llega un colectivo.
 
-En el ejemplo anterior, la “estatura de las mujeres adultas” es una variable cuantitativa continua.
 
-Medición y escalas de medida
+### Medición y escalas de medida
 
-La medición es el proceso mediante el cual se asignan números o categorías a objetos, personas o hechos, con el fin de representar atributos de acuerdo con ciertas reglas.
+La medición es el proceso mediante el cual se asignan números o categorías a objetos, personas o hechos con el propósito de representar atributos de acuerdo con ciertas reglas. Medir no es simplemente “poner números”: implica respetar un sistema que determina qué significan esos números y qué operaciones pueden realizarse con ellos.
 
-El tipo de operaciones estadísticas que podemos realizar depende de la escala de medida de la variable. Clásicamente se distinguen cuatro niveles:
+El tipo de análisis estadístico que podemos aplicar depende de la escala de medida de la variable. Tradicionalmente se distinguen cuatro niveles: nominal, ordinal, de intervalo y de razón. Cada uno de ellos habilita —y a la vez limita— las operaciones que tienen sentido realizar.
 
-Escala nominal
+#### Escala nominal
 
-Los números (si se usan) son solo etiquetas.
+En la escala nominal, los valores funcionan únicamente como etiquetas. No existe un orden inherente entre las categorías y estas son mutuamente excluyentes. Variables como la profesión o el grupo sanguíneo pertenecen a este nivel. Aunque puedan estar codificadas numéricamente en un dataset (por ejemplo, 1 = docente, 2 = comerciante, 3 = estudiante), esos números no representan cantidades. En consecuencia, las operaciones válidas se restringen a conteos, proporciones o la identificación de la categoría más frecuente (la moda). Calcular un promedio no tiene interpretación.
 
-No existe orden inherente.
+#### Escala ordinal
 
-Las categorías son mutuamente excluyentes.
+En la escala ordinal, las categorías presentan un orden natural, pero no es posible cuantificar la distancia entre ellas. Por ejemplo, el nivel educativo (primario, secundario, universitario), el nivel de dolor (leve, moderado, severo) o la posición de llegada en una carrera. Sabemos que una categoría es “mayor” o “más alta” que otra, pero no podemos afirmar cuánto mayor es. En este nivel podemos calcular frecuencias, proporciones, moda y también medidas basadas en el orden, como la mediana o los percentiles. Sin embargo, el promedio puede no ser interpretable, ya que presupone distancias numéricas bien definidas entre valores.
 
-Ejemplo: profesión, grupo sanguíneo.
+#### Escala de intervalo
 
-Operaciones válidas:
+La escala de intervalo incorpora un cambio fundamental: las diferencias entre los valores sí tienen significado cuantitativo. Un ejemplo clásico es la temperatura medida en grados Celsius. La diferencia entre 10 °C y 20 °C es la misma que entre 20 °C y 30 °C. No obstante, el cero no representa ausencia absoluta de la magnitud, por lo que las razones no son interpretables. No tiene sentido afirmar que 20 °C es el doble de 10 °C. En este nivel ya es válido calcular media, varianza y desvío estándar, así como realizar operaciones de suma y resta.
 
-Conteos
+#### Escala de razón
 
-Proporciones
+Finalmente, la escala de razón posee todas las propiedades anteriores y, además, cuenta con un cero absoluto que indica ausencia real de la magnitud medida. Variables como la estatura, el peso, los ingresos o la edad pertenecen a esta categoría. Aquí tanto las diferencias como las razones tienen significado: decir que una persona de 40 años tiene el doble de edad que una de 20 es una afirmación matemáticamente válida. Esta escala permite la mayor variedad de operaciones estadísticas y es la más informativa desde el punto de vista cuantitativo.
 
-Moda
+Comprender la escala de medida no es un detalle técnico menor. De ella depende qué medidas de resumen podemos calcular, qué visualizaciones son apropiadas, qué modelos estadísticos resultan válidos y qué interpretaciones tienen sentido. Retomando ejemplos mencionados anteriormente, en una variable nominal podemos hablar de proporciones, pero no de promedios; en una variable ordinal podemos analizar la mediana; y en una variable de razón podemos calcular media, varianza o coeficiente de variación.
 
-No tiene sentido calcular promedios.
+Elegir una medida inapropiada para el tipo de variable puede conducir a interpretaciones erróneas. Por eso, antes de calcular cualquier estadístico, es fundamental preguntarse primero: **¿qué estoy midiendo y en qué escala?**
 
-Escala ordinal
+## Medidas de posición
 
-Existe un orden entre las categorías.
+Las medidas de posición brindan información acerca de la localización del conjunto de observaciones de una variable.
 
-No conocemos ni podemos interpretar las distancias entre niveles.
+### Media aritmética
 
-Ejemplos:
+La media aritmética, comúnmente llamada promedio y denotada como $\bar{X}$, se define como la suma de todos los valores observados de una variable dividida por el número total de observaciones:
 
-Nivel de dolor (leve, moderado, severo)
+$$\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X_i$$
 
-Posición en una carrera
+Es una medida de tendencia central que utiliza toda la información disponible en el conjunto de datos.
 
-Nivel educativo (primario, secundario, universitario)
+En Pandas, la media puede calcularse fácilmente con el método `mean()`.
 
-Podemos determinar cuál es mayor o menor, pero no cuánto mayor.
+````{admonition} **Cálculo e interpretación**
+:class: tip
 
-Operaciones válidas:
+```{code-cell} python3
 
-Conteos
+data.bhih01.mean()
+```
 
-Proporciones
+**INTERPRETACIÓN:** Si aplicamos este cálculo a la variable BHIH (ingreso del hogar), obtenemos un valor que resume el ingreso promedio reportado por los hogares en la encuesta.
+````
 
-Moda
+Es importante tener presente que la media es sensible a valores extremos. Si en el conjunto de datos existen ingresos muy altos o muy bajos en comparación con la mayoría, estos influirán de manera significativa en el promedio. Esta idea será retomada más adelante.
 
-Mediana
+### Mediana (Q_2)
 
-Percentiles
+La mediana, también llamada segundo cuartil (Q_2) o percentil 50, es el valor que ocupa la posición central cuando los datos se ordenan de menor a mayor. Divide al conjunto en dos partes iguales: el 50% de las observaciones son menores o iguales a la mediana y el otro 50% son mayores o iguales.
 
-El promedio puede no ser interpretable.
+A diferencia de la media, la mediana no depende de todos los valores en magnitud, sino únicamente del orden. Por ello, es mucho más robusta frente a valores extremos.
 
-Escala de intervalo
+````{admonition} **Cálculo e interpretación**
+:class: tip
 
-Las diferencias entre valores tienen significado.
+```{code-cell} python3
 
-No existe un cero absoluto.
+data.bhih01.median()
+```
 
-Las razones no son interpretables.
+**INTERPRETACIÓN:** Si aplicamos este cálculo a la variable BHIH (ingreso del hogar), obtenemos un valor que resume el ingreso promedio reportado por los hogares en la encuesta.
+````
 
-Ejemplo clásico: temperatura en grados Celsius.
+```{admonition} **Media vs. mediana**
+:class: important
 
-No tiene sentido decir que 20 °C es “el doble de caliente” que 10 °C, porque el cero no representa ausencia total de temperatura.
+La comparación entre media y mediana es particularmente relevante en variables económicas.
 
-Operaciones válidas:
+Dado que la media utiliza todos los valores registrados, la presencia de observaciones anormalmente grandes o pequeñas influye de manera sensible en su valor. En cambio, la mediana solo depende de la posición central.
 
-Suma y resta
+En distribuciones simétricas, media y mediana suelen ser similares. Pero en distribuciones asimétricas —como suele ocurrir con los ingresos— la media puede ser considerablemente mayor que la mediana.
 
-Media
+En estos casos, la mediana suele considerarse una medida más representativa del “valor típico” o de la "tendencia central".
+```
 
-Desvío estándar
+### Media truncada (*trimmed mean*)
 
-Varianza
+Una alternativa intermedia entre la media y la mediana es la media truncada. Consiste en calcular el promedio una vez que se ha eliminado un cierto porcentaje $\alpha$ 100 % de las observaciones más pequeñas y más grandes del conjunto de datos. Por ejemplo, una media truncada al 10% elimina el 10% inferior y el 10% superior antes de promediar.
 
-Escala de razón
+Esta medida reduce la influencia de valores extremos, pero sigue utilizando una gran parte de la información disponible. Conceptualmente, se ubica entre la media (que usa todos los datos) y la mediana (que solo depende del centro).
 
-Existe un cero absoluto (ausencia real de la magnitud).
+Un ejemplo conocido de su aplicación es la evaluación de pruebas olímpicas de patinaje artístico sobre hielo y otras disciplinas artísticas y deportivas, donde se descartan puntajes extremos antes de calcular el promedio final.
 
-Las diferencias y las razones tienen significado.
+### Fractilas o cuantilos
 
-Ejemplos:
+La mediana es, en realidad, un caso particular de una familia más amplia de medidas llamadas **fractilas o cuantilos**.
 
-Estatura
-
-Peso
-
-Ingresos
-
-Edad
-
-Aquí sí tiene sentido afirmar que 40 años es el doble de 20 años, o que una persona que pesa 80 kg pesa el doble que una de 40 kg.
-
-Es la escala que permite la mayor cantidad de operaciones estadísticas.
-
-¿Por qué importa la escala de medida?
-
-El tipo de variable y su escala determinan:
-
-Qué medidas de resumen podemos calcular.
-
-Qué visualizaciones son adecuadas.
-
-Qué modelos estadísticos son válidos.
-
-Qué interpretaciones tienen sentido.
+En términos generales, la fractila de orden $r$ (con $0 \leq r \leq 1$) es el valor de la variable tal que el $r$ 100 % de las observaciones son menores o iguales a él.
 
 Por ejemplo:
 
-Para una variable nominal, tiene sentido calcular proporciones.
+- El percentil 25 deja por debajo al 25% de los datos.
 
-Para una variable ordinal, podemos hablar de mediana.
+- El percentil 50 coincide con la mediana.
 
-Para una variable de razón, podemos calcular media, varianza y coeficiente de variación.
+- El percentil 90 deja por debajo al 90% de las observaciones.
 
-Elegir mal la medida de resumen puede llevar a interpretaciones erróneas.
 
-Una variable es una característica, cualidad o propiedad observada que puede asumir diferentes valores y es susceptible de ser cuantificada o medida en una investigación. Las observaciones registradas de una o más variables conforman un **conjunto o set de datos**. Según su naturaleza, las variables pueden ser:
+#### Cuartilos (Q_1, Q_2 y Q_3)
 
-- Cualitativas (también llamadas categóricas): son aquellas que no son medibles numéricamente.
-- Cuantitativas: son aquellas que toman valores numéricos para los cuales tiene sentido pensar en operaciones aritméticas. Pueden ser continuas, si pueden asumir teóricamente cualquier valor dentro de un intervalo, o discretas, si sólo pueden tomar valores aislados en dicho intervalo.
+Los cuartilos son un tipo particular de fractilas que dividen al conjunto de datos ordenados en cuatro partes aproximadamente iguales:
 
-En el ejemplo anterior, la variable de interés es “estatura de las mujeres adultas de un país” y se trata de una variable cuantitativa continua.
+- **Q1 (primer cuartil):** deja por debajo al 25% de las observaciones.
 
-![Untitled](./imagenes/Untitled1.png)
+- **Q2 (segundo cuartil):** deja por debajo al 50% (coincide con la mediana).
 
-### Medición
+- **Q3 (tercer cuartil):** deja por debajo al 75% de los datos.
 
-Asignación de números a objetos, personas o hechos, para representar cantidades de sus atributos, de acuerdo a ciertas reglas.
+En Pandas, cualquier cuantilo puede calcularse con el método `quantile()`:
 
-Escala de medida: 
+````{admonition} **Cálculo e interpretación**
+:class: tip
 
-- Nominal: los números son simplemente rótulos, no tienen valores cuantitativos y las categorías son mutuamente excluyentes. Ej: Profesiones.
-- Ordinal: los números indican un orden en la medición, pero no brinda información sobre las
-distancias entre cada nivel. Ej: orden de llegada en una carrera, grado de dolor.
-- Intervalo: las diferencias entre las mediciones indican intervalos que tienen sentido. Ausencia del cero absoluto. Ej: temperatura en °C, puntajes de crédito. Esto significa que no puedes decir que 20° centigrados es el doble de 10° grados centigrados.
-- Razón: Existe un cero absoluto  y las razones tienen sentido. Ej: estatura.
+```{code-cell} python3
 
-La siguiente tabla muestra las transformaciones y estadísticas aplicables a cada tipo:
-
-![Untitled](./imagenes/Untitled2.png)
-
-## Medidas de centralidad
-
-Las medidas de centralidad describen el centro de la distribución de los datos. Las más comunes son la media aritmética, las fractilas o cuantilos y el modo.
-
-<aside>
-💡 Algunas medidas de resumen se calculan de forma diferente dependiendo si el cálculo se realiza con la población o con una muestra.
-
-</aside>
-
-### **Media aritmética/Promedio**
-
-El promedio de la población se representa con la letra $\mu$ mientras que el promedio de la muestra se representa con $\bar{x}$. En este último caso, se calcula sumando todos los valores no nulos de la variable $X$ y dividiendo por la cantidad de valores no nulos de $X$ ($n$):
-
-$$
-\bar{x} = \frac{\sum_{i = 1}^{n}{x_{i}}}{n}
-$$
-
-Una cuestión importante a tener en cuenta sobre esta medida es que, como depende de todos los valores registrados de la variable, la presencia de un valor anormalmente grande o pequeño en el conjunto influye profundamente sobre ella. Por lo tanto, en estas situaciones deja de ser una medida de centralidad representativa del conjunto de observaciones y deberá buscarse otra alternativa más adecuada. 
-
-Para calcularla, contamos con el método **`mean()`** de **Pandas**, que ya empleamos anteriormente.
-
-### **Mediana**
-
-La mediana, segundo cuartil o percentil del 50%, se define como el valor de la variable que se encuentra en la posición central del conjunto de datos ordenado de menor a mayor. En los casos en los que no existe un único valor central, es decir cuando la cantidad de valores estudiados es par, se calcula el promedio de los dos valores centrales. 
-
-Veamos un ejemplo:
-
-1. Tenemos el siguiente conjunto de 15 observaciones de la variable $X$: [40, 2, 2, 3, 9, 10, 11, 11, 1, 3, 10, 5, 1, 3, 3]
-2. Ordenamos los valores de la variable [1, 1, 2, 2, 3, 3, 3, 3, 5, 9, 10, 10, 11, 11, 40]
-3. El valor intermedio es 3, ya que es el que deja el mismo número de observaciones (7) por debajo y por encima de él.
-
-En nuestros datos parece haber un valor atípico, el 40. Como discutimos arriba, la media, 7.6, se ve afectada por este valor y no constituye una medida de centralidad representativa del conjunto. En esta situación, la mediana es una medida de tendencia central más adecuada para informar.
-
-### **Fractilas o cuantilos**
-
-La mediana es un tipo particular de medida que pertenece a una clase mucho más general de estadísticas descriptivas de centralidad: **las fractilas o cuantilos**. En términos generales, la fractila de orden r es aquel valor de la variable tal que el r% de las observaciones del conjunto ordenado de datos son menores o iguales a él.
-
-**Percentiles**
-
-Los percentiles son un tipo de fractila que divide al conjunto de datos ordenados de la variable $X$ en 100 partes con aproximadamente el mismo número de datos.
-
-Supongamos que tenemos la siguiente lista ordenada de datos con 11 elementos:
-
-$$
-l = [1,2,3,4,5,6,7,8,9,10,11]
-$$
-
-Una vez ordenados los datos de una variable $X$ de menor a mayor, el percentil de orden $i$ es el valor de la variable que deja al $i\%$ de los datos por debajo de sí y al $100 - i\%$ por encima de sí.  El percentil 10 es **2**, puesto que deja un único valor por debajo de sí y nueve valores por encima.
-
-**Los cuartiles**
-
-Los cuartiles son un tipo de fractila que divide al conjunto de datos ordenados de la variable en 4 partes con aproximadamente el mismo número de datos:
-
-- **Cuartil 1 (Q1)** es el valor tal que el 25% de los datos son menores o iguales a él. Coincide con el percentil 25.
-- **Cuartil 2 (Q2)** es el valor tal que el 50% de los datos son menores o iguales a él. Coincide con la mediana, definida anteriormente, y con el percentil 50.
-- **Cuartil 3 (Q3)** es el valor tal que el 75% de los datos son menores o iguales a él. Coincide con el percentil 75.
-
-**¿Cómo calculamos estas medidas con NumPy/Pandas?**
-
-**Pandas** posee el método `quantile` , que permite calcular cualquier fractila de un conjunto de datos de una variable. La misma puede especificarse en el parámetro **`q`** , que por *default* es igual a 0.5 
-
-```python
-data.bhih01.quantile(0.1)
-6000
+data.bhih01.quantile(0.25)  # Q1
+data.bhih01.quantile(0.50)  # Q2
+data.bhih01.quantile(0.75)  # Q3
 ```
 
-También puede utilizarse `percentile`, de **NumPy**, con la salvedad de que, a diferencia del primer método, debe especificarse el percentilo a calcular como un número entero entre 1 y 100.
+**INTERPRETACIÓN DE LOS VALORES OBTENIDOS:** Si aplicamos este cálculo a la variable BHIH (ingreso del hogar), obtenemos un valor que resume el ingreso promedio reportado por los hogares en la encuesta.
+````
 
-```jsx
-np.percentile(data.bhih01, q = 10)
-6000
+```{dropdown} ¿Cómo calcula Pandas los cuantilos?
+:class: seealso
+
+Por defecto, Pandas utiliza el método de interpolación lineal conocido como **método R-7** (también utilizado en R, Excel y NumPy).
+
+Según este método, la posición de la fractila $Q$ se calcula como:
+
+$$Pos = 1 + Q(n-1)$$
+
+Si la posición no es un número entero, se interpola linealmente entre los dos valores adyacentes del conjunto ordenado.
+
+Por ejemplo, para los datos:
+
+$$[2,2,4,5,5,6,7,8]$$
+
+el primer cuartil se ubica en la posición:
+
+$$Pos=1+0.25(8−1)=2.75$$
+
+Como 2.75 se encuentra entre las posiciones 2 y 3, el valor se obtiene interpolando:
+
+$$Q_1 = 2 + 0.75(4-2) = 3.5$$
+
+Cuando la posición calculada para un cuantilo no es un número entero, es necesario decidir cómo obtener el valor correspondiente, lo que se hace modificando el parámetro `interpolation`. Por defecto, Pandas utiliza el método de interpolación `'linear'` (**método R-7**), que interpola linealmente entre los dos valores adyacentes del conjunto ordenado.
+
+Sin embargo, existen otras alternativas que modifican el resultado cuando la posición no coincide exactamente con un dato observado (consultar la [documentación oficial](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.quantile.html#pandas.DataFrame.quantile) para más información):
+
+- **`interpolation = 'lower'`**: toma directamente el valor inferior, es decir, el que se encuentra inmediatamente antes de la posición calculada.
+
+- **`interpolation = 'higher'`**: toma el valor superior, es decir, el que se encuentra inmediatamente después de la posición calculada.
+
+- **`interpolation = 'nearest'`**: selecciona el valor más cercano a la posición estimada.
+
+- **`interpolation = 'midpoint'`**: calcula el punto medio entre los dos valores adyacentes.
+
+Estas opciones pueden producir resultados ligeramente distintos, especialmente en muestras pequeñas. En muestras grandes, las diferencias suelen menores.
+
+Es importante ser conscientes de qué método se está utilizando, sobre todo cuando se comparan resultados obtenidos con distintos programas o paquetes estadísticos, ya que no todos emplean el mismo criterio por defecto.
 ```
 
-Existen varios métodos para calcular percentiles. El **método R-7**, también conocido como "R-7 de Hyndman & Fan", es una variante del método de interpolación lineal. En el mismo, la posición de un percentil específico en una serie de datos ordenada se calcula utilizando la siguiente fórmula, donde **`percentil`** es el percentil deseado y **`N`** es el número total de elementos en la serie de datos:
+#### Decilos y percentilos
 
-```python
-# percentil puede ser cualquier valor entre 1 y 100
-pos = 1 + (percentil / 100) * (N - 1)
-```
+Además de los cuartilos, existen otras fractilas que permiten dividir el conjunto de datos ordenado en partes iguales más pequeñas.
 
-<aside>
-⚠️ **Atención:** esta fórmula nos indica la posición del percentil y no su valor, ya que no estamos incluyendo ninguna de las observaciones que componen el conjunto de datos.
+Los **decilos** son valores que dividen a las observaciones en diez partes con aproximadamente el mismo número de datos. Cada decilo deja por debajo al 10 %, 20 %, 30 %, …, 90 % de las observaciones, respectivamente.
 
-</aside>
+Por su parte, los **percentilos** dividen al conjunto en cien partes. Así, por ejemplo, el percentil 90 deja por debajo al 90% de los datos.
 
-Cuando **`pos`** no es un entero, se **interpola linealmente** entre los dos valores adyacentes en la posición fraccionaria en la serie de datos ordenada. El **método R-7** es utilizado por *default* tanto por `NumPy` [](https://numpy.org/doc/stable/reference/generated/numpy.quantile.html)como por `Pandas` para calcular percentiles. 
 
-[Los otros métodos R (R-1 a R-9)](https://en.wikipedia.org/wiki/Quantile#Estimating_quantiles_from_a_sample) son una familia de métodos de estimación de percentiles propuestos por Hyndman y Fan en su artículo "[Sample Quantiles in Statistical Packages](https://www.amherst.edu/media/view/129116/original/Sample+Quantiles.pdf)" (1996). Estos métodos difieren en la forma en que se calcula la posición y en cómo se interpola entre valores adyacentes cuando la posición no es un entero. Es importante destacar que no existe un enfoque "correcto" único para calcular percentiles, ya que cada método tiene sus propias ventajas y desventajas en función de la distribución y características de los datos en cuestión. Por lo tanto, es útil conocer los diferentes métodos y seleccionar el que mejor se adapte a las necesidades del análisis de datos.
-
-En el caso de **Pandas**, el método `quantile()` cuenta con un parámetro llamado `interpolation`, que permite definir el método a utilizar para estimar la fractila. Si bien utiliza `interpolation = 'linear'` por *default* (Método R-7), permite elegir entre otros criterios.
-
-**Ejemplos:**
-
-La siguiente lista de longitud 8 está dividida en 4 partes iguales y pintada acorde  [**2, 2, 4, 5, 5, 6, 7, 8**]. Veamos cómo se calcularían los tres cuartilos utilizando el método R-7.
-
-El Q1 es un valor que se ubica entre el índice 2 y el 3 (Pos. índice 2.75) para que la lista quede dividida en dos partes, por un lado el 25% de los datos y por el otro el 75%. La lista debería quedar de la siguiente manera [**2, 2, 4, 5, 5, 6, 7, 8**]. El Q1 en este caso es 3.5 si utilizamos la interpolación lineal para calcular el valor. 
-
-Posición del cuartil Q1 = (1 + 0.25 * (8 - 1))  = 2.75
-
-Valor del cuartil Q1 = 2 + 0.75 * (4 - 2) = 3.5
-
-El Q2 es un valor que se ubica entre el índice 4 y 5 (Pos. índice 4.5). Como ambos índices tienen el mismo valor, 5, no hay dudas de que el Q2 es igual a 5. La lista quedaría dividida de esta manera [**2, 2, 4, 5, 5, 6, 7, 8**] con 50% de los datos por debajo del valor y 50% de los datos por encima. 
-
-Posición del cuartil Q2 = (1 + 0.5 * (8 - 1))  = 4.5
-
-Valor del cuartil Q2 = 5 + 0.5 * (5 - 5) = 5
-
-Finalmente, el Q3, es un valor que se ubica entre el índice 6 y 7 (Pos. índice 6.25) para que la lista quede dividida en 75-25%, [**2, 2, 4, 5, 5, 6, 7, 8**] . En este caso el Q3 es 6.25.
-
-Posición del cuartil Q3 = (1 + 0.75 * (8 - 1))  = 6.25
-
-Valor del cuartil Q3 = 6 + 0.25 * (7 - 6) = 6.25
-
-En el siguiente ejemplo, mostramos cómo calcular los cuartiles con **Pandas** recurriendo al método [`quantile`](https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.quantile.html), pero también desarrollando las fórmulas en Python “a mano”.
-
-```python
-import pandas as pd
-import math
-serie = pd.Series([2, 2, 4, 5, 5, 6, 7, 8])
-
-#------------------ "A MANO" ------------------
-# Cálculo de la posición según método R7 (Mismo que en Excel, R, Pandas, NumPy)
-q1_pos = 1 + (25 / 100) * (serie.size - 1)
-q2_pos = 1 + (50 / 100) * (serie.size - 1)
-q3_pos = 1 + (75 / 100) * (serie.size - 1)
-
-# Obtenemos la parte decimal de la posición calculada
-parte_frac, _ = math.modf(q1_pos)
-# ¡Restamos 1 a la posición, ya que nuestra serie se basa en 0!
-index = int(q1_pos) - 1
-# Valor del cuartil Q1 = 2 + 0.75 * (4 - 2) = 3.5
-q1_valor = serie[index] + parte_frac * (serie[index + 1] - serie[index])
-
-# Obtenemos la parte decimal de la posición calculada
-parte_frac, _ = math.modf(q2_pos)
-# ¡Restamos 1 a la posición, ya que nuestra serie se basa en 0!
-index = int(q2_pos) - 1
-# Valor del cuartil Q2 = 5 + 0.5 * (5 - 5) = 5
-q2_valor = serie[index] + parte_frac * (serie[index + 1] - serie[index])
-
-# Obtenemos la parte decimal de la posición calculada
-parte_frac, _ = math.modf(q3_pos)
-# ¡Restamos 1 a la posición, ya que nuestra serie se basa en 0!
-index = int(q3_pos) - 1
-# Valor del cuartil Q3 = 6 + 0.25 * (7 - 6) = 6.25
-q3_valor = serie[index] + parte_frac * (serie[index + 1] - serie[index])
-
-#------------------ USANDO PANDAS ------------------
-# Ahora usamos pandas para calcular los cuartiles. 
-# Por defecto Pandas usa siempre la interpolación "linear"
-q1_pandas = serie.quantile(0.25, interpolation="linear")
-q2_pandas = serie.quantile(0.50, interpolation="linear")
-q3_pandas = serie.quantile(0.75, interpolation="linear")
-
-# Los valores calculados a mano en Python, son iguales a Pandas
-print('Posic.', '\t\t', 'Python', '\t', 'Pandas')
-print(q1_pos, '\t\t', q1_valor, '\t\t', q1_pandas)
-print(q2_pos, '\t\t', q2_valor, '\t\t', q2_pandas)
-print(q3_pos, '\t\t', q3_valor, '\t\t', q3_pandas)
-
-# Resultado
-"""
-Posic. 	 Python  Pandas
-2.75 		 3.5 		 3.5
-4.5 		 5.0 		 5.0
-6.25 		 6.25    6.25
-"""
-```
-
-Volviendo a los datos de ingreso reportados en la encuesta de nuestro dataset, podemos realizar los siguientes cálculos.
-
-```python
-# Cuartil 1 (Q1)
-data.bhih01.quantile(0.25)
-10000
-
-# Cuartil 2 (Q2)
-data.bhih01.quantile(0.5)
-18000
-
-# Cuartil 3 (Q3)
-data.bhih01.quantile(0.75)
-30000
-```
-
-<aside>
-🤔
-
-**Para pensar…**
-¿Cómo interpretaría cada una de estas medidas calculadas sobre los datos de la variable `bhih01` si tuviera que informar estos resultados?
-
-</aside>
-
-### **Moda**
+### Moda
 
 Es el valor de la variable que se presenta un mayor número de veces, es decir, el que tiene la mayor frecuencia. Puede ocurrir que un conjunto de datos no presente modo (si todos los valores presentan igual frecuencia) o que haya más de uno.
 
