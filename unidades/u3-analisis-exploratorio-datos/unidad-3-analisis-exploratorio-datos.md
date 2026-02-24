@@ -37,6 +37,8 @@ Para trabajar los conceptos utilizaremos datos de la Encuesta Nacional de Factor
 import pandas as pd
 
 data = pd.read_csv('datasets/enfr2018.txt', delimiter = '|')
+
+data.head()
 ```
 
 ## Algunos conceptos fundamentales
@@ -146,34 +148,34 @@ Es una medida de tendencia central que utiliza toda la información disponible e
 
 En Pandas, la media puede calcularse fácilmente con el método `mean()`.
 
-````{admonition} **Cálculo e interpretación**
+````{admonition} **Cálculo e interpretación de la media aritmética**
 :class: tip
 
-```{code-cell} python3
+```python
 
 data.bhih01.mean()
 ```
 
-**INTERPRETACIÓN:** Si aplicamos este cálculo a la variable BHIH (ingreso del hogar), obtenemos un valor que resume el ingreso promedio reportado por los hogares en la encuesta.
+**INTERPRETACIÓN:** en promedio, el ingreso total mensual de los hogares encuestados es de $ 22446.65.
 ````
 
 Es importante tener presente que la media es sensible a valores extremos. Si en el conjunto de datos existen ingresos muy altos o muy bajos en comparación con la mayoría, estos influirán de manera significativa en el promedio. Esta idea será retomada más adelante.
 
-### Mediana (Q_2)
+### Mediana ($Q_2$)
 
-La mediana, también llamada segundo cuartil (Q_2) o percentil 50, es el valor que ocupa la posición central cuando los datos se ordenan de menor a mayor. Divide al conjunto en dos partes iguales: el 50% de las observaciones son menores o iguales a la mediana y el otro 50% son mayores o iguales.
+La mediana, también llamada segundo cuartil ($Q_2$) o percentil 50, es el valor que ocupa la posición central cuando los datos se ordenan de menor a mayor. Divide al conjunto en dos partes iguales: el 50% de las observaciones son menores o iguales a la mediana y el otro 50% son mayores o iguales.
 
 A diferencia de la media, la mediana no depende de todos los valores en magnitud, sino únicamente del orden. Por ello, es mucho más robusta frente a valores extremos.
 
-````{admonition} **Cálculo e interpretación**
+````{admonition} **Cálculo e interpretación de la mediana**
 :class: tip
 
-```{code-cell} python3
+```python
 
 data.bhih01.median()
 ```
 
-**INTERPRETACIÓN:** Si aplicamos este cálculo a la variable BHIH (ingreso del hogar), obtenemos un valor que resume el ingreso promedio reportado por los hogares en la encuesta.
+**INTERPRETACIÓN:** el 50 % de los hogares encuestados presenta un ingreso mensual total menor o igual a $18000.
 ````
 
 ```{admonition} **Media vs. mediana**
@@ -196,6 +198,13 @@ Esta medida reduce la influencia de valores extremos, pero sigue utilizando una 
 
 Un ejemplo conocido de su aplicación es la evaluación de pruebas olímpicas de patinaje artístico sobre hielo y otras disciplinas artísticas y deportivas, donde se descartan puntajes extremos antes de calcular el promedio final.
 
+```{figure} imagenes/patinaje.png
+---
+width: 70%
+align: center
+---
+```
+
 ### Fractilas o cuantilos
 
 La mediana es, en realidad, un caso particular de una familia más amplia de medidas llamadas **fractilas o cuantilos**.
@@ -211,7 +220,7 @@ Por ejemplo:
 - El percentil 90 deja por debajo al 90% de las observaciones.
 
 
-#### Cuartilos (Q_1, Q_2 y Q_3)
+#### Cuartilos ($Q_1$, $Q_2$ y $Q_3$)
 
 Los cuartilos son un tipo particular de fractilas que dividen al conjunto de datos ordenados en cuatro partes aproximadamente iguales:
 
@@ -221,19 +230,23 @@ Los cuartilos son un tipo particular de fractilas que dividen al conjunto de dat
 
 - **Q3 (tercer cuartil):** deja por debajo al 75% de los datos.
 
-En Pandas, cualquier cuantilo puede calcularse con el método `quantile()`:
+En Pandas, cualquier cuantilo puede calcularse con el método `quantile()`. A continuación, veremos la aplicación de esta función para el cálculo de los tres cuartilos:
 
-````{admonition} **Cálculo e interpretación**
+````{admonition} **Cálculo e interpretación de los cuartilos**
 :class: tip
 
-```{code-cell} python3
+```python
 
-data.bhih01.quantile(0.25)  # Q1
-data.bhih01.quantile(0.50)  # Q2
-data.bhih01.quantile(0.75)  # Q3
+q1 = data.bhih01.quantile(0.25)  # Q1
+q2 = data.bhih01.quantile(0.50)  # Q2
+q3 = data.bhih01.quantile(0.75)  # Q3  
+
+print(f"Q1: {q1}")
+print(f"Q2: {q2}")
+print(f"Q3: {q3}")
 ```
 
-**INTERPRETACIÓN DE LOS VALORES OBTENIDOS:** Si aplicamos este cálculo a la variable BHIH (ingreso del hogar), obtenemos un valor que resume el ingreso promedio reportado por los hogares en la encuesta.
+**INTERPRETACIÓN DE LOS VALORES OBTENIDOS:** el 25% de los hogares encuestados reporta ingresos mensuales menores o iguales a \$10000. Por otro lado, la mitad de los hogares percibe ingresos menores o iguales a  \$18000, mientras que el 75% de los hogares reporta ingresos menores o iguales a $30 000.
 ````
 
 ```{dropdown} ¿Cómo calcula Pandas los cuantilos?
@@ -287,34 +300,53 @@ Por su parte, los **percentilos** dividen al conjunto en cien partes. Así, por 
 
 ### Moda
 
-Es el valor de la variable que se presenta un mayor número de veces, es decir, el que tiene la mayor frecuencia. Puede ocurrir que un conjunto de datos no presente modo (si todos los valores presentan igual frecuencia) o que haya más de uno.
+La moda es el valor de la variable que aparece con mayor frecuencia en el conjunto de datos.
 
-El comportamiento de una variable a nivel poblacional se encuentra descripto por su **distribución de probabilidad**, la cual indica el rango de valores que ésta puede asumir junto con sus respectivas probabilidades. El concepto de moda puede trasladarse a esta situación y corresponde a aquel valor de la variable en el que la función densidad de probabilidad (en el caso de que la variable sea continua) alcanza un máximo. En función del número de modas que pose, una distribución de probabilidad puede ser unimodal, bimodal o multimodal:  
+En Pandas, puede calcularse con el método `mode()`:
 
-![Untitled](./imagenes/Untitled3.png)
-
-Libro “Hands-On Data Analysis with Pandas” Stefanie Molin.
-
-**Pandas** cuenta con funciones específicas para calcular estas medidas:
+````{admonition} **Cálculo e interpretación de la/las modas**
+:class: tip
 
 ```python
-import pandas as pd
-data = pd.read_csv('ENFR 2018 - Base usuario.txt', delimiter = '|')
 
-# Mean
-data.bhih01.mean()
-2446.65
-
-# Median
-data.bhih01.median()
-18000
-
-# Mode
 data.bhih01.mode()
-20000
 ```
 
-Algo importante para agregar es que la moda es la única medida de posición que puede usarse para datos provenientes de una variable cualitativa. Si se aplica el método `mode()` sobre una columna del **DataFrame** que contiene observaciones para este tipo de variable, devolverá aquella/s categoría/s que se hayan presentado con mayor frecuencia.
+**INTERPRETACIÓN DEL VALOR OBTENIDO:** el ingreso total mensual más frecuente entre los hogares encuestados es $20000.
+````
+
+A diferencia de la media o la mediana, **la moda puede no ser única**. Es posible que un conjunto de datos presente varias modas (distribución multimodal). En esos casos, el método `mode()` devuelve una Serie con todos los valores que comparten la frecuencia máxima:
+
+```{code-cell} python
+
+serie_ejemplo = pd.Series([2, 3.5, 8, 3.5, 4, 6.5, 8, 6.5])
+serie_ejemplo.mode()
+```
+
+Aquí observamos que existen tres valores igualmente frecuentes.
+
+Un aspecto importante es que la moda **es la única medida de posición que puede utilizarse con variables cualitativas**. En variables categóricas no tiene sentido hablar de media o mediana, pero sí podemos identificar la categoría más frecuente.
+
+Por ejemplo, en el contexto de la ENFR 2018, si calculamos la moda de la variable *tipo de vivienda* (`):
+
+```{code-cell} python
+
+data.bhcv01.mode()
+```
+
+Si el resultado es 1, esto no significa que “1” sea el tipo de vivienda más frecuente en sí mismo, sino que **la categoría codificada como 1 es la más frecuente**. En este caso, según el diccionario de variables:
+
+1. Casa  
+2. Casilla  
+3. Departamento  
+4. Pieza de inquilinato  
+5. Pieza en hotel o pensión  
+6. Local no construido para habitación  
+7. Otros  
+
+Por lo tanto, la categoría más frecuente entre los hogares encuestados es **casa**.
+
+Este ejemplo ilustra una cuestión importante en el análisis de datos: muchas variables cualitativas se encuentran codificadas numéricamente. Antes de interpretar los resultados, es indispensable consultar el diccionario de variables para comprender qué representa cada código.
 
 ## Medidas de dispersión
 
