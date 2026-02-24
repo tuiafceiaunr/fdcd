@@ -182,9 +182,9 @@ La comparación entre media y mediana es particularmente relevante en variables 
 
 Dado que la media utiliza todos los valores registrados, la presencia de observaciones anormalmente grandes o pequeñas influye de manera sensible en su valor. En cambio, la mediana solo depende de la posición central.
 
-En distribuciones simétricas, media y mediana suelen ser similares. Pero en distribuciones asimétricas —como suele ocurrir con los ingresos— la media puede ser considerablemente mayor que la mediana.
+En distribuciones simétricas, media y mediana suelen ser similares. Pero en distribuciones asimétricas —como suele ocurrir con los ingresos— la media puede diferir considerablemente de la mediana. Cuando la distribución presenta asimetría hacia la derecha, algunos valores elevados tienden a incrementar el promedio.
 
-En estos casos, la mediana suele considerarse una medida más representativa del “valor típico” o de la "tendencia central".
+En nuestro conjunto de datos, la media del ingreso mensual es de \$22446.65, mientras que la mediana es de \$18000. El hecho de que la media sea mayor que la mediana sugiere la presencia de ingresos relativamente altos que elevan el promedio por encima del valor central. En situaciones como esta, la mediana suele considerarse una medida más representativa del “valor típico” o de la tendencia central de los datos. Por este motivo, resultaría más apropiado informar la mediana como resumen del ingreso mensual de estos hogares.
 ```
 
 ### Media truncada (*trimmed mean*)
@@ -243,7 +243,7 @@ print(f"Q3: {q3}")
 **Interpretación de los valores obtenidos:**
 
 > ***El 25% de los hogares encuestados reporta ingresos mensuales menores o iguales a \$10000. Por otro lado, la mitad de los hogares percibe ingresos menores o iguales a  \$18000, mientras que el 75% de los hogares reporta ingresos menores o iguales a $30 000.***
-````
+
 
 ```{dropdown} ¿Cómo calcula Pandas los cuantilos?
 :class: seealso
@@ -305,7 +305,7 @@ En Pandas, puede calcularse con el método **`mode()`**:
 data.bhih01.mode()
 ```
 
-> ***el ingreso total mensual más frecuente entre los hogares encuestados es $20000.***
+> ***El ingreso total mensual más frecuente entre los hogares encuestados es $20000.***
 
 A diferencia de la media o la mediana, **la moda puede no ser única**. Es posible que un conjunto de datos presente varias modas (distribución multimodal). En esos casos, el método `mode()` devuelve una Serie con todos los valores que comparten la frecuencia máxima:
 
@@ -319,7 +319,7 @@ Aquí observamos que existen tres valores igualmente frecuentes.
 
 Un aspecto importante es que la moda **es la única medida de posición que puede utilizarse con variables cualitativas**. En variables categóricas no tiene sentido hablar de media o mediana, pero sí podemos identificar la categoría más frecuente.
 
-Por ejemplo, en el contexto de la ENFR 2018, si calculamos la moda de la variable *tipo de vivienda* (`):
+Por ejemplo, en el contexto de la ENFR 2018, si calculamos la moda de la variable *tipo de vivienda* (`bhcv01`), obtenemos el siguiente resultado:
 
 ```{code-cell} python
 
@@ -342,97 +342,187 @@ Este ejemplo ilustra una cuestión importante en el análisis de datos: muchas v
 
 ## Medidas de dispersión
 
-Las medidas de dispersión describen la variabilidad de los datos y complementan a las medidas de centralidad, que no resumen en forma completa la información contenida en el conjunto de datos de la variable de interés. Podemos tener dos conjuntos de datos con aproximadamente la misma media, mediana y modo, pero que difieran en cuánto se alejan del valor “central”.
+Las medidas de tendencia central —como la media y la mediana— nos dan una idea acerca de la localización del conjunto de datos en el eje de variación en el que se mueve la variable de interés. Sin embargo, resumen sólo parte de la información contenida en el conjunto de datos
+
+Dos conjuntos de observaciones pueden tener la misma media y la misma mediana, pero diferir considerablemente en cuánto se "alejan"" los valores individuales respecto del valor central. Surge así la necesidad de incorporar medidas de dispersión, cuyo objetivo es **describir la variabilidad de los datos.**
+
+Para ilustrar esta idea, consideremos los siguientes dos conjuntos de datos:
+
+**Conjunto I:** 40, 38, 42, 40, 39, 39, 43, 40, 39, 40
+
+**Conjunto II:** 46, 37, 40, 33, 42, 36, 40, 47, 34, 45
+
+Vamos a generar un DataFrame para poder trabajar con ellos:
+
+```{code-cell} python
+import pandas as pd
+import numpy as np
+
+# Creamos los dos conjuntos
+data_I = [40, 38, 42, 40, 39, 39, 43, 40, 39, 40]
+data_II = [46, 37, 40, 33, 42, 36, 40, 47, 34, 45]
+
+# Creamos un DataFrame en formato largo
+df = pd.DataFrame({
+    "valor": data_I + data_II,
+    "grupo": ["Conjunto I"] * 10 + ["Conjunto II"] * 10
+})
+
+df.head()
+```
+
+Exploremos ahora cuál es la media y la mediana de cada conjunto:
+
+```{code-cell} python
+df.groupby("grupo")["valor"].agg(["mean", "median"])
+```
+A partir de la salida anterior, observamos que, aunque los conjuntos están compuestos por valores distintos, ambos tienen la misma media y la misma mediana. Esto muestra que las medidas de tendencia central no capturan toda la información relevante sobre la distribución de los datos.
+
+A continuación, representamos gráficamente ambos conjuntos utilizando un gráfico de tipo *jitter plot*, que permite visualizar cada observación individual:
+
+```{code-cell} python
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize = (5,5))
+
+sns.stripplot(x = 'valor', y = 'grupo', hue = 'grupo', size = 7, data = df)
+plt.xlabel('Variable', fontweight='bold')
+plt.ylabel('Conjunto', fontweight='bold')
+
+plt.show()
+```
+
+Aunque ambos conjuntos comparten la misma media, mediana y moda, el gráfico revela una diferencia sustancial en su distribución. En el Conjunto I, los valores se concentran alrededor de 40 y muestran poca variabilidad. En cambio, en el Conjunto II, las observaciones se encuentran más alejadas del centro y cubren un rango más amplio.
+
+Decimos entonces que el Conjunto II presenta mayor dispersión.
+
+Esta diferencia visual pone de manifiesto que conocer únicamente el centro de los datos no es suficiente. Necesitamos incorporar medidas que cuantifiquen cuánto se apartan las observaciones respecto de ese centro. Estas medidas reciben el nombre de medidas de dispersión y serán desarrolladas a continuación.
+
+Para ilustrar cada medida, utilizaremos la variable ingreso total mensual del hogar (`bhih01`), de la ENFR.
 
 ### Rango
 
-Rango o amplitud, es la distancia entre el dato de menor valor y el de mayor valor. Dado un conjunto de datos de una variable llamado $valores$, el rango se define como:
+El rango es la diferencia entre el mayor y el menor valor observado de la variable:
 
-$$
-R = max(valores)- min(valores)
-$$
+$$R = X_{max} - X_{min}$$
 
-Por ejemplo, para el grupo de datos [5, 7, 29, 9, 60, 1, 100, 45, 50, 80], el rango es 99.
+En Pandas, puede calcularse como:
 
-Usando los datos de la encuesta de salud obtendríamos:
+```{code-cell} python
+rango = data.bhih01.max() - data.bhih01.min()
 
-```python
-data.bhih01.max() - data.bhih01.min()
-420000
+print(rango)
 ```
 
-### Varianza
+A continuación, una forma de interpretar el valor obtenido en el contexto de los datos de la encuesta:
 
-Es una medida de cuánto se desvían, en promedio, las observaciones de una variable respecto a la media aritmética. Se calcula como:
+> ***Los ingresos totales mensuales en los hogares encuestados se encuentran en un rango de \$420000.*** 
 
-$$
-s^2=\frac {\sum_{i = 1}^{n}(x_i - \bar{x})^2}{n-1}
-$$
+```{admonition} **Importante**
+:class: important
 
-Donde:
-
-$n:$ Cantidad de datos en la muestra
-
-$\bar{x}:$ Media de la muestra
-
-<aside>
-💡 La varianza se utiliza en diversos campos como la economía, finanzas, psicología, biología, física, entre otros, para evaluar qué tan dispersos están los valores en un conjunto de datos. Si la varianza es pequeña, significa que los datos están más agrupados o concentrados en torno a la media; si es grande, los datos están más dispersos.
-
-</aside>
-
-### Desvío Estándar
-
-Se define como la raíz cuadrada positiva de la variancia:
-
-$$
-s=\sqrt{\frac {\sum_{i = 1}^{n}(x_i - \bar{x})^2}{n-1}}
-$$
-
-En comparación con la variancia, posee la ventaja de que está expresada en las unidades de la variable, por lo que su interpretación es más sencilla y directa. Podemos interpretarla como una **“distancia promedio de las observaciones con respecto a la media”**.
-
-Una desviación estándar baja indica que la mayor parte de los datos de una muestra tienden a estar agrupados cerca de la media aritmética, mientras que una desviación estándar alta indica que los datos se extienden sobre un rango de valores más amplio. 
-
-Gráficamente, considerando que las representaciones de la figura corresponden a gráficos de densidad de los datos observados de una variable (ya los trabajaremos en profundidad en la próxima Unidad):
-
-![Una desviación estándar alta indica una mayor variabilidad en los datos, mientras que una desviación estándar baja indica una menor variabilidad.](./imagenes/Untitled4.png)
-
-Una desviación estándar alta indica una mayor variabilidad en los datos, mientras que una desviación estándar baja indica una menor variabilidad.
-
-Pensando en la distribución de probabilidad de la variable, si ésta sigue una distribución normal:
-
-![Una gráfica de la [distribución normal](https://es.wikipedia.org/wiki/Distribuci%C3%B3n_normal) (o curva en forma de campana, o curva de Gauss), donde cada banda tiene un ancho de una vez la desviación estándar](./imagenes/Untitled5.png)
-
-Una gráfica de la [distribución normal](https://es.wikipedia.org/wiki/Distribuci%C3%B3n_normal) (o curva en forma de campana, o curva de Gauss), donde cada banda tiene un ancho de una vez la desviación estándar
-
-**Pandas** cuenta con la función `pd.std`que calcula la desviación estándar de la muestra:
-
-```python
-import pandas as pd
-data = pd.read_csv('ENFR 2018 - Base usuario.txt', delimiter = '|')
-
-# Desviación estándar
-data.bhih01.std()
-19756.58
+Si el valor obtenido es elevado en el contexto de los datos con los que estamos trabajando, esto sugiere la presencia de una gran heterogeneidad entre las observaciones. No obstante, es preciso tener presente que **el rango depende exclusivamente de los valores extremos**, por lo que puede verse fuertemente afectado por la existencia de observaciones atípicas.
 ```
+
+### Varianza y desvío estándar
+
+La varianza mide cuánto se desvían, en promedio, las observaciones respecto de la media aritmética. Se define como:
+
+$$S^2=\frac{1}{n-1}\sum_{i=1}^{n}{(X_i - \bar{X})^2}$$
+
+Cuanto mayor es la variabilidad de los datos, mayor será la varianza.
+
+Por su parte, el desvío estándar es la raíz cuadrada positiva de la varianza:
+
+$$S^2=\sqrt{\frac{1}{n-1}\sum_{i=1}^{n}{(X_i - \bar{X})^2}}$$
+
+En Pandas:
+
+```{code-cell} python
+varianza = data.bhih01.var()
+desv_est = data.bhih01.std()
+
+print(f"Varianza: {varianza}")
+print(f"Desvío estándar: {desv_est}")
+```
+
+A diferencia de la varianza, el desvío estándar está expresado en las mismas unidades que la variable, lo que facilita su interpretación.
+
+> ***En promedio, los ingresos totales mensuales de los hogares encuestados se desvían aproximadamente \$19756.58 con respecto a la media de \$22446.65.***
 
 ### Coeficiente de Variación (CV)
 
-El coeficiente de variación (CV) es una medida de dispersión relativa que se utiliza para comparar la variabilidad de diferentes conjuntos de datos en términos de su relación con la media. Se define como el desvío estándar dividido por la media aritmética:
+El coeficiente de variación (CV) se define como el cociente entre el desvío estándar y el valor absoluto de la media:
 
-$$
-CV = \frac{s}{\bar{|x|}}
-$$
+$$CV = \frac{S}{\bar{|X|}}$$
 
-Es una medida adimensional que indica qué proporción representa el desvío estándar de la media aritmética. Se suele utilizar cuando se desea comparar la variabilidad de dos o más conjuntos de datos que difieren en unidades de medida y/o magnitudes.
+Es una medida adimensional, lo que permite comparar la variabilidad relativa entre variables con distintas unidades o escalas.
 
-Por ejemplo, si queremos comparar la variabilidad de los precios de dos productos que tienen diferentes unidades de medida, el CV nos permitiría hacerlo de manera más adecuada. Si el producto A tiene un precio promedio de $100 con una desviación estándar de $10, y el producto B tiene un precio promedio de $50 con una desviación estándar de $5, el CV de ambos productos sería:
+En Python:
 
-CV A = (10 / 100) x 100% = 10%
-CV B = (5 / 50) x 100% = 10%
+```{code-cell} python
+cv = data.bhih01.std() / data.bhih01.mean()
 
-En este caso, el CV es el mismo para ambos productos, lo que indica que la variabilidad relativa del precio es similar en ambos casos, independientemente de las unidades de medida utilizadas.
+print(cv)
+```
 
-### Rango intercuartílico (RI)
+> ***El desvío estándar del ingreso total mensual de los hogares encuestados representa un 88 % del valor promedio correspondiente.***
+
+Retomando su característica de medida adimensional, supongamos que queremos comparar la dispersión del ingreso mensual de los hogares encuestados en Argentina con la de un estudio análogo realizado en Uruguay.
+
+Más allá de la realidad económica de cada país, dado que los niveles de ingreso están medidos en escalas diferentes por tratarse de monedas distintas, no tendría sentido comparar directamente los desvíos estándar expresados en sus monedas originales. Un mayor desvío estándar en Argentina podría deberse simplemente a que los ingresos están expresados en una escala monetaria numéricamente más alta, y no necesariamente a una mayor variabilidad relativa.
+
+En este sentido, el coeficiente de variación, al ser una medida adimensional, permite comparar la dispersión relativa de los ingresos entre ambos países independientemente de la unidad monetaria utilizada.
+
+
+### Rango intercuartil (RI)
+
+El rango intercuartil se define como la diferencia entre el tercer y el primer cuartil:
+
+$$RI = Q_3 - Q_1$$
+
+Mide la amplitud del 50% central de los datos y, a diferencia del rango, no se ve afectado por valores extremos.
+
+En Pandas:
+
+```{code-cell} python
+q1 = data.bhih01.quantile(0.25)
+q3 = data.bhih01.quantile(0.75)
+
+ri = q3 - q1
+
+print(ri)
+```
+
+> ***El 50% central de los ingresos totales anuales de los hogares encuestados se encuentra en un rango de \$20000.***
+
+El rango intercuartil es una medida robusta de dispersión y resulta especialmente adecuada cuando se utiliza la mediana como medida de tendencia central.
+
+### Desviación mediana absoluta (MAD)
+
+La desviación mediana absoluta (MAD) es una medida robusta de dispersión basada en la mediana. Se define como:
+
+$$MAD = \text{Mediana}(|X_i - Q_2|)
+
+Es decir, es la mediana de las diferencias absolutas entre cada observación y la mediana del conjunto.
+
+En Python:
+
+```{code-cell} python
+mediana = data.bhih01.median()
+dif_abs = abs(data.bhih01 - mediana)
+
+mad = dif_abs.median()
+
+print(mad)
+```
+
+Interpretación:
+
+> ***El 50 % de los ingresos totales mensuales de los hogares encuestados se aleja de la mediana un total de \$9000 o menos, en valor absoluto.***
+
+La MAD representa la desviación típica respecto de la mediana. Al estar basada en una medida robusta de centralidad, no se ve influenciada por valores extremos, por lo que es especialmente útil en distribuciones asimétricas.
 
 Es la diferencia entre el tercer y el primer cuartil y, como tal, **mide la dispersión del 50% de los datos centrales.**
 
