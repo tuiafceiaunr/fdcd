@@ -2,28 +2,55 @@
 
 ## Introducción
 
-Una de las primeras tareas que tenemos que realizar antes de comenzar a trabajar con los datos que recibimos es el análisis exploratorio de los datos. Esta tarea surge naturalmente cuando la consigna del análisis no está definida pero es muy posible pasarla por alto cuando nos piden realizar X análisis usando ciertos datos. 
+Una de las primeras etapas en cualquier trabajo con datos es el **análisis exploratorio de datos** (EDA, por sus siglas en inglés). Antes de calcular indicadores, ajustar modelos o responder preguntas específicas, necesitamos entender con qué información estamos trabajando.
 
-En esta unidad vamos a estudiar medidas de resumen que nos permitan entender los datos a partir de ciertos valores. En la próxima unidad, vamos a explorar los datos a través de visualizaciones.
+Con frecuencia, cuando el objetivo del análisis ya está definido —por ejemplo, estimar un promedio o construir un modelo predictivo—, tendemos a ir directamente al procedimiento técnico. Sin embargo, detenernos previamente a explorar los datos es fundamental para evitar errores y para interpretar correctamente los resultados.
 
-Para esta unidad vamos a utilizar la “Encuesta Nacional de Factores de Riesgo (ENFR) 2018” disponible [acá](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-2) 
+El análisis exploratorio nos permite:
 
-### Contenido de la unidad
+- Comprender la estructura del dataset.
 
-1. Medidas de centralidad: media, mediana, moda
-2. Cuartiles y percentiles
-3. Medidas de dispersión: rango, varianza, desvío estándar, rango intercuartílico, desviación mediana absoluta (MAD)
-4. Valores atípicos
-5. Tablas de frecuencia, proporciones y porcentajes
-6. Métricas de correlación: covarianza, correlación lineal, correlación de Spearman
-7. Matriz de covarianza y matriz de correlación
-8. Métricas de distancia y similaridad
+- Detectar errores, valores faltantes o inconsistencias.
 
-## Algunos conceptos importantes
+- Identificar patrones preliminares.
 
-### **Población**
+- Formular hipótesis.
 
-En estadística, la población se refiere al conjunto total de individuos, objetos, eventos o medidas que comparten una característica común de interés y que son de interés para un estudio en particular. La población puede ser tan grande o tan pequeña como se desee y puede estar formada por personas, animales, objetos, empresas, países, entre otros.
+- Elegir métodos adecuados para el análisis posterior.
+
+En esta unidad estudiaremos medidas de resumen, es decir, herramientas numéricas que permiten describir y sintetizar la información contenida en los datos mediante ciertos valores representativos. Estas medidas constituyen una primera aproximación cuantitativa al conjunto de datos. En la próxima unidad complementaremos este enfoque mediante el uso de visualizaciones, que nos permitirán analizar la información desde una perspectiva gráfica.
+
+Para trabajar los conceptos utilizaremos datos de la Encuesta Nacional de Factores de Riesgo (ENFR 2018, los datos pueden descargarse [acá](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-2)), una encuesta que releva información sobre condiciones de salud, hábitos y factores de riesgo en la población adulta argentina. 
+
+## Algunos conceptos fundamentales
+
+Antes de avanzar con las medidas de resumen, es importante repasar algunos conceptos básicos de estadística.
+
+### Población
+
+En estadística, la población es el conjunto total de individuos, objetos, eventos o mediciones que comparten una característica de interés y sobre los cuales deseamos obtener información.
+
+La población no necesariamente está compuesta por personas: puede estar formada por empresas, países, mediciones ambientales, transacciones financieras, experimentos de laboratorio, entre otros.
+
+Un punto importante es que la población está definida por el objetivo del estudio. Por ejemplo:
+
+- Si queremos estudiar el nivel de actividad física en Argentina, la población podría ser *“todas las personas adultas residentes en Argentina”*.
+
+- Si queremos estudiar el rendimiento académico en una materia, la población podría ser *“todos los estudiantes que cursaron la materia en 2025”*.
+
+La población puede ser muy grande (millones de individuos) o relativamente pequeña (unas pocas decenas).
+
+### Muestra
+
+En la práctica, rara vez es posible estudiar a toda la población. Por eso se selecciona una muestra, es decir, un subconjunto de la población que se utiliza para obtener información e inferir conclusiones sobre el conjunto total. El procedimiento mediante el cual se selecciona una muestra se denomina **muestreo**. Existen distintos tipos de muestreo, que pueden clasificarse, en términos generales, en:
+
+- **Probabilísticos:** interviene el azar en la selección.
+
+- **No probabilísticos:** no todos los elementos de la población tienen la misma probabilidad de ser seleccionados.
+
+Para que los resultados obtenidos a partir de una muestra puedan generalizarse válidamente a la población, es fundamental que la muestra sea **representativa**, lo cual generalmente requiere algún tipo de selección aleatoria.
+
+Por ejemplo, si deseamos estudiar la estatura de las mujeres adultas de un país, podríamos seleccionar una muestra aleatoria de mujeres adultas y medir su estatura. Si la muestra es suficientemente grande y representativa, podremos estimar la estatura promedio poblacional con cierto margen de error.
 
 ### **Muestra**
 
@@ -31,9 +58,163 @@ Por otro lado, una muestra se refiere a una porción o subconjunto seleccionado 
 
 Por ejemplo, si se desea estudiar la estatura de las mujeres adultas en un país en particular, se podría seleccionar una muestra aleatoria de mujeres adultas y medir su estatura. Si la muestra es representativa y suficientemente grande, se puede inferir información sobre la estatura promedio de todas las mujeres adultas en ese país.
 
-![Untitled](./imagenes/Untitled.png)
+```{figure} imagenes/poblacion-muestra.png
+---
+width: 80%
+align: center
+---
+Representación esquemática de una población compuesta por individuos y de una muestra seleccionada a partir de ella.
+```
 
-### **Variable**
+### Variable
+
+Una variable es una característica o propiedad que puede observarse o medirse y que puede tomar distintos valores entre los individuos de la población. Las observaciones registradas de una o más variables conforman un conjunto de datos (**dataset**). En el formato largo presentado en la Unidad 2, cada fila del dataset constituye un registro y cada columna contiene la información correspondiente a una variable.
+
+Según su naturaleza, las variables pueden clasificarse en **cualitativas** o **cuantitativas**.
+
+#### Variables cualitativas (categóricas)
+
+Las variables cualitativas son aquellas cuyos valores representan categorías o atributos, y no cantidades numéricas sobre las que tenga sentido realizar operaciones aritméticas. Aunque a veces se codifiquen con números, esos números funcionan únicamente como etiquetas.
+
+En la ENFR 2018 encontramos múltiples ejemplos de este tipo de variables. Por ejemplo: el máximo nivel educativo alcanzado, el estado civil, la provincia de residencia y la cobertura de salud (sí/no, tipo de cobertura).
+
+Dentro de las variables cualitativas podemos distinguir dos tipos:
+
+- **Nominales:** las categorías no tienen un orden natural. En la ENFR, la provincia de residencia o el estado civil son variables nominales.
+
+- **Ordinales:** las categorías presentan un orden, pero no es posible cuantificar la distancia entre ellas. El máximo nivel educativo alcanzado es un ejemplo claro: sabemos que *universitario* implica un nivel mayor que *secundario*, pero no podemos decir cuánto mayor en términos numéricos.
+
+#### Variables cuantitativas
+
+Son aquellas que toman valores numéricos para los cuales tiene sentido realizar operaciones aritméticas.
+
+Se dividen en:
+
+Discretas: toman valores aislados, generalmente enteros (por ejemplo, número de hijos).
+
+Continuas: pueden asumir cualquier valor dentro de un intervalo (por ejemplo, estatura, peso, presión arterial).
+
+En el ejemplo anterior, la “estatura de las mujeres adultas” es una variable cuantitativa continua.
+
+Medición y escalas de medida
+
+La medición es el proceso mediante el cual se asignan números o categorías a objetos, personas o hechos, con el fin de representar atributos de acuerdo con ciertas reglas.
+
+El tipo de operaciones estadísticas que podemos realizar depende de la escala de medida de la variable. Clásicamente se distinguen cuatro niveles:
+
+Escala nominal
+
+Los números (si se usan) son solo etiquetas.
+
+No existe orden inherente.
+
+Las categorías son mutuamente excluyentes.
+
+Ejemplo: profesión, grupo sanguíneo.
+
+Operaciones válidas:
+
+Conteos
+
+Proporciones
+
+Moda
+
+No tiene sentido calcular promedios.
+
+Escala ordinal
+
+Existe un orden entre las categorías.
+
+No conocemos ni podemos interpretar las distancias entre niveles.
+
+Ejemplos:
+
+Nivel de dolor (leve, moderado, severo)
+
+Posición en una carrera
+
+Nivel educativo (primario, secundario, universitario)
+
+Podemos determinar cuál es mayor o menor, pero no cuánto mayor.
+
+Operaciones válidas:
+
+Conteos
+
+Proporciones
+
+Moda
+
+Mediana
+
+Percentiles
+
+El promedio puede no ser interpretable.
+
+Escala de intervalo
+
+Las diferencias entre valores tienen significado.
+
+No existe un cero absoluto.
+
+Las razones no son interpretables.
+
+Ejemplo clásico: temperatura en grados Celsius.
+
+No tiene sentido decir que 20 °C es “el doble de caliente” que 10 °C, porque el cero no representa ausencia total de temperatura.
+
+Operaciones válidas:
+
+Suma y resta
+
+Media
+
+Desvío estándar
+
+Varianza
+
+Escala de razón
+
+Existe un cero absoluto (ausencia real de la magnitud).
+
+Las diferencias y las razones tienen significado.
+
+Ejemplos:
+
+Estatura
+
+Peso
+
+Ingresos
+
+Edad
+
+Aquí sí tiene sentido afirmar que 40 años es el doble de 20 años, o que una persona que pesa 80 kg pesa el doble que una de 40 kg.
+
+Es la escala que permite la mayor cantidad de operaciones estadísticas.
+
+¿Por qué importa la escala de medida?
+
+El tipo de variable y su escala determinan:
+
+Qué medidas de resumen podemos calcular.
+
+Qué visualizaciones son adecuadas.
+
+Qué modelos estadísticos son válidos.
+
+Qué interpretaciones tienen sentido.
+
+Por ejemplo:
+
+Para una variable nominal, tiene sentido calcular proporciones.
+
+Para una variable ordinal, podemos hablar de mediana.
+
+Para una variable de razón, podemos calcular media, varianza y coeficiente de variación.
+
+Elegir mal la medida de resumen puede llevar a interpretaciones erróneas.
 
 Una variable es una característica, cualidad o propiedad observada que puede asumir diferentes valores y es susceptible de ser cuantificada o medida en una investigación. Las observaciones registradas de una o más variables conforman un **conjunto o set de datos**. Según su naturaleza, las variables pueden ser:
 
