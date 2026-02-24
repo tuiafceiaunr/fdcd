@@ -148,16 +148,15 @@ Es una medida de tendencia central que utiliza toda la información disponible e
 
 En Pandas, la media puede calcularse fácilmente con el método `mean()`.
 
-````{admonition} **Cálculo e interpretación de la media aritmética**
+:::{admonition} **Cálculo e interpretación de la media aritmética**
 :class: tip
 
-    ```{code-cell} python
-
-    data.bhih01.mean()
-    ```
+```{code-cell} python
+data.bhih01.mean()
+```
 
 **INTERPRETACIÓN:** en promedio, el ingreso total mensual de los hogares encuestados es de $ 22446.65.
-````
+:::
 
 Es importante tener presente que la media es sensible a valores extremos. Si en el conjunto de datos existen ingresos muy altos o muy bajos en comparación con la mayoría, estos influirán de manera significativa en el promedio. Esta idea será retomada más adelante.
 
