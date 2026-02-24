@@ -33,7 +33,7 @@ En esta unidad estudiaremos medidas de resumen, es decir, herramientas numérica
 
 Para trabajar los conceptos utilizaremos datos de la Encuesta Nacional de Factores de Riesgo (ENFR 2018, los datos pueden descargarse [acá](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-2)), una encuesta que releva información sobre condiciones de salud, hábitos y factores de riesgo en la población adulta argentina. 
 
-```{code-cell} python3
+```{code-cell} python
 import pandas as pd
 
 data = pd.read_csv('datasets/enfr2018.txt', delimiter = '|')
@@ -146,19 +146,21 @@ $$\bar{X} = \frac{1}{n}\sum_{i=1}^{n} X_i$$
 
 Es una medida de tendencia central que utiliza toda la información disponible en el conjunto de datos.
 
-En Pandas, la media puede calcularse fácilmente con el método `mean()`.
-
-:::{admonition} **Cálculo e interpretación de la media aritmética**
-:class: tip
+En Pandas, la media puede calcularse fácilmente con el método **`mean()`**.
 
 ```{code-cell} python
 data.bhih01.mean()
 ```
 
-**INTERPRETACIÓN:** en promedio, el ingreso total mensual de los hogares encuestados es de $ 22446.65.
-:::
+Como parte del análisis descriptivo, no solo debemos calcular medidas numéricas representativas, sino también **interpretarlas en el contexto del problema**. Esto constituye un aspecto central en cualquier análisis de datos. El valor obtenido puede interpretarse de la siguiente manera:
+
+> ***En promedio, el ingreso total mensual de los hogares encuestados es de $22446.65.***
+
+```{admonition} **Importante**
+:class: important
 
 Es importante tener presente que la media es sensible a valores extremos. Si en el conjunto de datos existen ingresos muy altos o muy bajos en comparación con la mayoría, estos influirán de manera significativa en el promedio. Esta idea será retomada más adelante.
+```
 
 ### Mediana ($Q_2$)
 
@@ -166,16 +168,12 @@ La mediana, también llamada segundo cuartil ($Q_2$) o percentil 50, es el valor
 
 A diferencia de la media, la mediana no depende de todos los valores en magnitud, sino únicamente del orden. Por ello, es mucho más robusta frente a valores extremos.
 
-````{admonition} **Cálculo e interpretación de la mediana**
-:class: tip
+En Pandas, la mediana puede calcularse fácilmente con el método **`median()`**.
 
-    ```{code-cell} python
-
-    data.bhih01.median()
-    ```
-
-**INTERPRETACIÓN:** el 50 % de los hogares encuestados presenta un ingreso mensual total menor o igual a $18000.
-````
+```{code-cell} python
+data.bhih01.median()
+```
+> ***El 50 % de los hogares encuestados presenta un ingreso mensual total menor o igual a $18000.***
 
 ```{admonition} **Media vs. mediana**
 :class: important
@@ -197,7 +195,7 @@ Esta medida reduce la influencia de valores extremos, pero sigue utilizando una 
 
 Un ejemplo conocido de su aplicación es la evaluación de pruebas olímpicas de patinaje artístico sobre hielo y otras disciplinas artísticas y deportivas, donde se descartan puntajes extremos antes de calcular el promedio final.
 
-```{figure} imagenes/patinaje.png
+```{figure} imagenes/patinaje.jpg
 ---
 width: 70%
 align: center
@@ -223,29 +221,28 @@ Por ejemplo:
 
 Los cuartilos son un tipo particular de fractilas que dividen al conjunto de datos ordenados en cuatro partes aproximadamente iguales:
 
-- **Q1 (primer cuartil):** deja por debajo al 25% de las observaciones.
+- **$Q_1$ (primer cuartil):** es aquel valor de la variable tal que el 25 % de las observaciones son menores o iguales a él.
 
-- **Q2 (segundo cuartil):** deja por debajo al 50% (coincide con la mediana).
+- **$Q_2$ (segundo cuartil):** es aquel valor de la variable tal que la mitad de las observaciones son menores o iguales a él (coincide con la mediana).
 
-- **Q3 (tercer cuartil):** deja por debajo al 75% de los datos.
+- **Q3 (tercer cuartil):** es aquel valor de la variable tal que el 75 % de las observaciones son menores o iguales a él.
 
-En Pandas, cualquier cuantilo puede calcularse con el método `quantile()`. A continuación, veremos la aplicación de esta función para el cálculo de los tres cuartilos:
+En Pandas, cualquier cuantilo puede calcularse con el método **`quantile()`**. A continuación, veremos la aplicación de esta función para el cálculo de los tres cuartilos:
 
-````{admonition} **Cálculo e interpretación de los cuartilos**
-:class: tip
+```{code-cell} python
 
-    ```{code-cell} python
+q1 = data.bhih01.quantile(0.25)  # Q1
+q2 = data.bhih01.quantile(0.50)  # Q2
+q3 = data.bhih01.quantile(0.75)  # Q3  
 
-    q1 = data.bhih01.quantile(0.25)  # Q1
-    q2 = data.bhih01.quantile(0.50)  # Q2
-    q3 = data.bhih01.quantile(0.75)  # Q3  
+print(f"Q1: {q1}")
+print(f"Q2: {q2}")
+print(f"Q3: {q3}")
+```
 
-    print(f"Q1: {q1}")
-    print(f"Q2: {q2}")
-    print(f"Q3: {q3}")
-    ```
+**Interpretación de los valores obtenidos:**
 
-**INTERPRETACIÓN DE LOS VALORES OBTENIDOS:** el 25% de los hogares encuestados reporta ingresos mensuales menores o iguales a \$10000. Por otro lado, la mitad de los hogares percibe ingresos menores o iguales a  \$18000, mientras que el 75% de los hogares reporta ingresos menores o iguales a $30 000.
+> ***El 25% de los hogares encuestados reporta ingresos mensuales menores o iguales a \$10000. Por otro lado, la mitad de los hogares percibe ingresos menores o iguales a  \$18000, mientras que el 75% de los hogares reporta ingresos menores o iguales a $30 000.***
 ````
 
 ```{dropdown} ¿Cómo calcula Pandas los cuantilos?
@@ -301,18 +298,14 @@ Por su parte, los **percentilos** dividen al conjunto en cien partes. Así, por 
 
 La moda es el valor de la variable que aparece con mayor frecuencia en el conjunto de datos.
 
-En Pandas, puede calcularse con el método `mode()`:
+En Pandas, puede calcularse con el método **`mode()`**:
 
-````{admonition} **Cálculo e interpretación de la/las modas**
-:class: tip
+```{code-cell} python
 
-    ```{code-cell} python
+data.bhih01.mode()
+```
 
-    data.bhih01.mode()
-    ```
-
-**INTERPRETACIÓN DEL VALOR OBTENIDO:** el ingreso total mensual más frecuente entre los hogares encuestados es $20000.
-````
+> ***el ingreso total mensual más frecuente entre los hogares encuestados es $20000.***
 
 A diferencia de la media o la mediana, **la moda puede no ser única**. Es posible que un conjunto de datos presente varias modas (distribución multimodal). En esos casos, el método `mode()` devuelve una Serie con todos los valores que comparten la frecuencia máxima:
 
