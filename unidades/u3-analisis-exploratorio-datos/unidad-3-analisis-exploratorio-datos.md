@@ -384,7 +384,7 @@ A continuación, representamos gráficamente ambos conjuntos utilizando un gráf
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-plt.figure(figsize = (5,5))
+plt.figure(figsize = (4.5,5))
 
 sns.stripplot(x = 'valor', y = 'grupo', hue = 'grupo', size = 7, data = df)
 plt.xlabel('Variable', fontweight='bold')
@@ -663,14 +663,59 @@ Construimos el boxplot utilizando funciones de las librerías `matplotlib` y `se
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-plt.figure(figsize=(6,4))
-sns.boxplot(x = 'biaf02_m', data = df_stafe)
-plt.xlabel('Minutos semanales de actividad física intensa')
+plt.figure(figsize = (6,4))
+
+sns.boxplot(x = 'biaf02_m', data = data_stafe)
+plt.xlabel('Minutos semanales de actividad física intensa', fontweight = 'bold')
 plt.show()
 ```
 El gráfico muestra claramente que la distribución de estos datos es asimétrica hacia la derecha, y que hay algunas observaciones que, a la luz del criterio definido anteriormente, son potencialmente atípicas para este conjunto. Notar que el bigote inferior es coincidente con el valor mínimo, mientras que el superior se extiende hasta el máximo valor que se encuentra por debajo de $Q_3 + 1.5 RI$.
 
 Queda como ejercicio propuesto pensar qué medidas de posición y dispersión resultan más representativas para describir a un dataset con estas características.
+
+#### Sobre la interpretación de los *outliers*
+
+Como mencionamos anteriormente, en el contexto del boxplot modificado, un *outlier* es una observación que cae fuera del intervalo definido por
+
+$$(Q_1 - 1.5 RI)\qquad\qquad\text{y}\qquad\qquad(Q_3 + 1.5 RI)$$
+
+Es importante destacar que este criterio es convencional. Fue popularizado por John Tukey en el marco del análisis exploratorio de datos, y su propósito es identificar observaciones inusuales respecto del patrón central de la distribución. **Sin embargo, no constituye una regla que determine automáticamente que un dato sea incorrecto.**
+
+Un *outlier* es, estrictamente, una observación atípica según un criterio estadístico. Eso no implica que sea, necesariamente un error de carga, un valor imposible ni un dato que deba eliminarse.
+
+En muchos contextos, los valores extremos son completamente válidos y forman parte del fenómeno bajo estudio. Por ejemplo:
+
+- En ingresos económicos, es esperable que existan valores muy altos respecto de la mayoría.
+
+- En actividad física semanal, algunas personas pueden reportar minutos de actividad considerablemente superiores al promedio.
+
+- En variables biomédicas, ciertos individuos pueden presentar valores extremos sin que ello implique un error de medición.
+
+**Eliminar observaciones únicamente por el hecho de ser *outliers* puede alterar la distribución original de los datos y sesgar los resultados del análisis.** Por esta razón, ante la detección de valores atípicos, lo adecuado no es eliminarlos automáticamente, sino preguntarse:
+
+- ¿Es un error de medición o de carga?
+
+- ¿Es un valor posible dentro del fenómeno estudiado?
+
+- ¿El objetivo del análisis justifica conservarlo o tratarlo de manera especial?
+
+**¿Cuándo puede justificarse excluir un outlier?**
+
+Si bien los valores atípicos no deben eliminarse automáticamente, existen situaciones en las que su exclusión puede estar justificada. En particular, cuando hay evidencia de que el valor:
+
+- corresponde a un error de carga o digitación (por ejemplo, un cero de más en un ingreso),
+
+- es físicamente imposible (edad negativa, 500 horas de actividad física en una semana, etc.),
+
+- proviene de una falla de medición documentada,
+
+- o no pertenece realmente a la población objetivo del estudio (error de clasificación).
+
+**En estos casos, la exclusión no se basa en que el valor sea “extremo”, sino en que existe una razón sustantiva o técnica para considerarlo inválido.**
+
+También puede ocurrir que, aun siendo correcto, un valor extremo tenga una influencia desproporcionada sobre los valores de ciertas estadísticas, como la media aritmética o las estimaciones de los coeficientes de un modelo estadístico (Unidad 6). En esos casos, en lugar de eliminarlo sin más, es recomendable: analizar el resultado con y sin esa observación, utilizar medidas más robustas (como la mediana) o aplicar métodos estadísticos diseñados para reducir la influencia de valores extremos.
+
+En cualquier caso, una buena práctica es documentar explícitamente cualquier criterio de exclusión aplicado. La transparencia metodológica es parte central del análisis de datos.
 
 #### Consideraciones importantes sobre el ploteo de los *outliers*
 
@@ -699,9 +744,9 @@ Trabajemos nuevamente con la variable de minutos semanales de actividad física 
 ```{code-cell} python
 plt.figure(figsize = (6,4))
 
-sns.boxplot(x = 'biaf02_m', data = df_stafe)
+sns.boxplot(x = 'biaf02_m', data = data_stafe)
 plt.title("Boxplot modificado (por defecto)")
-plt.xlabel("Minutos semanales de actividad física intensa")
+plt.xlabel("Minutos semanales de actividad física intensa", fontweight = 'bold')
 plt.show()
 ```
 
@@ -712,9 +757,9 @@ Aquí los *whiskers* se cortan según el criterio mencionado anteriormente y los
 ```{code-cell} python
 plt.figure(figsize = (6,4))
 
-sns.boxplot(x = 'biaf02_m', data = df_stafe, showfliers = False)
+sns.boxplot(x = 'biaf02_m', data = data_stafe, showfliers = False)
 plt.title("Boxplot modificado sin mostrar outliers")
-plt.xlabel("Minutos semanales de actividad física intensa")
+plt.xlabel("Minutos semanales de actividad física intensa", fontweight = 'bold')
 plt.show()
 ```
 
@@ -724,16 +769,170 @@ En este caso, los valores extremos siguen fuera del rango de los *whiskers*, per
 
 ```{code-cell} python
 plt.figure(figsize = (6,4))
-sns.boxplot(x = 'biaf02_m', data = df_stafe, whis = [0,100])
+
+sns.boxplot(x = 'biaf02_m', data = data_stafe, whis = [0,100])
 plt.title("Boxplot clásico (whiskers hasta min y max)")
-plt.xlabel("Minutos semanales de actividad física intensa")
+plt.xlabel("Minutos semanales de actividad física intensa", fontweight = 'bold')
 plt.show()
 ```
 
 Aquí los *whiskers* se extienden hasta el mínimo y máximo observados. No se eliminan datos ni se altera la representación de la distribución.
 
 
-## Valores atípicos
+## Tabla de frecuencias
+
+Una tabla de frecuencias constituye una forma sencilla y efectiva de resumir la información contenida en las observaciones de una variable.
+
+### Variables cualitativas
+
+Cuando la variable es cualitativa, la tabla presenta las distintas categorías observadas, el número de veces que aparece cada una (frecuencia absoluta), y, si se desea, su frecuencia relativa o porcentaje sobre el total.
+
+Como ejemplo, trabajemos con la variable `bhcv01` (*tipo de vivienda*). Recordemos que la misma se encuentra codificada numéricamente de la siguiente manera:
+
+1 = Casa
+2 = Casilla
+3 = Departamento
+4 = Pieza de inquilinato
+5 = Pieza en hotel o pensión
+6 = Local no construido para habitación
+7 = Otros
+
+Para que la tabla resulte interpretable, primero conviene recodificar los valores. De esta manera, trabajaremos con etiquetas en lugar de códigos numéricos.
+
+```{code-cell} python
+
+# Creamos un diccionario de etiquetas
+map_vivienda = {
+    1: "Casa",
+    2: "Casilla",
+    3: "Departamento",
+    4: "Pieza de inquilinato",
+    5: "Pieza en hotel o pensión",
+    6: "Local no construido para habitación",
+    7: "Otros"
+}
+
+# Creamos una nueva variable que contenga las categorías correspondientes
+data["tipo_vivienda"] = data["bhcv01"].map(map_vivienda)
+```
+Una forma simple de construir la tabla es utilizar `value_counts()`:
+
+```{code-cell} python
+data["tipo_vivienda"].value_counts()
+```
+
+Pero podemos organizarla mejor:
+
+```{code-cell} python
+tabla_vivienda = (
+    data["tipo_vivienda"]
+    .value_counts()
+    .reset_index()
+)
+
+tabla_vivienda.columns = ["Tipo de vivienda", "Frec_absoluta"]
+tabla_vivienda = tabla_vivienda.set_index("Tipo de vivienda")
+
+tabla_vivienda
+```
+La columna `Frec_absoluta` indica la cantidad de veces que aparece cada categoría en el dataset. Sin embargo, en muchos contextos resulta más informativo expresar estas cantidades en términos relativos, es decir, como proporción o porcentaje sobre el total de observaciones.
+
+Podemos agregar ambas medidas directamente a la misma tabla:
+
+```{code-cell} python
+tabla_vivienda["Frec_relativa"] = (
+    tabla_vivienda["Frec_absoluta"] /
+    tabla_vivienda["Frec_absoluta"].sum()
+)
+
+tabla_vivienda["Porcentaje"] = (
+    tabla_vivienda["Frec_relativa"] * 100
+).round(1)
+
+tabla_vivienda
+```
+
+La frecuencia relativa toma valores entre 0 y 1 y representa la proporción de cada categoría respecto del total. El porcentaje no es más que esa misma proporción multiplicada por 100, lo que facilita su interpretación en términos más habituales.
+
+De esta manera, la tabla reúne en un único objeto la información esencial para describir la variable: cuántas veces aparece cada tipo de vivienda y qué peso relativo tiene dentro del conjunto de datos.
+
+A partir de esta tabla podemos construir un **gráfico de barras**, que es la representación gráfica natural de una variable cualitativa:
+
+```{code-cell} python
+
+plt.figure(figsize = (8,5))
+
+sns.barplot(
+    x = 'Porcentaje',
+    y = tabla_vivienda.index,
+    data = tabla_vivienda
+)
+
+plt.xlabel("Porcentaje (%)", fontweight="bold")
+plt.ylabel("Tipo de vivienda", fontweight="bold")
+plt.show()
+```
+
+El gráfico permite visualizar rápidamente cuál es la categoría más frecuente y cómo se distribuyen las demás, complementando la información numérica de la tabla.
+
+En algunos casos, como en el ejemplo, la distribución puede estar fuertemente concentrada en pocas categorías, mientras que otras presentan frecuencias muy bajas. Esto puede generar gráficos en los que algunas barras resultan prácticamente imperceptibles. 
+
+Frente a esta situación, una estrategia posible consiste en agrupar las categorías menos frecuentes en una nueva categoría, por ejemplo “Otros”, con el objetivo de facilitar la visualización. Sin embargo, esta decisión no es neutra: implica modificar la estructura original de la variable. Por lo tanto, su utilización debe estar justificada por el objetivo del análisis.
+
+Si el propósito es describir con precisión la distribución original, conviene conservar todas las categorías. Si el objetivo es comunicar tendencias generales o simplificar la presentación, puede ser razonable agrupar aquellas con muy baja frecuencia.
+
+En cualquier caso, la recodificación debe explicitarse y documentarse, como se muestra a continuación:
+
+```{code-cell} python
+# Identificamos categorías con menos del 3% de frecuencia en la tabla original
+categorias_principales = tabla_vivienda[
+    tabla_vivienda["Porcentaje"] >= 3
+].index
+
+# Unificamos las categorías menos frecuentes en "Otros tipos"
+data["tipo_vivienda_agrupada"] = data["tipo_vivienda"].apply(
+    lambda x: x if x in categorias_principales else "Otros tipos"
+)
+```
+
+La tabla resultante se vería así:
+
+```{code-cell} python
+tabla_vivienda_resumida = (
+    data["tipo_vivienda_agrupada"]
+    .value_counts()
+    .reset_index()
+)
+
+tabla_vivienda_resumida.columns = ["Tipo de vivienda", "Frec_absoluta"]
+tabla_vivienda_resumida = tabla_vivienda_resumida.set_index("Tipo de vivienda")
+
+# Agregamos columna con Porcentajes
+tabla_vivienda_resumida["Porcentaje"] = (
+    tabla_vivienda_resumida["Frec_absoluta"]*100/
+    tabla_vivienda["Frec_absoluta"].sum()
+).round(1)
+
+tabla_vivienda_resumida
+```
+El gráfico de barras ahora luciría así:
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.barplot(
+    x = 'Porcentaje',
+    y = tabla_vivienda_resumida.index,
+    hue = tabla_vivienda_resumida.index,
+    data = tabla_vivienda_resumida,
+)
+
+plt.xlabel("Porcentaje (%)", fontweight="bold")
+plt.ylabel("Tipo de vivienda", fontweight="bold")
+plt.show()
+```
+
+Es importante señalar que dentro de la categoría *Otros tipos* se agrupan diversas modalidades de vivienda originalmente diferenciadas (pieza de inquilinato, pieza en hotel o pensión, local no construido para habitación, entre otras). Esta decisión mejora la legibilidad del gráfico, pero reduce el nivel de detalle disponible en la descripción de la variable.
 
 Los valores atípicos son aquellos cuyo valor se encuentra alejado del grupo de datos. Supongamos que realizamos una encuesta para estudiar viajes al trabajo en el área metropolitana de Rosario. Cuando estamos estudiando la distribución encontramos que algunos viajes duran más de 3 horas. Estos viajes, si bien ocurren, no son de nuestro interés, porque alguien que tarda 3 horas o más para llegar a su lugar de trabajo probablemente no viva dentro del área que estamos estudiando y sus patrones de movilidad no nos interesen demasiado. Es más, considerarlos puede llegar a sesgar nuestro estudio. Por esta razón, vamos a tener que pensar qué tratamiento se les va a dar, por ejemplo, eliminarlos. 
 
