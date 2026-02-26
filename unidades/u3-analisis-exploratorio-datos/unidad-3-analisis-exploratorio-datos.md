@@ -503,11 +503,33 @@ El rango intercuartil es una medida robusta de dispersión y resulta especialmen
 
 La desviación mediana absoluta (MAD) es una medida robusta de dispersión basada en la mediana. Se define como:
 
-$$MAD = \text{Mediana}(|X_i - Q_2|)
+$$MAD = \text{Mediana}(|X_i - Q_2|)$$
 
 Es decir, es la mediana de las diferencias absolutas entre cada observación y la mediana del conjunto.
 
-En Python:
+Supongamos que tenemos el siguiente conjunto de valores observados: 
+
+$$[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]$$ 
+
+Para calcular la MAD seguimos los siguientes pasos:
+
+1. Calcular la mediana:
+
+$$Q_2 = 6$$
+
+2. Calcular la desviación absoluta de cada observación con respecto a la mediana:
+
+$$[5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5]$$
+
+3. Ordenar la lista de desviaciones absolutas de menor a mayor: 
+
+$$[0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5]$$
+
+4. Calcular la mediana del conjunto del ítem anterior: 
+
+$$MAD = 3$$
+
+En Python, y considerando el ejemplo de la ENFR con el que venimos trabajando:
 
 ```{code-cell} python
 mediana = data.bhih01.median()
@@ -524,79 +546,192 @@ Interpretación:
 
 La MAD representa la desviación típica respecto de la mediana. Al estar basada en una medida robusta de centralidad, no se ve influenciada por valores extremos, por lo que es especialmente útil en distribuciones asimétricas.
 
-Es la diferencia entre el tercer y el primer cuartil y, como tal, **mide la dispersión del 50% de los datos centrales.**
+## El método **describe()**
 
-$$
-RI = Q_3 - Q_1
-$$
+Una forma rápida de obtener varias de las métricas vistas es utilizar el método **`describe()`**:
 
-El rango intercuartílico es una medida de dispersión resistente a la presencia de valores atípicos o extremos que pueden distorsionar otras medidas de dispersión, como la desviación estándar. Por lo tanto, cuando se usa la mediana como medida de centralidad, el RI es una medida de dispersión adecuada para acompañarla. 
+```{code-cell} python
 
-Como veremos debajo, corresponde al ancho de la caja que constituye una parte central del gráfico conocido como **boxplot**.
+data.bhih01.describe()
+```
 
-![Untitled](./imagenes/Untitled6.png)
+Como se observa, este método permite obtener un panorama general de la distribución de la variable en una sola salida, ya que devuelve:
 
-### Desviación Mediana Absoluta (MAD)
+- cantidad de observaciones,
 
-La desviación mediana absoluta se define como la mediana de la desviación absoluta de cada punto con respecto a la mediana:
+- media,
 
-$$
-MAD = Mediana(|X_{i} - Q_{2}|)
-$$
+- desvío estándar,
 
-Supongamos que tenemos el siguiente conjunto de valores observados: [1,2,3,4,5,6,7,8,9,10,11]. Para calcular la MAD seguimos los siguientes pasos:
+- mínimo y máximo,
 
-1. Calcular la mediana: 6
-2. Calcular la desviación absoluta de cada observación con respecto a la mediana: [5, 4, 3, 2, 1, 0, 1, 2, 3, 4, 5]
-3. Ordenar la lista de desviaciones absolutas: [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5] 
-4. Calcular mediana de las desviaciones absolutas: 3
+- cuartiles.
 
-La MAD se utiliza para estimar la variabilidad de los datos en diferentes campos, como la estadística, la ciencia de datos, entre otros. A diferencia de la desviación estándar, la MAD es una medida que no se ve afectada por los valores extremos o atípicos que pueden influir en otras medidas de dispersión.
+Apliquémoslo ahora sobre una variable cualitativa, como el *tipo de vivienda* de la Encuesta Nacional de Factores de Riesgo (ENFR 2018). Antes de continuar, recordemos que la variable bhcv01 está codificada numéricamente:
 
-La MAD se utiliza a menudo en conjunción con la mediana, para proporcionar una descripción completa de la tendencia central y la variabilidad de los datos. Por ejemplo, si queremos describir la distribución de un conjunto de datos que contiene valores atípicos o extremos, la mediana y la MAD pueden proporcionar medidas más representativas de la tendencia central y la variabilidad de los datos que la media y la desviación estándar.
+1 = Casa
 
-### **Diagrama de Caja y Bigotes (Boxplot)**
+2 = Casilla
 
-Los cuartilos y los valores mínimo y máximo conforman un conjunto de cinco números que brindan un buen resumen de nuestros datos y con los cuales podemos construir un gráfico llamado boxplot. Estos gráficos, también conocidos como diagramas de caja y bigotes, se utilizan para representar gráficamente la distribución de un conjunto de datos numéricos y mostrar la presencia de potenciales valores atípicos (**outliers**).
+3 = Departamento
 
-Se compone de una caja, que abarca todo el rango de valores entre el primer y el tercer cuartil, y de dos líneas (*bigotes*), que se extienden a partir de los bordes de la caja hasta los valores mínimo y máximo del conjunto de datos. Adicionalmente, una línea vertical en el interior de la caja representa la mediana.
+4 = Pieza de inquilinato
 
-![boxplot.png](./imagenes/boxplot.png)
+5 = Pieza en hotel o pensión
+
+6 = Local no construido para habitación
+
+7 = Otros
+
+Por lo tanto, aunque conceptualmente es una variable cualitativa, su tipo de dato en el DataFrame no es categórico:
+
+```{code-cell} python
+data['bhcv01'].dtype
+```
+En este punto, pandas la interpreta como una variable numérica (`int64`).
+
+Si ejecutáramos el `describe()`, obtendríamos media, desvío estándar y percentiles. Sin embargo, estos estadísticos no tienen interpretación sustantiva, ya que los valores 1, 2, 3, … no representan cantidades, sino categorías. Por ejemplo, un promedio de 2.8 no corresponde a ningún tipo real de vivienda.
+
+Esto ocurre porque Pandas decide qué resumen mostrar en función del tipo de dato almacenado, no del significado conceptual de la variable.
+
+La solución conceptual correcta (y sencilla) es indicarle explícitamente que se trata de una variable categórica:
+
+```{code-cell} python 
+data["bhcv01"] = data["bhcv01"].astype("category")
+data.bhcv01.describe()
+``` 
+
+Ahora `describe()` devuelve:
+
+- `count`
+
+- `unique`
+
+- `top`
+
+- `freq`
+
+que sí son estadísticos adecuados para una variable cualitativa.
+
+Queda como ejercicio propuesto interpretar cada uno de los componentes de esta salida.
+
+## Diagrama de caja y bigotes (boxplot)
+
+Los cuartilos, junto con los valores mínimo y máximo, conforman un conjunto de cinco números que resume de manera muy compacta la información esencial de una variable cuantitativa: dónde se ubican los datos, qué tan concentrados están en torno al centro y cuál es el rango de variación.
+
+A partir de estos cinco valores podemos construir un gráfico llamado **boxplot** (o diagrama de caja y bigotes). El boxplot traduce ese resumen numérico en una representación visual sencilla pero muy potente.
+
+En este gráfico, la parte central está formada por una “caja” que se extiende desde el primer cuartil ($Q_1$) hasta el tercer cuartil ($Q_3$). Esa caja contiene el 50 % central de las observaciones. En su interior se dibuja una línea que marca la mediana, es decir, el valor que divide al conjunto de datos ordenados en dos subconjuntos con aproximadamente el mismo número de observaciones. Desde la caja se proyectan hacia ambos lados los llamados *whiskers* (bigotes), que en la versión clásica llegan hasta el mínimo y el máximo observados.
+
+De este modo, el boxplot permite visualizar de un vistazo la posición central, la dispersión y las características de simetría de la distribución. Sin necesidad de ver todos los datos individuales, obtenemos una síntesis clara de su comportamiento.
+
+```{figure} imagenes/boxplot.png
+---
+width: 70%
+align: center
+---
+Esquema representativo de un diagrama de caja y bigotes (boxplot) clásico.
+```
 
 ### El boxplot modificado
 
-Como se mencionó anteriormente, existe una versión modificada del boxplot permite detectar potenciales ***outliers***, es decir, observaciones que no son típicas del conjunto.
+Existe una versión modificada del boxplot que permite detectar potenciales *outliers*, es decir, observaciones que no son típicas del conjunto. El criterio comúnmente aceptado considera como potenciales outliers aquellas observaciones que se encuentren por fuera del intervalo:
 
-El criterio comúnmente aceptado consiste en considerar potenciales outliers a aquellas observaciones que caigan por fuera de  (Q1 - 1.5 RI) y (Q3 + 1.5 RI). La modificación del gráfico consiste en extender los *whiskers* hasta las observaciones mínima y máxima **que no sean puntos atípicos.** Los **outliers** se marcan en el gráfico como puntos separados de los *whiskers*.
+$$(Q_1 - 1.5 RI)\qquad\qquad\text{y}\qquad\qquad(Q_3 + 1.5 RI)$$
 
-![medidas_2.png](./imagenes/medidas_2.png)
+donde $RI = Q_3 - Q_1$ es el rango intercuartílico.
 
-Es importante remarcar que, en el gráfico anterior, la leyenda **“Valor máximo”** se refiere al máximo valor registrado u observado que es menor al límite de (Q3 + 1.5 RI).
+En el boxplot modificado:
 
-Volviendo a nuestro dataset inicial, para construir el boxplot de los ingresos, podemos utilizar la librería `seaborn`:
+- Los *whiskers* ya no llegan necesariamente al mínimo y máximo absolutos, sino que se extienden hasta el valor mínimo y máximo que no sea considerado atípico según el criterio anterior.
 
-```python
+- Las observaciones que quedan fuera de esos límites se representan como puntos individuales.
+
+Este formato es el que utilizan la mayoría de los softwares estadísticos por defecto.
+
+Para ilustrar el boxplot modificado, trabajaremos con la variable *minutos semanales de actividad física intensa* (según el diccionario de registros de la ENFR 2018, se trata de actividades que hacen respirar mucho más rápido, exigen mayor esfuerzo físico y aceleran el ritmo cardíaco).
+
+Para el ejemplo, filtraremos únicamente las observaciones correspondientes a la provincia de Santa Fe.
+
+```{code-cell} python
+data_stafe = data[data['cod_provincia'] == 82]
+```
+
+Construimos el boxplot utilizando funciones de las librerías `matplotlib` y `seaborn`, que veremos con más detalle en la próxima unidad:
+
+```{code-cell} python
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-sns.boxplot(data=data, x='bhih01', orient='h')
-plt.xlabel('ingreso')
+plt.figure(figsize=(6,4))
+sns.boxplot(x = 'biaf02_m', data = df_stafe)
+plt.xlabel('Minutos semanales de actividad física intensa')
+plt.show()
+```
+El gráfico muestra claramente que la distribución de estos datos es asimétrica hacia la derecha, y que hay algunas observaciones que, a la luz del criterio definido anteriormente, son potencialmente atípicas para este conjunto. Notar que el bigote inferior es coincidente con el valor mínimo, mientras que el superior se extiende hasta el máximo valor que se encuentra por debajo de $Q_3 + 1.5 RI$.
+
+Queda como ejercicio propuesto pensar qué medidas de posición y dispersión resultan más representativas para describir a un dataset con estas características.
+
+#### Consideraciones importantes sobre el ploteo de los *outliers*
+
+En algunas situaciones puede resultar de interés construir la versión clásica del boxplot, es decir, aquella en la que los *whiskers* se extienden hasta el valor mínimo y máximo observados, sin identificar ni marcar potenciales valores atípicos.
+
+Esto puede ser útil cuando el tamaño del dataset es muy grande. En esos casos, el boxplot modificado puede volverse difícil de leer: una proporción considerable de observaciones puede quedar fuera del criterio $1.5 RI$, generando una gran cantidad de puntos individuales que incluso pueden ocultar la caja.
+
+En **`sns.boxplot()`**, existe el parámetro `showfliers = False`, que evita que se dibujen los potenciales *outliers*. Sin embargo, es importante notar que esta opción no construye el boxplot clásico. El criterio del boxplot modificado se mantiene: los *whiskers* se extienden hasta el valor mínimo y máximo observados que se encuentren dentro del intervalo definido por $Q_1 - 1.5 RI$ y $Q_3 + 1.5 RI$. Lo único que cambia es que las observaciones que quedan fuera de esos límites no se muestran en el gráfico.
+
+En términos gráficos, esto equivale a “recortar” el boxplot y ocultar observaciones que efectivamente existen. Si el objetivo es analizar la distribución completa, esta no es una buena elección.
+
+Una forma más apropiada de construir el boxplot clásico sin eliminar ni ocultar datos es modificar el parámetro **`whis`**, extendiendo los *whiskers* hasta el menor y mayor valor observado:
+
+```python
+whis = [0, 100]
+```
+
+De esta manera, el gráfico respeta la totalidad de los datos y reproduce el esquema original basado en el resumen de cinco números.
+
+**Ejemplo comparativo**
+
+Trabajemos nuevamente con la variable de minutos semanales de actividad física intensa en Santa Fe.
+
+**1. Boxplot modificado (por defecto)**
+
+```{code-cell} python
+plt.figure(figsize = (6,4))
+
+sns.boxplot(x = 'biaf02_m', data = df_stafe)
+plt.title("Boxplot modificado (por defecto)")
+plt.xlabel("Minutos semanales de actividad física intensa")
 plt.show()
 ```
 
-Y el diagrama resultante es:
+Aquí los *whiskers* se cortan según el criterio mencionado anteriormente y los potenciales *outliers* aparecen como puntos.
 
-![Untitled](./imagenes/Untitled7.png)
+**2. Ocultando los outliers (¡PELIGRO!)**
 
-### Consideraciones importantes sobre el ploteo de los *outliers*
+```{code-cell} python
+plt.figure(figsize = (6,4))
 
-En algunas situaciones, puede resultar de interés construir la **versión clásica del boxplot**, es decir, aquella que no plotea los potenciales valores atípicos del conjunto. Esto puede ser de utilidad, por ejemplo, cuando el tamaño del dataset es considerablemente grande, situación en la cual el boxplot modificado puede volverse completamente ilegible (muchos valores serán indefectiblemente ploteados como potenciales *outliers,* lo que puede llevar, en casos extremos, a no ver la caja).
+sns.boxplot(x = 'biaf02_m', data = df_stafe, showfliers = False)
+plt.title("Boxplot modificado sin mostrar outliers")
+plt.xlabel("Minutos semanales de actividad física intensa")
+plt.show()
+```
 
-En `sns.boxplot()` puede setearse el parámetro `showfliers = 'False'` para evitar que el gráfico resultante muestre los potenciales outliers. Sin embargo, esto altera la verdadera distribución del dataset, ya que produce como resultado el equivalente a la versión “modificada”, con el agregado de que ya no se plotean los potenciales valores atípicos (¡es como si se “cortara” el boxplot y se eliminaran datos!). Por este motivo, no es una buena elección si se quiere utilizar el boxplot como una herramienta gráfica para analizar características de la distribución.
+En este caso, los valores extremos siguen fuera del rango de los *whiskers*, pero simplemente no se dibujan. La distribución queda parcialmente “recortada”.
 
-Frente a esto, una forma de construir el **boxplot clásico** (el que no muestra potenciales *outliers*) **sin borrar datos ni alterar la verdadera distribución de los mismos**, es modificar el parámetro `whis`, extendiendo los whiskers hasta el menor y el mayor valor observado: `whis = [0,100]`.
+**3. Boxplot clásico (*whiskers* hasta mínimo y máximo)**
 
-### 
+```{code-cell} python
+plt.figure(figsize = (6,4))
+sns.boxplot(x = 'biaf02_m', data = df_stafe, whis = [0,100])
+plt.title("Boxplot clásico (whiskers hasta min y max)")
+plt.xlabel("Minutos semanales de actividad física intensa")
+plt.show()
+```
+
+Aquí los *whiskers* se extienden hasta el mínimo y máximo observados. No se eliminan datos ni se altera la representación de la distribución.
+
 
 ## Valores atípicos
 
