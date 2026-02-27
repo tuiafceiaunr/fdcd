@@ -633,11 +633,11 @@ En términos intuitivos, el sesgo indica hacia qué lado se concentran los valor
 
 En Python, el coeficiente de asimetría puede calcularse directamente utilizando el método **`skew()`**. 
 
-La siguiente figura ilustra gráficamente los tres casos posibles.
+La siguiente figura ilustra gráficamente los tres casos posibles:
 
 ```{figure} imagenes/skewness.png
 ---
-width: 70%
+width: 85%
 align: center
 ---
 Histogramas que muestran ejemplos de distribuciones simétrica, asimétrica a la derecha (sesgo positivo, *right-skewed*) y asimétrica a la izquierda (sesgo negativo, *left-skewed*). Se indica la posición relativa de la media, la mediana y la moda en cada caso.
@@ -691,7 +691,7 @@ Al igual que el sesgo, la curtosis es sensible a la presencia de valores extremo
 
 Vamos a analizar tres ejemplos con datos "de juguete":
 
-```{code-python} python
+```{code-cell} python
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -944,12 +944,7 @@ Como ejemplo, trabajemos con la variable `bhcv01` (*tipo de vivienda*). Recordem
 Para que la tabla resulte interpretable, primero conviene recodificar los valores. De esta manera, trabajaremos con etiquetas en lugar de códigos numéricos.
 
 ```{code-cell} python
-
-{
-    "tags": [
-        "remove-output"
-    ]
-}
+:tags: [remove-output]
 
 # Creamos un diccionario de etiquetas
 map_vivienda = {
@@ -1024,11 +1019,7 @@ Si el propósito es describir con precisión la distribución original, conviene
 En cualquier caso, la recodificación debe explicitarse y documentarse, como se muestra a continuación:
 
 ```{code-cell} python
-{
-    "tags": [
-        "remove-output"
-    ]
-}
+:tags: [remove-output]
 
 # Identificamos categorías con menos del 3% de frecuencia en la tabla original
 categorias_principales = tabla_vivienda[
