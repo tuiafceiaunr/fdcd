@@ -615,6 +615,119 @@ que sí son estadísticos adecuados para una variable cualitativa.
 
 Queda como ejercicio propuesto interpretar cada uno de los componentes de esta salida.
 
+## Medidas de forma
+
+Además de describir el centro y la dispersión de una variable cuantitativa, en muchos casos resulta relevante analizar **la forma de su distribución**. Dos medidas clásicas que permiten caracterizarla son el **sesgo** (asimetría) y la **curtosis**. En esta sección abordaremos
+
+### Sesgo (asimetría)
+
+El sesgo mide el grado de asimetría de una distribución respecto de su media.
+
+- Si el sesgo es **cercano a 0**, la distribución es **aproximadamente simétrica**. En este caso, la media, la mediana y la moda tienden a coincidir o a ubicarse muy próximas entre sí.
+
+- Si el sesgo es *positivo**, la distribución presenta una **cola más larga hacia la derecha**. Esto suele implicar que existen algunos valores relativamente altos que “estiran” la distribución hacia ese lado. En este caso, típicamente se verifica: moda < mediana < media.
+
+- Si el sesgo es *negativo**, **la cola se extiende hacia la izquierda**. En este caso, suele observarse: media < mediana < moda.
+
+En términos intuitivos, el sesgo indica hacia qué lado se concentran los valores extremos.
+
+En Python, el coeficiente de asimetría puede calcularse directamente utilizando el método **`skew()`**. 
+
+La siguiente figura ilustra gráficamente los tres casos posibles.
+
+```{figure} imagenes/skewness.png
+---
+width: 70%
+align: center
+---
+Histogramas que muestran ejemplos de distribuciones simétrica, asimétrica a la derecha (sesgo positivo, *right-skewed*) y asimétrica a la izquierda (sesgo negativo, *left-skewed*). Se indica la posición relativa de la media, la mediana y la moda en cada caso.
+```
+
+### Curtosis
+
+La curtosis es una medida de forma que describe el grado en que una distribución se aleja de la **distribución normal** en términos de su apuntamiento (concentración central) y del peso de sus colas.
+
+```{dropdown} Sobre la distribución normal
+:class: seealso
+
+Se estima que **más del 80 % de los datos generados a nivel mundial son *no estructurados***, y que una proporción significativa corresponde a datos textuales, como correos electrónicos, publicaciones en redes sociales, documentos y noticias.
+```
+
+En la distribución normal, el coeficiente de curtosis es igual a 3. Cuando una distribución presenta aproximadamente ese mismo valor, se dice que es **mesocúrtica**.
+
+Si la curtosis es:
+
+- **Mayor que 3**, la distribución se denomina **leptocúrtica**. En este caso, los datos se encuentran más concentrados alrededor de la media que en la distribución normal, lo que produce una forma más "puntiaguda" en el centro. Además, aunque inicialmente la curva decae con mayor rapidez, en los extremos resulta relativamente más alta que la normal. Esto implica una mayor probabilidad de observar valores extremos.
+
+- **Menor que 3**, la distribución se denomina **platicúrtica**. Presenta una menor concentración central y una forma más achatada, con colas relativamente más livianas.
+
+Es importante destacar que la curtosis no mide únicamente la “altura del pico” de la distribución. En realidad, refleja una combinación entre concentración central y comportamiento en las colas. Tampoco debe confundirse con la variabilidad: una distribución leptocúrtica no necesariamente tiene menor varianza por ser más apuntada, ni una platicúrtica mayor varianza por ser más achatada.
+
+En Python, la curtosis puede calcularse mediante el método **`kurt()`**. Es importante señalar que Pandas reporta el **exceso de curtosis**, es decir, la curtosis menos 3. Bajo esta convención, un valor cercano a 0 indica una distribución mesocúrtica (similar a la normal), valores positivos indican leptocurtosis y valores negativos indican platicurtosis.
+
+Al igual que el sesgo, la curtosis es sensible a la presencia de valores extremos, por lo que su interpretación debe realizarse junto con el análisis gráfico de la distribución.
+
+Vamos a analizar tres ejemplos con datos "de juguete":
+
+```{code-python} python
+# Simulamos tres conjuntos de datos con distinta curtosis
+
+np.random.seed(123)
+
+n = 10000
+
+# Set 1) Curtosis ≈ 0 → Normal
+normal_data = pd.Series(np.random.normal(loc=0, scale=1, size=n))
+
+# Set 2) Curtosis < 0 (colas más livianas)
+# Parámetros: izquierda=-3, moda=0, derecha=3
+triangular_data = pd.Series(np.random.triangular(left=-3, mode=0, right=3, size=n))
+
+# Set 3) Curtosis > 0 (colas más pesadas)
+laplace_data = pd.Series(np.random.laplace(loc=0, scale=1, size=n))
+
+# Mostramos el exceso de curtosis
+print("Exceso de curtosis:")
+print("Normal     :", round(normal_data.kurt(), 3))
+print("Triangular :", round(triangular_data.kurt(), 3))
+print("Laplace    :", round(laplace_data.kurt(), 3))
+```
+
+Observemos los tres conjuntos anteriores representados gráficamente a través de histogramas de frecuencias:
+
+```{code-cell} python
+
+xmin, xmax = -6, 6
+
+# --- Set 1 ---
+plt.figure()
+plt.hist(normal_data, bins = 40, range = (xmin, xmax), color = '#f7b552', edgecolor = 'black')
+plt.title("Set 1 (Curtosis ≈ 0)")
+plt.xlabel("Valores", fontweight = 'bold')
+plt.ylabel("Frecuencia", fontweight = 'bold')
+plt.xlim(xmin, xmax)
+plt.show()
+
+# --- Set 2 ---
+plt.figure()
+plt.hist(triangular_data, bins = 40, range = (xmin, xmax), color = 'lightblue', edgecolor = 'black')
+plt.title("Set 2 (Curtosis < 0)")
+plt.xlabel("Valores", fontweight = 'bold')
+plt.ylabel("Frecuencia", fontweight = 'bold')
+plt.xlim(xmin, xmax)
+plt.show()
+
+# --- Set 3 ---
+plt.figure()
+plt.hist(laplace_data, bins = 40, range = (xmin, xmax), color = 'lightgreen', edgecolor = 'black')
+plt.title("Set 3 (Curtosis > 0)")
+plt.xlabel("Valores", fontweight = 'bold')
+plt.ylabel("Frecuencia", fontweight = 'bold')
+plt.xlim(xmin, xmax)
+plt.show()
+```
+
+
 ## Diagrama de caja y bigotes (boxplot)
 
 Los cuartilos, junto con los valores mínimo y máximo, conforman un conjunto de cinco números que resume de manera muy compacta la información esencial de una variable cuantitativa: dónde se ubican los datos, qué tan concentrados están en torno al centro y cuál es el rango de variación.
@@ -790,16 +903,28 @@ Cuando la variable es cualitativa, la tabla presenta las distintas categorías o
 Como ejemplo, trabajemos con la variable `bhcv01` (*tipo de vivienda*). Recordemos que la misma se encuentra codificada numéricamente de la siguiente manera:
 
 1 = Casa
+
 2 = Casilla
+
 3 = Departamento
+
 4 = Pieza de inquilinato
+
 5 = Pieza en hotel o pensión
+
 6 = Local no construido para habitación
+
 7 = Otros
 
 Para que la tabla resulte interpretable, primero conviene recodificar los valores. De esta manera, trabajaremos con etiquetas en lugar de códigos numéricos.
 
 ```{code-cell} python
+
+{
+    "tags": [
+        "remove-output"
+    ]
+}
 
 # Creamos un diccionario de etiquetas
 map_vivienda = {
@@ -824,11 +949,7 @@ data["tipo_vivienda"].value_counts()
 Pero podemos organizarla mejor:
 
 ```{code-cell} python
-tabla_vivienda = (
-    data["tipo_vivienda"]
-    .value_counts()
-    .reset_index()
-)
+tabla_vivienda = (data["tipo_vivienda"].value_counts().reset_index())
 
 tabla_vivienda.columns = ["Tipo de vivienda", "Frec_absoluta"]
 tabla_vivienda = tabla_vivienda.set_index("Tipo de vivienda")
@@ -845,9 +966,7 @@ tabla_vivienda["Frec_relativa"] = (
     tabla_vivienda["Frec_absoluta"].sum()
 )
 
-tabla_vivienda["Porcentaje"] = (
-    tabla_vivienda["Frec_relativa"] * 100
-).round(1)
+tabla_vivienda["Porcentaje"] = (tabla_vivienda["Frec_relativa"] * 100).round(1)
 
 tabla_vivienda
 ```
@@ -862,11 +981,7 @@ A partir de esta tabla podemos construir un **gráfico de barras**, que es la re
 
 plt.figure(figsize = (8,5))
 
-sns.barplot(
-    x = 'Porcentaje',
-    y = tabla_vivienda.index,
-    data = tabla_vivienda
-)
+sns.barplot(x = 'Porcentaje', y = tabla_vivienda.index, data = tabla_vivienda)
 
 plt.xlabel("Porcentaje (%)", fontweight="bold")
 plt.ylabel("Tipo de vivienda", fontweight="bold")
@@ -877,13 +992,19 @@ El gráfico permite visualizar rápidamente cuál es la categoría más frecuent
 
 En algunos casos, como en el ejemplo, la distribución puede estar fuertemente concentrada en pocas categorías, mientras que otras presentan frecuencias muy bajas. Esto puede generar gráficos en los que algunas barras resultan prácticamente imperceptibles. 
 
-Frente a esta situación, una estrategia posible consiste en agrupar las categorías menos frecuentes en una nueva categoría, por ejemplo “Otros”, con el objetivo de facilitar la visualización. Sin embargo, esta decisión no es neutra: implica modificar la estructura original de la variable. Por lo tanto, su utilización debe estar justificada por el objetivo del análisis.
+Frente a esta situación, una estrategia posible consiste en agrupar las categorías menos frecuentes en una nueva categoría, por ejemplo “Otros tipos”, con el objetivo de facilitar la visualización. Sin embargo, esta decisión no es neutra: implica modificar la estructura original de la variable. Por lo tanto, su utilización debe estar justificada por el objetivo del análisis.
 
 Si el propósito es describir con precisión la distribución original, conviene conservar todas las categorías. Si el objetivo es comunicar tendencias generales o simplificar la presentación, puede ser razonable agrupar aquellas con muy baja frecuencia.
 
 En cualquier caso, la recodificación debe explicitarse y documentarse, como se muestra a continuación:
 
 ```{code-cell} python
+{
+    "tags": [
+        "remove-output"
+    ]
+}
+
 # Identificamos categorías con menos del 3% de frecuencia en la tabla original
 categorias_principales = tabla_vivienda[
     tabla_vivienda["Porcentaje"] >= 3
@@ -898,11 +1019,7 @@ data["tipo_vivienda_agrupada"] = data["tipo_vivienda"].apply(
 La tabla resultante se vería así:
 
 ```{code-cell} python
-tabla_vivienda_resumida = (
-    data["tipo_vivienda_agrupada"]
-    .value_counts()
-    .reset_index()
-)
+tabla_vivienda_resumida = (data["tipo_vivienda_agrupada"].value_counts().reset_index())
 
 tabla_vivienda_resumida.columns = ["Tipo de vivienda", "Frec_absoluta"]
 tabla_vivienda_resumida = tabla_vivienda_resumida.set_index("Tipo de vivienda")
@@ -920,12 +1037,7 @@ El gráfico de barras ahora luciría así:
 ```{code-cell} python
 plt.figure(figsize = (8,5))
 
-sns.barplot(
-    x = 'Porcentaje',
-    y = tabla_vivienda_resumida.index,
-    hue = tabla_vivienda_resumida.index,
-    data = tabla_vivienda_resumida,
-)
+sns.barplot(x = 'Porcentaje', y = tabla_vivienda_resumida.index, hue = tabla_vivienda_resumida.index, data = tabla_vivienda_resumida)
 
 plt.xlabel("Porcentaje (%)", fontweight="bold")
 plt.ylabel("Tipo de vivienda", fontweight="bold")
@@ -933,6 +1045,47 @@ plt.show()
 ```
 
 Es importante señalar que dentro de la categoría *Otros tipos* se agrupan diversas modalidades de vivienda originalmente diferenciadas (pieza de inquilinato, pieza en hotel o pensión, local no construido para habitación, entre otras). Esta decisión mejora la legibilidad del gráfico, pero reduce el nivel de detalle disponible en la descripción de la variable.
+
+### Variables cuantitativas discretas
+
+Cuando trabajamos con variables cuantitativas discretas, los valores que puede tomar la variable son numéricos y separados entre sí. En muchos casos —como ocurre con la edad medida en años cumplidos— la variable puede asumir varios valores posibles, pero estos siguen siendo numerables.
+
+Si el número de observaciones es grande, pero la variable presenta un conjunto acotado de valores distintos (como generalmente ocurre cuando trabajamos con datos de variables cuantitativas discretas), es posible construir una tabla de frecuencias similar a la utilizada para variables cualitativas. En este caso, cada fila de la tabla representa un valor numérico posible y la frecuencia absoluta indica cuántas personas presentan esa edad en el dataset.
+
+En nuestro conjunto de datos contamos con la variable `bhch04_j`, que registra la edad del jefe o jefa de hogar en años cumplidos. Podemos resumir su distribución mediante una tabla de frecuencias de la siguiente manera:
+
+```{code-cell} python
+
+# Tabla de frecuencias para la edad del jefe/a de hogar
+tabla_edad = (data["bhch04_j"].value_counts().sort_index().to_frame())
+
+tabla_edad.index.name = "Edad"
+tabla_edad.columns = ["Frec_absoluta"]
+
+tabla_edad
+```
+
+En este caso, cada fila corresponde a una edad específica (por ejemplo, 16, 18, 19 años, etc.), y la columna `Frec_absoluta` indica cuántos jefes o jefas de hogar encuestados tienen esa edad dentro del conjunto de datos. Las edades que no aparecen en la tabla son aquellas que no se registran en la muestra, es decir, tienen frecuencia cero.
+
+Dado que se trata de una variable cuantitativa discreta, la representación gráfica adecuada es un **gráfico de bastones**. 
+
+Podemos construirlo utilizando el DataFrame anterior y la función `plt.bar()`. Si fijamos un ancho suficientemente pequeño (por ejemplo, `width = 0.4`), las barras adquieren la forma visual de bastones:
+
+```{code-cell} python
+plt.figure(figsize=(8,5))
+
+plt.bar(tabla_edad["Edad"], tabla_edad["Frec_absoluta"], width = 0.4)
+
+plt.xlabel("Edad (años cumplidos)", fontweight = "bold")
+plt.ylabel("Frecuencia absoluta", fontweight = "bold")
+
+plt.xlim((15,101))
+plt.xticks(np.arange(15,101,5))
+
+plt.show()
+```
+
+El gráfico permite visualizar la distribución de edades respetando el orden natural de la escala numérica. A diferencia de las variables cualitativas, aquí el eje horizontal representa valores numéricos ordenados, lo cual es fundamental para interpretar correctamente la forma de la distribución.  
 
 Los valores atípicos son aquellos cuyo valor se encuentra alejado del grupo de datos. Supongamos que realizamos una encuesta para estudiar viajes al trabajo en el área metropolitana de Rosario. Cuando estamos estudiando la distribución encontramos que algunos viajes duran más de 3 horas. Estos viajes, si bien ocurren, no son de nuestro interés, porque alguien que tarda 3 horas o más para llegar a su lugar de trabajo probablemente no viva dentro del área que estamos estudiando y sus patrones de movilidad no nos interesen demasiado. Es más, considerarlos puede llegar a sesgar nuestro estudio. Por esta razón, vamos a tener que pensar qué tratamiento se les va a dar, por ejemplo, eliminarlos. 
 

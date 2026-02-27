@@ -952,6 +952,7 @@ El *Data Wrangling*, por su nombre en inglés, es el proceso de limpiar, transfo
 ---
 align: center
 ---
+Cualquier semejanza con la realidad es pura coincidencia...
 ```
 
 ### Datos en forma larga o ancha
@@ -1903,6 +1904,14 @@ Los caracteres especiales pueden combinarse para construir patrones más complej
 
 ```python
 \b(?:0[1-9]|[12][0-9]|3[01])\/05\/\d{4}\b
+```
+
+```{figure} imagenes/regex_meme.png
+---
+width: 80%
+align: center
+---
+Cualquier semejanza con la realidad de trabajar con *regex* es pura coincidencia...
 ```
 
 ### Expresiones regulares en Python
