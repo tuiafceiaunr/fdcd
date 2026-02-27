@@ -650,7 +650,29 @@ La curtosis es una medida de forma que describe el grado en que una distribució
 ```{dropdown} Sobre la distribución normal
 :class: seealso
 
-Se estima que **más del 80 % de los datos generados a nivel mundial son *no estructurados***, y que una proporción significativa corresponde a datos textuales, como correos electrónicos, publicaciones en redes sociales, documentos y noticias.
+La distribución normal (o gaussiana) es una de las distribuciones de probabilidad más importantes en estadística. Tiene forma de campana, es simétrica respecto de su media y queda completamente determinada por dos parámetros:
+
+- la esperanza ($\mu$), que determina el centro,
+
+- la desviación estándar ($\sigma$), que determina la dispersión.
+
+Algunas propiedades relevantes:
+
+- Es simétrica: la esperanza, la mediana y la moda coinciden.
+
+- La mayor parte de los valores se concentra alrededor del centro.
+
+- La probabilidad de observar valores muy alejados de la media decrece rápidamente a medida que nos movemos hacia las colas.
+
+- Aproximadamente:
+
+    - el 68% de los valores cae dentro de $\pm1\sigma$,
+
+    - el 95% dentro de $\pm2\sigma$,
+
+    - el 99.7% dentro de $\pm3\sigma$.
+
+En el estudio de la curtosis, la distribución normal cumple un rol especial: se utiliza como punto de referencia. Cuando hablamos de **exceso de curtosis** (*ver más adelante en el texto principal*), estamos midiendo cuánto se aparta una distribución del nivel de curtosis de la normal.
 ```
 
 En la distribución normal, el coeficiente de curtosis es igual a 3. Cuando una distribución presenta aproximadamente ese mismo valor, se dice que es **mesocúrtica**.
@@ -670,20 +692,23 @@ Al igual que el sesgo, la curtosis es sensible a la presencia de valores extremo
 Vamos a analizar tres ejemplos con datos "de juguete":
 
 ```{code-python} python
-# Simulamos tres conjuntos de datos con distinta curtosis
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
 
+# Simulamos tres conjuntos de datos con distinta curtosis
 np.random.seed(123)
 
 n = 10000
 
-# Set 1) Curtosis ≈ 0 → Normal
+## Set 1) Curtosis ≈ 0 → Normal
 normal_data = pd.Series(np.random.normal(loc=0, scale=1, size=n))
 
-# Set 2) Curtosis < 0 (colas más livianas)
-# Parámetros: izquierda=-3, moda=0, derecha=3
+## Set 2) Curtosis < 0 (colas más livianas)
+### Parámetros: izquierda=-3, moda=0, derecha=3
 triangular_data = pd.Series(np.random.triangular(left=-3, mode=0, right=3, size=n))
 
-# Set 3) Curtosis > 0 (colas más pesadas)
+## Set 3) Curtosis > 0 (colas más pesadas)
 laplace_data = pd.Series(np.random.laplace(loc=0, scale=1, size=n))
 
 # Mostramos el exceso de curtosis
@@ -1048,24 +1073,24 @@ Es importante señalar que dentro de la categoría *Otros tipos* se agrupan dive
 
 ### Variables cuantitativas discretas
 
-Cuando trabajamos con variables cuantitativas discretas, los valores que puede tomar la variable son numéricos y separados entre sí. En muchos casos —como ocurre con la edad medida en años cumplidos— la variable puede asumir varios valores posibles, pero estos siguen siendo numerables.
+Cuando trabajamos con variables cuantitativas discretas, los valores que puede tomar la variable son numéricos y separados entre sí. En muchos casos —como ocurre con la edad medida en años cumplidos, el número de ambientes o de miembros de un hogar o el número de días por semana que una persona realiza actividad física— la variable puede asumir varios valores posibles, pero estos tienen la característica de ser numerables.
 
-Si el número de observaciones es grande, pero la variable presenta un conjunto acotado de valores distintos (como generalmente ocurre cuando trabajamos con datos de variables cuantitativas discretas), es posible construir una tabla de frecuencias similar a la utilizada para variables cualitativas. En este caso, cada fila de la tabla representa un valor numérico posible y la frecuencia absoluta indica cuántas personas presentan esa edad en el dataset.
+Si el número de observaciones es grande, pero la variable presenta un conjunto acotado de valores distintos (como muchas veces ocurre cuando trabajamos con datos de variables cuantitativas discretas), es posible construir una tabla de frecuencias similar a la utilizada para variables cualitativas. En este caso, cada fila de la tabla representa un valor numérico posible y la frecuencia absoluta indica cuántas viviendas presentan ese número de miembros.
 
-En nuestro conjunto de datos contamos con la variable `bhch04_j`, que registra la edad del jefe o jefa de hogar en años cumplidos. Podemos resumir su distribución mediante una tabla de frecuencias de la siguiente manera:
+En nuestro conjunto de datos contamos con la variable `cant_componentes`, que registra la cantidad de miembros del hogar encuestado. Podemos resumir su distribución mediante una tabla de frecuencias de la siguiente manera:
 
 ```{code-cell} python
 
-# Tabla de frecuencias para la edad del jefe/a de hogar
-tabla_edad = (data["bhch04_j"].value_counts().sort_index().to_frame())
+# Tabla de frecuencias para la cantidad de miembros del hogar
+tabla_miembros = (data['cant_componentes'].value_counts().sort_index().to_frame())
 
-tabla_edad.index.name = "Edad"
-tabla_edad.columns = ["Frec_absoluta"]
+tabla_miembros.index.name = 'Num_miembros'
+tabla_miembros.columns = ['Frec_absoluta']
 
-tabla_edad
+tabla_miembros
 ```
 
-En este caso, cada fila corresponde a una edad específica (por ejemplo, 16, 18, 19 años, etc.), y la columna `Frec_absoluta` indica cuántos jefes o jefas de hogar encuestados tienen esa edad dentro del conjunto de datos. Las edades que no aparecen en la tabla son aquellas que no se registran en la muestra, es decir, tienen frecuencia cero.
+En este caso, cada fila corresponde a un número específico de miembros del hogar y la columna `Frec_absoluta` indica cuántas viviendas encuestadas tienen ese número de miembros dentro del conjunto de datos. 
 
 Dado que se trata de una variable cuantitativa discreta, la representación gráfica adecuada es un **gráfico de bastones**. 
 
@@ -1074,191 +1099,185 @@ Podemos construirlo utilizando el DataFrame anterior y la función `plt.bar()`. 
 ```{code-cell} python
 plt.figure(figsize=(8,5))
 
-plt.bar(tabla_edad["Edad"], tabla_edad["Frec_absoluta"], width = 0.4)
+plt.bar(tabla_miembros['Num_miembros'], tabla_miembros['Frec_absoluta'], width = 0.4)
 
-plt.xlabel("Edad (años cumplidos)", fontweight = "bold")
+plt.xlabel("Cantidad de miembros del hogar", fontweight = "bold")
 plt.ylabel("Frecuencia absoluta", fontweight = "bold")
 
-plt.xlim((15,101))
-plt.xticks(np.arange(15,101,5))
+plt.xlim((0,12))
+plt.xticks(np.arange(0,11,1))
 
 plt.show()
 ```
 
-El gráfico permite visualizar la distribución de edades respetando el orden natural de la escala numérica. A diferencia de las variables cualitativas, aquí el eje horizontal representa valores numéricos ordenados, lo cual es fundamental para interpretar correctamente la forma de la distribución.  
+El gráfico permite visualizar que la distribución de cantidad de miembros de las viviendas encuestadas es asimétrica hacia la derecha. Se observa que la mayor parte de los hogares tiene pocos miembros, mientras que los hogares con muchos integrantes son relativamente menos frecuentes.
 
-Los valores atípicos son aquellos cuyo valor se encuentra alejado del grupo de datos. Supongamos que realizamos una encuesta para estudiar viajes al trabajo en el área metropolitana de Rosario. Cuando estamos estudiando la distribución encontramos que algunos viajes duran más de 3 horas. Estos viajes, si bien ocurren, no son de nuestro interés, porque alguien que tarda 3 horas o más para llegar a su lugar de trabajo probablemente no viva dentro del área que estamos estudiando y sus patrones de movilidad no nos interesen demasiado. Es más, considerarlos puede llegar a sesgar nuestro estudio. Por esta razón, vamos a tener que pensar qué tratamiento se les va a dar, por ejemplo, eliminarlos. 
+### Variables cuantitativas continuas
 
-Existen varias formas de definir valores atípicos. Cuando graficamos un boxplot usando seaborn, como en el gráfico de arriba, como default, seaborn clasifica como outliers a todo punto que este fuera del rango $(Q_1 - 1.5*RIC, Q_{3} + 1.5*RIC)$. 
+Cuando trabajamos con variables cuantitativas continuas, la situación es diferente a la de las variables discretas. Estas variables pueden tomar, al menos en teoría, infinitos valores dentro de un intervalo.
 
-A continuación mostramos un ejemplo de búsqueda de valores atípicos para la variable “minutos durante los cuales realizó actividad física intensa la semana pasada”. 
+Un ejemplo típico es el ingreso mensual del hogar. Desde el punto de vista conceptual, el ingreso es una magnitud continua: podría medirse con el nivel de precisión que quisiéramos (pesos, centavos, fracciones de centavo, etc.). Sin embargo, en los datos suele registrarse en unidades enteras (por ejemplo, en pesos, como ocurre en la ENFR), lo que hace que los valores observados aparezcan discretizados.
 
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
+Es importante distinguir entonces entre:
 
-data = pd.read_csv('ENFR 2018 - Base usuario.txt', delimiter = '|')
+- la naturaleza teórica de la variable (continua) 
 
-# minutos actividad física
-sns.boxplot(data.biaf02_m)
-plt.ylabel('Minutos por semana en actividad física intensa')
+- y la forma en que fue medida o registrada en el dataset.
+
+Aunque en nuestra base de datos el ingreso figure sin decimales, **puede asumir un gran número de valores diferentes**. Si intentáramos construir una tabla de frecuencias considerando cada valor individual observado, obtendríamos una tabla muy extensa y poco informativa.
+
+Por ello, en lugar de trabajar con valores puntuales, **realizamos un agrupamiento en subintervalos (segmentación)**.
+
+Lo primero es obtener un resumen descriptivo:
+
+```{code-cell} python
+data['bhih01'].describe()
 ```
 
-![Untitled](./imagenes/Untitled8.png)
+Este resumen nos permite conocer el rango en el que se encuentran las observaciones de la variable, su dispersión en términos de la desviación estándar y algunos percentiles relevantes. A partir de esta información podemos decidir cómo construir los intervalos.
 
-En este caso vemos que por encima de 720 minutos (12 horas) seaborn comienza a plotear los valores atípicos. Sin embargo, es nuestra decisión si queremos incluirlos en el análisis o no, o si queremos considerar otra medida para distinguir valores atípicos. Por ejemplo, puede ser que en nuestro estudio no queramos considerar deportistas profesionales. Entonces, deberíamos buscar un valor de minutos de entrenamiento semanal por el cual rechazamos a la observación si esta se encuentra por encima de ese valor, por ejemplo 1000 minutos. 
+Dado que los ingresos totales mensuales por hogar se encuentran aproximadamente en el rango de 0 a 350000 pesos, podríamos agruparlos en intervalos de igual amplitud, por ejemplo de 35000 pesos:
 
-## Tabla de Frecuencias
+- [0, 35000)
 
-La ***frecuencia absoluta*** es una medida estadística que indica cuántas veces se repite o se presenta un determinado valor en un conjunto de datos. La ***frecuencia relativa***, por su parte, es la frecuencia absoluta dividido entre el número total de datos que componen el conjunto. Se la suele multiplicar por 100, de manera que exprese la proporción en la que se presentó un determinado dato en el dataset.
+- [35000, 70000)
 
-La **tabla de frecuencias** constituye una forma sencilla y efectiva para resumir la información de las observaciones de una variable de un dataset. Es una tabla que muestra la cantidad de veces que se presenta una determinado valor o rango de valores de una variable/atributo $X$. 
+- [70000, 105000)
 
-En el caso de una **variable cualitativa**, la tabla contiene las diferentes categorías de la misma junto con la frecuencia absoluta de cada una de ellas en el dataset. Un ejemplo de este tipo de variable en la encuesta de Factores de Riesgo lo constituye la provincia a la que pertenece cada persona que respondió la encuesta. Entonces, podemos elaborar una tabla que nos indique cuántas personas fueron encuestadas por provincia:
+- [105000, 140000)
 
-![Untitled](./imagenes/Untitled9.png)
+- [140000, 175000)
 
-Para obtener la tabla de arriba usamos el siguiente código:
+- [175000, 210000)
 
-```python
-import pandas as pd
+- [210000, 245000)
 
-data = pd.read_csv('ENFR2018_baseusuario/ENFR 2018 - Base usuario.txt', delimiter = '|')
+- [245000, 280000)
 
-# Usando el diccionario de datos, mapeamos los códigos a nombres para que la tabla
-# sea más fácil de entender
-map_dict = {2: "Ciudad de Buenos Aires",
-            6: " Buenos Aires",
-            10: "Catamarca",
-            14: "Córdoba",
-            18: "Corrientes",
-            22: "Chaco",
-            26: "Chubut",
-            30: "Entre Ríos",
-            34: "Formosa",
-            38: "Jujuy",
-            42: "La Pampa",
-            46: "La Rioja",
-            50: "Mendoza",
-            54: "Misiones",
-            58: "Neuquén",
-            62: "Río Negro",
-            66: "Salta",
-            70: "San Juan",
-            74: "San Luis",
-            78: "Santa Cruz",
-            82: "Santa Fe",
-            86: "Santiago del Estero",
-            90: "Tucumán",
-            94: "Tierra del Fuego",}
-data['provincia'] = data['cod_provincia'].apply(lambda x: map_dict[x])
+- [280000, 315000)
 
-#Series.value_counts() es la encargada de generar la tabla de frecuencia. 
-#El resto del código es para embellecer el resultado
-df = data.provincia.value_counts().reset_index()
-df.rename(columns = {'index': 'provincia', 'provincia': 'frecuencia'}, inplace = True)
-df.set_index('provincia', inplace = True)
+- [315000, 350000)
+
+[350000, 385000)
+
+Estos intervalos son contiguos y no se superponen. La notación [a, b) indica que el intervalo incluye el límite inferior pero excluye el superior.
+
+Para generarlos utilizamos **`pd.cut()`**:
+
+```{code-cell} python
+
+# Generamos los subintervalos
+
+bins_ingresos = np.arange(0, 390000, 35000)
+
+data['ingreso_seg'] = pd.cut(data['bhih01'], bins = bins_ingresos, right = False)
+
+data['ingreso_seg'].head()
 ```
 
-![*Extracto de la tabla del ejemplo anterior*](./imagenes/Untitled10.png)
+A partir de esta segmentación construimos la tabla de frecuencias:
 
-*Extracto de la tabla del ejemplo anterior*
+```{code-cell} python
+tabla_ingresos = data['ingreso_seg'].value_counts().sort_index()
 
-A la tabla anterior, podemos agregarle una columna con las frecuencias relativas, para conocer qué proporción de la muestra pertenece a cada provincia. Este dato lo obtenemos dividiendo la frecuencia absoluta por el total de personas encuestadas. Podemos multiplicarlo por 100 para obtener los resultados en %.
-
-```python
-# Proporción de 0 a 1
-df['proporción'] = df['frecuencia'] / df['frecuencia'].sum()
-
-# Proporción de 0 a 100
-df['proporción'] = df['frecuencia'] / df['frecuencia'].sum() * 100
+tabla_ingresos
 ```
 
-![Untitled](./imagenes/Untitled11.png)
+Formateamos la tabla:
 
-![Visualización gráfica de la frecuencia. Los valores fueron convertidos a % (de 0 100)](./imagenes/descarga.png)
+```{code-cell} python
+tabla_ingresos = tabla_ingresos.reset_index()
+tabla_ingresos.rename(columns = {'ingreso_seg':'Ingreso', 'count':'Frec_absoluta'}, inplace = True)
+tabla_ingresos = tabla_ingresos.set_index('Ingreso')
 
-Visualización gráfica de la frecuencia. Los valores fueron convertidos a % (de 0 100)
-
-La tabla de arriba nos sirve para evaluar si la toma de muestra fue realizada correctamente, entre otras aplicaciones que podemos encontrarle. Cuando se hace un muestreo se plantea que la muestra debe representar de alguna forma a la población. En nuestro caso esta representación puede estar dada a través de la premisa que 
-
-> La distribución de personas encuestadas por provincia sea similar a la distribución de personas por provincia a nivel país.
-> 
-
-Para hacer esta comparación, debemos generar además una tabla de frecuencias relativas de la población por provincias. Luego comparamos las dos tablas de frecuencias relativas, la de la población y la de la muestra, y evaluamos qué tanto “se parecen”. 
-
-<aside>
-💡 La evaluación de la correspondencia de la muestra con la población es un proceso más complejo en el cual se emplea más de una variable.
-
-</aside>
-
-**Segmentación**
-
-La frecuencia se puede expresar de diferentes maneras, dependiendo del tipo de datos. Cuando trabajamos con **variables continuas**, en lugar de construir la tabla considerando los valores individuales que las mismas pueden asumir, es preciso realizar un agrupamiento previo en subintervalos (segmentación). En el caso de minutos entrenados intensamente por semana podríamos realizar la siguiente segmentación por horas:
-
-- Menos de una hora: [0-60)
-- De una a dos horas: [60-120)
-- De dos a tres horas: [120-180)
-- De tres a cuatro horas: [180- 240)
-- etc.
-
-```python
-data.biaf02_m.fillna(0, inplace = True)
-data['segmento entrenamiento intenso'] = pd.cut(data.biaf02_m, [x for x in range(0, 4200, 60)], right = False)
-
-df = data['segmento entrenamiento intenso'].value_counts()
-df/df.sum() #frecuencias relativas
-
-[0, 60)         0.784040
-[180, 240)      0.044486
-[120, 180)      0.039900
-[60, 120)       0.035041
-[240, 300)      0.022790
-                  ...   
-[1860, 1920)    0.000000
-[1740, 1800)    0.000000
-[1320, 1380)    0.000000
-[1020, 1080)    0.000000
-[4080, 4140)    0.000000
+tabla_ingresos
 ```
 
-![descarga (1).png](./imagenes/descarga_(1).png)
+Agregamos la frecuencia relativa correspondiente a cada subintervalo:
 
-### Frecuencia acumulada
+```{code-cell} python
 
-En algunos casos, sobre todo cuando estudiamos variables continuas, resulta de utilidad realizar la tabla de frecuencia acumulada donde se suman las frecuencias, ya sea absolutas o relativas. Siguiendo con el ejemplo de arriba, podríamos calcular la siguiente tabla de la que podemos extraer conclusiones como:
+tabla_ingresos['Frec_relativa'] = (
+    tabla_ingresos['Frec_absoluta'] /
+    tabla_ingresos['Frec_absoluta'].sum()
+).round(5)
 
-- El 10% de la población realiza más de 4 horas de entrenamiento intenso por semana.
-- El 85% de la población realiza menos de 3 horas de entrenamiento intenso por semana.
-
-```python
-df_relativo = (df/df.sum()).reset_index()
-# Ordenamos los valores por segmento es decir [0,60), [60, 120), etc
-df_relativo.sort_values('index', inplace = True)
-df_relativo.set_index('index', inplace = True)
-
-df_relativo.cumsum()
-
-index	        segmento entrenamiento intenso
-[0, 60)	      0.784040
-[60, 120)	    0.819081
-[120, 180)	  0.858981
-[180, 240)	  0.903466
-[240, 300)	  0.926257
-...	...
-[3840, 3900)	0.999966
-[3900, 3960)	1.000000
-[3960, 4020)	1.000000
-[4020, 4080)	1.000000
-[4080, 4140)	1.000000
+tabla_ingresos
 ```
 
-<aside>
-💡 Notar que para realizar la tabla de frecuencias acumuladas los valores deben estar ordenados por la variable en estudio, no por su frecuencia.
+Y las frecuencias acumuladas:
 
-</aside>
+```{code-cell} python
+tabla_ingresos['Frec_absoluta_cum'] = (tabla_ingresos['Frec_absoluta'].cumsum())
+
+tabla_ingresos['Frec_relativa_cum'] = (tabla_ingresos['Frec_relativa'].cumsum())
+
+tabla_ingresos
+```
+
+Recordemos:
+
+La **frecuencia absoluta acumulada** indica cuántos hogares tienen ingresos menores al límite superior del intervalo correspondiente.
+
+La **frecuencia relativa acumulada** expresa esa misma cantidad en proporción al total de observaciones.
+
+Este tipo de tabla nos permite resumir la distribución sin trabajar con cada valor individual.
+
+**Interpretación de una fila de la tabla**
+
+Interpretemos a continuación cada una de las frecuencias que figuran en la fila de la tabla correspondiente al subintervalo [35000, 70000):
+
+> ***893 hogares presentan un ingreso total mensual mayor o igual a \$35000 y menor a \$70000, lo que representa el 21.95 % de las viviendas encuestadas.***
+
+Las frecuencias acumuladas hasta ese intervalo nos permiten observar que:
+
+> ***3817 hogares presentan un ingreso total mensual menor a los \$70000, lo que representa el 93.83 % de las viviendas encuestadas. En consecuencia, sólo el 6.17 % de los hogares relevado tiene ingresos totales mensuales de \$70000 o más.*** 
+
+#### Histograma de frecuencias
+
+La representación gráfica más adecuada para variables cuantitativas continuas es el **histograma**. A diferencia del gráfico de bastones utilizado para variables discretas:
+
+- Aquí se representan rectángulos contiguos, cuya base abarca cada subintervalo.
+
+- El área del rectángulo representa la frecuencia correspondiente a cada subintervalo. Cuando los intervalos tienen igual amplitud (como en este caso), la altura de la barra es directamente proporcional a la frecuencia.
+
+Podemos construirlo directamente a partir de la variable original:
+
+```{code-cell} python
+plt.figure(figsize=(8,5))
+
+sns.histplot(x = 'bhih01', bins = bins_ingresos, color = 'lightgreen', edgecolor = 'black', data = data)
+
+plt.xlabel("Ingreso mensual del hogar (en pesos)", fontweight = "bold")
+plt.xticks(np.arange(0, 380000, 70000))
+plt.ylabel("Frecuencia absoluta", fontweight = "bold")
+
+plt.show()
+```
+
+El histograma permite visualizar la forma general de la distribución: concentración de valores, asimetría y comportamiento en las colas.
+
+En este caso, se observa que la distribución es asimétrica hacia la derecha: una gran proporción de hogares se concentra en niveles de ingreso bajos o medios, mientras que un número relativamente pequeño de hogares presenta ingresos elevados.
+
+#### Sobre la elección del número de intervalos
+
+La elección del número de intervalos (bins) no es arbitraria. Si utilizamos muy pocos intervalos, perdemos detalle. Si utilizamos demasiados, el gráfico se vuelve ruidoso y difícil de interpretar.
+
+Cuando el tamaño del dataset es grande, suele ser conveniente aumentar la cantidad de intervalos. Por ejemplo, si utilizamos 50 bins:
+
+```{code-cell} python
+
+plt.figure(figsize=(8,5))
+
+sns.histplot(x = 'bhih01', bins = 50, color = 'lightgreen', edgecolor = 'black', data = data)
+
+plt.xlabel("Ingreso mensual del hogar (en pesos)", fontweight="bold")
+plt.ylabel("Frecuencia", fontweight="bold")
+
+plt.show()
+```
+
+En este caso, se aprecia mayor detalle en la estructura de la distribución. Por ejemplo, puede observarse que el intervalo modal no se encuentra exactamente en el tramo inicial y que aparecen máximos locales adicionales en determinados rangos de ingreso.
 
 ## Métricas de correlación
 
