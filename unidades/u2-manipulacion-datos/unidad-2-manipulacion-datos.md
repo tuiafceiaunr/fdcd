@@ -1385,7 +1385,7 @@ $$f_{1}(x) = y_{0} + \frac{y_{1}-y_{0}}{x_{1} - x_{0}}(x_{i} - x_{0})\qquad , \q
 
 $$f_{2}(x) = y_{1} + \frac{y_{2}-y_{1}}{x_{2} - x_{1}}(x_{i} - x_{1})\qquad , \qquad x_{1}\lt x_{i} \lt x_{2}$$
 
-```{figure} imagenes/interpolacion_intervalos.png
+```{figure} imagenes/interpolacion_tramos.png
 ---
 width: 85%
 align: center

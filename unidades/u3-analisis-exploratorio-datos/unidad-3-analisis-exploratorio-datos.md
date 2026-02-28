@@ -384,7 +384,7 @@ A continuación, representamos gráficamente ambos conjuntos utilizando un gráf
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-plt.figure(figsize = (4.5,5))
+plt.figure(figsize = (5.2,5))
 
 sns.stripplot(x = 'valor', y = 'grupo', hue = 'grupo', size = 7, data = df)
 plt.xlabel('Variable', fontweight='bold')
@@ -637,7 +637,7 @@ La siguiente figura ilustra gráficamente los tres casos posibles:
 
 ```{figure} imagenes/skewness.png
 ---
-width: 85%
+width: 100%
 align: center
 ---
 Histogramas que muestran ejemplos de distribuciones simétrica, asimétrica a la derecha (sesgo positivo, *right-skewed*) y asimétrica a la izquierda (sesgo negativo, *left-skewed*). Se indica la posición relativa de la media, la mediana y la moda en cada caso.
@@ -1073,10 +1073,9 @@ En nuestro conjunto de datos contamos con la variable `cant_componentes`, que re
 ```{code-cell} python
 
 # Tabla de frecuencias para la cantidad de miembros del hogar
-tabla_miembros = (data['cant_componentes'].value_counts().sort_index().to_frame())
+tabla_miembros = (data['cant_componentes'].value_counts().sort_index().reset_index())
 
-tabla_miembros.index.name = 'Num_miembros'
-tabla_miembros.columns = ['Frec_absoluta']
+tabla_miembros.columns = ["Num_miembros", "Frec_absoluta"]
 
 tabla_miembros
 ```
@@ -1095,8 +1094,8 @@ plt.bar(tabla_miembros['Num_miembros'], tabla_miembros['Frec_absoluta'], width =
 plt.xlabel("Cantidad de miembros del hogar", fontweight = "bold")
 plt.ylabel("Frecuencia absoluta", fontweight = "bold")
 
-plt.xlim((0,12))
-plt.xticks(np.arange(0,11,1))
+plt.xlim((0,16))
+plt.xticks(np.arange(0,16,1))
 
 plt.show()
 ```
