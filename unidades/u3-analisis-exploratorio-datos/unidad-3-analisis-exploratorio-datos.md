@@ -1271,68 +1271,158 @@ En este caso, se aprecia mayor detalle en la estructura de la distribución. Por
 
 ## Métricas de correlación
 
-La correlación es una medida estadística que describe el grado en que dos variables cambian o “varían” conjuntamente.
+### Introducción
+En el análisis de datos, muchas veces no alcanza con estudiar variables de manera aislada. En cambio, nos interesa comprender cómo dos variables se comportan conjuntamente.
+
+El **análisis de correlación** tiene como objetivo estudiar el comportamiento conjunto de dos variables aleatorias $X$ e $Y$, es decir, el grado en que ambas varían o cambian juntas.
+
+Antes de cuantificar esta relación con una métrica (como veremos más adelante), es fundamental explorar los datos visualmente.
+
+### Dataset de ejemplo: Penguins
+
+A lo largo de este capítulo utilizaremos el dataset **penguins**, que contiene información sobre 344 pingüinos observados en el Archipiélago Palmer, en la Antártida.
+
+```{figure} imagenes/penguin.png
+---
+width: 70%
+align: center
+---
+```
+
+Este dataset incluye variables como:
+
+- especie
+
+- isla
+
+- longitud de la aleta (`flipper_length_mm`)
+
+- masa corporal (`body_mass_g`)
+
+entre otras...
+
+Podemos cargarlo fácilmente desde `seaborn`:
+
+```{code-cell} python
+
+import seaborn as sns
+df = sns.load_dataset('penguins')
+
+df.head()
+```
+
+### Análisis univariado
+
+Antes de estudiar la relación entre variables, es importante entender cada una por separado. A continuación, nos enfocaremos particularmente en la longitud de la aleta y la masa corporal del pingüino.
+
+```{code-cell} python
+df[['flipper_length_mm', 'body_mass_g']].describe().round(2)
+```
+
+A partir del resumen que nos proporciona el método `describe()`, podemos realizar algunas observaciones sobre el conjunto de datos de cada una de estas variables. Así, podemos dar respuesta, por ejemplo, a las siguientes preguntas:
+
+- **¿Cuál es la longitud de aleta promedio de los pingüinos?** La longitud de aleta promedio entre los pingüinos es de 200.92 mm.
+
+- **¿Qué porcentaje de los pingüinos pesa más de 4750 g?** Un 25 % de los pingüinos pesa más de 4750 g, ya que ese valor corresponde al tercer cuartil ($Q_3$): el punto por debajo del cual se concentra el 75 % de las observaciones.
+
+Una forma muy útil de complementar el análisis descriptivo es mediante boxplots:
+
+```{code-cell} python
+
+fig, axes = plt.subplots(1, 2, figsize = (12, 4))
+
+sns.boxplot(x = 'flipper_length_mm', color = 'coral', linecolor = 'black', data = df, ax = axes[0])
+axes[0].set_title('Longitud de aleta (mm)')
+
+sns.boxplot(x = 'body_mass_g', color = 'steelblue', linecolor = 'black', data = df, ax=axes[1])
+axes[1].set_title('Masa corporal (g)')
+
+plt.tight_layout()
+plt.show()
+```
+
+### Análisis bivariado
+
+Una vez estudiadas las variables individualmente, podemos preguntarnos: **¿Existe alguna relación entre la longitud de la aleta y el peso de los pingüinos?**.
+
+Un primer acercamiento a una posible respuesta a esta pregunta, consiste en representar gráficamente la información de ambas variables. Un ***scatterplot*** o **gráfico de dispersión** muestra la relación entre dos variables cuantitativas. Los valores de una variable se grafican en el eje de abscisas y los de la otra, en el de las ordenadas. Cada par de observaciones viene representado en el gráfico por un punto.
+
+El gráfico puede revelar la naturaleza de la relación entre las variables, analizando las siguientes características:
+
+- **FORMA:** cuando los puntos del gráfico de dispersión se sitúan aproximadamente a lo largo de una recta se dice que la relación es lineal. Otras formas que pueden presentarse son agrupaciones, relaciones curvilíneas u otras no definidas o claras.
+
+- **DIRECCIÓN:** si la relación entre las dos variables tiene una dirección clara, decimos que existe una asociación positiva cuando a valores mayores de una variable le corresponden en general valores mayores de la otra o negativa en el caso en que a valores menores de una variable le corresponden valores mayores de la otra.
+
+- **INTENSIDAD:** la fuerza de la relación estará dada por la proximidad de los puntos a la función matemática que se supone describe el comportamiento de una variable en función de la otra. En el caso de relaciones lineales, que es el que abordaremos con las métricas de este capítulo, esta referencia es una recta.
+
+```{code-cell} python
+
+plt.figure(figsize = (8,5))
+
+sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm', s = 35, color = '#eb4034', edgecolor = '#eb4034', data = df)
+plt.show()
+```
+
+A partir del gráfico anterior se observa que la relación entre la longitud de la aleta y la masa corporal de los pingüinos es lineal, directa y moderada a intensa.
 
 ### Covarianza
 
-La covarianza es una medida estadística que brinda información acerca del grado en que dos variables varían linealmente en forma conjunta. Suponiendo que se cuenta con un conjunto de n pares de observaciones de dos variables, X e Y, se calcula de la siguiente forma:
+Para comenzar a cuantificar la relación entre dos variables, volvamos al gráfico de dispersión e incorporemos un elemento clave: las medias de ambas variables ($\bar{x}$ y $\bar{y}$). Del análisis univariado que realizamos en una sección anterior, sabemos que $\bar{x} = 4201.75$ y $\bar{y} = 200.92$.
 
-$$
-S_{xy} = \frac{1}{n-1}\sum_{i=1}^{n} (x_i - \bar{x})(y_i - \bar{y})
-$$
+```{code-cell} python
+plt.figure(figsize = (8,5.8))
 
-Analicemos la ecuación anterior:
+sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm', data = df, s = 35, color = '#333131', edgecolor = '#333131')
+plt.axvline(df['body_mass_g'].mean(), color='coral', linewidth=3, linestyle='--', label=r'$\bar{x}$')
+plt.axhline(df['flipper_length_mm'].mean(), color='steelblue', linewidth=3, linestyle='--', label=r'$\bar{y}$')
+plt.xlabel('body_mass_g', fontsize = 20, fontweight = 'bold')
+plt.ylabel('flipper_length_mm', fontsize = 20, fontweight = 'bold')
+plt.legend(fontsize = 15)
+plt.show()
+```
+Como se observa, estas dos rectas dividen el plano en **cuatro cuadrantes**, y cada punto del gráfico queda ubicado en uno de ellos según si sus valores están por encima o por debajo de las medias.
 
-- Si la relación entre ambas variables es directa (a mayores valores de una variable le corresponden, en general, mayores valores de la otra, y viceversa), el producto $(x_i - \bar{x})(y_i - \bar{y})$ tenderá a ser positivo, dando como resultado una covariancia positiva.
-- Si, por el contrario, la relación entre ambas variables es inversa (a mayores valores de una variable le corresponden, en general, menores valores de la otra), el producto $(x_i - \bar{x})(y_i - \bar{y})$ tenderá a ser negativo, dando como resultado una covariancia negativa.
+Esta construcción permite introducir una idea central: para cada observación ($x_i$, $y_i$), podemos analizar el producto
 
-De esta forma, el **signo** de la covariancia indica si la asociación entre las variables X e Y es positiva o negativa. Un ejemplo podría ser precio de chocolate ($Y$) y porcentaje de cacao ($X$). Probablemente, si estudiamos diferentes marcas de chocolate en el mercado y registramos el precio de venta por gramo y el porcentaje de cacao, vamos a observar que a medida que el porcentaje de cacao aumenta, también lo hace el precio. Por lo tanto, si a partir de los datos recolectados calculáramos la covariancia, esperaríamos obtener un valor positivo de la misma.
+$$(x_i - \bar{x})(y_i - \bar{y})$$
 
-![positive.png](./imagenes/positive.png)
+Este producto mide si ambas variables se desvían de sus medias en el mismo sentido o en sentidos opuestos.
 
-![negative.png](./imagenes/negative.png)
+- Si un punto está en el cuadrante superior derecho o en el inferior izquierdo, ambas diferencias tienen el mismo signo. En este caso, el producto es positivo.
 
-![cero.png](./imagenes/cero.png)
+- Si un punto está en el cuadrante superior izquierdo o en el inferior derecho, los signos de ambas componentes del producto son opuestos. En este escenario, el producto es negativo.
 
-Cuando $X$ e $Y$ son estadísticamente independientes, se puede demostrar que la covariancia es igual a 0. Sin embargo, lo opuesto no es necesariamente cierto: 2 variables pueden tener una covariancia igual a 0 y aún así no ser estadísticamente independientes. En este caso, $X$ e $Y$ podrían tener una relación con una forma distinta a la lineal y, de esta forma, no ser independientes.
+En nuestro caso, al observar el gráfico en el que ya detectamos una asociación positiva entre las variables, la mayoría de los puntos se concentran en los cuadrantes donde el producto resulta positivo. Una métrica que sume estos productos sobre todas las observaciones y los divida por un factor relacionado con $n$ resultaría positiva cuando la asociación es positiva, y negativa en el caso contrario.
 
-La fórmula de la covarianza  (población) se define con la siguiente fórmula:
+La idea anterior se formaliza a través de la **covarianza**, una medida que resume estos productos promedio.
 
-$$
-COV(X, Y) = E[(X - E[X])(Y - E[Y])]
-$$
+$$S_{xy} = \frac{1}{n-1}\sum_{i=1}^{n}(x_{i} - \bar{x})(y_{i} - \bar{y})$$
 
-Donde: 
+La covarianza mide el grado en que dos variables varían linealmente en forma conjunta. Es, esencialmente, el promedio (ajustado) de cómo se combinan los desvíos respecto de sus medias.
 
-$E[X], E[Y]$ : es el valor esperado de la variable $X, Y$respectivamente. Es decir, la media poblacional.
+Desde el punto de vista interpretativo, su signo es lo más importante:
 
- 
+- Cuando la covarianza es positiva ($S_{xy} > 0$), indica que las variables tienden a moverse en el mismo sentido.
 
-<aside>
-💡 Las $E$ que vemos en la ecuación de arriba indican que se calcula el valor esperado de una variable aleatoria. El tema variables aleatorias se desarrolla con profundidad en PyE.
+- Cuando es negativa ($S_{xy} < 0$), indica que tienden a moverse en sentidos opuestos.
 
-</aside>
+- Cuando es cercana a cero, no hay evidencia de relación lineal.
 
-A continuación vamos a desglosar la fórmula de arriba y vamos a desarrollar algunas intuiciones sobre la misma. 
+Es importante notar que una covarianza nula no implica necesariamente independencia entre las variables, ya que pueden existir relaciones no lineales que esta medida no logra capturar.
 
-$(X - E[X])$ calcula la distancia entre cada valor $X$y la media de $X$
+```{admonition} **Limitaciones de la covarianza**
+:class: important
 
-$(Y - E[Y])$ calcula la distancia entre cada valor de $Y$y la media de $Y$
+Si bien la covarianza captura correctamente la dirección de la relación, presenta algunas limitaciones importantes.
 
-- Si, la distancia de $X$e $Y$a sus respectivas medias es “grande” y multiplicamos estas distancias, vamos a obtener un valor “grande”.
-- Si ambas variables se alejan de sus medias en la misma dirección, es decir ambas son mayores o menores que las mismas, la multiplicación va a ser positiva. Pero, si se alejan en sentidos opuestos, la multiplicación va a ser negativa.
-- Para que la covarianza adquiera un valor que se aleja de 0, ya sea positivo o negativo, la multiplicación de las distancias de la mayoría de los valores que asumen $X, Y$ deben estar en el mismo sentido. Si obtenemos multiplicaciones positivas y negativas balanceadas, el valor esperado de eso va a ser cero.
-- Si $X,Y$se alejan “poco” de sus medias, no vamos a tener mucha variación de por si y la covarianza va a ser “chica”
+En primer lugar, **su magnitud es difícil de interpretar**. A diferencia de otras medidas, no tiene un rango de variación acotado, por lo que un valor “grande” o “pequeño” depende completamente de las escalas de las variables.
 
-**Limitaciones de la covarianza**
+Esto se relaciona con una segunda limitación: la covarianza **depende de las unidades de medida de las variables**. Si cambiamos la escala de una variable (por ejemplo, si modificamos las unidades de la masa corporal de los pingüinos de gramos a kilogramos), el valor de la covariancia cambia, incluso cuando la relación subyacente es la misma.
 
-Aunque la covarianza es útil para identificar tendencias y relaciones en los datos, también presenta algunas debilidades y limitaciones:
+Por último, la covarianza **no permite comparar la intensidad de la relación entre distintos pares de variables**. Si calculamos la covarianza entre la longitud de la aleta y la masa corporal, y también entre la longitud del pico y la masa corporal, no podemos afirmar cuál de las dos relaciones es más intensa simplemente comparando los valores obtenidos, ya que las escalas difieren.
 
-1. Escala de medida: La covarianza depende de las unidades de medida de las variables, lo que puede dificultar la interpretación y comparación de los valores de covarianza entre diferentes pares de variables. Por ejemplo, si las unidades de medida de una variable son metros y las de la otra variable son grados Celsius, la covarianza entre estas dos variables será en unidades de metros por grados Celsius, lo que no es fácilmente interpretable.
-2. Sensibilidad a cambios de escala: La covarianza es sensible a cambios de escala en las variables. Si una de las variables se multiplica por una constante, la covarianza también se multiplicará por esa constante, lo que podría dar lugar a interpretaciones incorrectas de la relación entre las variables.
-3. Falta de normalización: A diferencia del coeficiente de correlación de Pearson, la covarianza no está normalizada en un rango de -1 a 1. Esto dificulta la comparación de la fuerza de las relaciones entre diferentes pares de variables, ya que no hay un valor máximo o mínimo absoluto para la covarianza.
-4. Interpretación de la fuerza de la relación: La covarianza no proporciona información directa sobre la fuerza de la relación entre las variables. Aunque una covarianza positiva indica una relación directa y una covarianza negativa indica una relación inversa, no se puede deducir cuán fuerte es esa relación a partir del valor de la covarianza en sí.
-5. Relaciones lineales únicamente: La covarianza solo puede capturar relaciones lineales entre las variables. Si existe una relación no lineal (por ejemplo, cuadrática o exponencial) entre las variables, la covarianza no será un indicador adecuado de esa relación.
+Por estas razones, **la covarianza no es una buena medida para evaluar la intensidad de la asociación.**
+```
 
 ### Correlación lineal de Pearson
 
