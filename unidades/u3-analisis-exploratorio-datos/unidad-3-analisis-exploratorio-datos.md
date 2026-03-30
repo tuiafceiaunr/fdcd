@@ -1484,7 +1484,7 @@ Es importante remarcar que estos umbrales son convencionales y dependen del cont
 
 #### Un poco más sobre la interpretación visual de r
 
-```{figure} imagenes/pearson-coefficient-values-2.jpg
+```{figure} imagenes/pearson-coefficient-values-2.png
 ---
 width: 95%
 align: center
@@ -1530,179 +1530,179 @@ Finalmente, el coeficiente de Pearson es sensible a valores atípicos (*outliers
 
 ### Correlación de Spearman
 
-Para poder entender la correlación de Spearman primero necesitamos revisar el ranking
+Vimos que el coeficiente de Pearson presenta dos limitaciones importantes: es sensible a la presencia de *outliers* y solo captura asociaciones lineales. El **coeficiente de correlación de Spearman** surge como una alternativa más robusta en ciertos contextos, y su idea central es simple: en lugar de trabajar con los valores originales de las variables, se trabaja con sus **rangos**.
 
-**Ranking**
+#### ¿Qué es un *ranking*?
 
-Un ranking es una lista ordenada de elementos o entidades en función de algún criterio de clasificación específico. El objetivo del ranking es proporcionar una forma de clasificar y comparar los elementos o entidades de interés.
+Antes de definir formalmente el coeficiente, conviene entender qué significa *rankear* una variable. Un *ranking* es una asignación de posiciones ordenadas a los valores de una variable según algún criterio. Lo que importa no es el valor en sí, sino el lugar que ocupa cada observación en el ordenamiento.
 
-Los rankings se utilizan comúnmente en una variedad de campos, como deportes, negocios, educación, ciencias, entre otros. Por ejemplo, en los deportes, los rankings se utilizan para clasificar a los equipos o jugadores en función de su rendimiento en la temporada actual o en temporadas anteriores. En los negocios, los rankings se utilizan para clasificar a las empresas en función de su tamaño, ingresos, beneficios, entre otros criterios. En la educación, los rankings se utilizan para clasificar a las universidades en función de su reputación, calidad académica, entre otros criterios.
+Por ejemplo, si registramos la satisfacción de usuarios con un producto, podríamos asignar rangos de la siguiente forma:
 
-Los rankings pueden basarse en diferentes criterios de clasificación, como puntuaciones, tiempos, ingresos, tamaño, popularidad, entre otros. Es importante tener en cuenta que el criterio de clasificación utilizado para crear un ranking puede afectar la posición de los elementos o entidades en la lista.
+| Nivel de satisfacción | Rango |
+|:---------------------:|:-----:|
+| 😍 Muy satisfecho    | 1     |
+| 😀 Satisfecho        | 2     |
+| 😑 Neutral           | 3     |
+| ☹️ Insatisfecho      | 4     |
+| 🤬 Muy insatisfecho  | 5     |
 
-Los rankings pueden tener un impacto significativo en la percepción pública y el éxito de los elementos o entidades clasificados. Sin embargo, es importante recordar que los rankings no siempre son una medida precisa o completa del rendimiento o calidad de los elementos o entidades clasificados, y que deben interpretarse con precaución.
+En este caso, el *ranking* preserva el orden de la variable pero descarta la magnitud de las diferencias entre valores: no sabemos cuánto más satisfecho está alguien con rango 1 respecto de alguien con rango 2, solo que está mejor posicionado.
 
-El ranking establece una relación entre los valores que asume una variable de forma tal que sabemos el orden de la misma sin que nos importe el valor en si. Por ejemplo, la satisfacción con un producto podría ser rankeada de esta forma
+De manera análoga, podemos *rankear* una variable cuantitativa como la edad. Si los valores son:
 
-- 😍 : 1
-- 😀 : 2
-- 😑 : 3
-- ☹️ : 4
-- 🤬 : 5
-
-Otro ejemplo podría ser rankear la variable `edad` de nuestro ejemplo. Para eso ordenamos las edades y le asignamos el valor 1 a la edad más grande y la cantidad de personas encuestadas al valor más chico. Luego, las edades intermedias reciben el correspondiente rango intermedio. Un ejemplo se vería así:
-
+```
 [18, 20, 22, 30, 34, 35, 40, 47, 50, 51]
+```
 
-[10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+Los rangos asignados de menor a mayor serían:
 
-Lo que hicimos arriba es posible porque en nuestro ejemplo las edades no se repiten, lo cual es poco real. Cuando los valores se repiten esto se llama empate y tenemos que buscar una estrategia para asignarles el ranking. Supongamos que tenemos las siguientes edades: 
+```
+[ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10]
+```
 
+**El problema de los empates**
+
+Cuando los valores no se repiten, la asignación de rangos es directa. Sin embargo, en situaciones reales es frecuente encontrar empates: dos o más observaciones con el mismo valor. En ese caso, existen distintas estrategias para asignar los rangos. Tomemos como ejemplo la siguiente serie de edades:
+
+```
 [18, 20, 22, 22, 30, 34, 35, 35, 35, 40, 47, 50, 51]
+```
 
-A continuación listamos algunas estrategias para rankearlas, [fuente Wikipedia](https://en.wikipedia.org/wiki/Ranking). 
+Las principales estrategias son:
 
-**Ranking de competición estándar**
+**Ranking de competición estándar:** los elementos empatados reciben el mismo rango, y el siguiente rango disponible se saltea tantas posiciones como elementos empatados haya.
 
-En la clasificación de competición, los elementos que se comparan y resultan iguales reciben el mismo número de clasificación y luego se deja un espacio en los números de clasificación. La cantidad de números de clasificación que se omiten en este espacio es uno menos que la cantidad de elementos que se compararon como iguales. De manera equivalente, el número de clasificación de cada elemento es 1 más la cantidad de elementos clasificados por encima de él. Esta estrategia de clasificación se adopta frecuentemente en competencias, ya que significa que si dos (o más) competidores empatan en una posición en la clasificación, la posición de todos aquellos clasificados por debajo de ellos no se ve afectada (es decir, un competidor solo queda en segundo lugar si exactamente una persona obtiene una puntuación mejor que ellos, tercero si exactamente dos personas obtienen una puntuación mejor que ellos, cuarto si exactamente tres personas obtienen una puntuación mejor que ellos, etc.).
-
-En nuestro ejemplo, obtendríamos este ranking: 
-
+```
 [1, 2, 3, 3, 5, 6, 7, 7, 7, 10, 11, 12, 13]
+```
 
-**Ranking de competición modificado**
+**Ranking de competición modificado:** similar al anterior, pero el espacio se deja antes del grupo empatado en lugar de después.
 
-A veces, la clasificación de competición se realiza dejando los espacios en los números de clasificación antes de los conjuntos de elementos con clasificación igual (en lugar de después de ellos, como en la clasificación de competición estándar). La cantidad de números de clasificación que se omiten en este espacio sigue siendo uno menos que la cantidad de elementos que se compararon como iguales. De manera equivalente, el número de clasificación de cada elemento es igual a la cantidad de elementos clasificados iguales o por encima de él. Esta clasificación garantiza que un competidor solo queda en segundo lugar si obtiene una puntuación más alta que todos menos uno de sus oponentes, tercero si obtiene una puntuación más alta que todos menos dos de sus oponentes, etc. El ranking nos quedaría de este modo: 
-
+```
 [1, 2, 4, 4, 5, 6, 9, 9, 9, 10, 11, 12, 13]
+```
 
-**Ranking denso**
+**Ranking denso:** los elementos empatados reciben el mismo rango, y el siguiente elemento recibe el rango inmediatamente posterior, sin dejar espacios.
 
-En la clasificación densa, los elementos que se comparan de manera igual reciben el mismo número de clasificación y los siguientes elementos reciben el número de clasificación inmediatamente posterior. De manera equivalente, el número de clasificación de cada elemento es 1 más la cantidad de elementos clasificados por encima de él que son distintos con respecto al orden de clasificación. El ranking nos quedaría de este modo: 
-
+```
 [1, 2, 3, 3, 4, 5, 6, 6, 6, 7, 8, 9, 10]
+```
 
-**Ranking ordinal**
+**Ranking ordinal:** cada elemento recibe un rango distinto, incluso si hay empates. Los criterios de desempate pueden ser arbitrarios pero deben ser consistentes.
 
-En la clasificación ordinal, todos los elementos reciben números ordinales distintos, incluidos los elementos que se comparan como iguales. La asignación de números ordinales distintos a elementos que se comparan igual se puede hacer de manera aleatoria o arbitraria, pero generalmente es preferible utilizar un sistema que sea arbitrario pero consistente, ya que esto proporciona resultados estables si la clasificación se realiza varias veces. Un ejemplo de un sistema arbitrario pero consistente sería incorporar otros atributos al orden de clasificación (como el orden alfabético del nombre del competidor) para garantizar que no haya dos elementos que coincidan exactamente.
-El ranking nos quedaría de este modo:
-
+```
 [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+```
 
-**Ranking fraccional**
+**Ranking fraccional:** los elementos empatados reciben el promedio de los rangos que les habrían correspondido bajo el *ranking* ordinal. Es el método más utilizado en estadística, ya que conserva la suma total de los rangos.
 
-Los elementos que se comparan igual reciben el mismo número de clasificación, que es la media de lo que tendrían bajo las clasificaciones ordinales; de manera equivalente, el número de clasificación de 1 más la cantidad de elementos clasificados por encima de él más la mitad de la cantidad de elementos iguales a él. Esta estrategia tiene la propiedad de que la suma de los números de clasificación es la misma que en la clasificación ordinal. El ranking nos quedaría de este modo:
+```
 [1, 2, 3.5, 3.5, 5, 6, 8, 8, 8, 10, 11, 12, 13]
-
-Con `pandas`, podemos rankear una serie con diferentes métodos de ranking: 
-
-```python
-import pandas as pd
-
-data = [18, 20, 22, 22, 30, 34, 35, 35, 35, 40, 47, 50, 51]
-serie = pd.Series(data)
-
-# min: **Ranking de competición estándar**
-# max: **Ranking de competición modificado**
-# dense: **Ranking denso**
-# average: **Ranking fraccional**
-# first: **Ranking ordinal**
-ranking_methods = ['average', 'min', 'max', 'dense', 'first']
-
-for method in ranking_methods:
-    ranked = serie.rank(method=method)
-    print(f"Método de Ranking: {method}")
-    print(ranked.tolist())
-    print("\n")
-
-"""
-Ranking method: average
-[1.0, 2.0, 3.5, 3.5, 5.0, 6.0, 8.0, 8.0, 8.0, 10.0, 11.0, 12.0, 13.0]
-
-Ranking method: min
-[1.0, 2.0, 3.0, 3.0, 5.0, 6.0, 7.0, 7.0, 7.0, 10.0, 11.0, 12.0, 13.0]
-
-Ranking method: max
-[1.0, 2.0, 4.0, 4.0, 5.0, 6.0, 9.0, 9.0, 9.0, 10.0, 11.0, 12.0, 13.0]
-
-Ranking method: dense
-[1.0, 2.0, 3.0, 3.0, 4.0, 5.0, 6.0, 6.0, 6.0, 7.0, 8.0, 9.0, 10.0]
-
-Ranking method: first
-[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0]
-"""
 ```
 
-**Correlación de Spearman**
+Con Pandas, podemos rankear una serie especificando el método deseado mediante el parámetro `method`:
 
-La correlación de Spearman se define como el coeficiente de correlación de Pearson para las variables rankeadas. Esto nos permite evaluar si existe una relación monotónica entre dos variables, es decir si crecen/decrecen juntas, sin importar si la relación es lineal o no, a diferencia de Pearson. Además el valor obtenido es menos sensible a valores atípicos que el coeficiente de Pearson. 
+```{code-cell} python
+serie = pd.Series([18, 20, 22, 22, 30, 34, 35, 35, 35, 40, 47, 50, 51])
 
-La fórmula general es: 
-
-$$
-\rho = {\frac{COV(R(X), R(Y))}{\sigma_{R(X)}\sigma_{R(Y)}}}
-$$
-
-La correlación de Spearman tiene una relación directa con los rankings (rangos) porque se basa en los rangos de los datos en lugar de sus valores originales. Al calcular la correlación de Spearman, convertimos los valores de las dos variables en rangos antes de evaluar la asociación entre ellas. Esta característica hace que la correlación de Spearman sea especialmente útil para analizar datos ordinales, donde la información más importante es el orden o la clasificación de las observaciones en lugar de sus valores numéricos exactos.
-
-Cuando comparamos dos conjuntos de rankings, la correlación de Spearman nos indica qué tan bien estos rankings concuerdan entre sí. Si los rankings de las dos variables son idénticos, la correlación de Spearman será 1, lo que indica una relación monotónica creciente perfecta. Si los rankings son exactamente opuestos, la correlación de Spearman será -1, lo que indica una relación monotónica decreciente perfecta. Un valor cercano a 0 sugiere que no hay una relación monotónica evidente entre los rankings de las dos variables.
-
-![Ejemplos de variables monotónicas y no monotónicas](./imagenes/Untitled13.png)
-
-Ejemplos de variables monotónicas y no monotónicas
-
-Antes de calcular la correlación de Spearman, debemos convertir los valores de las variables en rangos. Aquí se detallan los pasos para convertir los datos en rangos:
-
-1. Ordenar los valores de cada variable (X e Y) en orden ascendente, de menor a mayor.
-2. Asignar un rango a cada valor en función de su posición en la lista ordenada. El valor más pequeño recibirá el rango 1, el siguiente valor más pequeño recibirá el rango 2 y así sucesivamente.
-3. En caso de empates (valores iguales), utilizar el método de ranking ordinal.
-
-Repita estos pasos para ambas variables, X e Y. Al final, tendremos dos conjuntos de datos transformados en rangos, que se pueden utilizar para calcular el coeficiente de correlación de rango de Spearman (ρ).
-
-Aquí hay un ejemplo para ilustrar el proceso:
-
-Suponga que tiene dos variables, X e Y, con los siguientes valores:
-
-X: [10, 25, 30, 45, 55]
-Y: [2, 8, 10, 12, 22]
-
-Primero, ordene los valores de cada variable y asígneles rangos:
-
-X: 10 (R1 = 1), 25 (R2 = 2), 30 (R3 = 3), 45 (R4 = 4), 55 (R5 = 5)
-Y: 2 (R1 = 1), 8 (R2 = 2), 10 (R3 = 3), 12 (R4 = 4), 22 (R5 = 5)
-
-Luego la fórmula es:
-
-ρ = 1 - (6 * Σd^2) / (n * (n^2 - 1))
-
-$$
-\rho = \frac{1-(6\times \sum d^2)}{(n\times(n^2-1)}
-$$
-
-Donde:
-
-- n es el número de observaciones (pares de datos)
-- Σd^2 es la suma de las diferencias al cuadrado de los rangos.
-
-El coeficiente de correlación de Spearman (ρ) varía entre -1 y 1, donde:
-
-- ρ = 1 indica una relación monotónica creciente perfecta.
-- ρ = -1 indica una relación monotónica decreciente perfecta.
-- ρ ≈ 0 sugiere que no hay una relación monotónica evidente entre las variables.
-
-Si calculamos el coeficiente de Spearman con Pandas, la librería se encarga de facilitar el proceso de generación de rankings. El coeficiente se puede calcular de la misma forma que el coeficiente de correlación de Pearson pero cambiando el método
-
-```python
-data.bhch04.corr(data.biaf02_m, method = 'spearman')
+serie.rank(method = 'average')  # fraccional (default)
+serie.rank(method = 'min')      # competición estándar
+serie.rank(method = 'max')      # competición modificado
+serie.rank(method = 'dense')    # denso
+serie.rank(method = 'first')    # ordinal
 ```
 
-Aquí vemos el valor del coeficiente con diferentes funciones como ejemplo ([fuente](https://stackabuse.com/calculating-spearmans-rank-correlation-coefficient-in-python-with-pandas/)):
+### Definición del coeficiente de Spearman
 
-![Untitled](./imagenes/Untitled14.png)
+Una vez asignados los rangos, el coeficiente de Spearman se obtiene calculando el coeficiente de correlación de Pearson sobre los rangos en lugar de sobre los valores originales:
 
-![Untitled](./imagenes/Untitled15.png)
+$$r_{s} = \frac{S_{RxRy}}{S_{Rx}S_{Ry}}$$
 
-![Untitled](./imagenes/Untitled16.png)
+donde $R_x$ y $R_y$ representan los rangos asignados a cada variable. Esta conexión es clave: Spearman no es un coeficiente radicalmente distinto, sino Pearson aplicado a una transformación de los datos.
+
+**¿Cuándo usar Spearman?**
+
+El uso de rangos lo hace especialmente adecuado en tres situaciones:
+
+- Cuando se trabaja con **datos ordinales**, donde los valores solo indican un orden pero no una magnitud precisa.
+
+- Cuando la relación entre las variables es **monótona pero no necesariamente lineal**. Una relación es monótona si, al aumentar una variable, la otra tiende siempre a aumentar o siempre a disminuir, aunque no lo haga a un ritmo constante. Vale notar que toda relación lineal es monótona, pero no toda relación monótona es lineal.
+
+- Cuando hay **valores atípicos** que podrían distorsionar el coeficiente de Pearson, ya que al transformar los datos en rangos se reduce el peso de los extremos.
+
+**Propiedades de $r_s$**
+
+Al igual que el coeficiente de Pearson, $r_s$ toma valores en el intervalo [−1,1]:
+
+- $r_s = 1$ indica una relación monótona creciente perfecta.
+
+- $r_s = −1$ indica una relación monótona decreciente perfecta.
+
+- $r_s \approx 0$ indica ausencia de relación monótona.
+
+**Un ejemplo: tiempos de reacción y edad en jugadores**
+
+Supongamos que contamos con información sobre los tiempos de reacción y la edad de 8 jugadores:
+
+| Edad (años) | Tiempo (ms) |
+|:-----------:|:-----------:|
+| 10          | 120         |
+| 15          | 115         |
+| 20          | 145         |
+| 25          | 160         |
+| 30          | 195         |
+| 35          | 185         |
+| 45          | 230         |
+| 60          | 290         |
+
+```{code-cell} python
+# Generamos el DataFrame con los datos
+data_gamers = pd.DataFrame({
+    'edad_anios': [10, 15, 20, 25, 30, 35, 45, 60],
+    'tiempo_ms':  [120, 115, 145, 160, 195, 185, 230, 290]
+})
+
+# Representamos gráficamente los datos
+plt.figure(figsize = (8,5))
+sns.scatterplot(x = 'edad_anios', y = 'tiempo_ms', s = 35, color = '#eb4034', edgecolor = '#eb4034', data = data_gamers)
+plt.show()
+```
+
+El gráfico de dispersión sugiere una relación positiva entre ambas variables: a mayor edad, mayor tiempo de reacción. Sin embargo, la relación no parece estrictamente lineal, lo que hace de Spearman una opción más apropiada que Pearson en este caso.
+
+Para calcular $r_s$, primero se asignan rangos a cada variable:
+
+| Edad (años) | Tiempo (ms) | Rango Edad | Rango Tiempo |
+|:-----------:|:-----------:|:----------:|:------------:|
+| 10          | 120         | 1          | 2            |
+| 15          | 115         | 2          | 1            |
+| 20          | 145         | 3          | 3            |
+| 25          | 160         | 4          | 4            |
+| 30          | 195         | 5          | 6            |
+| 35          | 185         | 6          | 5            |
+| 45          | 230         | 7          | 7            |
+| 60          | 290         | 8          | 8            |
+
+Luego, $r_s$ es simplemente el coeficiente de Pearson calculado sobre las columnas `rango_edad` y `rango_tiempo`. Por ende, el $r_s$ es el coeficiente de correlación lineal de Pearson calculado con los datos representados en el siguiente gráfico:
+
+```{code-cell} python
+# Creamos DataFrame con los rangos
+
+data_gamers_ranks = pd.DataFrame({'rango_edad' : data_gamers['edad_anios'].rank(), 'rango_tiempo' : data_gamers['tiempo_ms'].rank())
+
+# Representamos gráficamente los rangos asignados
+plt.figure(figsize = (8,5))
+sns.scatterplot(x = 'rango_edad', y = 'rango_tiempo', s = 35, color = '#eb4034', edgecolor = '#eb4034', data = data_gamers_ranks)
+plt.show()
+```
+
+En la práctica, Pandas realiza este proceso internamente; basta con especificar `method = 'spearman'`:
+
+```{code-cell} python
+data_gamers.corr(method = 'spearman')
+```
+
+El valor obtenido es positivo y alto, lo que indica una relación monótona creciente fuerte entre la edad y el tiempo de reacción, aunque no perfecta. Esto es consistente con lo que observamos en el *scatterplot*: la tendencia general es clara —a mayor edad, mayor tiempo de reacción— pero con algunas irregularidades locales que impiden hablar de una monotonicidad perfecta. Nótese además que la relación es visiblemente no lineal: el tiempo de reacción crece de forma más pronunciada en las edades avanzadas.
 
 ## Matriz de Covarianza
 
