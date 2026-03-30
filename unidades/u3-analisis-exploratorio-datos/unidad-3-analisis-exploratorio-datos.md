@@ -1370,45 +1370,43 @@ A partir del gráfico anterior se observa que la relación entre la longitud de 
 Para comenzar a cuantificar la relación entre dos variables, volvamos al gráfico de dispersión e incorporemos un elemento clave: las medias de ambas variables ($\bar{x}$ y $\bar{y}$). Del análisis univariado que realizamos en una sección anterior, sabemos que $\bar{x} = 4201.75$ y $\bar{y} = 200.92$.
 
 ```{code-cell} python
-plt.figure(figsize = (8,5.8))
+plt.figure(figsize = (8,5))
 
 sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm', data = df, s = 35, color = '#333131', edgecolor = '#333131')
-plt.axvline(df['body_mass_g'].mean(), color='coral', linewidth=3, linestyle='--', label=r'$\bar{x}$')
-plt.axhline(df['flipper_length_mm'].mean(), color='steelblue', linewidth=3, linestyle='--', label=r'$\bar{y}$')
-plt.xlabel('body_mass_g', fontsize = 20, fontweight = 'bold')
-plt.ylabel('flipper_length_mm', fontsize = 20, fontweight = 'bold')
+plt.axvline(df['body_mass_g'].mean(), color = 'coral', linewidth = 2.5, linestyle = '--', label = r'$\bar{x}$')
+plt.axhline(df['flipper_length_mm'].mean(), color = 'steelblue', linewidth = 2.5, linestyle = '--', label = r'$\bar{y}$')
 plt.legend(fontsize = 15)
 plt.show()
 ```
-Como se observa, estas dos rectas dividen el plano en **cuatro cuadrantes**, y cada punto del gráfico queda ubicado en uno de ellos según si sus valores están por encima o por debajo de las medias.
+Como se observa, estas dos rectas dividen el plano en **cuatro cuadrantes**, y cada punto del gráfico queda ubicado en uno de ellos según si sus valores están por encima o por debajo de las medias. La pregunta que queremos responder es: **¿cómo construir una métrica que capture si las variables tienden a crecer juntas o a moverse en sentidos opuestos?**
 
-Esta construcción permite introducir una idea central: para cada observación ($x_i$, $y_i$), podemos analizar el producto
+Una forma natural de responderla es analizar, para cada observación ($x_i$, $y_i$), cómo se comportan sus desvíos respecto de las medias. En particular, podemos calcular el producto:
 
 $$(x_i - \bar{x})(y_i - \bar{y})$$
 
-Este producto mide si ambas variables se desvían de sus medias en el mismo sentido o en sentidos opuestos.
+El signo de este producto depende del cuadrante en el que se encuentre cada punto:
 
-- Si un punto está en el cuadrante superior derecho o en el inferior izquierdo, ambas diferencias tienen el mismo signo. En este caso, el producto es positivo.
+- En el **cuadrante superior derecho** (donde $x_i > \bar{x}$ y $y_i > \bar{y}$) y en el **inferior izquierdo** (donde $x_i < \bar{x}$ y $y_i < \bar{y}$), ambos factores tienen el mismo signo, por lo que el producto **es positivo**.
 
-- Si un punto está en el cuadrante superior izquierdo o en el inferior derecho, los signos de ambas componentes del producto son opuestos. En este escenario, el producto es negativo.
+- En el **cuadrante superior izquierdo** (donde $x_i < \bar{x}$ y $y_i > \bar{y}$) y en el **inferior derecho** (donde $x_i > \bar{x}$ y $y_i < \bar{y}$), los factores tienen signos opuestos, por lo que el producto **es negativo**.
 
-En nuestro caso, al observar el gráfico en el que ya detectamos una asociación positiva entre las variables, la mayoría de los puntos se concentran en los cuadrantes donde el producto resulta positivo. Una métrica que sume estos productos sobre todas las observaciones y los divida por un factor relacionado con $n$ resultaría positiva cuando la asociación es positiva, y negativa en el caso contrario.
+Cuando existe una asociación positiva entre las variables —como la que observamos en nuestro gráfico—, la mayoría de los puntos se concentran en los cuadrantes superior derecho e inferior izquierdo, donde el producto es positivo. Si promediamos estos productos sobre todas las observaciones, el resultado será un número positivo. Lo opuesto ocurre cuando la asociación es negativa.
 
-La idea anterior se formaliza a través de la **covarianza**, una medida que resume estos productos promedio.
+Esta idea se formaliza a través de la **covarianza**:
 
 $$S_{xy} = \frac{1}{n-1}\sum_{i=1}^{n}(x_{i} - \bar{x})(y_{i} - \bar{y})$$
 
-La covarianza mide el grado en que dos variables varían linealmente en forma conjunta. Es, esencialmente, el promedio (ajustado) de cómo se combinan los desvíos respecto de sus medias.
+La covarianza mide el grado en que dos variables varían linealmente en forma conjunta. Es, esencialmente, el promedio ajustado de los productos de los desvíos respecto de sus medias.
 
-Desde el punto de vista interpretativo, su signo es lo más importante:
+Desde el punto de vista interpretativo, su signo es lo más relevante:
 
-- Cuando la covarianza es positiva ($S_{xy} > 0$), indica que las variables tienden a moverse en el mismo sentido.
+- Si $S_{xy} > 0$, las variables tienden a moverse en el mismo sentido.
 
-- Cuando es negativa ($S_{xy} < 0$), indica que tienden a moverse en sentidos opuestos.
+- Si $S_{xy} < 0$, tienden a moverse en sentidos opuestos.
 
-- Cuando es cercana a cero, no hay evidencia de relación lineal.
+- Si $S_{xy} \approx 0$, no hay evidencia de relación lineal.
 
-Es importante notar que una covarianza nula no implica necesariamente independencia entre las variables, ya que pueden existir relaciones no lineales que esta medida no logra capturar.
+Resulta oportuno aclarar que una covarianza nula no implica necesariamente independencia entre las variables, ya que pueden existir relaciones no lineales que esta medida no logra capturar.
 
 ```{admonition} **Limitaciones de la covarianza**
 :class: important
@@ -1423,6 +1421,21 @@ Por último, la covarianza **no permite comparar la intensidad de la relación e
 
 Por estas razones, **la covarianza no es una buena medida para evaluar la intensidad de la asociación.**
 ```
+
+En la práctica, podemos obtener la covarianza directamente con Pandas:
+
+```{code-cell} python
+
+df[['body_mass_g','flipper_length_mm']].cov()
+```
+
+El resultado es una **matriz de covarianza** de dimensiones 2×2, donde:
+
+- Los elementos de la diagonal corresponden a las varianzas de cada variable.
+
+- Los elementos fuera de la diagonal corresponden a la covarianza entre ambas variables
+
+El valor obtenido para el par `body_mass_g` y `flipper_length_mm` es positivo, lo cual es consistente con lo que anticipamos a partir del gráfico de dispersión.
 
 ### Correlación lineal de Pearson
 
