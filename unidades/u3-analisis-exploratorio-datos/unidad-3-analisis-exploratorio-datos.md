@@ -1437,61 +1437,96 @@ El resultado es una **matriz de covarianza** de dimensiones 2×2, donde:
 
 El valor obtenido para el par `body_mass_g` y `flipper_length_mm` es positivo, lo cual es consistente con lo que anticipamos a partir del gráfico de dispersión.
 
-### Correlación lineal de Pearson
+### Coeficiente de correlación de Pearson
 
-El coeficiente de correlación lineal de Pearson mide el grado de asociación lineal que existe entre dos variables cuantitativas continuas. Se calcula de la siguiente manera:
+La covarianza nos permitió capturar la dirección de la relación entre dos variables, pero vimos que su magnitud es difícil de interpretar y depende de las unidades de medida. Para resolver estos problemas, se define el **coeficiente de correlación lineal de Pearson**, que estandariza la covarianza dividiéndola por los desvíos estándar de las observaciones registradas de ambas variables:
 
-$$
-r = \frac{S_{xy}}{S_x S_y}
-$$
+$$r = \frac{S_{xy}}{S_xS_y}$$
 
-donde $S_{xy}$ es la covariancia muestral entre X e Y, $S_{x}$ es la desviación estándar muestral de la variable X y $S_{y}$ es la desviación estándar muestral de la variable Y.
+Al dividir por los desvíos estándar, se elimina el efecto de las unidades de medida y se obtiene una medida adimensional que permite comparar la intensidad de la relación entre distintos pares de variables. Además, $r$ es simétrico: $r_{xy} = r_{yx}$, lo que explica que la matriz de correlación sea simétrica respecto de su diagonal, como veremos más adelante.
 
-**Interpretación**
+El coeficiente de Pearson **mide el grado de asociación lineal entre dos variables cuantitativas continuas**, y **su valor está siempre acotado:**
 
-Dado que se trata de una normalización de la covarianza, su valor está siempre comprendido entre -1 (correlación lineal inversa perfecta) y 1 (correlación lineal directa perfecta). 
+$$-1 \leq r \leq 1$$
 
-- Un coeficiente de correlación positivo indica una asociación directa entre las variables (se mueven en la misma dirección). Por el contrario, un coeficiente de correlación negativo es indicativo de una asociación inversa entre las variables (se mueven en direcciones opuestas).
-- Cuanto más cercano a 1 sea, en valor absoluto, más intensa es la correlación lineal entre las variables.
-- Un valor de r cercano a 0 no es necesariamente una evidencia de la falta de asociación entre las variables, sino sólo de la ausencia de una relación lineal, ya que este coeficiente no dice nada acerca de la intensidad de asociaciones diferentes a las lineales. En estos casos su cálculo e interpretación resultan inadecuados.
-- Existe una tendencia a asumir, implícita o explícitamente, que un alto valor de r implica causalidad, lo que constituye una interpretación errónea. El coeficiente de correlación de Pearson es simplemente una medida de la fuerza de la asociación lineal entre las dos variables.
+Esto permite interpretar de forma conjunta el signo y la magnitud de la relación:
 
-![Ejemplos de correlaciones de variables con el método de Pearson ](./imagenes/Untitled12.png)
+- Si $r > 0$, la relación es positiva: valores altos de una de las variables tienden a corresponderse con valores altos de la otra.
 
-Ejemplos de correlaciones de variables con el método de Pearson 
+- Si $r < 0$, la relación es negativa: cuando una variable aumenta, la otra tiende a disminuir.
 
-$$
-\rho_{X,Y} = {\frac {COV(X,Y)}{\sigma_{X}\sigma_{Y}}}
-$$
+- Si $r \approx 0$, no hay evidencia de asociación lineal.
 
-**Ventajas frente a la covariancia**
+En cuanto a la magnitud: 
 
-1. Al estar acotado entre -1 y 1, el coeficiente de correlación de Pearson proporciona información sobre la fuerza de la asociación lineal entre las dos variables (cuanto más cercano a 1, en valor absoluto, más intensa es la asociación lineal). 
-2. Su valor es independiente de las unidades en las que estén medidas las variables y de los cambios de escala en los datos. Si las dos variables están medidas en grados Celsius y las observaciones se convierten a grados Kelvin, el coeficiente de correlación de Pearson calculado en esta nueva situación será idéntico al anterior.
-3. El coeficiente de correlación de Pearson es muy fácil de interpretar y de calcular.
+- Valores cercanos a 0 indican una relación débil
 
-**Supuestos y limitaciones**
+- Valores cercanos a 1 o -1 indican una relación fuerte
 
-La correlación de Pearson asume que las variables poseen una distribución normal conjunta y que la relación entre las mismas es lineal. En relación al primer punto, se trata de una exigencia que cobra especial importancia en el contexto de la inferencia estadística. Es generalmente aceptado que el coeficiente de correlación lineal de Pearson puede utilizarse en prácticamente todas las situaciones en las que nos enfrentemos a la necesidad de cuantificar el grado de asociación lineal entre dos variables, independientemente de la forma de la distribución conjunta. Por otra parte, en relación al segundo punto, si existe una asociación no lineal entre las variables (por ejemplo, cuadrática o exponencial), el coeficiente de correlación de Pearson no será un indicador adecuado de esa relación. 
+- Los valores extremos $r = \pm 1$ corresponden a una relación perfectamente lineal.
 
-Finalmente, es oportuno destacar que el coeficiente de correlación de Pearson es bastante sensible a la presencia de valores atípicos en las observaciones, los cuales pueden distorsionar enormemente su valor y conducir a conclusiones equivocadas.
-
-En la encuesta de Factores de Riesgo podríamos pensar en estudiar las siguientes correlaciones:
-
-| **X** | **Y** | **Valor** |
-| --- | --- | --- |
-| Edad | Minutos entrenamiento intenso | - 0.16 |
-| Ingresos | Minutos entrenamiento intenso | 0.04 |
-| Edad | Minutos de caminata | - 0.03 |
-| Ingresos | Edad cuando fumó por primera vez | - 0.03 |
-
-Hay muchas maneras de calcular el coeficiente de variación en Python. Usando pandas podemos hacerlo de la siguiente forma:
-
-```python
-# bhch04 es la edad y biaf02_m es la cantidad de minutos entrenados de forma intensa 
-# en la semana. El método por default es `pearson`
-data.bhch04.corr(data.biaf02_m, method = 'pearson')
+```{figure} imagenes/pearson-coefficient-values.jpg
+---
+width: 95%
+align: center
+---
 ```
+
+Como referencia práctica —y siempre considerando el contexto de aplicación— suelen utilizarse los siguientes umbrales:
+
+- $|r| < 0.5$: relación débil.
+
+- $0.5 \leq |r| < 0.8$: relación moderada.
+
+- $|r| \geq 0.8$: relación fuerte.
+
+Es importante remarcar que estos umbrales son convencionales y dependen del contexto de aplicación.
+
+#### Un poco más sobre la interpretación visual de r
+
+```{figure} imagenes/pearson-coefficient-values-2.jpg
+---
+width: 95%
+align: center
+---
+```
+
+Esta figura muestra distintos conjuntos de datos con valores conocidos de $r$, e ilustra varias ideas clave:
+
+- En la primera fila, la nube de puntos se vuelve progresivamente más alineada en torno a una recta a medida que $|r|$ se acerca a 1, lo que refleja un aumento en la fuerza de la relación lineal.
+
+- Cuando $r = \pm 1$, todos los puntos caen exactamente sobre una recta.
+
+- La segunda fila muestra casos donde los puntos están perfectamente alineados con distintas pendientes. Esto refuerza que $r$ captura la intensidad de la asociación lineal, pero no la magnitud de la pendiente (aunque sí su signo).
+
+- Cuando los puntos se disponen sobre una recta horizontal, $r$ no está definido, ya que tanto $S_{xy}$ como $S_y$ son iguales a cero.
+
+- La tercera fila es especialmente importante: aparecen patrones claros —curvas, círculos, formas complejas— con $r = 0$. Esto evidencia que el coeficiente de Pearson no detecta relaciones no lineales.
+
+En la práctica, la correlación se calcula fácilmente con Pandas:
+
+```{code-cell} python
+
+df[['body_mass_g','flipper_length_mm']].corr(method = 'pearson')
+```
+El resultado es una **matriz de correlación**: la diagonal contiene unos, ya que cada variable está perfectamente correlacionada consigo misma, y los valores fuera de la diagonal corresponden a las correlaciones entre pares de variables. En este caso, el valor obtenido es positivo y relativamente alto, lo que confirma lo observado en el *scatterplot*: existe una relación lineal positiva, moderada a fuerte, entre la masa corporal y la longitud de la aleta.
+
+#### Precauciones en el uso de $r$
+
+A pesar de su popularidad, el coeficiente de Pearson puede conducir a interpretaciones erróneas si no se utiliza con cuidado.
+
+La confusión más frecuente es **asumir que correlación implica causalidad**. Que dos variables estén correlacionadas no significa que una cause a la otra: pueden intervenir variables ocultas, relaciones espurias o simples coincidencias. La siguiente ilustración lo resume con humor: el orador, ante una asociación entre ventas y número de cabezas rapadas (idea que expone a través de un gráfico que no resulta el más adecuado para representar esa información), concluye que la solución es que *todo el mundo tome una rasuradora*.
+
+```{figure} imagenes/correlation-causation.jpg
+---
+width: 70%
+align: center
+---
+```
+
+Otra limitación es que **$r$ solo captura relaciones lineales.** Como vimos en los ejemplos anteriores, pueden existir asociaciones muy claras entre variables que este coeficiente no detecta. De ahí una regla fundamental en el análisis de datos: nunca interpretar un coeficiente de correlación sin haber observado previamente el gráfico de dispersión. Retomaremos esta *máxima* más adelante.
+
+Finalmente, el coeficiente de Pearson es sensible a valores atípicos (*outliers*): un solo punto extremo puede alterar significativamente su valor y conducir a conclusiones engañosas.
 
 ### Correlación de Spearman
 
