@@ -1,48 +1,203 @@
 # Unidad 4 - Análisis exploratorio de datos: Visualizaciones
 
-## Introducción
+## Introducción: ver para entender
 
-Recomendamos la siguiente lectura: [Articulo del Gorila](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-020-02133-w)
+En la unidad anterior fuimos construyendo una idea central: en ciencia de datos, trabajar únicamente con medidas descriptivas no alcanza. Podemos calcular medias, cuartilos, desvíos estándar, rangos o coeficientes de correlación y, aun así, pasar por alto aspectos fundamentales del comportamiento de los datos.
 
-Dicho artículo trata sobre el costo oculto de tener una hipótesis en la investigación científica. Allí se argumenta que si bien tener una hipótesis puede ser útil para guiar el diseño de pruebas y analizar los resultados de manera efectiva, también puede limitar la creatividad y la exploración de nuevos descubrimientos. Se utiliza la metáfora de la ciencia nocturna y diurna para describir las dos fases de la investigación científica. La fase diurna es cuando se realizan pruebas y se analizan los resultados para probar una hipótesis, mientras que la fase nocturna es cuando se exploran nuevos descubrimientos sin tener una hipótesis específica en mente. El artículo argumenta que la limitación de la creatividad que surge de tener una hipótesis puede ser particularmente problemática en el contexto de conjuntos de datos biológicos modernos que son grandes y contienen múltiples descubrimientos potencialmente emocionantes.
+Un ejemplo clásico que ilustra esta idea es el **Datasaurus Dozen**, un conjunto de datasets que comparten prácticamente las mismas estadísticas descriptivas, pero que, al ser visualizados, revelan patrones completamente distintos.
 
-Para ilustrar este punto, el artículo describe un experimento en el que los estudiantes analizan un conjunto de datos. A un grupo de estudiantes se les pide que consideren tres hipótesis específicas al analizar los datos, mientras que a otro grupo se les pide simplemente que analicen los datos sin tener una hipótesis específica en mente. Los resultados del experimento muestran que los estudiantes que no tienen una hipótesis específica tienden a identificar más descubrimientos y patrones en los datos que los estudiantes que tienen una hipótesis específica. El artículo destaca la importancia de equilibrar la investigación diurna y nocturna para maximizar el potencial de descubrimientos emocionantes y útiles en la ciencia.
+```{figure} imagenes/datasaurus.png
+---
+width: 70%
+align: center
+---
+El *Datasaurus Dozen*.
+```
 
-### Visualización de datos
+Este ejemplo deja una enseñanza clave:
 
-La visualización de datos, también conocida como data visualization, es una herramienta fundamental en la ciencia de datos que permite representar información compleja de manera visual y fácil de entender. En general, la ciencia de datos implica el análisis de grandes cantidades de datos para extraer información útil y obtener conocimiento sobre fenómenos complejos. Sin embargo, la simple acumulación de datos no es suficiente para tomar decisiones informadas. Es necesario que los datos sean presentados de una manera que permita identificar patrones, tendencias y relaciones.
+> Dos conjuntos de datos pueden ser “idénticos” en términos de algunas medidas descriptivas y, sin embargo, ser completamente diferentes en su estructura.
 
-La visualización de datos, por lo tanto, se refiere al uso de gráficos, diagramas, mapas, tablas y otros recursos visuales para representar datos de una manera que sea fácil de entender y que permita identificar patrones y tendencias que podrían no ser evidentes de otra manera. El objetivo principal de la visualización de datos es comunicar información de manera efectiva y ayudar a los usuarios a tomar decisiones informadas.
+Por eso, en análisis de datos, visualizar no es opcional: es una herramienta fundamental para comprender lo que las estadísticas, por sí solas, no pueden mostrar.
 
-En la ciencia de datos, la visualización de datos se utiliza **en todas las etapas del proceso**, desde la exploración y limpieza de los datos, hasta la presentación de los resultados finales. Es una herramienta clave para explorar y comprender los datos, identificar patrones, relaciones y outliers, y comunicar los resultados a audiencias no técnicas. Además, la visualización de datos también se utiliza para comunicar los resultados de modelos complejos y hacer que los datos sean más accesibles y comprensibles para personas con diferentes niveles de habilidad y conocimiento técnico.
+### ¿Qué es la visualización de datos?
 
-### ¿Por qué visualizar datos?
+La visualización de datos es mucho más que la construcción de gráficos. **Es una forma de representar información de manera visual con el objetivo de generar conocimiento.**
 
-(Extraído del libro “Data Visualization: Exploring and Explaining with Data” - Jeffrey D. Camm)
+A través de gráficos, diagramas o mapas, podemos detectar patrones, identificar tendencias, reconocer valores atípicos y descubrir relaciones entre variables. Pero, además, la visualización cumple un **rol central en la comunicación de resultados**: un buen gráfico puede transmitir en segundos lo que requeriría páginas de texto o extensas tablas numéricas.
 
-Creamos visualizaciones de datos por dos razones: para explorar los datos y para comunicar/explicar un mensaje. Discutamos estos usos de la visualización de datos con más detalle, examinemos las diferencias entre los dos usos y consideremos cómo se relacionan con los tipos de análisis descritos anteriormente.
+### Visualizar para entender y para explicar
 
-**Visualización de datos para la exploración**
-La visualización de datos es una herramienta poderosa para explorar datos y poder identificar patrones, reconocer anomalías o irregularidades en los datos y comprender mejor las relaciones entre variables. Nuestra capacidad para detectar este tipo de características de los datos es mucho más fuerte y rápida cuando vemos una visualización de los datos en lugar de una simple lista.
-Como ejemplo de visualización de datos para la exploración, consideremos los datos de asistencia al zoológico mostrados en la Tabla 1.1 y la Figura 1.1. Comparando la Tabla 1.1 y la Figura 1.1, observe que el patrón en los datos es más detectable en el gráfico de columnas de la Figura 1.1 que en una tabla de números. Un gráfico de columnas muestra datos numéricos mediante la altura de la columna para una variedad de categorías o períodos de tiempo. En el caso de la Figura 1.1, los períodos de tiempo son los diferentes meses del año.
+Una idea central en visualización de datos es que no todos los gráficos cumplen el mismo propósito. En términos generales, podemos distinguir dos grandes usos: la exploración y la explicación.
 
-![Untitled](./imagenes/Untitled.png)
+En la **visualización exploratoria**, el objetivo es entender los datos. Los gráficos se utilizan como una herramienta de investigación que permite detectar patrones, anomalías o relaciones que no eran evidentes a priori. En esta etapa, muchas veces no existe una hipótesis clara, y el proceso está guiado por la curiosidad y la observación.
 
-Nuestra intuición y experiencia nos dice que esperaríamos que la asistencia al zoológico sea más alta en los meses de verano, cuando muchos niños en edad escolar están de vacaciones de verano (recordemos que este ejemplo fue tomado de un libro escrito por una persona del hemisferio norte). La Figura 1.1 confirma esto, ya que la asistencia al zoológico es más alta en los meses de verano de junio, julio y agosto (en hemisferio norte). Además, vemos que la asistencia aumenta gradualmente cada mes de febrero a mayo a medida que aumenta la temperatura promedio, y disminuye gradualmente cada mes de septiembre a noviembre a medida que la temperatura promedio disminuye. ¿Pero por qué la asistencia al zoológico en diciembre y enero no sigue estos patrones? Resulta que el zoológico tiene un evento conocido como el "Festival de las Luces" que se lleva a cabo desde finales de noviembre hasta principios de enero. Los niños están de vacaciones escolares durante la última mitad de diciembre y principios de enero para las fiestas de fin de año, y esto lleva a un aumento de la asistencia en las noches en el zoológico a pesar de las bajas temperaturas invernales. La exploración visual de datos es una parte importante del análisis descriptivo. La visualización de datos también se puede usar directamente para monitorear las principales métricas de rendimiento, es decir, medir cómo está funcionando una organización en relación con sus objetivos.
+Este enfoque ha sido estudiado en el [trabajo de Yanai y Lercher (2020)](https://link.springer.com/article/10.1186/s13059-020-02133-w), quienes muestran que tener hipótesis previas puede, paradójicamente, dificultar el descubrimiento. En su experimento, un grupo de estudiantes debía analizar un conjunto de datos con hipótesis específicas, mientras que otro grupo debía explorarlo libremente. El dataset estaba diseñado de tal manera que, al graficarlo, revelaba claramente la figura de un gorila. Sin embargo, los estudiantes enfocados en las hipótesis fueron mucho menos propensos a detectarlo.
 
-**Visualización de datos para explicación**
+Este resultado ilustra un punto clave:
 
-La visualización de datos también es importante para explicar relaciones encontradas en los datos y para explicar los resultados de modelos predictivos y prescriptivos. En general, la visualización de datos es útil para comunicarse con su audiencia y asegurarse de que su audiencia comprenda y se centre en su mensaje previsto.
-Consideremos el artículo "Conoce la cultura antes de un nuevo trabajo", que apareció en The Wall Street Journal. El artículo discute la importancia de encontrar un buen ajuste cultural al buscar un nuevo trabajo. La dificultad para entender una cultura empresarial o la falta de alineación con esa cultura puede llevar a la insatisfacción laboral. La figura 1.3 es una recreación de un gráfico de barras que apareció en este artículo. Un gráfico de barras muestra un resumen de datos categóricos utilizando la longitud de las barras horizontales para mostrar la magnitud de una variable cuantitativa.
-El gráfico mostrado en la figura 1.3 muestra el porcentaje de los 10.002 encuestados que enumeraron un factor como el más importante al buscar trabajo. Observe que nuestra atención se dirige a la barra azul oscuro, que es "Cultura de la empresa" (el enfoque del artículo). Inmediatamente vemos que solo "Salario y bonificación" se cita con más frecuencia que "Cultura de la empresa". Cuando se mira por primera vez el gráfico, el mensaje que se comunica es que la cultura empresarial es el segundo factor más importante citado por los solicitantes de empleo. Y como lector, en función de ese mensaje, decide si el artículo merece la pena leerlo.
+> Cuando buscamos algo específico en los datos, podemos pasar por alto patrones evidentes.
 
-![Untitled](./imagenes/Untitled1.png)
+Por otro lado, en la **visualización explicativa**, el objetivo cambia. Ya no se trata de descubrir, sino de comunicar un mensaje claro a una audiencia. En este caso, el gráfico se diseña cuidadosamente para resaltar una idea particular.
 
-## Visualización de distribuciones: histogramas, densidades, boxplots, gráficos de violines, distribuciones acumuladas
+La distinción entre exploración y explicación es fundamental en ciencia de datos. En las primeras etapas del análisis, es importante mantener una actitud abierta, permitiendo que los datos “hablen”. En etapas posteriores, en cambio, la visualización se convierte en una herramienta de comunicación, donde el foco está en la claridad y la efectividad del mensaje.
 
-En el mundo de la estadística y el análisis de datos, la visualización de distribuciones es una herramienta esencial para comprender y comunicar información compleja de manera clara y efectiva. Los gráficos y diagramas no sólo facilitan la interpretación de los datos, sino que también permiten una exploración más profunda de las características y patrones subyacentes. En esta parte se abordarán algunas técnicas gráficas clave en la visualización de distribuciones, por ejemplo: histogramas, densidades, boxplots, gráficos de violines y distribuciones acumuladas.
+En este sentido, la visualización no es una etapa aislada, sino una herramienta que atraviesa todo el proceso de análisis: desde la exploración inicial, pasando por el análisis, hasta la comunicación final de resultados.
 
-Cada una de estas técnicas ofrece una perspectiva única sobre la estructura y comportamiento de los datos, permitiendo a los analistas identificar tendencias, anomalías y relaciones ocultas.
+### Herramientas de visualización en Python
+
+Python cuenta con múltiples librerías para generar visualizaciones. A continuación presentamos algunas de las más utilizadas.
+
+#### Matplotlib
+
+```{figure} imagenes/matplotlib.png
+---
+width: 70%
+align: center
+---
+```
+
+Matplotlib es la biblioteca base de visualización en Python. Proporciona un control muy detallado sobre cada elemento del gráfico, lo que la hace extremadamente flexible.
+
+Su módulo más utilizado es pyplot, que permite construir gráficos de manera relativamente sencilla. Sin embargo, esa flexibilidad también implica que, en muchos casos, requiere más código para lograr visualizaciones complejas.
+
+#### Seaborn
+
+```{figure} imagenes/seaborn.png
+---
+width: 70%
+align: center
+---
+```
+
+Seaborn es una librería construida sobre Matplotlib que simplifica la creación de gráficos estadísticos.
+
+Su principal ventaja es que permite generar visualizaciones complejas con pocas líneas de código, incorporando además buenas prácticas de diseño por defecto.
+
+#### Plotnine y la gramática de los gráficos
+
+```{figure} imagenes/plotnine.png
+---
+width: 50%
+align: center
+---
+```
+
+Plotnine es una implementación en Python de la *Grammar of Graphics*, propuesta por Leland Wilkinson. Este enfoque propone pensar los gráficos como una combinación de componentes:
+
+- datos
+
+- variables estéticas (ejes, color, tamaño)
+
+- geometrías (puntos, barras, líneas)
+
+- transformaciones
+
+Esta forma de pensar resulta especialmente poderosa porque permite construir gráficos de manera sistemática y coherente.
+
+### Tipos de visualizaciones
+
+Existen muchas formas de clasificar los gráficos. Una de las más útiles es la propuesta por Claus Wilke, que organiza las visualizaciones según el tipo de información que buscan representar.
+
+```{figure} imagenes/fundamentals-wilke.png
+---
+width: 50%
+align: center
+---
+```
+
+En este curso nos enfocaremos en cuatro grandes categorías.
+
+#### Visualizar distribuciones
+
+```{admonition} **¿De qué hablamos cuando hablamos de DISTRIBUCIÓN?**
+:class: tip
+
+Cuando hablamos de la **distribución de las observaciones de una variable**, nos referimos a cómo están "organizados" o "repartidos" los valores de esa variable, es decir, cuántas veces aparece cada valor o cada rango de valores.
+```
+
+Estas visualizaciones permiten analizar cómo se distribuyen los valores de una variable. Entre las herramientas más utilizadas se encuentran: histogramas, gráficos de densidad, boxplots y gráficos de violín.
+
+Son fundamentales para entender aspectos como:
+
+- la forma de la distribución (simetría, sesgo, multimodalidad),
+
+- la dispersión de los datos,
+
+- y la presencia de valores atípicos.
+
+**Alternativas para visualizar una única distribución:**
+
+```{figure} imagenes/single-distributions-1.png
+---
+width: 70%
+align: center
+---
+```
+
+**Alternativas para visualizar varias distribuciones al mismo tiempo:**
+
+```{figure} imagenes/multiple-distributions-1.png
+---
+width: 70%
+align: center
+---
+```
+
+#### Visualizar cantidades y proporciones
+
+Cuando trabajamos con variables categóricas, es habitual querer representar frecuencias o proporciones. Los gráficos más comunes en este caso son: gráficos de barras apiladas o paralelas y gráficos de sectores.
+
+Estos gráficos permiten comparar magnitudes entre categorías y entender la composición de un conjunto de datos.
+
+```{figure} imagenes/proportions-1.png
+---
+width: 70%
+align: center
+---
+```
+
+```{figure} imagenes/proportions-comp-1.png
+---
+width: 70%
+align: center
+---
+```
+
+#### Relaciones entre variables cuantitativas
+
+Para analizar la relación entre dos variables cuantitativas, el gráfico más importante, y que ya presentamos en la unidad anterior, es el *scatterplot*.
+
+Estos gráficos permiten detectar:
+
+- relaciones lineales o no lineales
+
+- patrones estructurales
+
+- posibles *outliers*
+
+```{figure} imagenes/basic-scatter-1.png
+---
+width: 70%
+align: center
+---
+```
+
+#### Visualización geoespacial
+
+Cuando los datos tienen una componente espacial, es posible representarlos sobre mapas. Este tipo de visualización permite analizar distribuciones geográficas, concentraciones espaciales y
+patrones regionales
+
+Es especialmente relevante en áreas como economía, epidemiología o planificación urbana.
+
+```{figure} imagenes/geospatial-1.png
+---
+width: 70%
+align: center
+---
+```
+
+
 
 ### Histogramas
 
