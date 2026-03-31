@@ -2,9 +2,23 @@
 
 ## Introducción: ver para entender
 
-En la unidad anterior fuimos construyendo una idea central: en ciencia de datos, trabajar únicamente con medidas descriptivas no alcanza. Podemos calcular medias, cuartilos, desvíos estándar, rangos o coeficientes de correlación y, aun así, pasar por alto aspectos fundamentales del comportamiento de los datos.
+En la unidad anterior construimos una idea central: en ciencia de datos, trabajar únicamente con medidas descriptivas no es suficiente. Podemos calcular medias, cuartiles, desvíos estándar, rangos o coeficientes de correlación y, aun así, pasar por alto aspectos fundamentales del comportamiento de los datos.
 
-Un ejemplo clásico que ilustra esta idea es el **Datasaurus Dozen**, un conjunto de datasets que comparten prácticamente las mismas estadísticas descriptivas, pero que, al ser visualizados, revelan patrones completamente distintos.
+Un ejemplo clásico que ilustra esto es el **Datasaurus Dozen**: un conjunto de datasets que comparten prácticamente las mismas estadísticas descriptivas pero que, al visualizarse, revelan patrones completamente distintos.
+
+```{figure} imagenes/datasaurus.png
+---
+width: 70%
+align: center
+---
+El *Datasaurus Dozen*.
+```
+
+## Introducción: ver para entender
+
+En la unidad anterior construimos una idea central: en ciencia de datos, trabajar únicamente con medidas descriptivas no es suficiente. Podemos calcular medias, cuartiles, desvíos estándar, rangos o coeficientes de correlación y, aun así, pasar por alto aspectos fundamentales del comportamiento de los datos.
+
+Un ejemplo clásico que ilustra esto es el **Datasaurus Dozen**: un conjunto de datasets que comparten prácticamente las mismas estadísticas descriptivas pero que, al visualizarse, revelan patrones completamente distintos.
 
 ```{figure} imagenes/datasaurus.png
 ---
@@ -16,33 +30,33 @@ El *Datasaurus Dozen*.
 
 Este ejemplo deja una enseñanza clave:
 
-> Dos conjuntos de datos pueden ser “idénticos” en términos de algunas medidas descriptivas y, sin embargo, ser completamente diferentes en su estructura.
+> Dos conjuntos de datos pueden ser "idénticos" en términos de sus medidas descriptivas y, sin embargo, ser completamente diferentes en su estructura.
 
 Por eso, en análisis de datos, visualizar no es opcional: es una herramienta fundamental para comprender lo que las estadísticas, por sí solas, no pueden mostrar.
 
 ### ¿Qué es la visualización de datos?
 
-La visualización de datos es mucho más que la construcción de gráficos. **Es una forma de representar información de manera visual con el objetivo de generar conocimiento.**
+La visualización de datos es mucho más que construir gráficos. **Es una forma de representar información visualmente con el objetivo de generar conocimiento.**
 
-A través de gráficos, diagramas o mapas, podemos detectar patrones, identificar tendencias, reconocer valores atípicos y descubrir relaciones entre variables. Pero, además, la visualización cumple un **rol central en la comunicación de resultados**: un buen gráfico puede transmitir en segundos lo que requeriría páginas de texto o extensas tablas numéricas.
+A través de gráficos, diagramas o mapas podemos detectar patrones, identificar tendencias, reconocer valores atípicos y descubrir relaciones entre variables. Además, la visualización cumple un **rol central en la comunicación de resultados**: un buen gráfico puede transmitir en segundos lo que requeriría páginas de texto o extensas tablas numéricas.
 
-### Visualizar para entender y para explicar
+### Visualizar para entender y para comunicar
 
 Una idea central en visualización de datos es que no todos los gráficos cumplen el mismo propósito. En términos generales, podemos distinguir dos grandes usos: la exploración y la explicación.
 
-En la **visualización exploratoria**, el objetivo es entender los datos. Los gráficos se utilizan como una herramienta de investigación que permite detectar patrones, anomalías o relaciones que no eran evidentes a priori. En esta etapa, muchas veces no existe una hipótesis clara, y el proceso está guiado por la curiosidad y la observación.
+En la **visualización exploratoria**, el objetivo es entender los datos. Los gráficos se utilizan como herramienta de investigación para detectar patrones, anomalías o relaciones que no eran evidentes a priori. En esta etapa muchas veces no existe una hipótesis clara, y el proceso está guiado por la curiosidad y la observación.
 
-Este enfoque ha sido estudiado en el [trabajo de Yanai y Lercher (2020)](https://link.springer.com/article/10.1186/s13059-020-02133-w), quienes muestran que tener hipótesis previas puede, paradójicamente, dificultar el descubrimiento. En su experimento, un grupo de estudiantes debía analizar un conjunto de datos con hipótesis específicas, mientras que otro grupo debía explorarlo libremente. El dataset estaba diseñado de tal manera que, al graficarlo, revelaba claramente la figura de un gorila. Sin embargo, los estudiantes enfocados en las hipótesis fueron mucho menos propensos a detectarlo.
+Este enfoque ha sido estudiado en el [trabajo de Yanai y Lercher (2020)](https://link.springer.com/article/10.1186/s13059-020-02133-w), quienes muestran que tener hipótesis previas puede, paradójicamente, dificultar el descubrimiento. En su experimento, un grupo de estudiantes debía analizar un conjunto de datos con hipótesis específicas, mientras que otro debía explorarlo libremente. El dataset estaba diseñado de modo que, al graficarlo, revelaba con claridad la figura de un gorila. Sin embargo, los estudiantes enfocados en las hipótesis fueron mucho menos propensos a detectarlo.
 
-Este resultado ilustra un punto clave:
+Este resultado ilustra un punto importante:
 
 > Cuando buscamos algo específico en los datos, podemos pasar por alto patrones evidentes.
 
-Por otro lado, en la **visualización explicativa**, el objetivo cambia. Ya no se trata de descubrir, sino de comunicar un mensaje claro a una audiencia. En este caso, el gráfico se diseña cuidadosamente para resaltar una idea particular.
+En la **visualización explicativa**, el objetivo cambia: ya no se trata de descubrir, sino de comunicar un mensaje claro a una audiencia. En este caso, el gráfico se diseña cuidadosamente para resaltar una idea particular, priorizando la claridad y la efectividad del mensaje.
 
-La distinción entre exploración y explicación es fundamental en ciencia de datos. En las primeras etapas del análisis, es importante mantener una actitud abierta, permitiendo que los datos “hablen”. En etapas posteriores, en cambio, la visualización se convierte en una herramienta de comunicación, donde el foco está en la claridad y la efectividad del mensaje.
+La distinción entre exploración y explicación es fundamental en ciencia de datos. En las primeras etapas del análisis conviene mantener una actitud abierta y dejar que los datos "hablen". En etapas posteriores, la visualización se convierte en una herramienta de comunicación con un propósito bien definido.
 
-En este sentido, la visualización no es una etapa aislada, sino una herramienta que atraviesa todo el proceso de análisis: desde la exploración inicial, pasando por el análisis, hasta la comunicación final de resultados.
+En este sentido, la visualización no es una etapa aislada del proceso de análisis: aparece desde la exploración inicial hasta la comunicación final de resultados.
 
 ### Herramientas de visualización en Python
 
@@ -57,9 +71,7 @@ align: center
 ---
 ```
 
-Matplotlib es la biblioteca base de visualización en Python. Proporciona un control muy detallado sobre cada elemento del gráfico, lo que la hace extremadamente flexible.
-
-Su módulo más utilizado es pyplot, que permite construir gráficos de manera relativamente sencilla. Sin embargo, esa flexibilidad también implica que, en muchos casos, requiere más código para lograr visualizaciones complejas.
+Matplotlib es la biblioteca base de visualización en Python. Ofrece un control muy detallado sobre cada elemento del gráfico, lo que la hace extremadamente flexible. Su módulo más utilizado es `pyplot`, que permite construir gráficos de manera relativamente directa. Sin embargo, esa misma flexibilidad implica que, en muchos casos, se necesita más código para lograr visualizaciones complejas o con buen acabado estético.
 
 #### Seaborn
 
@@ -70,34 +82,29 @@ align: center
 ---
 ```
 
-Seaborn es una librería construida sobre Matplotlib que simplifica la creación de gráficos estadísticos.
-
-Su principal ventaja es que permite generar visualizaciones complejas con pocas líneas de código, incorporando además buenas prácticas de diseño por defecto.
+Seaborn es una librería construida sobre Matplotlib que simplifica la creación de gráficos. Su principal ventaja es que permite generar visualizaciones complejas con pocas líneas de código, incorporando además buenas prácticas de diseño por defecto.
 
 #### Plotnine y la gramática de los gráficos
 
 ```{figure} imagenes/plotnine.png
 ---
-width: 50%
+width: 30%
 align: center
 ---
 ```
 
-Plotnine es una implementación en Python de la *Grammar of Graphics*, propuesta por Leland Wilkinson. Este enfoque propone pensar los gráficos como una combinación de componentes:
+Plotnine es una implementación en Python de la *Grammar of Graphics*, propuesta originalmente por Leland Wilkinson. Este enfoque concibe los gráficos como una combinación de componentes independientes:
 
-- datos
+- **datos**
+- **variables estéticas** (ejes, color, tamaño, forma)
+- **geometrías** (puntos, barras, líneas)
+- **transformaciones estadísticas**
 
-- variables estéticas (ejes, color, tamaño)
-
-- geometrías (puntos, barras, líneas)
-
-- transformaciones
-
-Esta forma de pensar resulta especialmente poderosa porque permite construir gráficos de manera sistemática y coherente.
+Esta forma de pensar resulta especialmente poderosa porque permite construir gráficos de manera sistemática y coherente, combinando componentes de forma modular.
 
 ### Tipos de visualizaciones
 
-Existen muchas formas de clasificar los gráficos. Una de las más útiles es la propuesta por Claus Wilke, que organiza las visualizaciones según el tipo de información que buscan representar.
+Existen muchas formas de clasificar los gráficos. En este curso seguiremos la propuesta de Claus Wilke en [*Fundamentals of Data Visualization*](https://clauswilke.com/dataviz/), que organiza las visualizaciones según el tipo de información que buscan representar.
 
 ```{figure} imagenes/fundamentals-wilke.png
 ---
@@ -106,27 +113,37 @@ align: center
 ---
 ```
 
-En este curso nos enfocaremos en cuatro grandes categorías.
+Nos enfocaremos en cinco grandes categorías.
 
-#### Visualizar distribuciones
+#### Cantidades
 
-```{admonition} **¿De qué hablamos cuando hablamos de DISTRIBUCIÓN?**
-:class: tip
+Cuando queremos representar valores numéricos asociados a categorías, los gráficos más habituales son los de barras (verticales u horizontales) y los gráficos de puntos (*dot plots*). Estos permiten comparar magnitudes entre categorías de forma directa.
 
-Cuando hablamos de la **distribución de las observaciones de una variable**, nos referimos a cómo están "organizados" o "repartidos" los valores de esa variable, es decir, cuántas veces aparece cada valor o cada rango de valores.
+```{figure} imagenes/amounts-1.png
+---
+width: 70%
+align: center
+---
 ```
 
-Estas visualizaciones permiten analizar cómo se distribuyen los valores de una variable. Entre las herramientas más utilizadas se encuentran: histogramas, gráficos de densidad, boxplots y gráficos de violín.
+Cuando hay dos o más grupos de categorías, es posible agrupar o apilar las barras, o bien representar los valores mediante un mapa de calor (*heatmap*).
 
-Son fundamentales para entender aspectos como:
+```{figure} imagenes/amounts_multi-1.png
+---
+width: 70%
+align: center
+---
+```
 
-- la forma de la distribución (simetría, sesgo, multimodalidad),
+#### Distribuciones
 
-- la dispersión de los datos,
+```{admonition} **¿De qué hablamos cuando hablamos de distribución?**
+:class: tip
 
-- y la presencia de valores atípicos.
+La **distribución** de una variable describe cómo se reparten sus valores: qué valores aparecen, con qué frecuencia y en qué rangos se concentran.
+```
 
-**Alternativas para visualizar una única distribución:**
+Para una única distribución, las herramientas más utilizadas son el histograma y el gráfico de densidad; también existen alternativas como las funciones de distribución acumulada empírica (ECDF) y los gráficos Q-Q, que representan los datos de forma más fiel aunque suelen ser más difíciles de interpretar. El boxplot, si bien es especialmente útil para comparar varias distribuciones, también puede emplearse para resumir una única distribución y detectar valores atípicos.
 
 ```{figure} imagenes/single-distributions-1.png
 ---
@@ -135,7 +152,7 @@ align: center
 ---
 ```
 
-**Alternativas para visualizar varias distribuciones al mismo tiempo:**
+Cuando se quieren comparar varias distribuciones al mismo tiempo, herramientas como el boxplot, el gráfico de violín, el strip chart o el ridgeline plot permiten identificar diferencias en la forma, la dispersión y la presencia de valores atípicos.
 
 ```{figure} imagenes/multiple-distributions-1.png
 ---
@@ -144,11 +161,9 @@ align: center
 ---
 ```
 
-#### Visualizar cantidades y proporciones
+#### Proporciones
 
-Cuando trabajamos con variables categóricas, es habitual querer representar frecuencias o proporciones. Los gráficos más comunes en este caso son: gráficos de barras apiladas o paralelas y gráficos de sectores.
-
-Estos gráficos permiten comparar magnitudes entre categorías y entender la composición de un conjunto de datos.
+Cuando el interés está en cómo se divide un todo entre distintas partes, los gráficos más utilizados son los de sectores (*pie charts*) y los de barras apiladas o agrupadas. Los gráficos de sectores son útiles para destacar fracciones simples y enfatizar que las partes suman un todo; las barras agrupadas, en cambio, facilitan la comparación directa entre categorías.
 
 ```{figure} imagenes/proportions-1.png
 ---
@@ -157,7 +172,16 @@ align: center
 ---
 ```
 
+Cuando se comparan proporciones entre múltiples grupos o condiciones, los gráficos de sectores suelen volverse poco eficientes. En esos casos, las barras apiladas o agrupadas son preferibles. Para proporciones anidadas (es decir, cuando hay más de un nivel de agrupamiento), existen alternativas como los *treemaps* o los *parallel sets*.
+
 ```{figure} imagenes/proportions-comp-1.png
+---
+width: 70%
+align: center
+---
+```
+
+```{figure} imagenes/proportions-multi-1.png
 ---
 width: 70%
 align: center
@@ -166,15 +190,7 @@ align: center
 
 #### Relaciones entre variables cuantitativas
 
-Para analizar la relación entre dos variables cuantitativas, el gráfico más importante, y que ya presentamos en la unidad anterior, es el *scatterplot*.
-
-Estos gráficos permiten detectar:
-
-- relaciones lineales o no lineales
-
-- patrones estructurales
-
-- posibles *outliers*
+Para analizar la relación entre dos variables cuantitativas, el gráfico más fundamental es el *scatterplot*, que ya introdujimos en la unidad anterior. Permite detectar relaciones lineales o no lineales, patrones estructurales y posibles valores atípicos.
 
 ```{figure} imagenes/basic-scatter-1.png
 ---
@@ -183,12 +199,27 @@ align: center
 ---
 ```
 
+Cuando el eje *x* representa el tiempo, se suelen usar gráficos de línea. Cuando hay muchos puntos y el *scatterplot* se vuelve difícil de leer por superposición, alternativas como los gráficos de contorno, los histogramas 2D o los *hex bins* resultan más informativos.
+
+```{figure} imagenes/xy-binning-1.png
+---
+width: 70%
+align: center
+---
+```
+
+```{figure} imagenes/xy-lines-1.png
+---
+width: 70%
+align: center
+---
+```
+
 #### Visualización geoespacial
 
-Cuando los datos tienen una componente espacial, es posible representarlos sobre mapas. Este tipo de visualización permite analizar distribuciones geográficas, concentraciones espaciales y
-patrones regionales
+Cuando los datos tienen una componente espacial, es posible representarlos sobre mapas. Este tipo de visualización permite analizar distribuciones geográficas, concentraciones espaciales y patrones regionales, y es especialmente relevante en áreas como economía, epidemiología o planificación urbana.
 
-Es especialmente relevante en áreas como economía, epidemiología o planificación urbana.
+Una variante frecuente es el *choropleth*: un mapa en el que las regiones se colorean según el valor de una variable. Otra alternativa son los *cartogramas*, que distorsionan el tamaño de las regiones en función de alguna cantidad de interés (por ejemplo, la población).
 
 ```{figure} imagenes/geospatial-1.png
 ---
@@ -197,7 +228,100 @@ align: center
 ---
 ```
 
+## Gráficos para visualizar distribuciones
 
+En la unidad anterior introdujimos herramientas para resumir la distribución de una variable mediante tablas de frecuencias. En esta sección veremos cómo representar esa misma información de forma visual, eligiendo el tipo de gráfico adecuado según las características de la variable.
+
+### Gráfico de bastones
+
+Como vimos en la unidad anterior, cuando una variable cuantitativa discreta toma un conjunto acotado de valores distintos, es posible resumir su distribución mediante una tabla de frecuencias donde cada fila corresponde a un valor observado. El **gráfico de bastones** es la representación visual natural de esa tabla.
+
+En este tipo de gráfico, el eje horizontal representa los valores posibles de la variable y el eje vertical representa su frecuencia (absoluta o relativa). Para cada valor se traza un segmento vertical —el "bastón"— cuya altura es proporcional a dicha frecuencia.
+
+Retomando el dataset de la Encuesta Nacional de Factores de Riesgo 2018, construimos el gráfico de bastones para la variable `cant_componentes`, que registra la cantidad de miembros del hogar:
+
+```{code-cell} python
+import pandas as pd
+
+# Importamos el dataset de la ENFR 2018
+data = pd.read_csv('datasets/enfr2018.txt', delimiter = '|')
+```
+
+```{code-cell} python
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+plt.figure(figsize = (8,5))
+sns.countplot(x = 'cant_componentes', width = 0.25, color = 'darkred', data = data)
+plt.xlabel('Cantidad de miembros del hogar', fontweight = 'bold')
+plt.ylabel('Frecuencia absoluta', fontweight = 'bold')
+plt.show()
+```
+
+El gráfico permite observar con claridad que la distribución es asimétrica hacia la derecha: la mayoría de los hogares tiene pocos miembros, mientras que los hogares con muchos integrantes son progresivamente menos frecuentes.
+
+### Histograma de frecuencias
+
+Consideremos ahora la variable `edad` en el dataset del Titanic. 
+
+```{code-cell} python
+data_titanic = sns.load_dataset('titanic')
+```
+
+En este caso, aunque en los datos suele registrarse en años cumplidos, puede asumir un número muy grande de valores distintos. Si intentáramos representar su distribución con un gráfico de bastones, obtendríamos un bastón por cada edad registrada: el gráfico sería difícil de leer y perdería toda utilidad como herramienta de resumen.
+
+Cuando una variable puede tomar muchos valores diferentes —ya sea porque es continua o porque es discreta con un rango amplio— la representación adecuada es el **histograma de frecuencias**.
+
+A diferencia del gráfico de bastones, el histograma no trabaja con valores puntuales sino con **intervalos** (llamados *bins*): agrupa las observaciones en subintervalos contiguos y representa, mediante un rectángulo, la frecuencia de cada uno. El área de cada rectángulo es proporcional a la frecuencia del intervalo correspondiente. Cuando todos los intervalos tienen la misma amplitud (como ocurre habitualmente), la altura de los rectángulos es directamente comparable.
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.histplot(x = 'age', linecolor = 'black', color = '#4BAE8A', data = data_titanic)
+plt.xlabel('Edad (años)', fontweight = 'bold')
+plt.ylabel('Frecuencia absoluta', fontweight = 'bold')
+plt.show()
+```
+
+#### La elección del número de intervalos
+
+Un aspecto central al construir un histograma es decidir en cuántos intervalos dividir el rango de la variable. Esta decisión no es trivial: afecta directamente la imagen que el gráfico transmite sobre la distribución.
+
+Si se utilizan **muy pocos intervalos**, se pierde detalle y la distribución puede aparecer más uniforme de lo que realmente es. Si se utilizan **demasiados**, el gráfico se vuelve ruidoso y difícil de interpretar, con picos y valles que pueden no reflejar ningún patrón real.
+
+El siguiente gráfico muestra el efecto de distintas elecciones de *bins* sobre el histograma de las edades del Titanic:
+
+```{code-cell} python
+fig, axs = plt.subplots(2, 2, figsize=(14, 8))
+bins = [5, 10, 30, 60]
+
+for i, (ax, bin_value) in enumerate(zip(axs.flat, bins)):
+    sns.histplot(x = 'age', linecolor = 'black', color = '#4BAE8A', data = data_titanic, bins = bin_value, ax = ax)
+    ax.set_title(f'Bins = {bin_value}', fontsize = 14, fontweight = 'bold')
+    ax.set_xlabel('Edad (años)' if i >= 2 else '')
+    ax.set_ylabel('Frecuencia absoluta' if i % 2 == 0 else '')
+
+plt.tight_layout()
+plt.show()
+```
+
+Por defecto, `sns.histplot()` calcula automáticamente un número de bins razonable según la cantidad de observaciones. Sin embargo, es posible controlarlo mediante el parámetro `bins`, que acepta:
+
+- un número entero: `bins = 10`
+
+- el nombre de una regla de referencia: `bins = 'sqrt'` (raíz cuadrada de n)
+
+- una lista con los límites de los intervalos: `bins = [0, 10, 20, 30, 40, 50, 60, 70, 80]`
+
+También pueden resultar útiles los parámetros `binwidth` (para fijar la amplitud de cada intervalo) y `binrange` (para definir el rango cubierto por el histograma).
+
+#### Interpretación
+
+El histograma de edades del Titanic permite observar que la distribución presenta una concentración importante en edades jóvenes y adultas, con una cola hacia la derecha correspondiente a los pasajeros de mayor edad. Esta forma asimétrica sería imposible de detectar con una tabla de frecuencias de valores individuales, y difícilmente apreciable en un gráfico de bastones con tantos valores distintos.
+
+Esto ilustra bien el valor del histograma: **no solo resume los datos, sino que revela la forma de la distribución**, permitiendo identificar patrones como la asimetría, la concentración de valores o la presencia de múltiples modas.
 
 ### Histogramas
 
