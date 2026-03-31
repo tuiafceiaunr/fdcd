@@ -1215,13 +1215,13 @@ Este tipo de tabla nos permite resumir la distribución sin trabajar con cada va
 
 **Interpretación de una fila de la tabla**
 
-Interpretemos a continuación cada una de las frecuencias que figuran en la fila de la tabla correspondiente al subintervalo [35000, 70000):
+Interpretemos a continuación cada una de las frecuencias que figuran en la fila de la tabla correspondiente al subintervalo [40000, 80000):
 
-> ***4553 hogares presentan un ingreso total mensual mayor o igual a \$35000 y menor a \$70000, lo que representa el 16 % de las viviendas encuestadas en Santa Fe.***
+> ***3581 hogares presentan un ingreso total mensual mayor o igual a \$40000 y menor a \$80000, lo que representa el 12 % de las viviendas encuestadas.***
 
 Las frecuencias acumuladas hasta ese intervalo nos permiten observar que:
 
-> ***3817 hogares presentan un ingreso total mensual menor a los \$70000, lo que representa el 93.83 % de las viviendas encuestadas. En consecuencia, sólo el 6.17 % de los hogares relevado tiene ingresos totales mensuales de \$70000 o más.*** 
+> ***28645 hogares presentan un ingreso total mensual menor a los \$80000, lo que representa el 98.02 % de las viviendas encuestadas. En consecuencia, sólo el 1.98 % de los hogares relevado tiene ingresos totales mensuales de \$80000 o más.*** 
 
 #### Histograma de frecuencias
 
@@ -1259,12 +1259,14 @@ Cuando el tamaño del dataset es grande, suele ser conveniente aumentar la canti
 
 ```{code-cell} python
 
-plt.figure(figsize=(8,5))
+plt.figure(figsize = (8,5))
 
 sns.histplot(x = 'bhih01', bins = 50, color = 'lightgreen', edgecolor = 'black', data = data)
 
 plt.xlabel("Ingreso mensual del hogar (en pesos)", fontweight="bold")
 plt.ylabel("Frecuencia", fontweight="bold")
+
+plt.xlim(0, 450000)
 
 plt.show()
 ```
