@@ -264,7 +264,7 @@ El gráfico permite observar con claridad que la distribución es asimétrica ha
 
 ### Histograma de frecuencias
 
-Consideremos ahora la variable `edad` en el dataset del Titanic. 
+Consideremos ahora la variable `edad` en el dataset del Titanic. El dataset del Titanic contiene información sobre los pasajeros del famoso transatlántico hundido en 1912. Entre las variables disponibles se encuentran la edad, el sexo, la clase del pasaje, el precio pagado y si el pasajero sobrevivió o no. Es uno de los datasets más utilizados en ciencia de datos, tanto para exploración como para aprendizaje de modelos predictivos. Podemos importarlo directamente desde la librería `seaborn`, que incluye algunos datasets de práctica accesibles con la función `load_dataset()`:  
 
 ```{code-cell} python
 data_titanic = sns.load_dataset('titanic')
@@ -284,6 +284,20 @@ plt.xlabel('Edad (años)', fontweight = 'bold')
 plt.ylabel('Frecuencia absoluta', fontweight = 'bold')
 plt.show()
 ```
+
+#### Personalización del gráfico
+
+Más allá de la información que transmite, un buen gráfico debe ser claro y estar correctamente etiquetado. En la construcción del histograma anterior ya aparecen algunos elementos de personalización que vale la pena explicitar.
+
+Los **títulos de los ejes** se agregan con las funciones `plt.xlabel()` y `plt.ylabel()` de Matplotlib. El argumento `fontweight = 'bold'` permite resaltar el texto en negrita; de manera análoga, `fontsize` controla el tamaño.
+
+El **color** de las barras se controla mediante el parámetro `color` de `sns.histplot()`, que acepta nombres de colores (`'red'`, `'steelblue'`) o códigos hexadecimales (`'#4BAE8A'`). El parámetro `linecolor` define el color del borde de cada barra, lo que suele mejorar la legibilidad cuando los intervalos son angostos.
+
+El **tamaño de la figura** se establece con `plt.figure(figsize = (ancho, alto))` antes de llamar a la función de graficado, donde los valores están en pulgadas.
+
+Finalmente, `plt.show()` cierra y renderiza el gráfico de forma explícita, lo que en algunos entornos evita que se muestren mensajes de salida no deseados junto con la figura.
+
+A lo largo de la unidad iremos incorporando otros elementos de personalización según sea necesario.
 
 #### La elección del número de intervalos
 
@@ -309,7 +323,7 @@ plt.show()
 
 Por defecto, `sns.histplot()` calcula automáticamente un número de bins razonable según la cantidad de observaciones. Sin embargo, es posible controlarlo mediante el parámetro `bins`, que acepta:
 
-- un número entero: `bins = 10`
+- un número entero: por ejemplo, `bins = 10`
 
 - el nombre de una regla de referencia: `bins = 'sqrt'` (raíz cuadrada de n)
 
