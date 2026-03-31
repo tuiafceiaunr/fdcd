@@ -1600,16 +1600,16 @@ Las principales estrategias son:
 [1, 2, 3.5, 3.5, 5, 6, 8, 8, 8, 10, 11, 12, 13]
 ```
 
-Con Pandas, podemos rankear una serie especificando el método deseado mediante el parámetro `method`:
+Con Pandas, podemos rankear una serie especificando el método mediante el parámetro `method`:
 
 ```{code-cell} python
 serie = pd.Series([18, 20, 22, 22, 30, 34, 35, 35, 35, 40, 47, 50, 51])
 
-serie.rank(method = 'average')  # fraccional (default)
-serie.rank(method = 'min')      # competición estándar
-serie.rank(method = 'max')      # competición modificado
-serie.rank(method = 'dense')    # denso
-serie.rank(method = 'first')    # ordinal
+metodos = ['average', 'min', 'max', 'dense', 'first']
+nombres = ['Fraccional', 'Competición estándar', 'Competición modificado', 'Denso', 'Ordinal']
+
+for metodo, nombre in zip(metodos, nombres):
+    print(f"{nombre}: {serie.rank(method=metodo).tolist()}")
 ```
 
 ### Definición del coeficiente de Spearman
@@ -1627,6 +1627,13 @@ El uso de rangos lo hace especialmente adecuado en tres situaciones:
 - Cuando se trabaja con **datos ordinales**, donde los valores solo indican un orden pero no una magnitud precisa.
 
 - Cuando la relación entre las variables es **monótona pero no necesariamente lineal**. Una relación es monótona si, al aumentar una variable, la otra tiende siempre a aumentar o siempre a disminuir, aunque no lo haga a un ritmo constante. Vale notar que toda relación lineal es monótona, pero no toda relación monótona es lineal.
+
+```{figure} imagenes/monotonic-relations.png
+---
+width: 70%
+align: center
+---
+```
 
 - Cuando hay **valores atípicos** que podrían distorsionar el coeficiente de Pearson, ya que al transformar los datos en rangos se reduce el peso de los extremos.
 
@@ -1650,16 +1657,16 @@ Supongamos que contamos con información sobre los tiempos de reacción y la eda
 | 15          | 115         |
 | 20          | 145         |
 | 25          | 160         |
-| 30          | 195         |
-| 35          | 185         |
-| 45          | 230         |
-| 60          | 290         |
+| 30          | 235         |
+| 35          | 210         |
+| 45          | 335         |
+| 60          | 385         |
 
 ```{code-cell} python
 # Generamos el DataFrame con los datos
 data_gamers = pd.DataFrame({
     'edad_anios': [10, 15, 20, 25, 30, 35, 45, 60],
-    'tiempo_ms':  [120, 115, 145, 160, 195, 185, 230, 290]
+    'tiempo_ms':  [120, 115, 145, 160, 235, 210, 335, 385]
 })
 
 # Representamos gráficamente los datos
@@ -1670,7 +1677,7 @@ plt.show()
 
 El gráfico de dispersión sugiere una relación positiva entre ambas variables: a mayor edad, mayor tiempo de reacción. Sin embargo, la relación no parece estrictamente lineal, lo que hace de Spearman una opción más apropiada que Pearson en este caso.
 
-Para calcular $r_s$, primero se asignan rangos a cada variable:
+Para calcular $r_s$, primero se asignan rangos a cada variable. Como no hay empates, la asignación es directa:
 
 | Edad (años) | Tiempo (ms) | Rango Edad | Rango Tiempo |
 |:-----------:|:-----------:|:----------:|:------------:|
@@ -1678,21 +1685,24 @@ Para calcular $r_s$, primero se asignan rangos a cada variable:
 | 15          | 115         | 2          | 1            |
 | 20          | 145         | 3          | 3            |
 | 25          | 160         | 4          | 4            |
-| 30          | 195         | 5          | 6            |
-| 35          | 185         | 6          | 5            |
-| 45          | 230         | 7          | 7            |
-| 60          | 290         | 8          | 8            |
+| 30          | 235         | 5          | 6            |
+| 35          | 210         | 6          | 5            |
+| 45          | 335         | 7          | 7            |
+| 60          | 385         | 8          | 8            |
 
-Luego, $r_s$ es simplemente el coeficiente de Pearson calculado sobre las columnas `rango_edad` y `rango_tiempo`. Por ende, el $r_s$ es el coeficiente de correlación lineal de Pearson calculado con los datos representados en el siguiente gráfico:
+El coeficiente $r_s$ es entonces el coeficiente de Pearson calculado sobre estos rangos, es decir, sobre los datos representados en el siguiente gráfico:
 
 ```{code-cell} python
-# Creamos DataFrame con los rangos
+# Asignamos los rangos
+data_gamers_ranks = pd.DataFrame({
+    'rango_edad':   data_gamers['edad_anios'].rank(),
+    'rango_tiempo': data_gamers['tiempo_ms'].rank()
+})
 
-data_gamers_ranks = pd.DataFrame({'rango_edad' : data_gamers['edad_anios'].rank(), 'rango_tiempo' : data_gamers['tiempo_ms'].rank())
-
-# Representamos gráficamente los rangos asignados
-plt.figure(figsize = (8,5))
-sns.scatterplot(x = 'rango_edad', y = 'rango_tiempo', s = 35, color = '#eb4034', edgecolor = '#eb4034', data = data_gamers_ranks)
+# Representamos los rangos gráficamente
+plt.figure(figsize = (8, 5))
+sns.scatterplot(x = 'rango_edad', y = 'rango_tiempo', s = 35,
+                color = '#eb4034', edgecolor = '#eb4034', data = data_gamers_ranks)
 plt.show()
 ```
 
@@ -1702,7 +1712,7 @@ En la práctica, Pandas realiza este proceso internamente; basta con especificar
 data_gamers.corr(method = 'spearman')
 ```
 
-El valor obtenido es positivo y alto, lo que indica una relación monótona creciente fuerte entre la edad y el tiempo de reacción, aunque no perfecta. Esto es consistente con lo que observamos en el *scatterplot*: la tendencia general es clara —a mayor edad, mayor tiempo de reacción— pero con algunas irregularidades locales que impiden hablar de una monotonicidad perfecta. Nótese además que la relación es visiblemente no lineal: el tiempo de reacción crece de forma más pronunciada en las edades avanzadas.
+El valor obtenido es positivo y alto, lo que refleja una relación monótona creciente fuerte entre la edad y el tiempo de reacción, aunque no perfecta: hay algunas inversiones locales —como el leve descenso del tiempo de reacción entre los 10 y los 15 años, o entre los 30 y los 35— que impiden hablar de monotonicidad estricta. La relación es además claramente no lineal: el tiempo de reacción crece de forma marcadamente más pronunciada en las edades avanzadas, algo que el coeficiente de correlación de Pearson no capturaría adecuadamente.
 
 ## Matriz de Covarianza
 
