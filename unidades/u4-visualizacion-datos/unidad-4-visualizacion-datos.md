@@ -290,7 +290,7 @@ A diferencia del gráfico de bastones, el histograma no trabaja con valores punt
 ```{code-cell} python
 plt.figure(figsize = (8,5))
 
-sns.histplot(x = 'age', linecolor = 'black', color = '#4BAE8A', data = data_titanic)
+sns.histplot(x = 'age', edgecolor = 'black', color = '#4BAE8A', data = data_titanic)
 plt.xlabel('Edad (años)', fontweight = 'bold')
 plt.ylabel('Frecuencia absoluta', fontweight = 'bold')
 plt.show()
@@ -302,7 +302,7 @@ Más allá de la información que transmite, un buen gráfico debe ser claro y e
 
 Los **títulos de los ejes** se agregan con las funciones `plt.xlabel()` y `plt.ylabel()` de Matplotlib. El argumento `fontweight = 'bold'` permite resaltar el texto en negrita; de manera análoga, `fontsize` controla el tamaño.
 
-El **color** de las barras se controla mediante el parámetro `color` de `sns.histplot()`, que acepta nombres de colores (`'red'`, `'steelblue'`) o códigos hexadecimales (`'#4BAE8A'`). El parámetro `linecolor` define el color del borde de cada barra, lo que suele mejorar la legibilidad cuando los intervalos son angostos.
+El **color** de las barras se controla mediante el parámetro `color` de `sns.histplot()`, que acepta nombres de colores (`'red'`, `'steelblue'`) o códigos hexadecimales (`'#4BAE8A'`). El parámetro `edgecolor` define el color del borde de cada barra, lo que suele mejorar la legibilidad cuando los intervalos son angostos.
 
 El **tamaño de la figura** se establece con `plt.figure(figsize = (ancho, alto))` antes de llamar a la función de graficado, donde los valores están en pulgadas.
 
@@ -319,11 +319,11 @@ Si se utilizan **muy pocos intervalos**, se pierde detalle y la distribución pu
 El siguiente gráfico muestra el efecto de distintas elecciones de *bins* sobre el histograma de las edades del Titanic:
 
 ```{code-cell} python
-fig, axs = plt.subplots(2, 2, figsize=(14, 8))
+fig, axs = plt.subplots(2, 2, figsize = (14, 8))
 bins = [5, 10, 30, 60]
 
 for i, (ax, bin_value) in enumerate(zip(axs.flat, bins)):
-    sns.histplot(x = 'age', linecolor = 'black', color = '#4BAE8A', data = data_titanic, bins = bin_value, ax = ax)
+    sns.histplot(x = 'age', edgecolor = 'black', color = '#4BAE8A', data = data_titanic, bins = bin_value, ax = ax)
     ax.set_title(f'Bins = {bin_value}', fontsize = 14, fontweight = 'bold')
     ax.set_xlabel('Edad (años)' if i >= 2 else '')
     ax.set_ylabel('Frecuencia absoluta' if i % 2 == 0 else '')
@@ -348,280 +348,123 @@ El histograma de edades del Titanic permite observar que la distribución presen
 
 Esto ilustra bien el valor del histograma: **no solo resume los datos, sino que revela la forma de la distribución**, permitiendo identificar patrones como la asimetría, la concentración de valores o la presencia de múltiples modas.
 
-### Histogramas
+### Gráfico de densidad
 
-Con frecuencia nos encontramos con la situación en la que nos gustaría comprender cómo se distribuye una variable particular en un conjunto de datos. Para dar un ejemplo concreto, consideraremos los pasajeros del Titanic. Allí había aproximadamente 1300 pasajeros (sin contar la tripulación) y 756 de ellos con edades conocidas. Podríamos querer saber cuántos pasajeros había de determinadas edades en el Titanic, es decir, cuántos niños, adultos jóvenes, personas de mediana edad, personas mayores, etc. A las proporciones relativas de diferentes edades entre los pasajeros las llamamos distribución de edad de los pasajeros.
+El histograma es una herramienta útil para visualizar distribuciones, pero tiene una limitación: su forma depende directamente de la elección del número y el ancho de los intervalos. Una alternativa que evita esta dependencia es el **gráfico de densidad**, que en lugar de representar frecuencias por intervalos, busca estimar la **distribución de probabilidad subyacente** de los datos mediante una curva continua.
 
-**Visualizando una distribución simple**
+El método de estimación más utilizado es la **estimación de densidad por kernel (KDE)**. La idea es sencilla: se coloca una curva suave —llamada kernel— centrada en cada observación, y luego se suman todas esas curvas para obtener una estimación global de la densidad. El resultado es una curva continua que describe la forma de la distribución.
 
-Podemos obtener una idea de la distribución por edades entre los pasajeros agrupando a todos los pasajeros en segmentos con edades comparables y luego contando el número de pasajeros en cada segmento. 
-
-```python
-import pandas as pd
-
-titanic_data = pd.read_csv('titanic.csv')
-
-# Define los límites de los segmentos de edad y los etiqueta
-age_bins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
-age_labels = ['0-5', '6-10', '11-15', '16-20', '21-25', '26-30', '31-35', '36-40', '41-45', '46-50', '51-55', '56-60', '61-65', '66-70', '71-75', '76-80']
-
-# Crea una nueva columna en el DataFrame llamada 'AgeGroup' que contenga los segmentos de edad de cada pasajero:
-titanic_data_cleaned['AgeGroup'] = pd.cut(titanic_data_cleaned['Age'], bins=age_bins, labels=age_labels)
-
-# Cuenta el número de pasajeros en cada segmento de edad y almacena los resultados en una variable:
-age_distribution = titanic_data_cleaned['AgeGroup'].value_counts().sort_index()
-
-print(age_distribution)
+```{figure} imagenes/kernel-estimation.png
+---
+width: 60%
+align: center
+---
+Ilustración del proceso de estimación de densidad por kernel.
 ```
 
-Este procedimiento da como resultado una tabla como la siguiente:
+El parámetro que controla el "suavizado" de la curva se denomina **ancho de banda** (*bandwidth*). Un ancho de banda pequeño produce una curva muy irregular que sigue de cerca cada observación; uno grande produce una curva más suave pero que puede ocultar estructura real en los datos.
 
-![Untitled](./imagenes/Untitled2.png)
+En `seaborn`, los gráficos de densidad se construyen con la función `kdeplot()`. Retomando el dataset del Titanic, visualizamos la distribución de edades:
 
-Podemos visualizar esta tabla dibujando rectángulos rellenos cuyas alturas correspondan a los conteos y cuyo ancho corresponda al ancho de los intervalos de edad.
-Tal visualización se llama histograma. (Tener en cuenta que todos los contenedores deben tener el mismo ancho para que la visualización sea un histograma válido).
+```{code-cell} python
+plt.figure(figsize = (8, 5))
 
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-
-plt.figure(figsize=(12, 6))
-plt.bar(age_distribution.index, age_distribution.values)
-plt.title('Histograma de la Distribución de Edades en el Titanic')
-plt.xlabel('Segmentos de Edad')
-plt.ylabel('Cantidad de Pasajeros')
+sns.kdeplot(x = 'age', fill = True, color = '#4BAE8A', data = data_titanic)
+plt.xlabel('Edad (años)', fontweight = 'bold')
+plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-![Untitled](./imagenes/Untitled3.png)
+El parámetro `fill=True` rellena el área bajo la curva, lo que facilita su lectura. El ancho de banda puede controlarse con el parámetro `bw_method`, que acepta el nombre de un método de estimación automática (`'scott'` es el valor por defecto) o un valor numérico específico:
 
-Debido a que los histogramas se generan al agrupar los datos, su apariencia visual exacta depende de la elección del ancho del agrupamiento. La mayoría de los programas de visualización que generan histogramas elegirán un ancho de intervalo por defecto, pero lo más probable es que el ancho de intervalo no sea el más apropiado para cualquier histograma que desee crear. Por lo tanto, es fundamental probar siempre diferentes anchos de intervalo para verificar que el histograma resultante refleje los datos subyacentes con precisión. En general, si el ancho del intervalo es demasiado pequeño, entonces en el histograma se ven demasiados picos y visualmente confuso, y las principales tendencias en los datos pueden oscurecerse. Por otro lado, si el ancho del intervalo es demasiado grande, las características más pequeñas en la distribución de los datos, como la caída alrededor de los 10 años en este ejemplo, pueden desaparecer.
-Para la distribución por edades de los pasajeros del Titanic, podemos ver que un ancho de contenedor de 1 año es demasiado pequeño y un ancho de contenedor de 15 años es demasiado grande, mientras que los anchos de contenedor de entre 3 y 5 años funcionan bien.
+```{code-cell} python
+fig, axes = plt.subplots(2, 4, figsize=(18, 9))
+bw_values = [0.05, 0.1, 0.2, 0.5, 1, 2, 5, None]
 
-![Los histogramas dependen del ancho del contenedor elegido. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic con cuatro anchos de compartimiento diferentes: (a) 1 año; (b) 3 años; (c) 5 años; d) 15 años. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled4.png)
+for i, (ax, bw_value) in enumerate(zip(axes.flat, bw_values)):
+    sns.kdeplot(x = 'age', data = data_titanic, ax = ax,
+                bw_method = bw_value, color = '#4BAE8A', fill = True)
+    ax.set(xlabel = '', ylabel = '')
+    ax.tick_params(axis = 'both', labelsize = 14)
+    ax.set_title('Bw por default' if bw_value is None else f'Bw = {bw_value}',
+                 fontweight = 'bold', fontsize = 16)
+    if i in [0, 4]:
+        ax.set_ylabel('Densidad', fontsize = 15)
+    if i in [4, 5, 6, 7]:
+        ax.set_xlabel('Edad (años)', fontsize = 15)
 
-Los histogramas dependen del ancho del contenedor elegido. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic con cuatro anchos de compartimiento diferentes: (a) 1 año; (b) 3 años; (c) 5 años; d) 15 años. Fuente de datos: Enciclopedia Titanica.
-
-<aside>
-💡 Al hacer un histograma, siempre explorar múltiples anchos para la agrupación
-
-</aside>
-
-**Densidad**
-
-Los histogramas han sido una opción de visualización popular desde al menos el siglo XVIII, en parte porque se generan fácilmente a mano. Más recientemente, a medida que el poder de cómputo está disponible en dispositivos cotidianos como computadoras portátiles y teléfonos celulares, vemos que se reemplazan cada vez más por diagramas de densidad. En una gráfica de densidad, intentamos visualizar la distribución de probabilidad subyacente de los datos (poblacional) dibujando una curva continua apropiada. Esta curva debe estimarse a partir de los datos, y el método más utilizado para este procedimiento de estimación se denomina estimación de densidad por kernel. En la estimación de la densidad por kernel, dibujamos una curva continua (el kernel) con un ancho pequeño (controlado por un parámetro llamado ancho de banda) en la ubicación de cada punto de datos, y luego agregamos (sumamos) todas estas superficies para obtener la estimación de densidad final. El núcleo más utilizado es un núcleo gaussiano (es decir, una curva de campana gaussiana), pero hay muchas otras opciones.
-
-```python
-plt.figure(figsize=(12, 6))
-sns.kdeplot(data=titanic_data_cleaned['Age'], shade=True)
-plt.title('Diagrama de Densidad de la Distribución de Edades en el Titanic')
-plt.xlabel('Edad')
-plt.ylabel('Densidad')
-plt.xlim(0, 75)
+plt.tight_layout()
 plt.show()
 ```
 
-![Estimación de la densidad del núcleo de la distribución por edades de los pasajeros del Titanic.
-La altura de la curva está escalada de manera que el área bajo la curva sea igual a 1. La estimación de la densidad se realizó con un núcleo gaussiano y un ancho de banda de 2. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled5.png)
+Al igual que ocurría con los *bins* del histograma, valores extremos del ancho de banda distorsionan la representación: con valores muy pequeños la curva se vuelve ruidosa, y con valores muy grandes se aplana hasta perder toda información sobre la forma de la distribución.
 
-Estimación de la densidad del núcleo de la distribución por edades de los pasajeros del Titanic.
-La altura de la curva está escalada de manera que el área bajo la curva sea igual a 1. La estimación de la densidad se realizó con un núcleo gaussiano y un ancho de banda de 2. Fuente de datos: Enciclopedia Titanica.
+```{admonition} Advertencia: las colas del gráfico de densidad
+:class: warning
 
-Tal como ocurre con los histogramas, la apariencia visual exacta de un gráfico de densidad depende de las opciones de kernel y ancho de banda. El parámetro de ancho de banda se comporta de manera similar al ancho del contenedor en los histogramas. Si el ancho de banda es demasiado pequeño, entonces la estimación de la densidad puede volverse demasiado alta y visualmente ocupada y las principales tendencias en los datos pueden oscurecerse. Por otro lado, si el ancho de banda es demasiado grande, pueden desaparecer características más pequeñas en la distribución de los datos. Además, la elección del kernel afecta la forma de la curva de densidad. Por ejemplo, un núcleo gaussiano tendrá una tendencia a producir estimaciones de densidad que parezcan gaussianas, con rasgos y colas suaves. Por el contrario, un kernel rectangular puede generar la apariencia de pasos en la curva de densidad (Figura “d”). En general, cuantos más puntos de datos hay en el conjunto de datos, menos importa la elección del kernel. Por lo tanto, los diagramas de densidad tienden a ser bastante confiables e informativos para grandes conjuntos de datos, pero pueden ser engañosos para conjuntos de datos de solo unos pocos puntos.
+La estimación por kernel tiene una limitación importante: **tiende a extender la curva más allá del rango real de los datos**, generando la apariencia de que hay observaciones donde no las hay. Esto es especialmente problemático cuando la variable tiene un límite natural (por ejemplo, una variable que no puede tomar valores negativos). Para evitarlo, se puede usar el parámetro `clip` de `kdeplot()`, que restringe la curva a un rango específico del eje.
+```
 
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-from scipy.stats import gaussian_kde
-import numpy as np
+También es importante tener en cuenta que **el eje vertical de un gráfico de densidad no representa frecuencias sino valores de densidad de probabilidad**. Dado que el área bajo la curva debe ser igual a 1, la escala del eje depende de las unidades de la variable representada y no siempre resulta intuitiva.
 
-# Define el ancho de banda del kernel (un valor más bajo generará curvas más puntiagudas)
-bandwidth = 0.05
+#### Histograma con curva de densidad superpuesta
 
-# Crea una función de densidad de kernel gaussiano (KDE) utilizando scipy
-# https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.gaussian_kde.html
-kde = gaussian_kde(titanic_data_cleaned['Age'], bw_method=bandwidth)
+Una práctica habitual es superponer la curva de densidad al histograma, lo que permite combinar la precisión de las frecuencias observadas con la suavidad de la estimación continua. En `seaborn` esto se logra con el parámetro `kde = True` dentro de `histplot()`:
 
-# Genera un conjunto de valores de edad en el rango deseado (0 a 80) para evaluar la función KDE
-x_values = np.linspace(0, 80, num=1000)
+```{code-cell} python
+plt.figure(figsize = (8, 5))
 
-# Evalúa la función KDE en los valores de edad generados
-density_values = kde.evaluate(x_values)
-
-# Grafica el diagrama de densidad de la distribución de edades con las curvas más puntiagudas utilizando matplotlib
-plt.figure(figsize=(12, 6))
-plt.plot(x_values, density_values)
-plt.fill_between(x_values, density_values, alpha=0.5)
-plt.title('Diagrama de Densidad de la Distribución de Edades en el Titanic (Curvas Puntiagudas)')
-plt.xlabel('Edad')
-plt.ylabel('Densidad')
-
-# Establece el rango del eje x de 0 a 80
-plt.xlim(0, 80)
-
+sns.histplot(x= 'age', kde = True, color = '#4BAE8A', data = data_titanic)
+plt.xlabel('Edad (años)', fontweight='bold')
+plt.ylabel('Frecuencia absoluta', fontweight = 'bold')
 plt.show()
 ```
 
-![Las estimaciones de la densidad por kernel dependen del kernel y el ancho de banda elegidos. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic para cuatro combinaciones diferentes de estos parámetros: (a) núcleo gaussiano, ancho de banda = 0,5; (b) Kernel gaussiano, ancho de banda = 2; (c) Kernel gaussiano, ancho de banda = 5; (d) núcleo rectangular, ancho de banda = 2. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled6.png)
+#### Comparar distribuciones según una variable categórica
 
-Las estimaciones de la densidad por kernel dependen del kernel y el ancho de banda elegidos. Aquí, se muestra la misma distribución de edad de los pasajeros del Titanic para cuatro combinaciones diferentes de estos parámetros: (a) núcleo gaussiano, ancho de banda = 0,5; (b) Kernel gaussiano, ancho de banda = 2; (c) Kernel gaussiano, ancho de banda = 5; (d) núcleo rectangular, ancho de banda = 2. Fuente de datos: Enciclopedia Titanica.
+Hasta aquí visualizamos la distribución de una única variable. Sin embargo, en muchos análisis es de interés comparar cómo se distribuye una variable cuantitativa en distintos grupos definidos por una variable categórica.
 
-Las curvas de densidad generalmente se escalan de manera que el área bajo la curva sea igual a 1. Esta convención puede hacer que la escala del eje y sea confusa, porque depende de las unidades del eje x. Por ejemplo, en el caso de la distribución por edad, el rango de datos en el eje x va de 0 a aproximadamente 75. Por lo tanto, esperamos que la altura media de la curva de densidad sea 1/75 = 0,013. De hecho, cuando observamos las curvas de densidad de edad, vemos que los valores de y varían de 0 a aproximadamente 0,04, con un promedio cercano a 0,01.
+Para ilustrar esto, retomamos el dataset **Palmer Penguins**, con el que trabajamos en la unidad anterior. Recordemos que contiene mediciones morfológicas de pingüinos de tres especies: *Adelie*, *Chinstrap* y *Gentoo*. Visualizamos la distribución de la longitud de aleta (`flipper_length_mm`) según la especie (`species`):
 
-Las estimaciones de la densidad del kernel tienen una trampa que debemos tener en cuenta: tienden a producir la apariencia de datos donde no existen, en particular en las colas.
-Como consecuencia, el uso descuidado de las estimaciones de densidad puede conducir fácilmente a cifras que hacen afirmaciones sin sentido. Por ejemplo, si no prestamos atención, podríamos generar una visualización de una distribución de edades que incluya edades negativas:
+```{code-cell} python
+data_penguins = sns.load_dataset('penguins')
+```
+```{code-cell} python
+paleta_especies = {
+    'Adelie':    '#E07B54',
+    'Chinstrap': '#5B8DB8',
+    'Gentoo':    '#4BAE8A'
+}
 
-![Las estimaciones de la densidad del núcleo pueden extender las colas de la distribución a áreas donde no existen datos y ni siquiera es posible obtenerlos. Aquí, se ha permitido que la densidad estimada para las edades de los pasajeros del Titanic se extienda al rango de edad negativo. Esto no tiene sentido y debe evitarse. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled7.png)
+plt.figure(figsize = (8, 5))
 
-Las estimaciones de la densidad del núcleo pueden extender las colas de la distribución a áreas donde no existen datos y ni siquiera es posible obtenerlos. Aquí, se ha permitido que la densidad estimada para las edades de los pasajeros del Titanic se extienda al rango de edad negativo. Esto no tiene sentido y debe evitarse. Fuente de datos: Enciclopedia Titanica.
-
-<aside>
-💡 Siempre verifique que su estimación de densidad no prediga la existencia de valores de datos sin sentido.
-
-</aside>
-
-Entonces, ¿debería elegir un histograma o un gráfico de densidad para visualizar una distribución? Se pueden tener discusiones acaloradas sobre este tema. Algunas personas están vehementemente en contra de los diagramas de densidad y creen que son arbitrarios y engañosos. Otros se dan cuenta de que los histogramas pueden ser igualmente arbitrarios y engañosos. La elección es en gran medida una cuestión de gusto, pero a veces una u otra opción puede reflejar con mayor precisión las características específicas de interés en los datos disponibles. También existe la posibilidad de no utilizar ninguno y, en su lugar, elegir funciones de densidad acumulada empírica o diagramas q-q.
-Sin embargo, las estimaciones de densidad tienen una ventaja inherente sobre los histogramas en cuanto queremos visualizar más de una distribución a la vez.
-
-**Visualización de múltiples distribuciones al mismo tiempo**
-
-En muchos escenarios tenemos múltiples distribuciones que nos gustaría visualizar simultáneamente.
-Por ejemplo, digamos que nos gustaría ver cómo se distribuyen las edades de los pasajeros del Titanic entre hombres y mujeres. ¿Los pasajeros masculinos y femeninos tenían generalmente la misma edad, o había una diferencia de edad entre los géneros? Una estrategia de visualización comúnmente empleada en este caso es un histograma apilado, donde dibujamos las barras del histograma para las mujeres encima de las barras para los hombres, en un color diferente.
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-
-male_data = titanic_data_cleaned[titanic_data_cleaned['Sex'] == 'male']
-female_data = titanic_data_cleaned[titanic_data_cleaned['Sex'] == 'female']
-
-age_bins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
-age_labels = ['0-5', '6-10', '11-15', '16-20', '21-25', '26-30', '31-35', '36-40', '41-45', '46-50', '51-55', '56-60', '61-65', '66-70', '71-75', '76-80']
-
-male_hist, _ = np.histogram(male_data['Age'], bins=age_bins)
-female_hist, _ = np.histogram(female_data['Age'], bins=age_bins)
-
-plt.figure(figsize=(12, 6))
-plt.bar(age_labels, male_hist, label='Hombres', color='blue', alpha=0.7)
-plt.bar(age_labels, female_hist, bottom=male_hist, label='Mujeres', color='red', alpha=0.7)
-plt.title('Histograma Apilado de la Distribución de Edades en el Titanic')
-plt.xlabel('Segmentos de Edad')
-plt.ylabel('Cantidad de Pasajeros')
-plt.legend()
+sns.kdeplot(x = 'flipper_length_mm', hue = 'species',
+            multiple = 'layer', fill = True, palette = paleta_especies, data = data_penguins)
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-![Histograma de las edades de los pasajeros del Titanic estratificados por género. Esta cifra se ha etiquetado como "mala" porque los histogramas apilados se confunden fácilmente con histogramas superpuestos (consulte la Figura 7-7). Además, las alturas de las barras que representan a las pasajeras no pueden compararse fácilmente entre sí. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled8.png)
+El parámetro `hue = 'species'` asigna un color distinto a cada especie, y `multiple = 'layer'` superpone las curvas en el mismo gráfico. El resultado permite comparar de forma inmediata la forma y posición de cada distribución.
 
-Histograma de las edades de los pasajeros del Titanic estratificados por género. Esta cifra se ha etiquetado como "mala" porque los histogramas apilados se confunden fácilmente con histogramas superpuestos (consulte la Figura 7-7). Además, las alturas de las barras que representan a las pasajeras no pueden compararse fácilmente entre sí. Fuente de datos: Enciclopedia Titanica.
+En este caso, se observa que las tres especies presentan distribuciones claramente diferenciadas: *Adelie* y *Chinstrap* tienen aletas más cortas y de longitud similar entre sí, mientras que *Gentoo* se distingue con aletas notablemente más largas. Esta separación sería mucho más difícil de apreciar comparando histogramas o tablas de frecuencias por separado.
 
-Este tipo de visualización puede provocar dos problemas. Primero, con solo mirar la figura, nunca está del todo claro dónde comienzan exactamente las barras. ¿Comienzan donde cambia el color o están destinados a comenzar en cero? En otras palabras, ¿hay unas 25 mujeres de 18 a 20 años o hay casi 80?
-(El primero es el caso.) En segundo lugar, las alturas de las barras para los conteos femeninos no se pueden comparar directamente entre sí, porque todas las barras comienzan a una altura diferente. Por ejemplo, los hombres eran en promedio mayores que las mujeres, y este hecho no es del todo visible en la figura.
-Podríamos tratar de abordar estos problemas haciendo que todas las barras comiencen en cero y haciendo que las barras sean parcialmente transparentes.
+Una limitación de este gráfico es que, por defecto, cada curva se normaliza de forma independiente: su área individual es siempre igual a 1, sin importar cuántos pingüinos pertenecen a cada especie. Esto significa que grupos de distinto tamaño aparecen representados con curvas visualmente equivalentes.
 
-![Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como dos histogramas superpuestos. Esta cifra ha sido etiquetada como "mala" porque no hay una indicación visual clara de que todas las barras azules comiencen en 0. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled9.png)
+Para incorporar información sobre el tamaño relativo de cada grupo, se puede usar el parámetro `common_norm=True`, que normaliza todas las curvas conjuntamente de modo que el área **total** bajo todas ellas sume 1. En ese caso, el área de cada curva es proporcional a la fracción de observaciones de esa especie:
 
-Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como dos histogramas superpuestos. Esta cifra ha sido etiquetada como "mala" porque no hay una indicación visual clara de que todas las barras azules comiencen en 0. Fuente de datos: Enciclopedia Titanica.
+```{code-cell} python
+plt.figure(figsize = (8, 5))
 
-Sin embargo, este enfoque genera nuevos problemas. Ahora parece que hay en realidad tres grupos diferentes, no solo dos, y todavía no estamos completamente seguros de dónde cada barra comienza y termina. Los histogramas superpuestos no funcionan bien porque una barra semitransparente dibujada encima de otra tiende a no verse como una barra semitransparente sino como una barra dibujada en un color diferente.
-
-Los gráficos de densidad superpuestos no suelen tener el problema que tienen los histogramas superpuestos, porque las líneas de densidad continuas ayudan al ojo a mantener las distribuciones separadas. Sin embargo, para este conjunto de datos en particular, las distribuciones de edad para pasajeros masculinos y femeninos son casi idénticas hasta alrededor de los 17 años y luego divergen, por lo que la visualización resultante aún no es la ideal.
-
-Una solución que funciona bien para este conjunto de datos es mostrar las distribuciones de edad de los pasajeros masculinos y femeninos por separado, cada uno como una proporción de la distribución de edad general. Esta visualización muestra intuitiva y claramente que había muchas menos mujeres que hombres en el rango de edad de 20 a 50 años en el Titanic.
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-# Limpia los datos eliminando las filas con valores de edad faltantes:
-titanic_data_cleaned = titanic_data.dropna(subset=['Age'])
-
-# Separa los datos por género:
-male_data = titanic_data_cleaned[titanic_data_cleaned['Sex'] == 'male']
-female_data = titanic_data_cleaned[titanic_data_cleaned['Sex'] == 'female']
-
-# Grafica el diagrama de densidades utilizando seaborn
-bandwidth = 0.5
-plt.figure(figsize=(12, 6))
-sns.kdeplot(data=male_data['Age'], fill=True, label='Hombres', bw_adjust=bandwidth)
-sns.kdeplot(data=female_data['Age'], fill=True, label='Mujeres', bw_adjust=bandwidth)
-plt.title('Diagrama de Densidad de la Distribución de Edades en el Titanic por Género')
-plt.xlabel('Edad')
-plt.ylabel('Densidad')
-plt.xlim(0, 80)
-plt.legend()
+sns.kdeplot(x = 'flipper_length_mm', hue= ' species',
+            multiple = 'layer', fill = True, palette = paleta_especies,
+            common_norm = True, data = data_penguins)
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-![Estimaciones de densidad de las edades de los pasajeros masculinos y femeninos del Titanic. Para resaltar que había más pasajeros hombres que mujeres, las curvas de densidad se escalaron de tal manera que el área bajo cada curva corresponde al número total de pasajeros hombres y mujeres con edad conocida (468 y 288, respectivamente). Fuente de datos: Enciclopedia Titánica.](./imagenes/Untitled10.png)
-
-Estimaciones de densidad de las edades de los pasajeros masculinos y femeninos del Titanic. Para resaltar que había más pasajeros hombres que mujeres, las curvas de densidad se escalaron de tal manera que el área bajo cada curva corresponde al número total de pasajeros hombres y mujeres con edad conocida (468 y 288, respectivamente). Fuente de datos: Enciclopedia Titánica.
-
-![Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como proporciones del número total de pasajeros. Las áreas coloreadas muestran las estimaciones de densidad de las edades de los pasajeros masculinos y femeninos, respectivamente, y las áreas grises muestran la distribución general de edades de los pasajeros. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled11.png)
-
-Distribuciones de edad de pasajeros masculinos y femeninos del Titanic, mostradas como proporciones del número total de pasajeros. Las áreas coloreadas muestran las estimaciones de densidad de las edades de los pasajeros masculinos y femeninos, respectivamente, y las áreas grises muestran la distribución general de edades de los pasajeros. Fuente de datos: Enciclopedia Titanica.
-
-Finalmente, cuando queremos visualizar exactamente dos distribuciones, también podemos hacer dos histogramas separados, rotarlos 90 grados y hacer que las barras en un histograma apunten en la dirección opuesta al otro. Este truco se emplea comúnmente cuando se visualizan distribuciones de edad, y el gráfico resultante generalmente se denomina pirámide de edad.
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-
-# Limpia los datos eliminando las filas con valores de edad faltantes
-titanic_data_cleaned = titanic_data.dropna(subset=['Age'])
-
-# Separa los datos por género
-male_data = titanic_data_cleaned[titanic_data_cleaned['Sex'] == 'male']
-female_data = titanic_data_cleaned[titanic_data_cleaned['Sex'] == 'female']
-
-# Define los límites de los segmentos de edad y los etiqueta
-age_bins = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80]
-age_labels = ['0-5', '6-10', '11-15', '16-20', '21-25', '26-30', '31-35', '36-40', '41-45', '46-50', '51-55', '56-60', '61-65', '66-70', '71-75', '76-80']
-
-# Crea histogramas por género utilizando la función np.histogram y los límites de los segmentos de edad definidos
-male_hist, _ = np.histogram(male_data['Age'], bins=age_bins)
-female_hist, _ = np.histogram(female_data['Age'], bins=age_bins)
-
-# Prepara el tamaño de la figura
-plt.figure(figsize=(12, 6))
-
-# Dibuja las barras para hombres (valores negativos para representar la parte izquierda de la pirámide)
-plt.barh(age_labels, -male_hist, label='Hombres', color='blue', alpha=0.7)
-
-# Dibuja las barras para mujeres (valores positivos para representar la parte derecha de la pirámide)
-plt.barh(age_labels, female_hist, label='Mujeres', color='red', alpha=0.7)
-
-plt.title('Diagrama de Pirámide de la Distribución de Edades en el Titanic por Género')
-plt.xlabel('Cantidad de Pasajeros')
-plt.ylabel('Segmentos de Edad')
-plt.legend()
-
-# Ajusta el rango del eje x para que se muestre correctamente el diagrama de pirámide
-max_population = max(max(male_hist), max(female_hist))
-plt.xlim(-max_population, max_population)
-
-# Muestra los valores negativos en el eje x como positivos
-plt.xticks(np.arange(-max_population, max_population, step=10), np.abs(np.arange(-max_population, max_population, step=10)))
-
-plt.show()
-```
-
-![Las distribuciones de edad de los pasajeros masculinos y femeninos del Titanic se visualizan como una pirámide de edad. Fuente de datos: Enciclopedia Titanica.](./imagenes/Untitled12.png)
-
-Las distribuciones de edad de los pasajeros masculinos y femeninos del Titanic se visualizan como una pirámide de edad. Fuente de datos: Enciclopedia Titanica.
-
-Es importante destacar que este truco no funciona cuando hay más de dos distribuciones que queremos visualizar al mismo tiempo. Para distribuciones múltiples, los histogramas tienden a volverse confusos, mientras que los gráficos de densidad funcionan bien siempre que las distribuciones sean algo distintas y contiguas. Por ejemplo, para visualizar la distribución del porcentaje de grasa de mantequilla en la leche de vacas de cuatro razas diferentes de ganado, los diagramas de densidad están bien.
-
-<aside>
-💡 Para visualizar varias distribuciones a la vez, los diagramas de densidad kernel generalmente funcionarán mejor que los histogramas.
-
-</aside>
-
-![Estimaciones de densidad del porcentaje de grasa butírica en la leche de cuatro razas de ganado. Fuente de datos: Registro Canadiense de Desempeño para Ganado Lechero de Pura Raza.](./imagenes/Untitled13.png)
-
-Estimaciones de densidad del porcentaje de grasa butírica en la leche de cuatro razas de ganado. Fuente de datos: Registro Canadiense de Desempeño para Ganado Lechero de Pura Raza.
+Dado que *Adelie* es la especie más numerosa del dataset, su curva ocupa proporcionalmente más área que las de *Chinstrap* y *Gentoo*. Esta versión del gráfico comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
 
 **Boxplots**
 
