@@ -1649,24 +1649,25 @@ Al igual que el coeficiente de Pearson, $r_s$ toma valores en el intervalo [−1
 
 **Un ejemplo: tiempos de reacción y edad en jugadores**
 
-Supongamos que contamos con información sobre los tiempos de reacción y la edad de 8 jugadores:
+Supongamos que contamos con información sobre los tiempos de reacción y la edad de 9 personas:
 
 | Edad (años) | Tiempo (ms) |
 |:-----------:|:-----------:|
-| 10          | 120         |
+| 10          | 125         |
 | 15          | 115         |
-| 20          | 145         |
+| 20          | 135         |
 | 25          | 160         |
 | 30          | 235         |
 | 35          | 210         |
-| 45          | 335         |
-| 60          | 385         |
+| 45          | 365         |
+| 60          | 410         |
+| 70          | 600         |
 
 ```{code-cell} python
 # Generamos el DataFrame con los datos
 data_gamers = pd.DataFrame({
-    'edad_anios': [10, 15, 20, 25, 30, 35, 45, 60],
-    'tiempo_ms':  [120, 115, 145, 160, 235, 210, 335, 385]
+    'edad_anios': [10, 15, 20, 25, 30, 35, 45, 60, 70],
+    'tiempo_ms':  [125, 115, 135, 160, 235, 210, 365, 410, 600]
 })
 
 # Representamos gráficamente los datos
@@ -1714,40 +1715,89 @@ data_gamers.corr(method = 'spearman')
 
 El valor obtenido es positivo y alto, lo que refleja una relación monótona creciente fuerte entre la edad y el tiempo de reacción, aunque no perfecta: hay algunas inversiones locales —como el leve descenso del tiempo de reacción entre los 10 y los 15 años, o entre los 30 y los 35— que impiden hablar de monotonicidad estricta. La relación es además claramente no lineal: el tiempo de reacción crece de forma marcadamente más pronunciada en las edades avanzadas, algo que el coeficiente de correlación de Pearson no capturaría adecuadamente.
 
-## Matriz de Covarianza
+## Matrices de covarianza y de correlación
 
-La matriz de covarianza es una matriz cuadrada donde se muestra el coeficiente de covarianza entre múltiples variables. En el ejemplo de abajo mostramos la matriz de covarianza entre edad (bhch04), minutos semanales de actividad intensa (biaf02_m), ingreso (bhih01), minutos de caminata semanal (biaf06_m) y edad en que comenzó a fumar (bita02).
+Hasta ahora calculamos métricas de correlación para un único par de variables. Sin embargo, cuando el dataset contiene múltiples variables cuantitativas, resulta útil estudiar todas las relaciones posibles de forma simultánea. Para eso se construyen la **matriz de covarianza** y la **matriz de correlación**, que organizan estas métricas para todos los pares de variables.
 
-![Untitled](./imagenes/Untitled17.png)
+En el dataset **penguins**, las variables cuantitativas son `bill_length_mm`, `bill_depth_mm`, `flipper_length_mm` y `body_mass_g`. Trabajaremos exclusivamente con ellas.
+La matriz de covarianza se obtiene con el método **`cov()`**:
 
-Esta matriz nos permite ver de forma rápida si existe alguna relación lineal entre las variables y nos puede servir en el futuro como guía para selección de atributos para nuestros modelos. 
-
-Para construir la tabla de arriba usamos Pandas de la siguiente forma:
-
-```python
-data[['bhch04', 'biaf02_m', 'bhih01', 'biaf06_m', 'bita02']].cov()
+```{code-cell} python
+df[['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g']].cov()
 ```
 
-## Matriz de Correlación
+El resultado es una matriz simétrica de 4×4 donde, como ya vimos, la diagonal contiene las varianzas de las observaciones de cada variable y los elementos fuera de la diagonal contienen las covarianzas entre cada par. Si bien esta matriz permite identificar la dirección de las relaciones, comparar sus valores entre distintos pares es difícil por las razones que discutimos al analizar las limitaciones de la covarianza.
 
-La matriz de correlación es similar a la anterior pero en lugar de mostrar el coeficiente de covarianza nos muestra el de correlación. 
+Para resolver esto, recurrimos a la matriz de correlación de Pearson, que se obtiene con el método **`corr()`**:
 
-```python
-#en este caso el método por default es el de pearson
-data[['bhch04', 'biaf02_m', 'bhih01', 'biaf06_m', 'bita02']].corr()
+```{code-cell} python
+df[['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g']].corr()
 ```
 
-![Untitled](./imagenes/Untitled18.png)
+Esta matriz tiene la misma estructura, pero ahora todos los valores están acotados entre −1 y 1, lo que permite comparar directamente la intensidad de la asociación entre distintos pares de variables. La diagonal contiene unos, ya que cada variable está perfectamente correlacionada consigo misma.
 
-La diagonal siempre tiene el valor de 1 puesto que es la correlación de una variable consigo misma. Tanto en esta matriz como en la anterior, solo nos interesa mirar la parte que está por encima o debajo de la diagonal, puesto que estas matrices son siempre simétricas. 
+### Correlograma
 
-Una forma de visualizar rápidamente la correlación que existe entre un grupo de variables es  imprimiendo la matriz de correlación con colores:
+Cuando el número de variables crece, leer una matriz de números puede volverse tedioso. El correlograma es la representación gráfica de la matriz de correlación: un mapa de calor (*heatmap*) donde cada celda muestra el coeficiente de correlación entre un par de variables, y el color codifica su magnitud y dirección.
 
-```python
-sns.heatmap(data[['bhch04', 'biaf02_m', 'bhih01', 'biaf06_m', 'bita02']].corr(), annot=True)
+Para construirlo, generamos primero la matriz de correlación y luego la visualizamos con la función `heatmap()` de Seaborn. Algunos aspectos más finos de su construcción serán retomados en la próxima unidad:
+
+```{code-cell} python
+matriz = df[['bill_length_mm', 'bill_depth_mm', 'flipper_length_mm', 'body_mass_g']].corr()
+
+palette_inferior = sns.color_palette('Oranges', 100)
+palette_superior = sns.color_palette('Blues_r', 100)
+colors = palette_superior + palette_inferior[::1]
+cmap = sns.blend_palette(colors, as_cmap=True)
+
+plt.figure(figsize=(8, 5.8))
+ax = sns.heatmap(matriz, cmap=cmap, annot=True, linewidths=0.8,
+                 annot_kws={"fontsize": 20},
+                 cbar_kws={'label': 'r de Pearson'},
+                 vmin=-1, vmax=1)
+plt.xticks(fontsize=18, rotation=90)
+plt.yticks(fontsize=18)
+
+cbar = ax.collections[0].colorbar
+cbar.ax.tick_params(labelsize=15)
+cbar.ax.yaxis.label.set_size(20)
+
+plt.show()
 ```
 
-![Untitled](./imagenes/Untitled19.png)
+El correlograma permite identificar de un vistazo qué pares de variables están fuertemente asociados, en qué dirección, y qué pares no presentan una relación lineal apreciable.
+
+### Una advertencia: ¿nos puede engañar $r$?
+
+Al observar el correlograma, el coeficiente de correlación de Pearson entre `bill_depth_mm` y `flipper_length_mm` es $r = -0.58$, lo que sugiere una asociación negativa moderada. Sin embargo, el *scatterplot* de este par revela algo inesperado:
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.scatterplot(x = 'flipper_length_mm', y = 'bill_depth_mm', data = df, s = 35, color = '#1f0b40', edgecolor = '#1f0b40')
+plt.show()
+```
+
+Lo que se observa en el gráfico no es una nube de puntos con tendencia negativa uniforme, sino una estructura con subgrupos claramente diferenciados. Esto es un ejemplo concreto del principio que mencionamos anteriormente: **nunca interpretar un coeficiente de correlación sin haber observado previamente el gráfico de dispersión.**
+
+En este caso, la causa es la variable `species`: cada especie presenta combinaciones distintas de profundidad de pico y longitud de aleta, y al calcular el coeficiente sobre el conjunto completo se mezclan patrones que en realidad pertenecen a grupos distintos. Este fenómeno, en el que una variable no considerada distorsiona la relación observada entre otras dos, se conoce como **paradoja de Simpson** y es uno de los errores más frecuentes en el análisis exploratorio de datos.
+
+La solución es desagregar el análisis por grupos, lo que podemos hacer visualmente con el parámetro `hue`:
+
+```{code-cell} python
+paleta_especies = {
+    'Adelie':    '#E07B54',
+    'Chinstrap': '#5B8DB8',
+    'Gentoo':    '#4BAE8A'
+}
+
+plt.figure(figsize = (8, 5))
+sns.scatterplot(x = 'flipper_length_mm', y = 'bill_depth_mm',
+                hue = 'species', palette = paleta_especies,
+                data = df, s = 35)
+plt.show()
+```
+Al colorear los puntos por especie, la estructura del gráfico cambia radicalmente: dentro de cada especie, la relación entre ambas variables es positiva o prácticamente nula, lo que contradice la asociación negativa que habíamos obtenido para el conjunto completo. Esto refuerza una idea central del análisis exploratorio: **los coeficientes de correlación globales pueden ocultar patrones importantes que solo se revelan al segmentar los datos.** Retomaremos estas ideas en la próxima unidad.
 
 ## Temas avanzados
 
