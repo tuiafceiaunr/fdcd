@@ -1084,12 +1084,12 @@ En este caso, cada fila corresponde a un número específico de miembros del hog
 
 Dado que se trata de una variable cuantitativa discreta, la representación gráfica adecuada es un **gráfico de bastones**. 
 
-Podemos construirlo utilizando el DataFrame anterior y la función `plt.bar()`. Si fijamos un ancho suficientemente pequeño (por ejemplo, `width = 0.4`), las barras adquieren la forma visual de bastones:
+Podemos construirlo utilizando el DataFrame anterior y la función `plt.bar()`. Si fijamos un ancho suficientemente pequeño (por ejemplo, `width = 0.25`), las barras adquieren la forma visual de bastones:
 
 ```{code-cell} python
 plt.figure(figsize=(8,5))
 
-plt.bar(tabla_miembros['Num_miembros'], tabla_miembros['Frec_absoluta'], width = 0.4)
+plt.bar(tabla_miembros['Num_miembros'], tabla_miembros['Frec_absoluta'], width = 0.25)
 
 plt.xlabel("Cantidad de miembros del hogar", fontweight = "bold")
 plt.ylabel("Frecuencia absoluta", fontweight = "bold")
@@ -1116,7 +1116,7 @@ Es importante distinguir entonces entre:
 
 Aunque en nuestra base de datos el ingreso figure sin decimales, **puede asumir un gran número de valores diferentes**. Si intentáramos construir una tabla de frecuencias considerando cada valor individual observado, obtendríamos una tabla muy extensa y poco informativa.
 
-Por ello, en lugar de trabajar con valores puntuales, **realizamos un agrupamiento en subintervalos (segmentación)**.
+Por ello, en lugar de trabajar con valores puntuales, **realizamos un agrupamiento en subintervalos (segmentación)**. 
 
 Lo primero es obtener un resumen descriptivo:
 
@@ -1126,29 +1126,29 @@ data['bhih01'].describe()
 
 Este resumen nos permite conocer el rango en el que se encuentran las observaciones de la variable, su dispersión en términos de la desviación estándar y algunos percentiles relevantes. A partir de esta información podemos decidir cómo construir los intervalos.
 
-Dado que los ingresos totales mensuales por hogar se encuentran aproximadamente en el rango de 0 a 350000 pesos, podríamos agruparlos en intervalos de igual amplitud, por ejemplo de 35000 pesos:
+Dado que los ingresos totales mensuales por hogar se encuentran en el rango de 0 a 420000 pesos, podríamos agruparlos en intervalos de igual amplitud, por ejemplo de 40000 pesos:
 
-- [0, 35000)
+- [0, 40000)
 
-- [35000, 70000)
+- [40000, 80000)
 
-- [70000, 105000)
+- [80000, 120000)
 
-- [105000, 140000)
+- [120000, 160000)
 
-- [140000, 175000)
+- [160000, 200000)
 
-- [175000, 210000)
+- [200000, 240000)
 
-- [210000, 245000)
+- [240000, 280000)
 
-- [245000, 280000)
+- [280000, 320000)
 
-- [280000, 315000)
+- [320000, 360000)
 
-- [315000, 350000)
+- [360000, 400000)
 
-[350000, 385000)
+- [400000, 440000)
 
 Estos intervalos son contiguos y no se superponen. La notación [a, b) indica que el intervalo incluye el límite inferior pero excluye el superior.
 
@@ -1158,7 +1158,7 @@ Para generarlos utilizamos **`pd.cut()`**:
 
 # Generamos los subintervalos
 
-bins_ingresos = np.arange(0, 390000, 35000)
+bins_ingresos = np.arange(0, 450000, 40000)
 
 data['ingreso_seg'] = pd.cut(data['bhih01'], bins = bins_ingresos, right = False)
 
@@ -1217,7 +1217,7 @@ Este tipo de tabla nos permite resumir la distribución sin trabajar con cada va
 
 Interpretemos a continuación cada una de las frecuencias que figuran en la fila de la tabla correspondiente al subintervalo [35000, 70000):
 
-> ***893 hogares presentan un ingreso total mensual mayor o igual a \$35000 y menor a \$70000, lo que representa el 21.95 % de las viviendas encuestadas.***
+> ***4553 hogares presentan un ingreso total mensual mayor o igual a \$35000 y menor a \$70000, lo que representa el 16 % de las viviendas encuestadas en Santa Fe.***
 
 Las frecuencias acumuladas hasta ese intervalo nos permiten observar que:
 
@@ -1241,6 +1241,8 @@ sns.histplot(x = 'bhih01', bins = bins_ingresos, color = 'lightgreen', edgecolor
 plt.xlabel("Ingreso mensual del hogar (en pesos)", fontweight = "bold")
 plt.xticks(np.arange(0, 380000, 70000))
 plt.ylabel("Frecuencia absoluta", fontweight = "bold")
+
+plt.xlim(0, 450000)
 
 plt.show()
 ```
