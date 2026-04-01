@@ -569,34 +569,43 @@ Cuando el número de grupos es grande, los gráficos anteriores pueden volverse 
 
 Un ridgeline plot muestra las distribuciones de cada grupo como curvas de densidad escalonadas en el eje vertical, superponiéndose ligeramente entre sí. Este tipo de gráfico es especialmente útil cuando se tienen muchos grupos o cuando se quiere visualizar la evolución de distribuciones a lo largo del tiempo.
 
-Para el ejemplo de Penguins el número de grupos es pequeño y cualquiera de las opciones anteriores funciona bien. Sin embargo, es una buena oportunidad para conocer esta herramienta. En Python puede construirse con la librería `ridgeplot`:
+Para el ejemplo de Penguins el número de grupos es pequeño y cualquiera de las opciones anteriores funciona bien. Sin embargo, es una buena oportunidad para conocer esta herramienta. Puede construirse directamente con seaborn combinando un FacetGrid con `kdeplot()`:
 
 ```{code-cell} python
-from ridgeplot import ridgeplot
+sns.set_theme(style = 'white0, rc = {'axes.facecolor': (0, 0, 0, 0)})
 
-especies = orden.tolist()
-
-muestras = [
-    data_penguins.loc[data_penguins['species'] == sp,
-                      'flipper_length_mm'].dropna().values
-    for sp in especies
-]
-
-fig = ridgeplot(
-    samples = muestras,
-    labels = especies,
-    bandwidth = 3,
-    colorscale = 'viridis',
-    spacing = 0.4
+g = sns.FacetGrid(
+    data_penguins,
+    row = 'species',
+    hue = 'species',
+    row_order = orden,
+    aspect = 10,
+    height = 1.2,
+    palette = paleta_especies
 )
 
-fig.update_layout(
-    xaxis_title = 'Longitud de aleta (mm)',
-    height = 400,
-    width = 700
-)
+g.map(sns.kdeplot, 'flipper_length_mm',
+      bw_adjust = 0.8, fill = True, alpha = 1, linewidth = 1.5, clip_on = False)
 
-fig.show()
+g.map(sns.kdeplot, 'flipper_length_mm',
+      bw_adjust = 0.8, color = 'white', lw = 2, clip_on = False)
+
+g.refline(y = 0, linewidth = 1.5, linestyle = '-', color = None, clip_on = False)
+
+def label(x, color, label):
+    ax = plt.gca()
+    ax.text(0, 0.2, label, fontweight = 'bold', color = color,
+            ha = 'left', va = 'center', transform = ax.transAxes)
+
+g.map(label, 'flipper_length_mm')
+
+g.figure.subplots_adjust(hspace = -0.5)
+g.set_titles('')
+g.set(yticks = [], ylabel = '')
+g.despine(bottom = True, left = True)
+g.set_xlabels('Longitud de aleta (mm)', fontweight = 'bold')
+
+plt.show()
 ```
 
 ```{admonition} ¿Cuándo usar cada opción?
@@ -604,6 +613,73 @@ fig.show()
 
 No existe una opción universalmente superior. Como regla general: el **boxplot** es útil para comparaciones rápidas cuando la forma de la distribución es secundaria; el **strip plot** es preferible cuando el dataset es pequeño y se quieren mostrar los datos individuales; el **violin plot** aporta más información sobre la forma de la distribución y es especialmente valioso cuando hay indicios de bimodalidad; el **ridgeline plot** escala bien cuando el número de grupos es grande o cuando se quiere mostrar la evolución de distribuciones a lo largo del tiempo.
 ```
+
+## Gráficos para visualizar conteos y proporciones 
+
+Hasta aquí trabajamos principalmente con variables cuantitativas. Cuando la variable de interés es cualitativa, el objetivo cambia: ya no buscamos describir una forma continua, sino **comparar frecuencias o proporciones entre categorías**.
+
+La herramienta central para este tipo de análisis es el **gráfico de barras**.
+
+### Gráfico de barras
+
+En un gráfico de barras cada categoría se representa mediante una barra cuya longitud es proporcional a la cantidad —o al porcentaje— de observaciones en esa categoría. Es, en esencia, la representación visual de una tabla de frecuencias para una variable cualitativa.
+
+En `seaborn`, esto se implementa con `countplot()`. Por defecto muestra frecuencias absolutas, pero puede representar proporciones con el argumento `stat = 'percent'`. Retomando el dataset del Titanic, visualizamos la distribución de pasajeros según la clase en la que viajaban:
+
+```{code-cell} python
+plt.figure(figsize = (8, 5))
+
+sns.countplot(y = 'class', stat = 'percent',
+              order = ['First', 'Second', 'Third'],
+              data = data_titanic)
+
+plt.xlabel('Porcentaje', fontweight = 'bold')
+plt.ylabel('Clase', fontweight = 'bold')
+plt.show()
+```
+
+El gráfico permite observar de un vistazo cómo se distribuyen los pasajeros: más de la mitad viajaba en tercera clase. Este gráfico es la representación visual de la siguiente tabla:
+
+```{code-cell} python
+(data_titanic['class']
+ .value_counts(normalize=True)
+ .mul(100)
+ .round(1)
+ .rename('percent'))
+```
+
+Nótese que las categorías se ordenan explícitamente con el parámetro `order` en lugar de dejar el orden por defecto. Igual que con los boxplots, ordenar las barras según el valor representado —de mayor a menor, o siguiendo algún criterio sustantivo— facilita la lectura y hace más evidentes las diferencias entre grupos.
+
+### Barras agrupadas
+
+Muchas veces el interés no está en una sola variable categórica, sino en analizar la relación entre dos. Una forma directa de hacerlo es con un **gráfico de barras agrupadas**, que coloca en paralelo las barras de cada combinación de categorías.
+
+En `seaborn`, esto se logra incorporando el parámetro `hue`, que introduce la segunda variable categórica asignando un color distinto a cada una de sus categorías:
+
+```{code-cell} python
+plt.figure(figsize = (8, 5))
+
+sns.countplot(y = 'class', hue = 'alive',
+              stat = 'percent',
+              order = ['First', 'Second', 'Third'],
+              data = data_titanic)
+
+plt.xlabel('Porcentaje', fontweight = 'bold')
+plt.ylabel('Clase', fontweight = 'bold')
+plt.legend(title = 'Supervivencia')
+plt.show()
+```
+
+Es importante tener presente qué representan exactamente los porcentajes en este gráfico. Con `stat = 'percent'`, `countplot()` calcula los porcentajes sobre el **total de observaciones del dataset**: cada barra indica qué fracción del total corresponde a esa combinación particular de clase y supervivencia. En consecuencia, todas las barras juntas suman 100 %, y el gráfico refleja la **distribución conjunta** de ambas variables.
+
+Esta lectura difiere de la que tendríamos si los porcentajes se calcularan dentro de cada clase (es decir, qué proporción de los pasajeros de primera clase sobrevivió, de los de segunda, etc.). Esa perspectiva —la **distribución condicional** de supervivencia dado la clase— requeriría un cálculo previo y no es lo que produce `countplot()` directamente.
+
+```{admonition} **¿Distribución conjunta o condicional?**
+:class: warning
+
+Al interpretar un gráfico de barras agrupadas conviene preguntarse siempre sobre qué base se calcularon los porcentajes. La respuesta cambia completamente el mensaje del gráfico: visualizar la distribución conjunta muestra el peso de cada combinación dentro del total; visualizar distribuciones condicionales permite comparar el comportamiento de una variable dentro de cada categoría de la otra.
+```
+
 
 **Funciones de distribución acumulativas empíricas**
 Para ilustrar las FDAE (Empirical Cumulative Distribution Functions en inglés), comenzaremos con un ejemplo: un conjunto de datos de las calificaciones de los estudiantes. Supongamos que nuestra clase hipotética tiene 50 estudiantes, y los estudiantes acaban de completar un examen en el que podían obtener entre 0 y 100 puntos. ¿Cómo podemos visualizar mejor el desempeño de la clase, por ejemplo, para determinar los límites de calificación apropiados?
