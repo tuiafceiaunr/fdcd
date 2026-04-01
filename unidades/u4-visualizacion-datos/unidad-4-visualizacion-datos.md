@@ -275,7 +275,16 @@ El gráfico permite observar con claridad que la distribución es asimétrica ha
 
 ### Histograma de frecuencias
 
-Consideremos ahora la variable `edad` en el dataset del Titanic. El dataset del Titanic contiene información sobre los pasajeros del famoso transatlántico hundido en 1912. Entre las variables disponibles se encuentran la edad, el sexo, la clase del pasaje, el precio pagado y si el pasajero sobrevivió o no. Es uno de los datasets más utilizados en ciencia de datos, tanto para exploración como para aprendizaje de modelos predictivos. Podemos importarlo directamente desde la librería `seaborn`, que incluye algunos datasets de práctica accesibles con la función `load_dataset()`:  
+Consideremos ahora la variable `edad` en el dataset del Titanic. El dataset del Titanic contiene información sobre los pasajeros del famoso transatlántico hundido en 1912. Entre las variables disponibles se encuentran la edad, el sexo, la clase del pasaje, el precio pagado y si el pasajero sobrevivió o no. Es uno de los datasets más utilizados en ciencia de datos, tanto para exploración como para aprendizaje de modelos predictivos. 
+
+```{figure} imagenes/titanic.jpeg
+---
+width: 60%
+align: center
+---
+```
+
+Podemos importarlo directamente desde la librería `seaborn`, que incluye algunos datasets de práctica accesibles con la función `load_dataset()`:  
 
 ```{code-cell} python
 data_titanic = sns.load_dataset('titanic')
@@ -323,8 +332,10 @@ fig, axs = plt.subplots(2, 2, figsize = (14, 8))
 bins = [5, 10, 30, 60]
 
 for i, (ax, bin_value) in enumerate(zip(axs.flat, bins)):
-    sns.histplot(x = 'age', edgecolor = 'black', color = '#4BAE8A', data = data_titanic, bins = bin_value, ax = ax)
-    ax.set_title(f'Bins = {bin_value}', fontsize = 14, fontweight = 'bold')
+    sns.histplot(x = 'age', edgecolor = 'black', color = '#4BAE8A',
+                 data = data_titanic, bins = bin_value, ax = ax)
+    ax.set_xlim(left = 0)
+    ax.set_title(f'Bins = {bin_value}', fontsize = 14, fontweight='bold')
     ax.set_xlabel('Edad (años)' if i >= 2 else '')
     ax.set_ylabel('Frecuencia absoluta' if i % 2 == 0 else '')
 
@@ -350,19 +361,20 @@ Esto ilustra bien el valor del histograma: **no solo resume los datos, sino que 
 
 ### Gráfico de densidad
 
-El histograma es una herramienta útil para visualizar distribuciones, pero tiene una limitación: su forma depende directamente de la elección del número y el ancho de los intervalos. Una alternativa que evita esta dependencia es el **gráfico de densidad**, que en lugar de representar frecuencias por intervalos, busca estimar la **distribución de probabilidad subyacente** de los datos mediante una curva continua.
+El histograma es una herramienta útil para visualizar distribuciones, pero tiene una limitación: su forma depende directamente de la elección del número y el ancho de los intervalos. Una alternativa que evita esta dependencia es el **gráfico de densidad**, que en lugar de representar frecuencias por intervalos busca estimar la **distribución de probabilidad subyacente** de los datos mediante una **curva continua.**
 
-El método de estimación más utilizado es la **estimación de densidad por kernel (KDE)**. La idea es sencilla: se coloca una curva suave —llamada kernel— centrada en cada observación, y luego se suman todas esas curvas para obtener una estimación global de la densidad. El resultado es una curva continua que describe la forma de la distribución.
+El método de estimación más utilizado es la **estimación de densidad por kernel (KDE)**. La idea es la siguiente: se coloca una curva suave —llamada *kernel*— centrada en cada observación, y luego se suman todas esas curvas para obtener una estimación global de la densidad. El resultado es una curva continua que describe la forma de la distribución. El kernel más utilizado es el gaussiano, aunque existen otras opciones.
+
 
 ```{figure} imagenes/kernel-estimation.png
 ---
-width: 60%
+width: 50%
 align: center
 ---
 Ilustración del proceso de estimación de densidad por kernel.
 ```
 
-El parámetro que controla el "suavizado" de la curva se denomina **ancho de banda** (*bandwidth*). Un ancho de banda pequeño produce una curva muy irregular que sigue de cerca cada observación; uno grande produce una curva más suave pero que puede ocultar estructura real en los datos.
+El parámetro que controla el suavizado de la curva se denomina **ancho de banda** (*bandwidth*). Un ancho de banda pequeño produce una curva muy irregular que sigue de cerca cada observación individual; uno grande produce una curva más suave pero que puede ocultar estructura real en los datos.
 
 En `seaborn`, los gráficos de densidad se construyen con la función `kdeplot()`. Retomando el dataset del Titanic, visualizamos la distribución de edades:
 
@@ -375,7 +387,19 @@ plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-El parámetro `fill=True` rellena el área bajo la curva, lo que facilita su lectura. El ancho de banda puede controlarse con el parámetro `bw_method`, que acepta el nombre de un método de estimación automática (`'scott'` es el valor por defecto) o un valor numérico específico:
+Notemos el uso del parámetro **`clip=(0, None)`**: le indica a `kdeplot()` que restrinja la curva al rango de valores posibles de la variable. Sin este ajuste, la estimación por kernel tiene una tendencia conocida a extenderse más allá del rango real de los datos, generando la apariencia de que existen observaciones donde no las hay. En el caso de la edad, esto se traduce en que la curva podría adentrarse en valores negativos, lo cual carece de sentido. El valor `None` en el segundo elemento de la tupla indica que no se establece un límite superior.
+
+```{admonition} **Importante**
+:class: warning
+
+Cuando la variable tiene un límite natural —por ejemplo, no puede tomar valores negativos— es importante usar `clip` para restringir la curva a ese rango. De lo contrario, el gráfico puede comunicar información incorrecta sobre la distribución de los datos.
+```
+
+El parámetro `fill=True` rellena el área bajo la curva, lo que facilita su lectura. El eje vertical no representa frecuencias sino **valores de densidad de probabilidad**: dado que el área total bajo la curva es igual a 1, la escala del eje depende de las unidades de la variable representada y no siempre resulta intuitiva. Por ejemplo, si las edades van de 0 a 75 años, la altura media de la curva será del orden de 1/75 ≈ 0.013, lo que explica los valores pequeños que suele mostrar el eje $Y$.
+
+#### El efecto del ancho de banda
+
+Al igual que la elección de los *bins* en el histograma, el ancho de banda afecta directamente la imagen que el gráfico transmite sobre la distribución. El siguiente gráfico muestra el efecto de distintos valores sobre la curva de densidad de las edades del Titanic:
 
 ```{code-cell} python
 fig, axes = plt.subplots(2, 4, figsize=(18, 9))
@@ -383,11 +407,12 @@ bw_values = [0.05, 0.1, 0.2, 0.5, 1, 2, 5, None]
 
 for i, (ax, bw_value) in enumerate(zip(axes.flat, bw_values)):
     sns.kdeplot(x = 'age', data = data_titanic, ax = ax,
-                bw_method = bw_value, color = '#4BAE8A', fill = True)
+                bw_method = bw_value, color = '#4BAE8A',
+                fill = True, clip = (0,100))
     ax.set(xlabel = '', ylabel = '')
     ax.tick_params(axis = 'both', labelsize = 14)
     ax.set_title('Bw por default' if bw_value is None else f'Bw = {bw_value}',
-                 fontweight = 'bold', fontsize = 16)
+                 fontweight='bold', fontsize = 16)
     if i in [0, 4]:
         ax.set_ylabel('Densidad', fontsize = 15)
     if i in [4, 5, 6, 7]:
@@ -397,25 +422,25 @@ plt.tight_layout()
 plt.show()
 ```
 
-Al igual que ocurría con los *bins* del histograma, valores extremos del ancho de banda distorsionan la representación: con valores muy pequeños la curva se vuelve ruidosa, y con valores muy grandes se aplana hasta perder toda información sobre la forma de la distribución.
+Con valores muy pequeños la curva se vuelve ruidosa y difícil de interpretar; con valores muy grandes se aplana hasta perder toda información sobre la estructura de la distribución: por ejemplo, se pierde completamente la asimetría hacia la derecha que sabemos que caracteriza a la distribución de estos datos. Wilke señala, además, que el tipo de *kernel* también influye en la forma de la curva: un *kernel* gaussiano produce estimaciones con transiciones suaves y colas extendidas, mientras que otros *kernels* pueden generar escalones o discontinuidades. En general, cuantas más observaciones tiene el dataset, menos importante es la elección del *kernel* y más robusta resulta la estimación.
 
-```{admonition} Advertencia: las colas del gráfico de densidad
-:class: warning
+Como regla práctica —tanto para histogramas como para gráficos de densidad— conviene **explorar distintos valores del parámetro de suavizado** para verificar que la forma que muestra el gráfico refleja genuinamente los datos y no es un artefacto de una elección particular.
 
-La estimación por kernel tiene una limitación importante: **tiende a extender la curva más allá del rango real de los datos**, generando la apariencia de que hay observaciones donde no las hay. Esto es especialmente problemático cuando la variable tiene un límite natural (por ejemplo, una variable que no puede tomar valores negativos). Para evitarlo, se puede usar el parámetro `clip` de `kdeplot()`, que restringe la curva a un rango específico del eje.
-```
+#### ¿Histograma o gráfico de densidad?
 
-También es importante tener en cuenta que **el eje vertical de un gráfico de densidad no representa frecuencias sino valores de densidad de probabilidad**. Dado que el área bajo la curva debe ser igual a 1, la escala del eje depende de las unidades de la variable representada y no siempre resulta intuitiva.
+Ambas representaciones tienen ventajas y limitaciones, y ninguna es universalmente superior. El histograma muestra directamente las frecuencias observadas y es más fácil de interpretar. Por su parte, el gráfico de densidad ofrece una representación más suave y continua, pero introduce supuestos sobre la forma de la distribución que no siempre están justificados.
+
+En la práctica, la elección suele depender del contexto y del gusto. Sin embargo, una ventaja clara del gráfico de densidad es que resulta especialmente útil cuando se quieren **comparar varias distribuciones al mismo tiempo**, ya que superponer múltiples histogramas suele producir gráficos difíciles de leer. Volveremos sobre esto en la siguiente sección.
 
 #### Histograma con curva de densidad superpuesta
 
-Una práctica habitual es superponer la curva de densidad al histograma, lo que permite combinar la precisión de las frecuencias observadas con la suavidad de la estimación continua. En `seaborn` esto se logra con el parámetro `kde = True` dentro de `histplot()`:
+Una práctica habitual es combinar ambas representaciones superponiendo la curva de densidad al histograma, lo que permite ver simultáneamente las frecuencias observadas y la estimación continua de la distribución. En `seaborn` esto se logra con el parámetro `kde = True` dentro de `histplot()`:
 
 ```{code-cell} python
 plt.figure(figsize = (8, 5))
 
 sns.histplot(x= 'age', kde = True, color = '#4BAE8A', data = data_titanic)
-plt.xlabel('Edad (años)', fontweight='bold')
+plt.xlabel('Edad (años)', fontweight = 'bold')
 plt.ylabel('Frecuencia absoluta', fontweight = 'bold')
 plt.show()
 ```
@@ -424,7 +449,7 @@ plt.show()
 
 Hasta aquí visualizamos la distribución de una única variable. Sin embargo, en muchos análisis es de interés comparar cómo se distribuye una variable cuantitativa en distintos grupos definidos por una variable categórica.
 
-Para ilustrar esto, retomamos el dataset **Palmer Penguins**, con el que trabajamos en la unidad anterior. Recordemos que contiene mediciones morfológicas de pingüinos de tres especies: *Adelie*, *Chinstrap* y *Gentoo*. Visualizamos la distribución de la longitud de aleta (`flipper_length_mm`) según la especie (`species`):
+Para ilustrar esto, retomamos el dataset **Palmer Penguins**, con el que trabajamos en la unidad anterior. Recordemos que contiene mediciones morfológicas de pingüinos de tres especies: *adelie*, *chinstrap* y *gentoo*. Visualizamos la distribución de la longitud de aleta (`flipper_length_mm`) según la especie (`species`):
 
 ```{code-cell} python
 data_penguins = sns.load_dataset('penguins')
@@ -447,16 +472,16 @@ plt.show()
 
 El parámetro `hue = 'species'` asigna un color distinto a cada especie, y `multiple = 'layer'` superpone las curvas en el mismo gráfico. El resultado permite comparar de forma inmediata la forma y posición de cada distribución.
 
-En este caso, se observa que las tres especies presentan distribuciones claramente diferenciadas: *Adelie* y *Chinstrap* tienen aletas más cortas y de longitud similar entre sí, mientras que *Gentoo* se distingue con aletas notablemente más largas. Esta separación sería mucho más difícil de apreciar comparando histogramas o tablas de frecuencias por separado.
+En este caso, se observa que las tres especies presentan distribuciones claramente diferenciadas: *adelie* y *chinstrap* tienen aletas más cortas y de longitud similar entre sí, mientras que *gentoo* se distingue con aletas notablemente más largas. Esta separación sería mucho más difícil de apreciar comparando histogramas o tablas de frecuencias por separado.
 
 Una limitación de este gráfico es que, por defecto, cada curva se normaliza de forma independiente: su área individual es siempre igual a 1, sin importar cuántos pingüinos pertenecen a cada especie. Esto significa que grupos de distinto tamaño aparecen representados con curvas visualmente equivalentes.
 
-Para incorporar información sobre el tamaño relativo de cada grupo, se puede usar el parámetro `common_norm=True`, que normaliza todas las curvas conjuntamente de modo que el área **total** bajo todas ellas sume 1. En ese caso, el área de cada curva es proporcional a la fracción de observaciones de esa especie:
+Para incorporar información sobre el tamaño relativo de cada grupo, se puede usar el parámetro `common_norm = True`, que normaliza todas las curvas conjuntamente de modo que el área **total** bajo todas ellas sume 1. En ese caso, el área de cada curva es proporcional a la fracción de observaciones de esa especie:
 
 ```{code-cell} python
 plt.figure(figsize = (8, 5))
 
-sns.kdeplot(x = 'flipper_length_mm', hue= ' species',
+sns.kdeplot(x = 'flipper_length_mm', hue= 'species',
             multiple = 'layer', fill = True, palette = paleta_especies,
             common_norm = True, data = data_penguins)
 plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
@@ -464,7 +489,7 @@ plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-Dado que *Adelie* es la especie más numerosa del dataset, su curva ocupa proporcionalmente más área que las de *Chinstrap* y *Gentoo*. Esta versión del gráfico comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
+Dado que *adelie* es la especie más numerosa del dataset, su curva ocupa proporcionalmente más área que las de *Chinstrap* y *Gentoo*. Esta versión del gráfico comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
 
 **Boxplots**
 
