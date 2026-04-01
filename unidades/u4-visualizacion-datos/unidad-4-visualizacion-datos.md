@@ -25,20 +25,6 @@ align: center
 El *Datasaurus Dozen*.
 ```
 
-## Introducción: ver para entender
-
-En la unidad anterior construimos una idea central: en ciencia de datos, trabajar únicamente con medidas descriptivas no es suficiente. Podemos calcular medias, cuartiles, desvíos estándar, rangos o coeficientes de correlación y, aun así, pasar por alto aspectos fundamentales del comportamiento de los datos.
-
-Un ejemplo clásico que ilustra esto es el **Datasaurus Dozen**: un conjunto de datasets que comparten prácticamente las mismas estadísticas descriptivas pero que, al visualizarse, revelan patrones completamente distintos.
-
-```{figure} imagenes/datasaurus.png
----
-width: 70%
-align: center
----
-El *Datasaurus Dozen*.
-```
-
 Este ejemplo deja una enseñanza clave:
 
 > Dos conjuntos de datos pueden ser "idénticos" en términos de sus medidas descriptivas y, sin embargo, ser completamente diferentes en su estructura.
@@ -363,7 +349,7 @@ Esto ilustra bien el valor del histograma: **no solo resume los datos, sino que 
 
 El histograma es una herramienta útil para visualizar distribuciones, pero tiene una limitación: su forma depende directamente de la elección del número y el ancho de los intervalos. Una alternativa que evita esta dependencia es el **gráfico de densidad**, que en lugar de representar frecuencias por intervalos busca estimar la **distribución de probabilidad subyacente** de los datos mediante una **curva continua.**
 
-El método de estimación más utilizado es la **estimación de densidad por kernel (KDE)**. La idea es la siguiente: se coloca una curva suave —llamada *kernel*— centrada en cada observación, y luego se suman todas esas curvas para obtener una estimación global de la densidad. El resultado es una curva continua que describe la forma de la distribución. El kernel más utilizado es el gaussiano, aunque existen otras opciones.
+El método de estimación más utilizado es la **estimación de densidad por kernel (KDE)**. La idea es la siguiente: se coloca una curva suave —llamada *kernel*, representada en la figura a continuación sobre cada observación— centrada en cada observación, y luego se suman todas esas curvas para obtener una estimación global de la densidad. El resultado es una curva continua que describe la forma de la distribución. El *kernel* más utilizado es el gaussiano, aunque existen otras opciones.
 
 
 ```{figure} imagenes/kernel-estimation.png
@@ -371,7 +357,7 @@ El método de estimación más utilizado es la **estimación de densidad por ker
 width: 50%
 align: center
 ---
-Ilustración del proceso de estimación de densidad por kernel.
+Ilustración del proceso de estimación de densidad por *kernel*.
 ```
 
 El parámetro que controla el suavizado de la curva se denomina **ancho de banda** (*bandwidth*). Un ancho de banda pequeño produce una curva muy irregular que sigue de cerca cada observación individual; uno grande produce una curva más suave pero que puede ocultar estructura real en los datos.
@@ -381,13 +367,13 @@ En `seaborn`, los gráficos de densidad se construyen con la función `kdeplot()
 ```{code-cell} python
 plt.figure(figsize = (8, 5))
 
-sns.kdeplot(x = 'age', fill = True, color = '#4BAE8A', data = data_titanic)
+sns.kdeplot(x = 'age', fill = True, color = '#4BAE8A', clip = (0, None), data = data_titanic)
 plt.xlabel('Edad (años)', fontweight = 'bold')
 plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-Notemos el uso del parámetro **`clip=(0, None)`**: le indica a `kdeplot()` que restrinja la curva al rango de valores posibles de la variable. Sin este ajuste, la estimación por kernel tiene una tendencia conocida a extenderse más allá del rango real de los datos, generando la apariencia de que existen observaciones donde no las hay. En el caso de la edad, esto se traduce en que la curva podría adentrarse en valores negativos, lo cual carece de sentido. El valor `None` en el segundo elemento de la tupla indica que no se establece un límite superior.
+Notemos el uso del parámetro **`clip = (0, None)`**: le indica a `kdeplot()` que restrinja la curva al rango de valores posibles de la variable. Sin este ajuste, la estimación por kernel tiene una tendencia conocida a extenderse más allá del rango real de los datos, generando la apariencia de que existen observaciones donde no las hay. En el caso de la edad, esto se traduce en que la curva podría adentrarse en valores negativos, lo cual carece de sentido. El valor `None` en el segundo elemento de la tupla indica que no se establece un límite superior.
 
 ```{admonition} **Importante**
 :class: warning
@@ -395,7 +381,7 @@ Notemos el uso del parámetro **`clip=(0, None)`**: le indica a `kdeplot()` que 
 Cuando la variable tiene un límite natural —por ejemplo, no puede tomar valores negativos— es importante usar `clip` para restringir la curva a ese rango. De lo contrario, el gráfico puede comunicar información incorrecta sobre la distribución de los datos.
 ```
 
-El parámetro `fill=True` rellena el área bajo la curva, lo que facilita su lectura. El eje vertical no representa frecuencias sino **valores de densidad de probabilidad**: dado que el área total bajo la curva es igual a 1, la escala del eje depende de las unidades de la variable representada y no siempre resulta intuitiva. Por ejemplo, si las edades van de 0 a 75 años, la altura media de la curva será del orden de 1/75 ≈ 0.013, lo que explica los valores pequeños que suele mostrar el eje $Y$.
+El parámetro `fill = True` rellena el área bajo la curva, lo que facilita su lectura. El eje vertical no representa frecuencias sino **valores de densidad de probabilidad**: dado que el área total bajo la curva es igual a 1, la escala del eje depende de las unidades de la variable representada y no siempre resulta intuitiva. Por ejemplo, si las edades van de 0 a 75 años, la altura media de la curva será del orden de 1/75 ≈ 0.013, lo que explica los valores pequeños que suele mostrar el eje $Y$.
 
 #### El efecto del ancho de banda
 
@@ -422,7 +408,7 @@ plt.tight_layout()
 plt.show()
 ```
 
-Con valores muy pequeños la curva se vuelve ruidosa y difícil de interpretar; con valores muy grandes se aplana hasta perder toda información sobre la estructura de la distribución: por ejemplo, se pierde completamente la asimetría hacia la derecha que sabemos que caracteriza a la distribución de estos datos. Wilke señala, además, que el tipo de *kernel* también influye en la forma de la curva: un *kernel* gaussiano produce estimaciones con transiciones suaves y colas extendidas, mientras que otros *kernels* pueden generar escalones o discontinuidades. En general, cuantas más observaciones tiene el dataset, menos importante es la elección del *kernel* y más robusta resulta la estimación.
+Con valores muy pequeños la curva se vuelve ruidosa y difícil de interpretar; con valores muy grandes se aplana hasta perder toda información sobre la estructura de la distribución: por ejemplo, la asimetría hacia la derecha que presenta la distribución de edades desaparece por completo. Wilke señala, además, que el tipo de *kernel* también influye en la forma de la curva: un *kernel* gaussiano produce estimaciones con transiciones suaves y colas extendidas, mientras que otros *kernels* pueden generar escalones o discontinuidades. En general, cuantas más observaciones tiene el dataset, menos importante es la elección del *kernel* y más robusta resulta la estimación.
 
 Como regla práctica —tanto para histogramas como para gráficos de densidad— conviene **explorar distintos valores del parámetro de suavizado** para verificar que la forma que muestra el gráfico refleja genuinamente los datos y no es un artefacto de una elección particular.
 
@@ -445,15 +431,20 @@ plt.ylabel('Frecuencia absoluta', fontweight = 'bold')
 plt.show()
 ```
 
-#### Comparar distribuciones según una variable categórica
+### Comparar distribuciones entre grupos
 
-Hasta aquí visualizamos la distribución de una única variable. Sin embargo, en muchos análisis es de interés comparar cómo se distribuye una variable cuantitativa en distintos grupos definidos por una variable categórica.
+Hasta aquí visualizamos la distribución de una variable de forma global. Sin embargo, en muchos análisis el interés está en comparar cómo se distribuye una variable cuantitativa en distintos grupos definidos por una variable categórica.
 
-Para ilustrar esto, retomamos el dataset **Palmer Penguins**, con el que trabajamos en la unidad anterior. Recordemos que contiene mediciones morfológicas de pingüinos de tres especies: *adelie*, *chinstrap* y *gentoo*. Visualizamos la distribución de la longitud de aleta (`flipper_length_mm`) según la especie (`species`):
+Para ilustrar las distintas alternativas, retomamos el dataset **Palmer Penguins** y la variable `flipper_length_mm`, que mide la longitud de aleta de pingüinos de tres especies: *Adelie*, *Chinstrap* y *Gentoo*.
 
 ```{code-cell} python
 data_penguins = sns.load_dataset('penguins')
 ```
+
+#### Gráficos de densidad múltiples
+
+Una primera opción es superponer los gráficos de densidad de cada grupo en un mismo panel. En `seaborn`, esto se logra con el parámetro `hue` dentro de `kdeplot()`, que asigna un color distinto a cada categoría, y `multiple = 'layer'`, que superpone las curvas:
+
 ```{code-cell} python
 paleta_especies = {
     'Adelie':    '#E07B54',
@@ -470,13 +461,11 @@ plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-El parámetro `hue = 'species'` asigna un color distinto a cada especie, y `multiple = 'layer'` superpone las curvas en el mismo gráfico. El resultado permite comparar de forma inmediata la forma y posición de cada distribución.
-
-En este caso, se observa que las tres especies presentan distribuciones claramente diferenciadas: *adelie* y *chinstrap* tienen aletas más cortas y de longitud similar entre sí, mientras que *gentoo* se distingue con aletas notablemente más largas. Esta separación sería mucho más difícil de apreciar comparando histogramas o tablas de frecuencias por separado.
+El resultado permite comparar de forma inmediata la forma y posición de cada distribución. Se observa que las tres especies presentan distribuciones claramente diferenciadas: *Adelie* y *Chinstrap* tienen aletas más cortas y de longitud similar entre sí, mientras que *Gentoo* se distingue con aletas notablemente más largas.
 
 Una limitación de este gráfico es que, por defecto, cada curva se normaliza de forma independiente: su área individual es siempre igual a 1, sin importar cuántos pingüinos pertenecen a cada especie. Esto significa que grupos de distinto tamaño aparecen representados con curvas visualmente equivalentes.
 
-Para incorporar información sobre el tamaño relativo de cada grupo, se puede usar el parámetro `common_norm = True`, que normaliza todas las curvas conjuntamente de modo que el área **total** bajo todas ellas sume 1. En ese caso, el área de cada curva es proporcional a la fracción de observaciones de esa especie:
+Para incorporar información sobre el tamaño relativo de cada grupo, se puede usar el parámetro `common_norm = True`, que normaliza todas las curvas conjuntamente de modo que el área total bajo todas ellas sume 1. En ese caso, el área de cada curva es proporcional a la fracción de observaciones de esa especie:
 
 ```{code-cell} python
 plt.figure(figsize = (8, 5))
@@ -489,141 +478,132 @@ plt.ylabel('Densidad', fontweight = 'bold')
 plt.show()
 ```
 
-Dado que *adelie* es la especie más numerosa del dataset, su curva ocupa proporcionalmente más área que las de *Chinstrap* y *Gentoo*. Esta versión del gráfico comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
+Dado que *Adelie* es la especie más numerosa del dataset, su curva ocupa proporcionalmente más área que las de *Chinstrap* y *Gentoo*. Esta versión comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
 
-**Boxplots**
+Sin embargo, los gráficos de densidad superpuestos tienen una limitación práctica: cuando el número de grupos crece, las curvas se acumulan y el gráfico se vuelve difícil de leer. Para esos casos existen alternativas más adecuadas.
 
-Los boxplots (también conocidos como diagramas de caja y bigotes) se utilizan para representar gráficamente la distribución de un conjunto de datos numéricos y mostrar la presencia de valores atípicos (outliers). 
+#### Boxplot múltiple
 
-El boxplot muestra cinco estadísticas resumen del conjunto de datos: la mediana (el valor correspondiente al indice de orden medio, 50% de los datos a cada lado ), el primer cuartil (el valor que divide al conjunto de datos en dos partes, dejando el 25% de los datos a la izquierda y el 75% a la derecha), el tercer cuartil (el valor que divide al conjunto de datos en dos partes, dejando el 75% de los datos a la izquierda y el 25% a la derecha), el valor mínimo y el valor máximo (que no se consideran outliers).
+El boxplot, que ya introdujimos como herramienta para resumir una única distribución, resulta especialmente útil cuando se quieren comparar varias distribuciones al mismo tiempo. Al colocar varios boxplots uno al lado del otro es posible comparar de un vistazo la mediana, la dispersión y la presencia de valores atípicos en cada grupo.
 
-Además se compone de una caja que se extiende desde el primer cuartil hasta el tercer cuartil, y una línea dentro de la caja que representa la mediana. Dos líneas (bigotes) se extienden desde la caja hasta los valor que usualmente se calculan como Q1 - 1.5 * RIC y Q3 + 1.5 * RIC, respectivamente, excluyendo los valores atípicos que se encuentran más allá de los bigotes.
+En `seaborn`, esto se logra mapeando la variable categórica al parámetro `y`:
 
-Los boxplots son útiles para comparar la distribución de datos entre diferentes grupos o conjuntos de datos, y para identificar valores atípicos que pueden estar influyendo en la distribución de los datos. A continuación se muestra un ejemplo de como se interpretan los diagramas de boxplots:
+```{code-cell} python
+orden = (data_penguins.groupby('species')['flipper_length_mm']
+         .median()
+         .sort_values()
+         .index)
 
-![medidas_2.png](./imagenes/medidas_2.png)
+plt.figure(figsize = (8, 5))
 
-Los diagramas de boxplots ayudan también a comprender como se distribuyen los valores con respecto a su **simetría**, por ejemplo: 
-
-![Untitled](./imagenes/Untitled14.png)
-
-Volviendo a nuestro dataset de ejemplo, al crear boxplots de las edades de los pasajeros que sobrevivieron y los que no, podemos explorar si la edad tuvo un impacto en la supervivencia durante el desastre. Por ejemplo, podríamos encontrar que los niños tuvieron una mayor tasa de supervivencia en comparación con los adultos mayores, a través del siguiente ejemplo:
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-
-titanic_data = pd.read_csv('https://raw.githubusercontent.com/datasciencedojo/datasets/master/titanic.csv')
-
-titanic_data_cleaned = titanic_data.dropna(subset=['Age'])
-
-sns.set(style="whitegrid")
-plt.figure(figsize=(12, 6))
-sns.boxplot(x='Survived', y='Age', hue='Sex', data=titanic_data_cleaned)
-plt.title('Boxplot de Edad vs. Supervivencia Separados por Sexo')
-plt.xlabel('Supervivencia (0 = No, 1 = Sí)')
-plt.ylabel('Edad')
-plt.legend(title='Sexo')
+sns.boxplot(x = 'flipper_length_mm', y = 'species',
+            hue = 'species', palette = paleta_especies, order = orden, data = data_penguins)
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Especie', fontweight = 'bold')
 plt.show()
 ```
 
-![Untitled](./imagenes/Untitled15.png)
+Las categorías se ordenan según la mediana de la variable respuesta en lugar de dejarse en orden alfabético. Esta práctica facilita la lectura y hace más evidente el ordenamiento entre grupos.
 
-El diagrama de caja mostró que las mujeres sobrevivientes tenían una mayor en las estadísticas de orden, lo que podría deberse a la ayuda de otros. Podría ser que se haya considerado un grupo de alta prioridad durante el rescate. Sobrevivieron más hombres jóvenes menores de 20 años, lo que podría deberse a que pudieron salvarse a sí mismos o recibieron ayuda en función de su edad más joven.
+El boxplot tiene, sin embargo, una limitación importante: **resume la distribución en cinco números y puede ocultar su forma real o subyacente**. Dos distribuciones con la misma mediana y el mismo rango intercuartílico pueden tener formas muy distintas —una unimodal y simétrica, otra bimodal o sesgada— y un boxplot las haría aparecer idénticas.
 
-Otra hipótesis podría ser que la mayoría de las mujeres mayores tenían un hermano, cónyuge, padre o hijo que viajaba con ellas y que las ayudó.
+#### Strip plot
 
-Los diagramas de caja son simples pero informativos y funcionan bien cuando se trazan uno al lado del otro para visualizar muchas distribuciones a la vez. Otro ejemplo: Para los datos de temperatura de Lincoln (hemisferio norte), el uso de diagramas de caja conduce a la siguiente figura. En esa figura, ahora podemos ver que la temperatura está muy sesgada en diciembre (la mayoría de los días son moderadamente fríos y algunos extremadamente fríos) y no muy sesgada en algunos otros meses, como en julio.
+Una alternativa que evita este problema es el **strip plot** (también llamado *jitter plot*), que representa directamente cada observación como un punto. Al mostrar los datos individuales, este gráfico no oculta ninguna información sobre la distribución.
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de caja. Fuente de datos: Weather Underground.](./imagenes/Untitled16.png)
+Cuando hay muchas observaciones, representarlas en una línea exacta provoca superposición y dificulta la lectura. Por eso se aplica *jittering*: se agrega un pequeño desplazamiento aleatorio en la dimensión perpendicular al eje de la variable respuesta, de modo que los puntos se dispersen sin distorsionar los valores reales.
 
-Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de caja. Fuente de datos: Weather Underground.
+```{code-cell} python
+plt.figure(figsize = (8, 5))
 
-Los diagramas de caja fueron inventados por el estadístico **John Tukey** a principios de la década de 1970 y rápidamente ganaron popularidad porque eran muy informativos y fáciles de dibujar a mano, que es como se dibujaban la mayoría de las visualizaciones de datos en ese momento. Sin embargo, con las modernas capacidades informáticas y de visualización, no estamos limitados a lo que se dibuja fácilmente a mano. Por lo tanto, más recientemente vemos que los diagramas de caja son reemplazados por diagramas de violín.
-
-**Diagrama de violines**
-
-Los diagramas de violines se pueden usar siempre que se use un diagrama de caja, y brindan una imagen mucho más matizada de los datos. En particular, los diagramas de violín representarán con precisión los datos bimodales, mientras que un diagrama de caja no lo hará.
-Solo los valores y de los puntos se visualizan en el gráfico de violín. El ancho del violín en un valor dado, representa la densidad de puntos en ese valor de y. Los violines son simétricos y  comienzan y terminan en los mínimos y máximos valores de datos, respectivamente. La parte más gruesa del violín corresponde a la densidad de puntos más alta en el conjunto de datos.
-
-![Anatomía de un diagrama de violín: Se muestra una nube de puntos (izquierda) y el diagrama de violín correspondiente (derecha).](./imagenes/Untitled17.png)
-
-Anatomía de un diagrama de violín: Se muestra una nube de puntos (izquierda) y el diagrama de violín correspondiente (derecha).
-
-<aside>
-💡 Antes de usar violines para visualizar distribuciones, verifique que tenga suficientes puntos de datos en cada grupo para justificar mostrar las densidades de puntos como líneas suaves.
-
-</aside>
-
-Para graficar un diagrama de violines con temperaturas de la ciudad de Rosario, podemos usar el siguiente ejemplo:
-
-```python
-import pandas as pd
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-# Descargar dataset desde https://datos.gob.ar/dataset/smn-registro-temperatura-365-dias
-# Descomprimir el siguiente archivo: registro_temperatura365d_smn.txt
-
-# Lee el conjunto de datos con Pandas
-column_widths = [8, 6, 6, 40]  # Ajusta estos valores según los anchos de tus columnas en el archivo
-column_names = ['FECHA', 'TMAX', 'TMIN', 'NOMBRE']
-df_temperaturas = pd.read_fwf('registro_temperatura365d_smn.txt', 
-                              widths=column_widths, names=column_names, 
-                              parse_dates=['FECHA'], dayfirst=True, 
-                              encoding='latin-1', 
-                              skiprows=3)
-
-df_temperaturas['FECHA'] = pd.to_datetime(df_temperaturas['FECHA'], format='%d%m%Y')
-
-ciudad = 'ROSARIO AERO'
-ciudad_data = df_temperaturas[df_temperaturas['NOMBRE'] == ciudad]
-
-ciudad_data['MES'] = ciudad_data['FECHA'].dt.month
-ciudad_data['TPROM'] = (ciudad_data['TMAX'] + ciudad_data['TMIN']) / 2
-
-plt.figure(figsize=(12, 6))
-sns.violinplot(x='MES', y='TPROM', data=ciudad_data, inner='quartile')
-plt.title('Diagrama de Violines de la Distribución de Temperaturas Promedio por Mes')
-plt.xlabel('Mes')
-plt.ylabel('Temperatura Promedio')
+sns.stripplot(x = 'flipper_length_mm', y = 'species',
+              hue = 'species', palette = paleta_especies, order = orden,
+              jitter = 0.25, data = data_penguins)
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Especie', fontweight = 'bold')
 plt.show()
 ```
 
-![Untitled](./imagenes/Untitled18.png)
+El strip plot es preferible cuando el número de observaciones es moderado y se quiere mostrar la distribución completa. Con datasets muy grandes, incluso con *jittering* puede volverse difícil de leer.
 
-Para el caso de las temperaturas de Lincoln con violines, se obtiene la figura siguiente.
+#### Violin plot
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de violín. Fuente de datos: Weather Underground](./imagenes/Untitled19.png)
+El **gráfico de violín** combina las ventajas del boxplot y del gráfico de densidad. Técnicamente, es una estimación de densidad por *kernel* rotada 90 grados y reflejada, lo que produce una figura simétrica cuyo ancho en cada punto es proporcional a la densidad de observaciones en ese valor.
 
-Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de violín. Fuente de datos: Weather Underground
+A diferencia del boxplot, el violin plot puede revelar distribuciones bimodales o asimétricas que el boxplot ocultaría. Sin embargo, hereda la principal limitación del gráfico de densidad: cuando el número de observaciones en algún grupo es pequeño, la curva puede sugerir estructura donde no la hay. Por eso, antes de usar un violin plot conviene verificar que cada grupo cuenta con suficientes observaciones.
 
-Ahora podemos ver que algunos meses tienen datos moderadamente bimodales. Por ejemplo, el mes de noviembre parece haber tenido dos grupos de temperatura, uno alrededor de los 50 grados y otro alrededor de los 35 grados Fahrenheit.
-Debido a que las gráficas de violín se derivan de estimaciones de densidad, tienen deficiencias similares.
-En particular, pueden generar la apariencia de que hay datos donde no los hay, o que el conjunto de datos es muy denso cuando en realidad es bastante escaso. Podemos tratar de eludir estos problemas simplemente trazando todos los puntos de datos individuales directamente, como puntos. Tal figura se llama un gráfico de tiras. 
+```{code-cell} python
+plt.figure(figsize = (8, 5))
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Cada punto representa la temperatura media de un día. Esta cifra está etiquetada como "mala" porque se trazan tantos puntos uno encima del otro que no es posible determinar qué temperaturas fueron las más comunes en cada mes. Fuente de datos: Weather Underground.](./imagenes/Untitled20.png)
+sns.violinplot(x = 'flipper_length_mm', y = 'species',
+               hue = 'species', palette = paleta_especies, order = orden,
+               inner_kws = dict(box_width = 12, whis_width = 2),
+               data = data_penguins)
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Especie', fontweight = 'bold')
+plt.show()
+```
 
-Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Cada punto representa la temperatura media de un día. Esta cifra está etiquetada como "mala" porque se trazan tantos puntos uno encima del otro que no es posible determinar qué temperaturas fueron las más comunes en cada mes. Fuente de datos: Weather Underground.
+Por defecto, `violinplot()` incluye un boxplot interno que resume los cuartiles y la mediana. Esto puede controlarse con el parámetro `inner`: usando `inner = None` se oculta, y con `inner_kws` se puede ajustar su grosor y apariencia.
 
-Los gráficos de tiras están bien en principio, siempre y cuando nos aseguremos de no trazar demasiados puntos uno encima del otro. Una solución simple para la sobregraficación es esparcir los puntos un poco a lo largo del eje x, agregando algo de ruido aleatorio en la dimensión x. Esta técnica se llama **jittering**:
+Una combinación especialmente informativa es superponer el strip plot sobre el violin plot con `inner = None`, obteniendo simultáneamente la estimación de la forma de la distribución y la visualización de cada observación individual:
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Los puntos se han alterado a lo largo del eje x para mostrar mejor la densidad de puntos en cada valor de temperatura. Fuente de datos: Weather Underground.](./imagenes/Untitled21.png)
+```{code-cell} python
+plt.figure(figsize=(8, 5))
 
-Temperaturas medias diarias en Lincoln, NE, visualizadas como gráficos de franjas. Los puntos se han alterado a lo largo del eje x para mostrar mejor la densidad de puntos en cada valor de temperatura. Fuente de datos: Weather Underground.
+sns.violinplot(x = 'flipper_length_mm', y = 'species',
+               hue = 'species', palette = paleta_especies, order = orden,
+               inner = None, data = data_penguins)
+sns.stripplot(x = 'flipper_length_mm', y = 'species',
+              order = orden, data = data_penguins,
+              color = 'black', size = 3, alpha = 0.6,
+              jitter = True)
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Especie', fontweight = 'bold')
+plt.show()
+```
 
-<aside>
-💡 Siempre que el conjunto de datos sea demasiado escaso para justificar la visualización del violín, será posible trazar los datos sin procesar como puntos individuales.
+#### Ridgeline plot
 
-</aside>
+Cuando el número de grupos es grande, los gráficos anteriores pueden volverse difíciles de leer: los boxplots o violines apilados se comprimen y pierden legibilidad. En esos casos, el **ridgeline plot** ofrece una alternativa más efectiva.
 
-Finalmente, podemos combinar lo mejor de ambos mundos extendiendo los puntos en proporción a la densidad de puntos en una coordenada y dada. Este método, llamado sina plot, y se puede considerar como un híbrido entre un diagrama de violín y puntos jittered, y muestra cada punto individual al mismo tiempo que visualiza las distribuciones. En la figura, se ven los diagramas de sina plot encima de los violines, para resaltar la relación entre estos dos enfoques.
+Un ridgeline plot muestra las distribuciones de cada grupo como curvas de densidad escalonadas en el eje vertical, superponiéndose ligeramente entre sí. Este tipo de gráfico es especialmente útil cuando se tienen muchos grupos o cuando se quiere visualizar la evolución de distribuciones a lo largo del tiempo.
 
-![Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de senos (una combinación de puntos individuales y violines). Los puntos se han alterado a lo largo del eje x en proporción a la densidad de puntos a la temperatura respectiva. Aquí, las gráficas de sina se muestran superpuestas a las gráficas de violín. Fuente de datos: Weather Underground.](./imagenes/Untitled22.png)
+Para el ejemplo de Penguins el número de grupos es pequeño y cualquiera de las opciones anteriores funciona bien. Sin embargo, es una buena oportunidad para conocer esta herramienta. En Python puede construirse con la librería `ridgeplot`:
 
-Temperaturas medias diarias en Lincoln, NE, visualizadas como diagramas de senos (una combinación de puntos individuales y violines). Los puntos se han alterado a lo largo del eje x en proporción a la densidad de puntos a la temperatura respectiva. Aquí, las gráficas de sina se muestran superpuestas a las gráficas de violín. Fuente de datos: Weather Underground.
+```{code-cell} python
+from ridgeplot import ridgeplot
+
+especies = orden.tolist()
+
+muestras = [
+    data_penguins.loc[data_penguins['species'] == sp,
+                      'flipper_length_mm'].dropna().values
+    for sp in especies
+]
+
+fig = ridgeplot(
+    samples = muestras,
+    labels = especies,
+    bandwidth = 3,
+    colorscale = 'viridis',
+    spacing = 0.4
+)
+
+fig.update_layout(
+    xaxis_title = 'Longitud de aleta (mm)',
+    height = 400,
+    width = 700
+)
+
+fig.show()
+```
+
+```{admonition} ¿Cuándo usar cada opción?
+:class: tip
+
+No existe una opción universalmente superior. Como regla general: el **boxplot** es útil para comparaciones rápidas cuando la forma de la distribución es secundaria; el **strip plot** es preferible cuando el dataset es pequeño y se quieren mostrar los datos individuales; el **violin plot** aporta más información sobre la forma de la distribución y es especialmente valioso cuando hay indicios de bimodalidad; el **ridgeline plot** escala bien cuando el número de grupos es grande o cuando se quiere mostrar la evolución de distribuciones a lo largo del tiempo.
+```
 
 **Funciones de distribución acumulativas empíricas**
 Para ilustrar las FDAE (Empirical Cumulative Distribution Functions en inglés), comenzaremos con un ejemplo: un conjunto de datos de las calificaciones de los estudiantes. Supongamos que nuestra clase hipotética tiene 50 estudiantes, y los estudiantes acaban de completar un examen en el que podían obtener entre 0 y 100 puntos. ¿Cómo podemos visualizar mejor el desempeño de la clase, por ejemplo, para determinar los límites de calificación apropiados?
