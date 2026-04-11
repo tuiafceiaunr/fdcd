@@ -23,6 +23,7 @@ El dataset `iris.csv` contiene información sobre 150 flores de iris de tres esp
 
 ```{code-cell} python
 :tags: [remove-input]
+:align: center
 
 import pandas as pd
 import numpy as np
@@ -35,7 +36,7 @@ sns.set_theme(style = 'ticks')
 data_iris = pd.read_csv('datasets/iris.csv')
 
 # Hago gráfico
-plt.figure(figsize=(4, 3))
+plt.figure(figsize=(8, 6))
 sns.histplot(x = 'sepal_width_cm', fill = True, stat = 'percent', color = 'darkred', edgecolor = 'black', data = data_iris, bins = np.arange(2,4.5,0.2))
 plt.xlabel('Ancho de sépalo (cm)', fontweight = 'bold', fontsize = 11)
 plt.title('Distribución del ancho de sépalo de las flores', fontweight = 'bold')
@@ -95,7 +96,8 @@ Analice los gráficos obtenidos. ¿Cuál de las siguientes opciones describe de 
 - *Distribución uniforme*
 
 ```{code-cell} python
-:tags: [remove-input]
+:tags: [remove-input, remove-stderr]
+:align: center
 
 # Hago gráfico
 fig, axes = plt.subplots(1, 2, figsize=(10,3))
@@ -150,63 +152,168 @@ Al emplear esta función se deben definir los anchos de las columnas mediante el
     
 5. Realice nuevamente el ítem 3 con los datos correspondientes a la estación meteorológica localizada en la Base Marambio de la Antártida Argentina. Compare los dos gráficos y comente las diferencias que encuentra en las distribuciones de las temperaturas registradas en ambas estaciones.
 
-### **Ejercicio N° 3**
+### **Ejercicio N°3**
 El dataset **Penguins** contiene información acerca de un conjunto de pingüinos que habitan el Archipiélago Palmer, un archipiélago del Océano Glacial Antártico que se encuentra conformado por un conjunto de islas montañosas. Sobre cada ejemplar se cuenta con la siguiente información:
 
-- `species`: especie a la que pertenece (Chinstrap, Adélie o Gentoo).
+- **`species`**: especie a la que pertenece (Chinstrap, Adélie o Gentoo).
 
-- `culmen_length_mm`: largo del culmen, cresta superior del pico (mm).
+- **`culmen_length_mm`**: largo del culmen, cresta superior del pico (mm).
 
-- `culmen_depth_mm`: altura del culmen (mm).
+- **`culmen_depth_mm`**: altura del culmen (mm).
 
-- `flipper_length_mm`: largo de la aleta (mm).
+- **`flipper_length_mm`**: largo de la aleta (mm).
 
-- `body_mass_g`: masa corporal (g).
+- **`body_mass_g`**: masa corporal (g).
 
-- `island`: nombre de la isla del Archipiélago Palmer en la que habita (Dream, Torgersen o Biscoe).
+- **`island`**: nombre de la isla del Archipiélago Palmer en la que habita (Dream, Torgersen o Biscoe).
 
-- `sex`: sexo.
+- **`sex`**: sexo.
 
-El mismo puede importarse al entorno de trabajo utilizando la función `sns.load_dataset('penguins')` de Seaborn.
+El mismo puede importarse al entorno de trabajo utilizando la función **`sns.load_dataset('penguins')`** de Seaborn.
 
-1. Reproduzca el gráfico que se muestra a continuación para visualizar la distribución del largo de la aleta entre las distintas especies de pingüinos. En el mismo se utilizaron colores pertenecientes a la paleta **magma**.
+1. Reproduzca el gráfico mostrado en la siguiente figura para visualizar la distribución del largo de la aleta entre las distintas especies de pingüinos. En el mismo se utilizaron colores pertenecientes a la paleta **magma**. 
 
-<p align="center">
-  <img src="imagenes/practica/grafej3.png" alt="Densidad" width="60%">
-</p>
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+:align: center
 
-<br />
+# Importo dataset
+data_penguins = sns.load_dataset('penguins')
+
+# Hago gráfico
+plt.figure(figsize=(8, 6))
+ax = sns.kdeplot(x = 'flipper_length_mm', hue = 'species', fill = True, data = data_penguins, palette = 'magma', common_norm = True)
+plt.xlabel('Longitud de la aleta (mm)', fontweight = 'bold', fontsize = 11)
+plt.title('Distribución de la long. de la aleta según especie', fontweight = 'bold')
+plt.xticks(np.arange(160,241,20), fontsize = 10)
+plt.yticks(np.arange(0, 0.021, 0.01), fontsize = 10)
+plt.ylabel('Densidad', fontweight = 'bold', fontsize = 11);
+
+legend = ax.get_legend()  # Obtener la leyenda generada por Seaborn
+legend.set_title('Especie')
+legend.get_title().set_fontweight('bold')
+legend.get_title().set_fontsize(10)
+
+legend.set_bbox_to_anchor((1, 1))
+legend.set_loc('upper left')
+
+for text in legend.get_texts():
+    text.set_fontsize(10) 
+```
 
 2. Realice una tabla en la que se muestre qué porcentaje de pingüinos del dataset pertenece a cada una de las tres especies.
 
-3. Teniendo en cuenta las características del gráfico realizado en el ítem 1 y la información contenida en la tabla realizada en el ítem 2, ¿qué observación puede realizar acerca de las curvas de densidad representadas para cada especie? **Sugerencia:** dentro de la [documentación de Seaborn](https://seaborn.pydata.org/index.html), busque información sobre el parámetro `common_norm` de la función `kdeplot()` que utilizó para construir el gráfico.
+3. Teniendo en cuenta las características del gráfico realizado en el ítem 1 y la información contenida en la tabla realizada en el ítem 2, ¿qué observación puede realizar acerca de las curvas de densidad representadas para cada especie? **Sugerencia:** dentro de la [documentación de Seaborn](https://seaborn.pydata.org/index.html), busque información sobre el parámetro **`common_norm`** de la función **`kdeplot()`** que utilizó para construir el gráfico.
 
 4. ¿A cuál de las tres especies se refiere la siguiente frase? **El 90% de los pingüinos presenta una longitud de aleta menor o igual a 198 mm.**
 
-## **Ejercicio N° 4**
-Utilizando el dataset `iris.csv` del **Ejercicio N° 1**:
+### **Ejercicio N°4**
+Utilizando el dataset `iris.csv` del **Ejercicio N°1**:
 
 1. Construya un gráfico que le permita visualizar la distribución de los valores observados del ancho de sépalo. A partir del gráfico realizado, ¿qué puede decir acerca de la simetría de la distribución?
 
 2. Realice un gráfico que permita comparar la distribución del largo del pétalo de las flores entre las distintas especies. Comente brevemente lo observado.
 
-3. 
-
-- Construya un gráfico que le permita analizar la relación general que existe entre las variables ancho y largo del pétalo. ¿Qué observa?
+3. Construya un gráfico que le permita analizar la relación general que existe entre las variables ancho y largo del pétalo. ¿Qué observa?
     
-- Modifique el gráfico realizado en el ítem anterior de tal manera que le permita analizar si la relación general entre el ancho y el largo del pétalo se mantiene según la especie. Comente brevemente lo observado.
+4. Modifique el gráfico realizado en el ítem anterior de tal manera que le permita analizar si la relación general entre el ancho y el largo del pétalo se mantiene según la especie. Comente brevemente lo observado.
     
-4.
+5. Construya una matriz de gráficos que le permitan estudiar la asociación que existe entre todos los pares de variables cuantitativas del dataset. *Sugerencia*: utilice la función **`pairplot()`** de **Seaborn**. 
 
-- Construya una matriz de gráficos que le permitan estudiar la asociación que existe entre todos los pares de variables cuantitativas del dataset. *Sugerencia*: utilice la función `pairplot()` de **Seaborn**. 
-
-- Sobre las mismas variables cuantitativas del dataset, genere la matriz de correlación lineal de Pearson y represéntela gráficamente a través de un correlograma.  
+6. Sobre las mismas variables cuantitativas del dataset, genere la matriz de correlación lineal de Pearson y represéntela gráficamente a través de un correlograma.  
     
-- A partir de lo realizado en los ítems anteriores, caracterice el grado de asociación lineal entre los distintos pares de variables de interés, incluyendo fuerza y dirección, y analizando la correspondencia entre los valores calculados y lo observado gráficamente.
+7. A partir de lo realizado en los dos ítems anteriores, caracterice el grado de asociación lineal entre los distintos pares de variables de interés, incluyendo fuerza y dirección, y analizando la correspondencia entre los valores calculados y lo observado gráficamente.
 
-## **Ejercicio N° 5**
+### **Ejercicio N°5**
 El set de datos `viajes_tup.xlsx` contiene información sobre el número de viajes mensuales registrados en el Transporte Urbano de Pasajeros (TUP) de la ciudad de Rosario entre los años 2015 y 2021.
 
 1. Realice una tabla que resuma el total de viajes realizados por año y represente gráficamente dicha información. ¿Cuál fue el año en el que se registró la mayor cantidad de viajes en el TUP?
 
 2. Construya un gráfico en el que se represente la evolución del número de viajes registrados en el TUP a lo largo de los meses para los años 2019 y 2020. Comente brevemente lo observado.
+
+### **Ejercicio N°6**
+Utilizando el dataset `partos2022.txt`, el cual contiene información sobre los partos atendidos en el 2022 en el Hospital Roque Sáenz Peña (HRSP) y la Maternidad Martin (MR), efectores municipales de la ciudad:
+
+1. Indique los meses en los que se registró la mayor y la menor cantidad de partos atendidos. ¿Qué porcentajes del total de partos atendidos en el año representan?
+
+2. Represente gráficamente la distribución del número de partos atendidos en el 2022 según el efector. ¿Qué puede decir acerca de la institución en la que tuvieron lugar los partos?
+
+3. Realice un gráfico que permita comparar la distribución del peso de los recién nacidos entre las distintas categorías de la edad gestacional. ¿Qué observa?
+
+4. Realice una descripción general de las variables **rango etario de la madre** (**`rango_edad_mama`**) y **tipo de parto** (**`terminacion_parto`**) que incluya: tipo de variables, valores que toman, distribución de cada una en la muestra y presencia de datos faltantes.
+    
+5. 
+
+    a. Recategorice la variable **`rango_edad_mama`** de la siguiente manera: 10-19 años, 20-29 años, 30-39 años y 40 años o más.
+    
+    b. Recategorice la variable **`terminacion_parto`** de forma tal que la categoría **Fórceps** se encuentre comprendida dentro de **Otros**.
+    
+6. 
+
+    a. Construya un gráfico de barras paralelas que muestre la distribución general del tipo de parto (Cesárea/Normal/Otros) según el rango etario de la madre, en el que los porcentajes de cada categoría se encuentren calculados **sobre el total general de partos atendidos para los que se cuenta con información sobre la edad de la madre (n = 4577)**.
+    
+    b. Construya un gráfico de barras paralelas que muestre la distribución del tipo de parto según el rango etario de la madre, en el que los porcentajes de cada categoría se encuentren calculados **sobre el total de partos atendidos para cada uno de estos grupos etarios**.
+    
+***Para tener de referencia, en la siguiente figura se muestran ambos gráficos terminados. Para su construcción se utilizó, en ambos casos, la función `plot.barh()` de Pandas, previa generación de las respectivas tablas de doble entrada, y los colores de las barras pertenecen a la paleta `deep`.***
+    
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+:align: center
+
+# Importo dataset
+data_partos = pd.read_csv('datasets/partos2022.txt', encoding = 'latin-1', delimiter = '\t')
+
+# Recategorizo rango_edad_mama
+def recategorizar(rango_edad_mama):
+    if (rango_edad_mama == '10 a 14 años') | (rango_edad_mama == '15 a 19 años'):
+        return '10 a 19 años'
+    elif (rango_edad_mama == '20 a 24 años') | (rango_edad_mama == '25 a 29 años'):
+        return '20 a 29 años'
+    elif (rango_edad_mama == '30 a 34 años') | (rango_edad_mama == '35 a 39 años'):
+        return '30 a 39 años'
+    elif (rango_edad_mama == '40 a 44 años') | (rango_edad_mama == '45 a 49 años') | (rango_edad_mama == '50 años y más'):
+        return 'Más de 40'
+    else:
+        return rango_edad_mama
+  
+data_partos['rango_edad_mama_recat'] = data_partos['rango_edad_mama'].apply(recategorizar)
+
+# Recategorizo terminacion_parto
+data_partos['terminacion_parto_recat'] = data_partos['terminacion_parto'].replace('Fórceps', 'Otros')
+
+# Genero tabla de doble entrada con % calculado sobre el total
+tabla_frecuencias = data_partos.groupby(['rango_edad_mama_recat','terminacion_parto_recat']).size().unstack()
+
+tabla_porcentajes_totales = tabla_frecuencias.div(len(data_partos))*100
+
+# Genero tabla de doble entrada con % calculado sobre total rango_edad_mama_recat
+tabla_porcentajes_relativos = tabla_frecuencias.div(tabla_frecuencias.sum(axis = 1), axis = 0)*100
+
+# Construyo gráficos
+# Hago gráfico
+
+color = sns.set_palette('deep')
+
+fig, axes = plt.subplots(2, 1, figsize=(8,12))
+plt.subplots_adjust(hspace = 0.5, wspace = 0.3)
+
+#columnas = ['sepal_width_cm', 'petal_width_cm']
+
+tabla_porcentajes_totales.plot.barh(stacked = False, width = 0.85, ax = axes[0], color = color)
+axes[0].set_xlabel('Porcentaje (%)', fontweight = 'bold', fontsize = 10)
+axes[0].set_ylabel('Rango etario de la madre', fontweight = 'bold', fontsize = 10)
+axes[0].tick_params(axis='both', labelsize=9)
+axes[0].legend(bbox_to_anchor = (1,1), title='Tipo de parto', fontsize=8, title_fontsize=8)
+axes[0].set_title('Gráfico ítem d', fontsize=10, fontweight='bold')
+tabla_porcentajes_relativos.plot.barh(stacked = False, width = 0.85, ax = axes[1], color = color)
+axes[1].set_xlabel('Porcentaje (%)', fontweight = 'bold', fontsize = 10)
+axes[1].set_ylabel('Rango etario de la madre', fontweight = 'bold', fontsize = 10)
+axes[1].tick_params(axis='both', labelsize=9)
+axes[1].legend(bbox_to_anchor = (1,1), title='Tipo de parto', fontsize=8, title_fontsize=8)
+axes[1].set_title('Gráfico ítem e', fontsize=10, fontweight='bold');
+```
+    
+7. Compare los gráficos realizados en el ítem anterior. ¿Qué tipo de información brinda cada uno?
+    
+8. **PARA PENSAR:** ¿Cuál de los gráficos anteriores le permite analizar si la edad de la madre influye en la probabilidad de recurrir a una cesárea como método de parto? ¿Qué observa?
+  
