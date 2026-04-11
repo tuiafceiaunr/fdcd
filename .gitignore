@@ -1,6 +1,6 @@
 # Files
 #*.html
-*.csv
+#*.csv
 **/_build/
 .idea/
 *.Rproj

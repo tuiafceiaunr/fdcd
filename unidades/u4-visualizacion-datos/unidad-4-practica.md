@@ -22,7 +22,7 @@ El dataset `iris.csv` contiene información sobre 150 flores de iris de tres esp
 1. Reproduzca el histograma mostrado en la siguiente figura para visualizar la distribución del ancho de sépalo (`sepal_width_cm`). 
 
 ```{code-cell} python
-:tags: [hide-input]
+:tags: [remove-input]
 
 import pandas as pd
 import numpy as np
@@ -65,7 +65,7 @@ Una vez que tenga el gráfico construido, compare media y mediana en cada especi
 
 4. Reproduzca el gráfico en paneles mostrado en la figura, en el que se presentan gráficos de violín para el ancho de sépalo (`sepal_width_cm`) y ancho de pétalo (`petal_width_cm`). Utilice `plt.subplots()` para crear los paneles y personalice cada gráfico en su respectivo eje. Superponga además los datos individuales mediante `stripplot()`.
 
-```{admonition} *Sobre plt.subplots()**
+````{admonition} **Sobre plt.subplots()**
 :class: tip
 
 La función **`plt.subplots()`** de Matplotlib crea una figura con una cuadrícula de subgráficos (elemento llamado **`axes`**), permitiendo organizar varios gráficos en una sola figura. El uso básico es el siguiente:
@@ -74,7 +74,7 @@ La función **`plt.subplots()`** de Matplotlib crea una figura con una cuadrícu
 fig, axes = plt.subplots(nrows, ncols)
 ```
 Donde **`nrows`** y **`ncols`** especifican el número de filas y columnas de subgráficos. La función devuelve una figura (**`fig`**) y un array de ejes (**`axes`**). Cada subgráfico individual es un objeto de tipo **`Axes`** que se puede personalizar de manera independiente.
-```
+````
 
 **Sugerencias:**
 
@@ -95,12 +95,7 @@ Analice los gráficos obtenidos. ¿Cuál de las siguientes opciones describe de 
 - *Distribución uniforme*
 
 ```{code-cell} python
-#| echo: false
-#| output: true
-#| fig-align: center
-#| label: fig-ejercicio-2
-#| fig-cap: "Gráfico correspondiente al ítem 2 del Ejercicio N° 1."
-#| warning: false
+:tags: [remove-input]
 
 # Hago gráfico
 fig, axes = plt.subplots(1, 2, figsize=(10,3))
@@ -127,7 +122,7 @@ El dataset `registro_temperatura365d_smn.txt` contiene las temperaturas máximas
 
 1. Explore la estructura del archivo. Notará que no se utiliza un delimitador particular para separar las distintas columnas sino que los distintos campos están alineados en columnas con diferente número de espacios que separan uno del otro. Por este motivo, y aprovechando que las primeras columnas son de ancho fijo, se sugiere utilizar la función `read_fwf()` de Pandas, que permite leer este tipo de archivos. 
 
-```{admonition} *Sobre read_fwf()**
+```{admonition} **Sobre read_fwf()**
 :class: tip
 
 La función **`pd.read_fwf()`** en Pandas se utiliza para leer archivos de texto que tienen columnas de ancho fijo, donde cada columna ocupa una cantidad específica de caracteres. Esta función es útil cuando los datos no están separados por delimitadores como comas o espacios, sino que están organizados en columnas de longitudes fijas.
