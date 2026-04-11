@@ -22,11 +22,7 @@ El dataset `iris.csv` contiene información sobre 150 flores de iris de tres esp
 1. Reproduzca el histograma mostrado en la siguiente figura para visualizar la distribución del ancho de sépalo (`sepal_width_cm`). 
 
 ```{code-cell} python
-#| echo: false
-#| output: true
-#| fig-align: center
-#| label: fig-ejercicio-1
-#| fig-cap: "Gráfico correspondiente al ítem 1 del Ejercicio N° 1."
+:tags: [hide-input]
 
 import pandas as pd
 import numpy as np
@@ -74,7 +70,7 @@ Una vez que tenga el gráfico construido, compare media y mediana en cada especi
 
 La función **`plt.subplots()`** de Matplotlib crea una figura con una cuadrícula de subgráficos (elemento llamado **`axes`**), permitiendo organizar varios gráficos en una sola figura. El uso básico es el siguiente:
 
-```python
+```
 fig, axes = plt.subplots(nrows, ncols)
 ```
 Donde **`nrows`** y **`ncols`** especifican el número de filas y columnas de subgráficos. La función devuelve una figura (**`fig`**) y un array de ejes (**`axes`**). Cada subgráfico individual es un objeto de tipo **`Axes`** que se puede personalizar de manera independiente.
