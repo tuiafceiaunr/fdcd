@@ -242,17 +242,13 @@ Utilizando el dataset `partos2022.txt`, el cual contiene información sobre los 
 
 4. Realice una descripción general de las variables **rango etario de la madre** (**`rango_edad_mama`**) y **tipo de parto** (**`terminacion_parto`**) que incluya: tipo de variables, valores que toman, distribución de cada una en la muestra y presencia de datos faltantes.
     
-5. 
-
-    a. Recategorice la variable **`rango_edad_mama`** de la siguiente manera: 10-19 años, 20-29 años, 30-39 años y 40 años o más.
+5. Recategorice la variable **`rango_edad_mama`** de la siguiente manera: 10-19 años, 20-29 años, 30-39 años y 40 años o más.
     
-    b. Recategorice la variable **`terminacion_parto`** de forma tal que la categoría **Fórceps** se encuentre comprendida dentro de **Otros**.
+6. Recategorice la variable **`terminacion_parto`** de forma tal que la categoría **Fórceps** se encuentre comprendida dentro de **Otros**.
     
-6. 
-
-    a. Construya un gráfico de barras paralelas que muestre la distribución general del tipo de parto (Cesárea/Normal/Otros) según el rango etario de la madre, en el que los porcentajes de cada categoría se encuentren calculados **sobre el total general de partos atendidos para los que se cuenta con información sobre la edad de la madre (n = 4577)**.
+7. Construya un gráfico de barras paralelas que muestre la distribución general del tipo de parto (Cesárea/Normal/Otros) según el rango etario de la madre, en el que los porcentajes de cada categoría se encuentren calculados **sobre el total general de partos atendidos para los que se cuenta con información sobre la edad de la madre (n = 4577)**.
     
-    b. Construya un gráfico de barras paralelas que muestre la distribución del tipo de parto según el rango etario de la madre, en el que los porcentajes de cada categoría se encuentren calculados **sobre el total de partos atendidos para cada uno de estos grupos etarios**.
+8. Construya un gráfico de barras paralelas que muestre la distribución del tipo de parto según el rango etario de la madre, en el que los porcentajes de cada categoría se encuentren calculados **sobre el total de partos atendidos para cada uno de estos grupos etarios**.
     
 ***Para tener de referencia, en la siguiente figura se muestran ambos gráficos terminados. Para su construcción se utilizó, en ambos casos, la función `plot.barh()` de Pandas, previa generación de las respectivas tablas de doble entrada, y los colores de las barras pertenecen a la paleta `deep`.***
     
@@ -304,16 +300,16 @@ axes[0].set_xlabel('Porcentaje (%)', fontweight = 'bold', fontsize = 10)
 axes[0].set_ylabel('Rango etario de la madre', fontweight = 'bold', fontsize = 10)
 axes[0].tick_params(axis='both', labelsize=9)
 axes[0].legend(bbox_to_anchor = (1,1), title='Tipo de parto', fontsize=8, title_fontsize=8)
-axes[0].set_title('Gráfico ítem d', fontsize=10, fontweight='bold')
+axes[0].set_title('Gráfico ítem 7', fontsize=10, fontweight='bold')
 tabla_porcentajes_relativos.plot.barh(stacked = False, width = 0.85, ax = axes[1], color = color)
 axes[1].set_xlabel('Porcentaje (%)', fontweight = 'bold', fontsize = 10)
 axes[1].set_ylabel('Rango etario de la madre', fontweight = 'bold', fontsize = 10)
 axes[1].tick_params(axis='both', labelsize=9)
 axes[1].legend(bbox_to_anchor = (1,1), title='Tipo de parto', fontsize=8, title_fontsize=8)
-axes[1].set_title('Gráfico ítem e', fontsize=10, fontweight='bold');
+axes[1].set_title('Gráfico ítem 8', fontsize=10, fontweight='bold');
 ```
     
-7. Compare los gráficos realizados en el ítem anterior. ¿Qué tipo de información brinda cada uno?
+9. Compare los gráficos realizados en el ítem anterior. ¿Qué tipo de información brinda cada uno?
     
-8. **PARA PENSAR:** ¿Cuál de los gráficos anteriores le permite analizar si la edad de la madre influye en la probabilidad de recurrir a una cesárea como método de parto? ¿Qué observa?
+10. **PARA PENSAR:** ¿Cuál de los gráficos anteriores le permite analizar si la edad de la madre influye en la probabilidad de recurrir a una cesárea como método de parto? ¿Qué observa?
   

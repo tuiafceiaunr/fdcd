@@ -463,22 +463,19 @@ plt.show()
 
 El resultado permite comparar de forma inmediata la forma y posición de cada distribución. Se observa que las tres especies presentan distribuciones claramente diferenciadas: *Adelie* y *Chinstrap* tienen aletas más cortas y de longitud similar entre sí, mientras que *Gentoo* se distingue con aletas notablemente más largas.
 
-Una limitación de este gráfico es que, por defecto, cada curva se normaliza de forma independiente: su área individual es siempre igual a 1, sin importar cuántos pingüinos pertenecen a cada especie. Esto significa que grupos de distinto tamaño aparecen representados con curvas visualmente equivalentes.
+Por defecto, `kdeplot()` utiliza `common_norm = True`, lo que implica que todas las curvas se normalizan de manera conjunta: el área total bajo todas ellas suma 1. En consecuencia, el área de cada curva es proporcional al tamaño relativo de cada grupo en el dataset. Si en cambio se quisiera comparar únicamente la forma de las distribuciones, sin que intervenga la proporción relativa de las distintas categorías de la variable cualitativa, se puede utilizar `common_norm = False`. En ese caso, cada curva se normaliza de manera independiente y todas tienen área igual a 1.
 
-Para incorporar información sobre el tamaño relativo de cada grupo, se puede usar el parámetro `common_norm = True`, que normaliza todas las curvas conjuntamente de modo que el área total bajo todas ellas sume 1. En ese caso, el área de cada curva es proporcional a la fracción de observaciones de esa especie:
+Para verificar cómo se distribuyen las observaciones entre las especies, podemos calcular el porcentaje que representa cada una sobre el total:
 
 ```{code-cell} python
-plt.figure(figsize = (8, 5))
+#|echo: true
+#|output: true
+#|code-line-numbers: false
 
-sns.kdeplot(x = 'flipper_length_mm', hue= 'species',
-            multiple = 'layer', fill = True, palette = paleta_especies,
-            common_norm = True, data = data_penguins)
-plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
-plt.ylabel('Densidad', fontweight = 'bold')
-plt.show()
+df_penguins['species'].value_counts(normalize = True).mul(100).round(2)
 ```
 
-Dado que *Adelie* es la especie más numerosa del dataset, su curva ocupa proporcionalmente más área que las de *Chinstrap* y *Gentoo*. Esta versión comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
+Esto permite incorporar información sobre el tamaño relativo de cada grupo. Sin embargo, esa diferencia no siempre es fácil de percibir visualmente: en este caso, se distingue con mayor claridad que *Chinstrap* es la especie menos numerosa, mientras que la mayor proporción de *Adelie* no resulta tan evidente a simple vista. Aun así, esta versión comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
 
 Sin embargo, los gráficos de densidad superpuestos tienen una limitación práctica: cuando el número de grupos crece, las curvas se acumulan y el gráfico se vuelve difícil de leer. Para esos casos existen alternativas más adecuadas.
 
