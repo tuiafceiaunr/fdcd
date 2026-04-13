@@ -472,7 +472,7 @@ Para verificar cómo se distribuyen las observaciones entre las especies, podemo
 #|output: true
 #|code-line-numbers: false
 
-df_penguins['species'].value_counts(normalize = True).mul(100).round(2)
+data_penguins['species'].value_counts(normalize = True).mul(100).round(2)
 ```
 
 Esto permite incorporar información sobre el tamaño relativo de cada grupo. Sin embargo, esa diferencia no siempre es fácil de percibir visualmente: en este caso, se distingue con mayor claridad que *Chinstrap* es la especie menos numerosa, mientras que la mayor proporción de *Adelie* no resulta tan evidente a simple vista. Aun así, esta versión comunica simultáneamente la forma de cada distribución y el peso relativo de cada grupo dentro del total.
