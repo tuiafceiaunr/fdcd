@@ -576,8 +576,8 @@ g = sns.FacetGrid(
     row = 'species',
     hue = 'species',
     row_order = orden,
-    aspect = 10,
-    height = 1.8,
+    aspect = 8,
+    height = 2,
     palette = paleta_especies
 )
 
@@ -624,11 +624,12 @@ colors_m = sns.color_palette('magma', 2)
 En `seaborn`, esto se implementa con `countplot()`. Por defecto muestra frecuencias absolutas, pero puede representar frecuencias relativas utilizando el argumento `stat = 'proportion'` o porcentajes utilizando `stat = 'percent'`. Retomando el dataset del Titanic, visualizamos la distribución de pasajeros según la clase en la que viajaban:
 
 ```{code-cell} python
+:tags: [remove-stderr]
+
 plt.figure(figsize = (8, 5))
 
 sns.countplot(y = 'class', stat = 'percent',
               order = ['First', 'Second', 'Third'],
-              hue = 'class',
               palette = 'viridis',
               edgecolor = 'black',
               data = data_titanic)
@@ -664,7 +665,8 @@ sns.countplot(y = 'class', hue = 'alive',
 
 plt.xlabel('Porcentaje', fontweight = 'bold')
 plt.ylabel('Clase', fontweight = 'bold')
-plt.legend(title = 'Supervivencia')
+plt.legend(title = 'Supervivencia', labels = ['No', 'Sí'],
+facecolor = 'white')
 plt.show()
 ```
 
@@ -680,13 +682,17 @@ data_titanic.value_counts(['class', 'alive'], normalize = True).mul(100).round(2
 
 #### Tablas de contingencia y proporciones
 
-Otra forma de resumir la relación entre dos variables categóricas es mediante una **tabla de contingencia**, que podemos construir con **`crosstab()`**:
+Otra forma de resumir la relación entre dos variables categóricas es mediante una **tabla de contingencia**, que podemos construir con **`crosstab()`**.
+
+Una tabla de contingencia es una **tabla de doble entrada** que muestra la frecuencia conjunta de dos variables categóricas. Cada celda indica cuántas observaciones pertenecen simultáneamente a una categoría de la primera variable (filas) y a una categoría de la segunda (columnas). En este sentido, permite ver cómo se distribuyen los datos considerando ambas variables al mismo tiempo.
 
 ```{code-cell} python
 pd.crosstab(data_titanic['class'], data_titanic['alive'])
 ```
 
-El argumento `normalize` permite transformar esta tabla en proporciones (que luego podrán transformarse en porcentajes multiplicándolas por 100):
+Por ejemplo, en la tabla anterior el valor 372 indica la cantidad de pasajeros que viajaban en tercera clase y no sobrevivieron al naufragio.
+
+El argumento `normalize` permite transformar esta tabla en frecuencias relativas o proporciones (que luego podrán transformarse en porcentajes multiplicándolas por 100):
 
 - `normalize = 'all'`: divide sobre el total de observaciones (distribución conjunta)
 
@@ -716,10 +722,10 @@ normalize = 'index').mul(100).round(2)
 tabla_cond
 ```
 
-Podemos representar esta información con un gráfico de barras paralelas (notar la utilización del método `plot.barh()` de Pandas):
+Podemos representar esta información con un gráfico de barras paralelas. En este caso utilizamos el método `plot.barh()` de Pandas:
 
 ```{code-cell} python
-tabla2.plot.barh(figsize = (8,5), 
+tabla_cond.plot.barh(figsize = (8,5), 
 stacked = False, 
 color = colors_m,
 edgecolor = 'black',
@@ -735,6 +741,8 @@ plt.show()
 ```
 
 Este gráfico permite comparar directamente proporciones dentro de cada clase. Por ejemplo, se observa que la proporción de personas que no sobrevivieron es considerablemente mayor en tercera clase que en primera.
+
+A diferencia de lo que ocurría antes, aquí no utilizamos `countplot()`. Esto se debe a que countplot() calcula automáticamente los conteos o porcentajes sobre el total del dataset, por lo que representa distribuciones conjuntas. En este caso, en cambio, ya realizamos un cálculo previo para obtener porcentajes dentro de cada clase (distribución condicional). Por lo tanto, necesitamos un gráfico que simplemente represente esos valores ya calculados, sin volver a procesarlos. Para ello utilizamos directamente los métodos de graficación de Pandas.
 
 #### Comparación: distribución conjunta vs. condicional
  
