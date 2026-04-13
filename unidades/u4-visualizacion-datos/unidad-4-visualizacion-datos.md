@@ -742,7 +742,7 @@ plt.show()
 
 Este gráfico permite comparar directamente proporciones dentro de cada clase. Por ejemplo, se observa que la proporción de personas que no sobrevivieron es considerablemente mayor en tercera clase que en primera.
 
-A diferencia de lo que ocurría antes, aquí no utilizamos `countplot()`. Esto se debe a que countplot() calcula automáticamente los conteos o porcentajes sobre el total del dataset, por lo que representa distribuciones conjuntas. En este caso, en cambio, ya realizamos un cálculo previo para obtener porcentajes dentro de cada clase (distribución condicional). Por lo tanto, necesitamos un gráfico que simplemente represente esos valores ya calculados, sin volver a procesarlos. Para ello utilizamos directamente los métodos de graficación de Pandas.
+A diferencia de lo que ocurría antes, aquí no utilizamos `countplot()`. Esto se debe a que `countplot()` calcula automáticamente los conteos o porcentajes sobre el total del dataset, por lo que representa distribuciones conjuntas. En este caso, en cambio, ya realizamos un cálculo previo para obtener porcentajes dentro de cada clase (distribución condicional). Por lo tanto, necesitamos un gráfico que simplemente represente esos valores ya calculados, sin volver a procesarlos. Para ello utilizamos directamente los métodos de graficación de Pandas.
 
 #### Comparación: distribución conjunta vs. condicional
  
