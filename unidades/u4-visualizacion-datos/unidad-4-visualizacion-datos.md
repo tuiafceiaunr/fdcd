@@ -569,7 +569,7 @@ Un ridgeline plot muestra las distribuciones de cada grupo como curvas de densid
 Para el ejemplo de Penguins el número de grupos es pequeño y cualquiera de las opciones anteriores funciona bien. Sin embargo, es una buena oportunidad para conocer esta herramienta. Puede construirse directamente con seaborn combinando un FacetGrid con `kdeplot()`:
 
 ```{code-cell} python
-sns.set_theme(style = 'white0, rc = {'axes.facecolor': (0, 0, 0, 0)})
+sns.set_theme(style = 'ticks', rc = {'axes.facecolor': (0, 0, 0, 0)})
 
 g = sns.FacetGrid(
     data_penguins,
@@ -605,13 +605,13 @@ g.set_xlabels('Longitud de aleta (mm)', fontweight = 'bold')
 plt.show()
 ```
 
-```{admonition} ¿Cuándo usar cada opción?
-:class: tip
-
-No existe una opción universalmente superior. Como regla general: el **boxplot** es útil para comparaciones rápidas cuando la forma de la distribución es secundaria; el **strip plot** es preferible cuando el dataset es pequeño y se quieren mostrar los datos individuales; el **violin plot** aporta más información sobre la forma de la distribución y es especialmente valioso cuando hay indicios de bimodalidad; el **ridgeline plot** escala bien cuando el número de grupos es grande o cuando se quiere mostrar la evolución de distribuciones a lo largo del tiempo.
-```
-
 ## Gráficos para visualizar conteos y proporciones 
+
+```{code-cell} python
+# Definimos paletas de colores para los gráficos
+colors_v = sns.color_palette('viridis', 2)
+colors_m = sns.color_palette('magma', 2)
+```
 
 Hasta aquí trabajamos principalmente con variables cuantitativas. Cuando la variable de interés es cualitativa, el objetivo cambia: ya no buscamos describir una forma continua, sino **comparar frecuencias o proporciones entre categorías**.
 
@@ -619,15 +619,17 @@ La herramienta central para este tipo de análisis es el **gráfico de barras**.
 
 ### Gráfico de barras
 
-En un gráfico de barras cada categoría se representa mediante una barra cuya longitud es proporcional a la cantidad —o al porcentaje— de observaciones en esa categoría. Es, en esencia, la representación visual de una tabla de frecuencias para una variable cualitativa.
+En un gráfico de barras cada categoría se representa mediante una barra cuya longitud es proporcional a la frecuencia de observaciones en esa categoría. Es, en esencia, la representación visual de una tabla de frecuencias para una variable cualitativa.
 
-En `seaborn`, esto se implementa con `countplot()`. Por defecto muestra frecuencias absolutas, pero puede representar proporciones con el argumento `stat = 'percent'`. Retomando el dataset del Titanic, visualizamos la distribución de pasajeros según la clase en la que viajaban:
+En `seaborn`, esto se implementa con `countplot()`. Por defecto muestra frecuencias absolutas, pero puede representar frecuencias relativas utilizando el argumento `stat = 'proportion'` o porcentajes utilizando `stat = 'percent'`. Retomando el dataset del Titanic, visualizamos la distribución de pasajeros según la clase en la que viajaban:
 
 ```{code-cell} python
 plt.figure(figsize = (8, 5))
 
 sns.countplot(y = 'class', stat = 'percent',
               order = ['First', 'Second', 'Third'],
+              palette = 'viridis',
+              edgecolor = 'black',
               data = data_titanic)
 
 plt.xlabel('Porcentaje', fontweight = 'bold')
@@ -635,14 +637,14 @@ plt.ylabel('Clase', fontweight = 'bold')
 plt.show()
 ```
 
-El gráfico permite observar de un vistazo cómo se distribuyen los pasajeros: más de la mitad viajaba en tercera clase. Este gráfico es la representación visual de la siguiente tabla:
+El gráfico permite observar de un vistazo cómo era la distribución de los pasajeros del barco entre las tres clases: más de la mitad viajaba en tercera clase. Se trata de la representación visual de la siguiente tabla:
 
 ```{code-cell} python
-(data_titanic['class']
- .value_counts(normalize=True)
+data_titanic['class']
+ .value_counts(normalize = True)
  .mul(100)
  .round(1)
- .rename('percent'))
+ .rename('percent')
 ```
 
 Nótese que las categorías se ordenan explícitamente con el parámetro `order` en lugar de dejar el orden por defecto. Igual que con los boxplots, ordenar las barras según el valor representado —de mayor a menor, o siguiendo algún criterio sustantivo— facilita la lectura y hace más evidentes las diferencias entre grupos.
@@ -659,6 +661,8 @@ plt.figure(figsize = (8, 5))
 sns.countplot(y = 'class', hue = 'alive',
               stat = 'percent',
               order = ['First', 'Second', 'Third'],
+              palette = colors_v,
+              edgecolor = 'black',
               data = data_titanic)
 
 plt.xlabel('Porcentaje', fontweight = 'bold')
@@ -667,9 +671,114 @@ plt.legend(title = 'Supervivencia')
 plt.show()
 ```
 
-Es importante tener presente qué representan exactamente los porcentajes en este gráfico. Con `stat = 'percent'`, `countplot()` calcula los porcentajes sobre el **total de observaciones del dataset**: cada barra indica qué fracción del total corresponde a esa combinación particular de clase y supervivencia. En consecuencia, todas las barras juntas suman 100 %, y el gráfico refleja la **distribución conjunta** de ambas variables.
+Es clave entender qué representan exactamente los porcentajes en este gráfico. Con stat = 'percent', countplot() calcula los porcentajes **sobre el total de observaciones del dataset**. Es decir, cada barra indica qué fracción del total corresponde a esa combinación particular de clase y supervivencia. En consecuencia, todas las barras del gráfico suman 100 % y el gráfico muestra lo que se conoce como la **distribución conjunta** de ambas variables.
 
-Esta lectura difiere de la que tendríamos si los porcentajes se calcularan dentro de cada clase (es decir, qué proporción de los pasajeros de primera clase sobrevivió, de los de segunda, etc.). Esa perspectiva —la **distribución condicional** de supervivencia dado la clase— requeriría un cálculo previo y no es lo que produce `countplot()` directamente.
+Por ejemplo, puede observarse que una proporción importante del total de pasajeros corresponde a personas que viajaban en tercera clase y no sobrevivieron.
+
+Podemos obtener esta misma información en forma tabular:
+
+```{code-cell} python
+data_titanic.value_counts(['class', 'alive'], normalize = True).mul(100).round(2).sort_index(level='class')
+```
+
+#### Tablas de contingencia y proporciones
+
+Otra forma de resumir la relación entre dos variables categóricas es mediante una **tabla de contingencia**, que podemos construir con **`crosstab()`**:
+
+```{code-cell} python
+pd.crosstab(data_titanic['class'], data_titanic['alive'])
+```
+
+El argumento `normalize` permite transformar esta tabla en proporciones (que luego podrán transformarse en porcentajes multiplicándolas por 100):
+
+- `normalize = 'all'`: divide sobre el total de observaciones (distribución conjunta)
+
+- `normalize = 'index'`: divide por filas (distribución condicional por fila).
+
+- `normalize = 'columns'`: divide por columnas (distribución condicional por columna)
+
+Por ejemplo, la distribución conjunta en escala porcentual es:
+
+```{code-cell} python
+pd.crosstab(data_titanic['class'], data_titanic['alive'], normalize = 'all').mul(100).round(2)
+```
+
+#### Distribución condicional
+
+Muchas veces, sin embargo, el interés está en responder preguntas del tipo:
+
+> **¿qué proporción de pasajeros sobrevivió dentro de cada clase?**
+
+Esto requiere trabajar con la **distribución condicional de la variable `alive` dada la clase**, es decir, calcular porcentajes **dentro de cada grupo**:
+
+```{code-cell} python
+tabla_cond = pd.crosstab(data_titanic['class'],
+data_titanic['alive'], 
+normalize = 'index').mul(100).round(2)
+
+tabla_cond
+```
+
+Podemos representar esta información con un gráfico de barras paralelas (notar la utilización del método `plot.barh()` de Pandas):
+
+```{code-cell} python
+tabla2.plot.barh(figsize = (8,5), 
+stacked = False, 
+color = colors_m,
+edgecolor = 'black',
+width = 0.9)
+
+plt.xlabel('Porcentaje (%)', fontweight = 'bold')
+plt.ylabel('Clase', fontweight = 'bold', )
+plt.yticks(ticks = range(3), labels = ['Primera', 'Segunda', 'Tercera'])
+
+plt.legend(title = 'Supervivencia', labels = ['No', 'Sí'])
+
+plt.show()
+```
+
+Este gráfico permite comparar directamente proporciones dentro de cada clase. Por ejemplo, se observa que la proporción de personas que no sobrevivieron es considerablemente mayor en tercera clase que en primera.
+
+#### Comparación: distribución conjunta vs. condicional
+ 
+Comparemos ahora ambas representaciones:
+
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+:align: center
+
+fig, axes = plt.subplots(2, 1, figsize = (7, 10))
+plt.subplots_adjust(hspace = 0.5)
+
+# Gráfico izquierdo: porcentajes sobre el total
+sns.countplot(y = 'class', hue = 'alive', stat = 'percent', 
+              order = ['First', 'Second', 'Third'], edgecolor = 'black',
+              palette = colors_v, data = data_titanic, 
+              ax = axes[0])
+axes[0].invert_yaxis()
+axes[0].set_xlabel('Porcentaje (%)', fontweight='bold')
+axes[0].set_ylabel('Clase', fontweight='bold')
+axes[0].set_yticklabels(['Primera', 'Segunda', 'Tercera'])
+legend0 = axes[0].legend(title = 'Supervivencia', 
+labels = ['No', 'Sí'])
+axes[0].set_title('GRÁF. 1 - Distribución conjunta', fontweight = 'bold', pad = 10)
+
+# Gráfico derecho: porcentajes dentro de cada clase
+tabla_cond.plot.barh(stacked = False, color = colors_m, edgecolor = 'black', ax = axes[1], width = 0.85)
+axes[1].set_xlabel('Porcentaje (%)', fontweight='bold')
+axes[1].set_ylabel('Clase', fontweight='bold')
+axes[1].set_yticklabels(['Primera', 'Segunda', 'Tercera'])
+legend1 = axes[1].legend(title='Supervivencia', labels=['No', 'Sí'], facecolor='white', bbox_to_anchor=(1, 1), loc='upper left')
+axes[1].set_title('GRÁF. 2 - Distribución condicional', fontweight='bold', pad=10)
+
+plt.show()
+```
+
+- El **primer gráfico** muestra la **distribución conjunt**a: los porcentajes se calculan sobre el total de pasajeros, por lo que todas las barras suman 100 %.
+
+- El **segundo gráfico** muestra la **distribución condicional**: los porcentajes se calculan dentro de cada clase, por lo que cada fila suma 100 %.
+
+Esta diferencia es fundamental: el primer gráfico describe la composición del total, mientras que el segundo permite comparar proporciones entre grupos.
 
 ```{admonition} **¿Distribución conjunta o condicional?**
 :class: warning
@@ -677,6 +786,63 @@ Esta lectura difiere de la que tendríamos si los porcentajes se calcularan dent
 Al interpretar un gráfico de barras agrupadas conviene preguntarse siempre sobre qué base se calcularon los porcentajes. La respuesta cambia completamente el mensaje del gráfico: visualizar la distribución conjunta muestra el peso de cada combinación dentro del total; visualizar distribuciones condicionales permite comparar el comportamiento de una variable dentro de cada categoría de la otra.
 ```
 
+### Barras apiladas
+
+Una alternativa para representar estas relaciones son los **gráficos de barras apiladas**, que permiten visualizar simultáneamente el total y su composición interna.
+
+#### Distribución conjunta
+
+Partimos de la tabla de proporciones sobre el total:
+
+```{code-cell} python
+tabla_porc = pd.crosstab(df_titanic['class'], 
+df_titanic['alive'], 
+normalize = 'all').mul(100).round(2)
+
+tabla_porc
+```
+
+Y construimos el gráfico:
+
+```{code-cell} python
+tabla_porc.plot.barh(figsize = (8, 5), 
+stacked = True, 
+color = colors_v, 
+edgecolor = 'black')
+
+plt.xlabel('Porcentaje (%)', fontweight = 'bold')
+plt.ylabel('Clase', fontweight = 'bold')
+plt.yticks(ticks = range(3), labels = ['Primera', 'Segunda', 'Tercera'])
+
+legend = plt.legend(title = 'Supervivencia', labels = ['No', 'Sí'])
+
+plt.show()
+```
+
+Aquí la longitud total de cada barra representa el porcentaje de pasajeros en esa clase y cada segmento muestra cómo se distribuye ese grupo según la supervivencia al naufragio del barco.
+
+#### Distribución condicional
+
+Si en cambio usamos la tabla condicional:
+
+```{code-cell} python
+tabla_cond.plot.barh(figsize = (8, 5), 
+                     stacked = True, 
+                     color = colors_m, 
+                     edgecolor = 'black')
+                     
+plt.xlabel('Porcentaje (%)', fontweight = 'bold')
+plt.ylabel('Clase', fontweight = 'bold')
+plt.yticks(ticks = range(3), labels = ['Primera', 'Segunda', 'Tercera'])
+
+legend = plt.legend(title = 'Supervivencia', labels = ['No', 'Sí'])
+
+plt.show()
+```
+
+En este caso todas las barras tienen la misma longitud (100 %) y lo que varía es la proporción interna de cada categoría.
+
+Este tipo de gráfico resalta aún más la comparación entre grupos, ya que elimina el efecto del tamaño de cada categoría y permite enfocarse únicamente en las diferencias relativas.
 
 **Funciones de distribución acumulativas empíricas**
 Para ilustrar las FDAE (Empirical Cumulative Distribution Functions en inglés), comenzaremos con un ejemplo: un conjunto de datos de las calificaciones de los estudiantes. Supongamos que nuestra clase hipotética tiene 50 estudiantes, y los estudiantes acaban de completar un examen en el que podían obtener entre 0 y 100 puntos. ¿Cómo podemos visualizar mejor el desempeño de la clase, por ejemplo, para determinar los límites de calificación apropiados?
