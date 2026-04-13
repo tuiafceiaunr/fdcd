@@ -577,7 +577,7 @@ g = sns.FacetGrid(
     hue = 'species',
     row_order = orden,
     aspect = 10,
-    height = 1.2,
+    height = 1.8,
     palette = paleta_especies
 )
 
@@ -607,12 +607,6 @@ plt.show()
 
 ## Gráficos para visualizar conteos y proporciones 
 
-```{code-cell} python
-# Definimos paletas de colores para los gráficos
-colors_v = sns.color_palette('viridis', 2)
-colors_m = sns.color_palette('magma', 2)
-```
-
 Hasta aquí trabajamos principalmente con variables cuantitativas. Cuando la variable de interés es cualitativa, el objetivo cambia: ya no buscamos describir una forma continua, sino **comparar frecuencias o proporciones entre categorías**.
 
 La herramienta central para este tipo de análisis es el **gráfico de barras**.
@@ -621,6 +615,12 @@ La herramienta central para este tipo de análisis es el **gráfico de barras**.
 
 En un gráfico de barras cada categoría se representa mediante una barra cuya longitud es proporcional a la frecuencia de observaciones en esa categoría. Es, en esencia, la representación visual de una tabla de frecuencias para una variable cualitativa.
 
+```{code-cell} python
+# Definimos paletas de colores para los gráficos
+colors_v = sns.color_palette('viridis', 2)
+colors_m = sns.color_palette('magma', 2)
+```
+
 En `seaborn`, esto se implementa con `countplot()`. Por defecto muestra frecuencias absolutas, pero puede representar frecuencias relativas utilizando el argumento `stat = 'proportion'` o porcentajes utilizando `stat = 'percent'`. Retomando el dataset del Titanic, visualizamos la distribución de pasajeros según la clase en la que viajaban:
 
 ```{code-cell} python
@@ -628,6 +628,7 @@ plt.figure(figsize = (8, 5))
 
 sns.countplot(y = 'class', stat = 'percent',
               order = ['First', 'Second', 'Third'],
+              hue = 'class',
               palette = 'viridis',
               edgecolor = 'black',
               data = data_titanic)
@@ -640,11 +641,7 @@ plt.show()
 El gráfico permite observar de un vistazo cómo era la distribución de los pasajeros del barco entre las tres clases: más de la mitad viajaba en tercera clase. Se trata de la representación visual de la siguiente tabla:
 
 ```{code-cell} python
-data_titanic['class']
- .value_counts(normalize = True)
- .mul(100)
- .round(1)
- .rename('percent')
+data_titanic['class'].value_counts(normalize = True).mul(100).round(1).rename('percent')
 ```
 
 Nótese que las categorías se ordenan explícitamente con el parámetro `order` en lugar de dejar el orden por defecto. Igual que con los boxplots, ordenar las barras según el valor representado —de mayor a menor, o siguiendo algún criterio sustantivo— facilita la lectura y hace más evidentes las diferencias entre grupos.
