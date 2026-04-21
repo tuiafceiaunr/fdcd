@@ -915,7 +915,7 @@ Vale la pena detenerse un momento en qué representan esas líneas. Estrictament
 
 ### Un ejemplo: el acceso a Internet en Argentina
 
-Para ilustrar estas ideas, trabajaremos con datos del Banco Mundial sobre el porcentaje de personas con acceso a Internet a lo largo del tiempo en distintos países. El primer paso es importar ese dataset al entorno de trabajo y realizar algunas tareas de limpieza y filtrado que nos permitirán obtener el conjunto de datos listo para analizar.
+Para ilustrar estas ideas, trabajaremos con datos del Banco Mundial sobre el porcentaje de personas con acceso a Internet a lo largo del tiempo en distintos países (puede descargarse [acá](https://data.worldbank.org/indicator/IT.NET.USER.ZS)). El primer paso es importar ese dataset al entorno de trabajo y realizar algunas tareas de limpieza y filtrado que nos permitirán obtener el conjunto de datos listo para analizar.
 
 ```{code-cell} python
 # Importamos el dataset
@@ -964,6 +964,9 @@ sns.scatterplot(x = 'anio', y = 'porcentaje', s = 35, color = '#3446eb', edgecol
 
 plt.xlabel('Año', fontweight = 'bold')
 plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+
+plt.ylim(0, 100)
+
 plt.show()
 ```
 
@@ -972,10 +975,13 @@ Al conectar los puntos con una línea, obtenemos un gráfico de líneas básico 
 ```{code-cell} python
 plt.figure(figsize = (8,5))
 
-sns.lineplot(x = 'anio', y = 'porcentaje', color = '#3446eb', marker = 'o', markersize = 35, data = data_argentina)
+sns.lineplot(x = 'anio', y = 'porcentaje', color = '#3446eb', marker = 'o', data = data_argentina)
 
 plt.xlabel('Año', fontweight = 'bold')
 plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+
+plt.ylim(0, 100)
+
 plt.show()
 ```
 
@@ -988,15 +994,21 @@ sns.lineplot(x = 'anio', y = 'porcentaje', color = '#3446eb', data = data_argent
 
 plt.xlabel('Año', fontweight = 'bold')
 plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+
+plt.ylim(0, 100)
+
 plt.show()
 ```
 
 ### Comparar varias series temporales
 
-Frecuentemente nos interesa comparar la evolución de una misma variable en distintos grupos o categorías. En nuestro caso, supongamos que queremos contrastar la trayectoria del acceso a Internet en Argentina, India y Estados Unidos. Lo primero es filtrar esa información y darle forma de **`DataFrame`** en formato largo:
+Frecuentemente nos interesa comparar la evolución de una misma variable en distintos grupos o categorías. En nuestro caso, supongamos que queremos contrastar la trayectoria del acceso a Internet en Argentina, India y Estados Unidos. Lo primero es filtrar esa información, darle forma de **`DataFrame`** en formato largo y convertir la columna **`anio`** a numérica:
 
 ```{code-cell} python
 data_paises = data_internet_f.loc[['Argentina', 'India', 'United States']].reset_index().melt(id_vars = 'Country Name', var_name = 'anio', value_name = 'porcentaje')
+
+data_paises['anio'] = pd.to_numeric(data_paises['anio'])
+
 data_paises.head(3)
 ```
 
@@ -1010,7 +1022,11 @@ sns.scatterplot(x = 'anio', y = 'porcentaje', hue = 'Country Name', s = 35, data
 plt.xlabel('Año', fontweight = 'bold')
 plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
 
-plt.legend(title = 'País', labels = ['Argentina', 'India', 'USA'], facecolor = 'white')
+plt.ylim(0, 100)
+
+handles, labels = plt.gca().get_legend_handles_labels()
+labels_espaniol = ['Argentina', 'India', 'Estados Unidos']
+plt.legend(handles = handles, labels = labels_espaniol, title = 'País', facecolor = 'white')
 
 plt.show()
 ```
@@ -1025,7 +1041,109 @@ sns.lineplot(x = 'anio', y = 'porcentaje', hue = 'Country Name', data = data_pai
 plt.xlabel('Año', fontweight = 'bold')
 plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
 
-plt.legend(title = 'País', labels = ['Argentina', 'India', 'USA'], facecolor = 'white')
+plt.ylim(0, 100)
+
+handles, labels = plt.gca().get_legend_handles_labels()
+labels_espaniol = ['Argentina', 'India', 'Estados Unidos']
+plt.legend(handles = handles, labels = labels_espaniol, title = 'País', facecolor = 'white')
+
+plt.show()
+```
+
+Analicemos cuál es la función que cumple el siguiente fragmento en las líneas de código anteriores
+
+``` python
+handles, labels = plt.gca().get_legend_handles_labels()
+labels_espaniol = ['Argentina', 'India', 'Estados Unidos']
+plt.legend(handles = handles, labels = labels_espaniol, title = 'País', facecolor = 'white')
+```
+
+En primer lugar, **`plt.gca()`** devuelve el objeto `Axes` de los ejes actuales del gráfico (“get current axes”), es decir, el “área de dibujo” donde se colocan todos los elementos visuales como líneas, barras, etiquetas, leyendas, etc.
+
+En Matplotlib, **`handles`** son los objetos gráficos que representan los elementos que aparecen en la leyenda (por ejemplo, las líneas correspondientes a cada país). Por su parte, los **`labels`** son las etiquetas asociadas a cada uno de esos objetos. Estos dos elementos se generan automáticamente a partir del gráfico ya construido (en este caso, a partir de la variable utilizada en `hue`). Además, cada `handle` está asociado a un `label` en la misma posición, lo que permite modificar las etiquetas manteniendo los mismos elementos visuales.
+
+De este modo, podemos reemplazar los labels originales por otros (por ejemplo, en español) sin necesidad de redefinir las líneas del gráfico.
+
+## Heatmaps: cuando el color representa una cantidad
+
+A lo largo de las secciones anteriores hemos visto distintas formas de representar datos: gráficos para entender cómo se distribuyen los valores de una variable (segmentados o no según una variable categórica), gráficos de barras y proporciones para comparar conteos o proporciones entre categorías, y gráficos de líneas para seguir la evolución de una variable en el tiempo. Todas estas visualizaciones tienen algo en común: *mapean* los valores de los datos a posiciones en el espacio del gráfico, ya sea la altura de una barra, la posición de un punto o la trayectoria de una línea.
+
+Existe, sin embargo, una alternativa: en lugar de usar la posición para representar un valor numérico, **podemos usar el color**. Este tipo de visualización se conoce como **mapa de calor o *heatmap***, y resulta especialmente poderoso cuando queremos mostrar simultáneamente una variable cuantitativa en función de dos dimensiones categóricas u ordinales, por ejemplo: países y años.
+
+### El heatmap aplicado al acceso a Internet
+
+El gráfico de líneas que construimos en la sección anterior es ideal para comparar la evolución de dos o tres países. Pero, ¿qué ocurre si queremos visualizar los 20 países del dataset al mismo tiempo? Un gráfico de líneas con 20 series superpuestas se vuelve rápidamente ilegible: los colores se repiten, las líneas se cruzan y el ojo no logra seguir ninguna trayectoria en particular.
+
+El heatmap ofrece una solución elegante a este problema. La idea es sencilla: construimos una grilla donde cada fila corresponde a un país y cada columna a un año, y cada celda se colorea según el valor del porcentaje de acceso a Internet en ese país y ese año. En Python, podemos construirlo con Seaborn a partir de los datos en formato ancho (que es justo el formato en el cual teníamos los datos originalmente, en el objeto `data_internet_f`):
+
+```{code-cell} python
+plt.figure(figsize = (17,9))
+
+ax = sns.heatmap(data_internet_f, cmap = 'magma', cbar_kws={'label': 'Porcentaje de acceso a internet'})
+
+plt.xlabel('Año', fontweight = 'bold')
+plt.ylabel('País', fontweight = 'bold')
+
+cbar = ax.collections[0].colorbar
+cbar.ax.tick_params(labelsize=15)
+cbar.ax.yaxis.label.set_size(18)
+cbar.ax.yaxis.label.set_fontweight('bold')
+
+plt.show()
+```
+
+El resultado es una visualización compacta que permite leer patrones globales de un vistazo: qué países adoptaron Internet tempranamente, cuáles lo hicieron tarde, y cómo se distribuye el acceso Internet en los años más recientes.
+
+### Lo que el heatmap gana y lo que cede
+
+Como toda herramienta de visualización, el heatmap implica una serie de concesiones. Su principal fortaleza es la capacidad de mostrar muchas series simultáneamente sin saturar el gráfico: 20 países, más de 30 años, más de 600 celdas, todo en una sola figura legible. Además, permite detectar patrones estructurales con rapidez: gradientes de color que revelan tendencias, celdas aisladas que señalan anomalías, bloques de color que muestran grupos de países con comportamientos similares.
+
+Lo que el heatmap sacrifica es la precisión en la lectura de valores individuales. Si queremos saber exactamente qué porcentaje de personas tenía acceso a Internet en Argentina en 2010, el heatmap nos dará una respuesta aproximada, no exacta. Para ese tipo de consulta, un gráfico de líneas o una tabla son herramientas más adecuadas. El heatmap no compite con ellos: los complementa.
+
+### El orden de las filas importa (y mucho)
+
+Una decisión de diseño que tiene un impacto enorme en lo que el heatmap comunica es el orden en que se disponen los países. No existe un único orden correcto, la elección depende de la historia que queremos contar.
+
+Si ordenamos los países por su porcentaje de acceso a Internet en el año más reciente del dataset (año 2024), el gráfico destaca cuáles son los países con mayor acceso actual y cuáles quedaron rezagados. Esta es la pregunta más natural si nos interesa el estado del mundo hoy.
+
+```{code-cell} python
+# Ordenar por acceso en el último año disponible
+
+## Índice ordenado
+orden_2024 = data_internet_f.sort_values(by = '2024', ascending = False).index
+
+## Dataset ordenado
+data_internet_ord_2024 = data_internet_f.reindex(orden_2024)
+```
+
+Pero si ordenamos los países por el año en que su acceso a Internet superó por primera vez un umbral determinado —digamos, el 20% de la población—, el gráfico nos cuenta una historia diferente: la de los pioneros y los tardíos en la adopción de la tecnología. Este ordenamiento puede revelar patrones sorprendentes: países que adoptaron Internet muy temprano pero que en la actualidad tienen un porcentaje relativamente bajo de su población con acceso a Internet, así como países que llegaron tarde pero crecieron de forma muy acelerada.
+
+```{code-cell} python
+# Ordenar según orden de acceso del 20% de la población
+
+## Índice ordenado
+orden_20 = (data_internet_f >=20).idxmax(axis = 'columns').sort_values().index
+
+## Dataset ordenado
+data_internet_ord_20 = data_internet_f.reindex(orden_20)
+```
+
+Ambas representaciones son igualmente válidas. La pregunta que debemos hacernos antes de construir el gráfico no es cuál es el orden "correcto", sino **cuál es la pregunta que queremos responder.** El orden de las filas no es un detalle técnico: es una decisión narrativa.
+
+Veamos cómo luce el heatmap construido con las categorías ordenadas según este último criterio:
+
+```{code-cell} python
+plt.figure(figsize = (17,9))
+
+ax = sns.heatmap(data_internet_ord_20, cmap = 'magma', cbar_kws={'label': 'Porcentaje de acceso a internet'})
+
+plt.xlabel('Año', fontweight = 'bold')
+plt.ylabel('País', fontweight = 'bold')
+
+cbar = ax.collections[0].colorbar
+cbar.ax.tick_params(labelsize=15)
+cbar.ax.yaxis.label.set_size(18)
+cbar.ax.yaxis.label.set_fontweight('bold')
 
 plt.show()
 ```
