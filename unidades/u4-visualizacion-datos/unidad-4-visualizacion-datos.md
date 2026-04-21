@@ -929,11 +929,11 @@ lista_paises = ['Iceland', 'Norway', 'United Kingdom', 'Japan', 'Canada', 'Germa
 data_internet_f = data_internet[(data_internet['Country Name'].isin(lista_paises))]
 
 # Eliminamos columnas innecesarias
-data_internet_filtrado = data_internet_filtrado.drop(['Country Code', 'Indicator Name', 'Indicator Code', 'Unnamed: 70'], axis = 1)
+data_internet_f = data_internet_f.drop(['Country Code', 'Indicator Name', 'Indicator Code', 'Unnamed: 70'], axis = 1)
 
 # Filtramos los últimos 30 años (datos para todos los países que seleccionamos)
-data_internet_filtrado = data_internet_filtrado[
-    ['Country Name'] + [col for col in data_internet_filtrado.columns if col.isdigit() and 1994 <= int(col) <= 2024]
+data_internet_f = data_internet_f[
+    ['Country Name'] + [col for col in data_internet_f.columns if col.isdigit() and 1994 <= int(col) <= 2024]
 ]
 
 # Seteamos Country Name como index
