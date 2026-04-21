@@ -866,7 +866,7 @@ A diferencia del gráfico de barras, donde comparamos longitudes, en este caso l
 Para construir un gráfico de sectores para la variable `class`, primero generamos una tabla con los porcentajes correspondientes a cada categoría:
 
 ```{code-cell} python
-tabla_clases = df_titanic['class'].value_counts(normalize = True).mul(100).round(1).reset_index().rename(columns = {'class': 'Clase', 'proportion': 'Porcentaje'})
+tabla_clases = data_titanic['class'].value_counts(normalize = True).mul(100).round(1).reset_index().rename(columns = {'class': 'Clase', 'proportion': 'Porcentaje'})
 
 tabla_clases
 ```
@@ -905,6 +905,130 @@ Si bien es un gráfico muy difundido, el gráfico de sectores presenta **algunas
 
 - Se vuelve poco claro cuando hay muchas categorías.
 
+## Visualizar series de tiempo
+
+Una **serie temporal** es una secuencia de observaciones de una variable registradas en puntos específicos en el tiempo. A diferencia de otros tipos de datos, las observaciones que componen una serie temporal no son independientes entre sí: están ordenadas cronológicamente, y cada valor tiene un "antes" y un "después". Esta estructura impone una lógica particular sobre cómo debemos visualizar los datos.
+
+Cuando graficamos una serie temporal, el eje horizontal representa el tiempo y los puntos se distribuyen de izquierda a derecha siguiendo ese orden natural. Esto significa que cada observación tiene exactamente un vecino anterior y uno posterior (salvo los extremos de la serie), lo que nos habilita a conectar los puntos mediante líneas. El resultado es lo que se conoce como un **gráfico de líneas**.
+
+Vale la pena detenerse un momento en qué representan esas líneas. Estrictamente hablando, no corresponden a datos observados: son interpolaciones visuales entre mediciones reales. Si las observaciones estuvieran más espaciadas en el tiempo, los valores intermedios probablemente no caerían sobre la línea trazada. Sin embargo, los gráficos de líneas son una convención ampliamente aceptada en la visualización de series temporales porque cumplen una función muy clara: **hacen visible la evolución de la variable a lo largo del tiempo y facilitan la detección de tendencias y comportamientos estacionales**. Cuando sea pertinente, es buena práctica aclararlo en el epígrafe del gráfico, con una frase del tipo *"las líneas son una guía visual"*.
+
+### Un ejemplo: el acceso a Internet en Argentina
+
+Para ilustrar estas ideas, trabajaremos con datos del Banco Mundial sobre el porcentaje de personas con acceso a Internet a lo largo del tiempo en distintos países. El primer paso es importar ese dataset al entorno de trabajo y realizar algunas tareas de limpieza y filtrado que nos permitirán obtener el conjunto de datos listo para analizar.
+
+```{code-cell} python
+# Importamos el dataset
+data_internet = pd.read_csv('datasets/data_internet.csv', skiprows = 4)
+
+# Filtramos sólo algunos países
+lista_paises = ['Iceland', 'Norway', 'United Kingdom', 'Japan', 'Canada', 'Germany', 'New Zealand',
+                  'France', 'Israel', 'Argentina', 'United States', 'Chile', 'Italy', 'Brazil', 'Mexico',
+                  'South Africa', 'China', 'Algeria', 'India', 'Kenia']
+
+data_internet_f = data_internet[(data_internet['Country Name'].isin(lista_paises))]
+
+# Eliminamos columnas innecesarias
+data_internet_f = data_internet_f.drop(['Country Code', 'Indicator Name', 'Indicator Code', 'Unnamed: 68'], axis = 1)
+
+# Nos quedamos únicamente con las columnas que tienen datos para todos los países que seleccionamos
+data_internet_f = data_internet_f.dropna(axis = 1)
+
+# Seteamos Country Name como index
+data_internet_f.set_index('Country Name', inplace = True)
+
+# Visualizamos las primeras filas
+data_internet_f.head(3)
+```
+
+Como primer caso, visualizamos la evolución de este indicador en Argentina entre 1990 y 2021. Para ello, necesitamos filtrar esa información y darle forma de **`DataFrame`**. 
+
+```{code-cell} python
+data_argentina = data_internet_f.loc['Argentina'].reset_index().rename(columns = {'index' : 'anio', 'Argentina' : 'porcentaje'})
+data_argentina.head()
+```
+
+Además, teniendo en cuenta que la columna **`anio`** es de tipo **`object`**, la transformamos en **`int64`** para poder realizar luego algunas modificaciones de escala en el gráfico:
+
+```{code-cell} python
+data_argentina['anio'] = pd.to_numeric(data_argentina['anio'])
+data_argentina.info()
+```
+
+El punto de partida es un gráfico de dispersión o *scatterplot* donde cada punto representa el porcentaje de acceso a Internet en un año particular. Sin embargo, a diferencia de un *scatterplot* convencional, aquí los puntos están ordenados a lo largo del eje horizontal según el tiempo, y esa estructura es precisamente la que vamos a aprovechar.
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.scatterplot(x = 'anio', y = 'porcentaje', s = 35, color = '#3446eb', edgecolor = '#3446eb', data = data_argentina)
+
+plt.xlabel('Año', fontweight = 'bold')
+plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+plt.show()
+```
+
+Al conectar los puntos con una línea, obtenemos un gráfico de líneas básico que ya deja ver la tendencia de crecimiento sostenido del acceso a Internet en el país. Si queremos mostrar también las observaciones individuales, podemos agregar marcadores:
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.lineplot(x = 'anio', y = 'porcentaje', color = '#3446eb', marker = 'o', markersize = 35, data = data_argentina)
+
+plt.xlabel('Año', fontweight = 'bold')
+plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+plt.show()
+```
+
+La elección de mostrar o no los puntos individuales depende del objetivo del gráfico. Incluirlos enfatiza las observaciones concretas, mientras que omitirlos pone el foco en la tendencia general. Para series con pocas observaciones muy espaciadas, los marcadores ayudan a distinguir los datos reales de la interpolación visual. Para series muy densas, los marcadores se superponen y ensucian el gráfico; en esos casos, la línea sola es suficiente.
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.lineplot(x = 'anio', y = 'porcentaje', color = '#3446eb', data = data_argentina)
+
+plt.xlabel('Año', fontweight = 'bold')
+plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+plt.show()
+```
+
+### Comparar varias series temporales
+
+Frecuentemente nos interesa comparar la evolución de una misma variable en distintos grupos o categorías. En nuestro caso, supongamos que queremos contrastar la trayectoria del acceso a Internet en Argentina, India y Estados Unidos. Lo primero es filtrar esa información y darle forma de **`DataFrame`** en formato largo:
+
+```{code-cell} python
+data_paises = data_internet_f.loc[['Argentina', 'India', 'United States']].reset_index().melt(id_vars = 'Country Name', var_name = 'anio', value_name = 'porcentaje')
+data_paises.head(3)
+```
+
+La forma más directa de construir esta visualización es usando el parámetro **`hue`**, que asigna un color diferente a cada categoría:
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.scatterplot(x = 'anio', y = 'porcentaje', hue = 'Country Name', s = 35, data = data_paises)
+
+plt.xlabel('Año', fontweight = 'bold')
+plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+
+plt.legend(title = 'País', labels = ['Argentina', 'India', 'USA'], facecolor = 'white')
+
+plt.show()
+```
+
+Cuando trabajamos con múltiples series temporales, los gráficos de líneas tienen una ventaja decisiva sobre los gráficos de puntos sin conectar: las líneas ayudan al ojo a seguir cada trayectoria de forma independiente, evitando que las series se confundan entre sí:
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.lineplot(x = 'anio', y = 'porcentaje', hue = 'Country Name', data = data_paises)
+
+plt.xlabel('Año', fontweight = 'bold')
+plt.ylabel('Porcentaje de acceso a Internet', fontweight = 'bold')
+
+plt.legend(title = 'País', labels = ['Argentina', 'India', 'USA'], facecolor = 'white')
+
+plt.show()
+```
 
 **Funciones de distribución acumulativas empíricas**
 Para ilustrar las FDAE (Empirical Cumulative Distribution Functions en inglés), comenzaremos con un ejemplo: un conjunto de datos de las calificaciones de los estudiantes. Supongamos que nuestra clase hipotética tiene 50 estudiantes, y los estudiantes acaban de completar un examen en el que podían obtener entre 0 y 100 puntos. ¿Cómo podemos visualizar mejor el desempeño de la clase, por ejemplo, para determinar los límites de calificación apropiados?
