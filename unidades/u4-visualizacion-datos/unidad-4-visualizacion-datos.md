@@ -641,7 +641,7 @@ sns.ecdfplot(x = 'flipper_length_mm', hue = 'species', linewidth = 2.5, data = d
 plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
 plt.ylabel('Proporción acumulada', fontweight = 'bold')
 
-plt.legend(title = 'Especie', labels = ['Adelie', 'Chinstrap', 'Gentoo'])
+plt.legend(title = 'Especie', labels = ['Adelie', 'Chinstrap', 'Gentoo'], facecolor = 'white')
 
 plt.show()
 ```
@@ -660,7 +660,7 @@ Un ejemplo clásico es la distribución de ingresos, precios de viviendas, o tam
 np.random.seed(123)
 datos_x1 = np.random.lognormal(mean = 2, sigma = 0.8, size = 5000)
 
-fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+fig, axes = plt.subplots(1, 2, figsize = (10, 5))
 
 # Histograma
 sns.histplot(x = datos_x1, color = 'darkred', edgecolor = 'black', bins = 50, ax = axes[0])
@@ -699,13 +699,13 @@ Para construir un Q-Q plot en Python podemos usar la función **`sm.qqplot()`** 
 ```{code-cell} python
 # Simulamos datos provenientes de una distribución normal
 np.random.seed(123)
-datos_x2 = np.random.normal(mean = 2, sigma = 0.8, size = 5000)
+datos_x2 = np.random.normal(loc = 2, scale = 0.8, size = 5000)
 ```
 
 ```{code-cell} python
 import statsmodels.api as sm
 
-fig, axes = plt.subplots(1, 2, figsize = (14, 5))
+fig, axes = plt.subplots(1, 2, figsize = (10, 5))
 
 # Variable aproximadamente normal: x2
 sm.qqplot(datos_x2, line = 's', ax = axes[0], markerfacecolor = 'black', markeredgecolor = 'none', alpha = 0.5)
@@ -731,7 +731,7 @@ plt.show()
 
 El contraste entre ambos paneles es inmediatamente elocuente. Los datos de la variable $x_2$ siguen muy de cerca la diagonal, lo que indica que su distribución es aproximadamente normal. Los datos de $x_1$, en cambio, muestran una desviación muy marcada.
 
-#### ¿Cuándo usar ECDF y cuándo usar Q-Q?
+#### ¿Cuándo usar ECDF y cuándo usar Q-Q plots?
 
 Ambas herramientas son complementarias y responden a preguntas distintas. La ECDF es ideal para **explorar** la distribución de los datos: muestra todo el rango de valores, permite comparar grupos y es útil para leer percentiles directamente. El Q-Q plot, en cambio, es una **herramienta de diagnóstico**: sirve para evaluar si los datos se ajustan a una distribución teórica específica, y es más sensible a desviaciones en las colas de la distribución que un histograma o una densidad.
 
@@ -1282,29 +1282,56 @@ cbar.ax.yaxis.label.set_fontweight('bold')
 plt.show()
 ```
 
-**Funciones de distribución acumulativas empíricas**
-Para ilustrar las FDAE (Empirical Cumulative Distribution Functions en inglés), comenzaremos con un ejemplo: un conjunto de datos de las calificaciones de los estudiantes. Supongamos que nuestra clase hipotética tiene 50 estudiantes, y los estudiantes acaban de completar un examen en el que podían obtener entre 0 y 100 puntos. ¿Cómo podemos visualizar mejor el desempeño de la clase, por ejemplo, para determinar los límites de calificación apropiados?
-Podemos trazar el número total de estudiantes que han recibido como máximo un cierto número de puntos frente a todas las puntuaciones posibles. Esta gráfica será una función ascendente, comenzando en 0 para 0 puntos y terminando en 50 para 100 puntos. Una forma diferente de pensar en esta visualización es la siguiente: podemos clasificar a todos los estudiantes por la cantidad de puntos que obtuvieron, en orden ascendente (de modo que el estudiante con la menor cantidad de puntos recibe la clasificación más baja y el estudiante con la mayor cantidad de puntos la más alta), y luego represente la clasificación frente a los puntos reales obtenidos. El resultado es una función de distribución acumulativa empírica, o simplemente distribución acumulativa. Cada punto representa a un estudiante y las líneas visualizan el rango de estudiante más alto observado para cualquier valor de punto posible.
+## Gráficos para visualizar asociaciones entre variables cuantitativas
 
-![Función de distribución acumulativa empírica de las calificaciones de los estudiantes para una clase hipotética de 50 estudiantes.](./imagenes/Untitled23.png)
+Cuando trabajamos con datasets que contienen múltiples variables cuantitativas, una pregunta natural es si existe alguna relación entre ellas. Retomando el ejemplo del dataset Penguins, podríamos preguntarnos, por ejemplo si los pingüinos más pesados tienden a tener aletas más largas y, de ser así, qué tipo de forma caracteriza a dicha relación. Para responder este tipo de preguntas necesitamos herramientas que permitan visualizar asociaciones, es decir, patrones de covariación entre dos o más variables numéricas.
 
-Función de distribución acumulativa empírica de las calificaciones de los estudiantes para una clase hipotética de 50 estudiantes.
+### El scatterplot como punto de partida
 
-Quizás se pregunten qué sucede si clasificamos a los estudiantes al revés, en orden descendente. Esta clasificación simplemente le da la vuelta a la función. El resultado sigue siendo una función de distribución acumulativa empírica, pero las líneas ahora representan el rango de estudiante más bajo observado para cualquier valor de punto posible.
+Ya vimos en detalle en la unidad anterior que el gráfico de dispersión o *scatterplot* es la herramienta fundamental para explorar la relación entre dos variables cuantitativas. Cada punto representa una observación, y su posición en el plano está determinada por los valores de las dos variables que estamos representando. Vale la pena recordar, a modo de repaso, el gráfico que construimos con el dataset de pingüinos del archipiélago Palmer para visualizar la relación existente entre la masa corporal y la longitud del pico:
 
-![Distribución de las calificaciones de los estudiantes representadas como FDAE descendente](./imagenes/Untitled24.png)
+```{code-cell} python
+plt.figure(figsize = (8,5))
 
-Distribución de las calificaciones de los estudiantes representadas como FDAE descendente
+sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm', s = 35, color = '#eb4034', edgecolor = '#eb4034', data = data_penguins)
 
-Las funciones de distribución acumulativa ascendente son más conocidas y más utilizadas que las descendentes, pero ambas tienen aplicaciones importantes. Las funciones de distribución acumulativa descendente son críticas cuando queremos visualizar distribuciones altamente sesgadas, como se explica en la siguiente sección.
+plt.xlabel('Masa corporal (g)', fontweight = 'bold')
+plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
 
-En aplicaciones prácticas, es bastante común dibujar el FDAE sin resaltar los puntos individuales y normalizar los rangos por el rango máximo, de modo que el eje y represente la frecuencia acumulada.
+plt.show()
+```
 
-![FDAE de las calificaciones de los estudiantes. Las clasificaciones de los estudiantes se han normalizado al número total de estudiantes, de modo que los valores de y graficados corresponden a la fracción de estudiantes en la clase con, como máximo, esa cantidad de puntos.](./imagenes/Untitled25.png)
+La nube de puntos resultante muestra con claridad que la relación entre ambas variables es lineal, intensa y que los pingüinos más pesados tienden a tener aletas más largas (dirección positiva). También vimos que podemos incorporar una variable categórica codificándola mediante el color de los puntos, lo que permite distinguir si un patrón se mantiene en todos los grupos o si es distinto entre ellos.
 
-FDAE de las calificaciones de los estudiantes. Las clasificaciones de los estudiantes se han normalizado al número total de estudiantes, de modo que los valores de y graficados corresponden a la fracción de estudiantes en la clase con, como máximo, esa cantidad de puntos.
+Lo que nos preguntamos ahora es: ¿qué hacemos cuando queremos explorar no una sino varias relaciones al mismo tiempo?
 
-Podemos leer directamente las propiedades clave de la distribución de calificaciones de los estudiantes de este gráfico. Por ejemplo, aproximadamente una cuarta parte de los estudiantes (25%) recibió menos de 75 puntos. El valor medio de la puntuación (correspondiente a una frecuencia acumulada de 0,5) es 81. Aproximadamente el 20 % de los alumnos obtuvo 90 puntos o más. Las FDAE son útiles para asignar límites de calificación porque ayudan a ubicar los límites exactos que minimizan la infelicidad de los estudiantes. Por ejemplo, en este ejemplo, hay una línea horizontal bastante larga justo debajo de los 80 puntos, seguida de una subida pronunciada justo en los 80. Esta característica se debe a que tres estudiantes obtuvieron 80 puntos en su examen, mientras que el estudiante con la siguiente calificación más alta recibió solo 76 puntos. En este escenario, podría decidir que todos los que tienen un puntaje de 80 o más reciben una B y todos los que tienen 79 o menos reciben una C. Los tres estudiantes con 80 puntos están contentos de haber obtenido una B y el estudiante con 76 se da cuenta de que tendría que haber tenido un desempeño mucho mejor para no recibir una C. Si tuviera que establecer el límite en 77, la distribución de calificaciones con letras sería exactamente la misma, pero podría encontrar al estudiante con 76 puntos solicitando negociar su calificación. Del mismo modo, si hubiera establecido el límite en 81, probablemente habría tres estudiantes tratando de negociar su calificación.
+### Matrices de scatterplots
+
+El dataset de pingüinos incluye cuatro variables cuantitativas: longitud del pico (`bill_length_mm`), profundidad del pico (`bill_depth_mm`), longitud de la aleta (`flipper_length_mm`) y masa corporal (`body_mass_g`). Si quisiéramos estudiar la relación entre cada par posible de estas variables, tendríamos que construir seis scatterplots por separado. La función **`pairplot()`** de Seaborn resuelve este problema de forma elegante, generando automáticamente la matriz de scatterplots para todas las combinaciones posibles:
+
+```{code-cell} python
+sns.pairplot(vars = ['bill_length_mm','bill_depth_mm',
+                            	'flipper_length_mm', 'body_mass_g'], data = data_penguins, height = 2, plot_kws = {'color': 'black', 'edgecolor' : 'black', 'size' : 2.5}, diag_kws = {'color': 'black', 'edgecolor' : 'black'})
+                            	
+plt.show()
+```
+
+El resultado es una grilla donde cada celda fuera de la diagonal muestra el scatterplot entre un par de variables, y cada celda en la diagonal muestra la distribución individual de cada variable mediante un histograma. La matriz es simétrica: el gráfico en la posición ($i$, $j$) muestra las mismas variables que el de la posición ($j$, $i$), pero con los ejes intercambiados.
+
+Como ya hicimos con el scatterplot simple, podemos incorporar la variable `species` mediante el parámetro `hue` para visualizar si los patrones de asociación difieren entre las tres especies:  
+
+```{code-cell} python
+sns.pairplot(vars = ['bill_length_mm','bill_depth_mm',
+                            	'flipper_length_mm', 'body_mass_g'], data = data_penguins, height = 2, hue = 'species',
+                            	plot_kws = {'s' : 15, 'edgecolor' : 'none'})
+
+plt.show()
+```
+
+Cuando se usa `hue`, la diagonal deja de mostrar histogramas y pasa a mostrar curvas de densidad superpuestas para cada especie. Esto permite comparar tanto las asociaciones entre variables como las distribuciones individuales de cada grupo en una única figura.
+
+La matriz de scatterplots es una herramienta poderosa porque explota lo que mejor hacemos los seres humanos al leer gráficos: juzgar posiciones. Cada relación se representa en su propio panel, sin que las variables compitan entre sí por el espacio visual.
+
 
 ## Visualización de cantidades y proporciones: gráficos de barra (apiladas, agrupadas), gráficos de área
 
