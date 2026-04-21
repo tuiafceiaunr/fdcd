@@ -605,6 +605,138 @@ g.set_xlabels('Longitud de aleta (mm)', fontweight = 'bold')
 plt.show()
 ```
 
+### Función de distribución acumulada empírica (ECDF)
+
+Los histogramas y los gráficos de densidad que vimos en las secciones anteriores son herramientas poderosas e intuitivas para explorar la forma de una distribución. Sin embargo, ambas comparten una limitación importante: el aspecto final del gráfico depende de decisiones que toma el analista de datos —por ejemplo, el ancho de los *bins* en el histograma, el *bandwidth* en la estimación de densidad— y esas decisiones pueden afectar de forma significativa lo que el gráfico comunica. En ese sentido, tanto el histograma como el gráfico de densidad son, en alguna medida, una interpretación de los datos, no una representación directa de ellos.
+
+La **función de distribución acumulada empírica** (ECDF, por sus siglas en inglés) resuelve este problema. No requiere ningún parámetro de suavizado, no depende de decisiones arbitrarias del analista y muestra todos los datos al mismo tiempo. La contrapartida es que resulta algo menos intuitiva al primer contacto, razón por la cual es mucho más frecuente en publicaciones técnicas y en la práctica estadística que en la comunicación general de datos.
+
+La idea detrás de la ECDF es simple: para cada valor posible $x_0$ en el rango de los datos, la función nos dice qué proporción de las observaciones es menor o igual a $x_0$. Dicho de otro modo, si ordenamos todas las observaciones de menor a mayor y las numeramos del 1 al $n$ la ECDF asigna a cada observación su rango relativo dentro del total.
+
+Para ilustrarlo con un ejemplo concreto usaremos la variable `flipper_length_mm` (longitud de la aleta en milímetros), incluida en el dataset Penguins, y construiremos el gráfico utilizando la función **`sns.ecdfplot()`** de la librería Seaborn:
+
+```{code-cell} python
+# Eliminamos cualquier registro que contenga un dato faltante
+data_penguins = data_penguins.dropna()
+
+plt.figure(figsize=(8, 5))
+
+sns.ecdfplot(x = 'flipper_length_mm', linewidth = 2.5, data = data_penguins)
+
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Proporción acumulada', fontweight = 'bold')
+
+plt.show()
+```
+
+La curva resultante es siempre **monótona creciente**: parte de 0 en el valor mínimo de los datos y llega a 1 en el valor máximo. Su forma nos permite leer directamente propiedades de la distribución que en un histograma requieren más esfuerzo. Por ejemplo, el valor en el que la curva cruza el 0.5 en el eje vertical corresponde a la mediana. Si la curva crece de forma muy abrupta en una región, significa que muchas observaciones se concentran allí. Si crece lentamente, los datos están más dispersos en ese rango.
+
+También podemos usar la ECDF para comparar distribuciones entre grupos, simplemente graficando una curva por grupo:
+
+```{code-cell} python
+plt.figure(figsize=(8, 5))
+
+sns.ecdfplot(x = 'flipper_length_mm', hue = 'species', linewidth = 2.5, data = data_penguins)
+
+plt.xlabel('Longitud de aleta (mm)', fontweight = 'bold')
+plt.ylabel('Proporción acumulada', fontweight = 'bold')
+
+plt.legend(title = 'Especie', labels = ['Adelie', 'Chinstrap', 'Gentoo'])
+
+plt.show()
+```
+
+Esta comparación tiene una ventaja sobre los gráficos de densidad por grupo: al no requerir suavizado, no existe el riesgo de que las curvas de distintos grupos se "contaminen" visualmente entre sí. Cada ECDF representa fielmente los datos de su grupo, sin interpolación.
+
+#### ECDF y distribuciones muy asimétricas
+
+La ECDF resulta especialmente útil cuando los datos tienen distribuciones muy asimétricas, es decir, con una cola larga hacia la derecha. En esos casos, los histogramas y las densidades suelen mostrar un pico pronunciado cerca del mínimo y un eje horizontal tan extendido que los detalles de la distribución desaparecen.
+
+Un ejemplo clásico es la distribución de ingresos, precios de viviendas, o tamaños de ciudades. Para ilustrarlo, vamos a simular datos provenientes de una distribución muy asimétrica (`datos_x1`):
+
+```{code-cell} python
+
+# Simulamos datos muy asimétricos (distribución lognormal)
+np.random.seed(123)
+datos_x1 = np.random.lognormal(mean = 2, sigma = 0.8, size = 5000)
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Histograma
+sns.histplot(x = datos_x1, color = 'darkred', edgecolor = 'black', bins = 50, ax = axes[0])
+axes[0].set_xlabel('x1', fontweight = 'bold')
+axes[0].set_ylabel('Frecuencia', fontweight = 'bold')
+axes[0].set_title('Histograma', fontweight = 'bold')
+axes[0].set_xticks(np.arange(0, 226, 25))
+axes[0].set_xlim(0, 225)
+
+# ECDF
+sns.ecdfplot(x = datos_x1, linewidth = 2.5, color = 'darkred', ax = axes[1])
+axes[1].set_xlabel('x1', fontweight = 'bold')
+axes[1].set_ylabel('Proporción acumulada', fontweight = 'bold')
+axes[1].set_title('ECDF', fontweight = 'bold')
+axes[1].set_xticks(np.arange(0, 226, 25))
+axes[1].set_xlim(0, 225)
+
+plt.tight_layout()
+plt.show()
+```
+
+Comparar ambos gráficos lado a lado es un ejercicio revelador. El histograma muestra claramente la asimetría pero hace difícil leer valores concretos. La ECDF, en cambio, permite ver directamente qué proporción de los valores de la variable son menores o iguales a un determinado valor, o identificar los percentiles de la distribución con precisión.
+
+Cuando la asimetría es muy extrema, puede ser útil aplicar una transformación logarítmica al eje horizontal antes de graficar la ECDF. Esto "abre" la distribución y hace visibles detalles que de otro modo quedarían aplastados cerca del mínimo.
+
+### Gráficos Q-Q
+
+Los **gráficos cuantil-cuantil** (Q-Q plots) son una herramienta de diagnóstico estadístico: no están pensados para explorar la forma de una distribución en términos generales, sino para responder una pregunta más específica: ¿qué tan bien se ajustan mis datos a una distribución teórica particular?
+
+La distribución de referencia más habitual es la **distribución normal**, aunque el principio es general y puede aplicarse a cualquier distribución teórica.
+
+La lógica del gráfico es la siguiente: si los datos siguieran perfectamente una distribución normal, entonces sus cuantiles empíricos deberían coincidir exactamente con los cuantiles teóricos de esa distribución. El Q-Q plot compara visualmente ambos conjuntos de cuantiles: si los puntos caen sobre la diagonal, los datos se ajustan bien a la distribución de referencia. Las desviaciones sistemáticas respecto a la línea pueden revelar algunas diferencias específicas con respecto a la referencia: colas más pesadas o más ligeras de lo esperado, asimetría, valores atípicos, etc.
+
+Para construir un Q-Q plot en Python podemos usar la función **`sm.qqplot()`** de la librería `statsmodels`. A modo de ejemplo, vamos a comparar el Q-Q plot de los datos de la variable $x_1$ (generada anteriormente) con el de una variable $x_2$, generada a partir de una distribución normal.
+
+```{code-cell} python
+# Simulamos datos provenientes de una distribución normal
+np.random.seed(123)
+datos_x2 = np.random.normal(mean = 2, sigma = 0.8, size = 5000)
+```
+
+```{code-cell} python
+import statsmodels.api as sm
+
+fig, axes = plt.subplots(1, 2, figsize = (14, 5))
+
+# Variable aproximadamente normal: x2
+sm.qqplot(datos_x2, line = 's', ax = axes[0], markerfacecolor = 'black', markeredgecolor = 'none', alpha = 0.5)
+axes[0].set_title('Q-Q plot x2', fontweight = 'bold')
+axes[0].set_xlabel('Cuantiles teóricos', fontweight = 'bold')
+axes[0].set_ylabel('Cuantiles observados', fontweight = 'bold')
+
+axes[0].lines[1].set_color('#3c32a8')
+axes[0].lines[1].set_linewidth(2.5)
+
+# Variable asimétrica: x1
+sm.qqplot(datos_x1, line = 's', ax = axes[0], markerfacecolor = 'black', markeredgecolor = 'none', alpha = 0.5)
+axes[1].set_title('Q-Q plot x1', fontweight = 'bold')
+axes[1].set_xlabel('Cuantiles teóricos', fontweight = 'bold')
+axes[1].set_ylabel('Cuantiles observados', fontweight = 'bold')
+
+axes[1].lines[1].set_color('#3c32a8')
+axes[1].lines[1].set_linewidth(2.5)
+
+plt.tight_layout()
+plt.show()
+```
+
+El contraste entre ambos paneles es inmediatamente elocuente. Los datos de la variable $x_2$ siguen muy de cerca la diagonal, lo que indica que su distribución es aproximadamente normal. Los datos de $x_1$, en cambio, muestran una desviación muy marcada.
+
+#### ¿Cuándo usar ECDF y cuándo usar Q-Q?
+
+Ambas herramientas son complementarias y responden a preguntas distintas. La ECDF es ideal para **explorar** la distribución de los datos: muestra todo el rango de valores, permite comparar grupos y es útil para leer percentiles directamente. El Q-Q plot, en cambio, es una **herramienta de diagnóstico**: sirve para evaluar si los datos se ajustan a una distribución teórica específica, y es más sensible a desviaciones en las colas de la distribución que un histograma o una densidad.
+
+En la práctica, la secuencia habitual es: explorar con histograma o densidad, confirmar o refinar con ECDF, y validar supuestos distribucionales con Q-Q plots antes de aplicar modelos estadísticos que los requieran.
+
 ## Gráficos para visualizar conteos y proporciones 
 
 Hasta aquí trabajamos principalmente con variables cuantitativas. Cuando la variable de interés es cualitativa, el objetivo cambia: ya no buscamos describir una forma continua, sino **comparar frecuencias o proporciones entre categorías**.
