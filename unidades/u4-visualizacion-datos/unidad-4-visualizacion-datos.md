@@ -1727,6 +1727,8 @@ Cuando trabajemos con datos en Python, verificar y, si es necesario, transformar
 
 ### GeoPandas: trabajar con datos georreferenciados en Python
 
+La librería GeoPandas extiende la funcionalidad de Pandas para incorporar soporte nativo para datos geoespaciales. Su estructura central es el **GeoDataFrame**: esencialmente un DataFrame de Pandas al que se le agrega una columna especial llamada geometry, donde se almacena la información geográfica de cada observación.
+
 La librería GeoPandas extiende la funcionalidad de Pandas para incorporar soporte nativo para datos geoespaciales. Su estructura central es el GeoDataFrame, que es esencialmente un DataFrame de Pandas al que se le agrega una columna especial llamada geometry, donde se almacena la información geométrica de cada observación.
 
 ```{figure} imagenes/geopandas_logo.png
@@ -1746,7 +1748,7 @@ GeoPandas trabaja con tres tipos básicos de geometría, que corresponden a los 
 
 #### Lectura de archivos con datos geoespaciales
 
-GeoPandas puede leer los formatos más comunes de archivos geoespaciales: **Shapefiles** (`.shp`), **GeoJSON** (`.geojson`), **GML** (`.gml`), entre otros. Todos se leen con la misma función **`read_file()`**. Como ejemplo, trabajaremos con el dataset [**barrios.gml**](https://datosabiertos.rosario.gob.ar/dataset/568be879-5cdc-497f-a292-b05b482e4517), que contiene informacion geográfica referente a los polígonos que establecen los límites catastrales de los Barrios Oficiales del municipio.
+GeoPandas puede leer los formatos más comunes de archivos geoespaciales: **Shapefiles** (`.shp`), **GeoJSON** (`.geojson`), **GML** (`.gml`), entre otros. Todos se leen con la misma función **`read_file()`**. Como ejemplo, trabajaremos con el dataset [**barrios.gml**](https://datosabiertos.rosario.gob.ar/dataset/568be879-5cdc-497f-a292-b05b482e4517), disponible en los datos abiertos de la Municipalidad de Rosario, que contiene los polígonos que establecen los límites catastrales de los barrios oficiales de la ciudad:
 
 ```{code-cell} python
 import geopandas as gpd
@@ -1756,118 +1758,105 @@ data_barrios.head(1)
 ```
 
 Al explorar el objeto `data_barrios`, veremos que se parece mucho a un DataFrame convencional, con la diferencia de que tiene una columna **`geometry`** que contiene los objetos geométricos.
-Se trata de un objeto de tipo **`GeoDataFrame`**, algo que podemos chequear fácilmente a través del método `.info()`:
+El tipo del objeto lo podemos confirmar con `.info()`:
 
 ```{code-cell} python
 data_barrios.info()
 ```
 
+La salida confirma que data_barrios es un `GeoDataFrame` y que la columna `geometry` almacena polígonos (`Polygon`).
+
 ```{admonition} **Archivos auxiliares al leer datos en formato GML**
 :class: tip dropdown
 
-Al trabajar con archivos en formato GML (.gml), es posible que al leerlos con GeoPandas aparezca en la misma carpeta un archivo adicional con extensión .gfs. Este archivo no forma parte del dataset original, sino que es generado automáticamente por la biblioteca subyacente la primera vez que se lee el archivo.
+Al trabajar con archivos en formato GML (`.gml`), es posible que al leerlos con GeoPandas aparezca en la misma carpeta un archivo adicional con extensión `.gfs`. Este archivo no forma parte del dataset original: es generado automáticamente por la biblioteca subyacente la primera vez que se lee el archivo GML.
 
-El archivo .gfs contiene una descripción del esquema del .gml, incluyendo información como:
-
-- los nombres de las capas
-
-- los atributos disponibles
-
-- los tipos de datos de cada variable
-
-- el tipo de geometría (polígonos, puntos, etc.)
-
-Su función principal es actuar como una especie de archivo de apoyo o caché, permitiendo que futuras lecturas del mismo .gml sean más rápidas y consistentes. En caso de que este archivo se elimine, no ocurre ningún inconveniente: simplemente se volverá a generar automáticamente la próxima vez que se lea el .gml.
+El archivo `.gfs` contiene una descripción del esquema del `.gml`, incluyendo los nombres de las capas, los atributos disponibles, los tipos de datos y el tipo de geometría. Actúa como una especie de caché que hace más rápidas y consistentes las lecturas posteriores del mismo archivo. Si se elimina, no ocurre ningún inconveniente: simplemente se regenera la próxima vez que se lee el `.gml`.
 ```
 
-Podemos inspeccionar el CRS del dataset con:
+Antes de visualizar o analizar cualquier dataset geoespacial, es fundamental verificar su **sistema de coordenadas de referencia** (CRS). Podemos consultarlo con el atributo `.crs`:
 
 ```{code-cell} python
 data_barrios.crs
 ```
 
-Esto nos devuelve información detallada sobre el sistema de coordenadas utilizado, incluyendo si es geográfico o proyectado, las unidades de medida y el datum de referencia. Analicemos un poco esta salida:
+La salida tiene varios elementos que vale la pena entender:
 
-- EPSG:4326: es el identificador estándar que define el sistema de coordenadas. En este caso corresponde a WGS 84.
+- `EPSG:4326` es el identificador numérico estándar del sistema de coordenadas. En este caso corresponde al WGS 84, el sistema de referencia global del GPS. El código EPSG es el que usaremos cada vez que necesitemos especificar o transformar el CRS de un dataset.
 
-- Geographic 2D CRS: indica que se trata de un sistema de coordenadas geográfico (no proyectado), basado en coordenadas angulares.
+- `Geographic 2D CRS` indica que se trata de un sistema de coordenadas geográfico, es decir, basado en coordenadas angulares (latitud y longitud en grados), y no proyectado. Esta distinción tiene consecuencias prácticas importantes, como veremos a continuación.
 
-- Lat / Lon (degree): las coordenadas están expresadas como latitud (norte-sur) y longitud (este-oeste) ambas medidas en grados.
+- `Datum: WGS 84` confirma el modelo matemático de la Tierra sobre el que se definen las coordenadas.
 
-- Area of Use: señala que este sistema es válido para todo el mundo.
+- `Prime Meridian: Greenwich` establece el meridiano de referencia (longitud 0°), que pasa por Greenwich, en el Reino Unido.
 
-- Datum: WGS 84. Define el modelo matemático que representa la forma de la Tierra. Como ya se mencionó anteriormente, es el estándar utilizado por sistemas de posicionamiento como el GPS.
-
-- Prime Meridian: Greenwich. Establece el meridiano de referencia (longitud 0°), que pasa por Greenwich, en el Reino Unido.
-
-Verificar el CRS antes de trabajar con cualquier dataset geoespacial es una práctica indispensable.
+Verificar el CRS es una práctica indispensable cada vez que cargamos un nuevo dataset geoespacial, especialmente cuando vamos a combinar múltiples fuentes de datos. Dos datasets con CRS distintos no pueden superponerse directamente: los objetos aparecerán en posiciones incorrectas.
 
 #### Visualización con GeoPandas
 
-La forma más directa de visualizar un GeoDataFrame es usar el método **`.plot()`**, que genera un mapa estático aprovechando Matplotlib como motor gráfico.
+La forma más directa de visualizar un GeoDataFrame es el método **`.plot()`**, que genera un mapa estático usando Matplotlib como motor gráfico.
 
-**POLÍGONOS: LOS BARRIOS DE ROSARIO**
+##### Polígonos: los barrios de Rosario
 
-Con el dataset de barrios de la ciudad de Rosario, podemos construir un mapa básico con una sola línea de código:
-
-```{code-cell} python
-data_barrios.plot(edgecolor = 'black', linewidth = 2, column = 'BARRIO')
-```
-
-El parámetro `column` indica qué variable se usará para colorear los polígonos. En este caso, cada barrio recibe un color distinto. Sin embargo, cuando el número de categorías es grande —como ocurre con los barrios de una ciudad— esta visualización resulta poco útil porque los colores se repiten y no se distinguen bien. En esos casos, suele ser más informativo mostrar solo los límites entre barrios, sin relleno, usando el método **`.boundary.plot()`**:
+Con el dataset de barrios, podemos construir un mapa básico con una sola línea de código:
 
 ```{code-cell} python
-data_barrios.boundary.plot(edgecolor = 'black')
+data_barrios.plot(edgecolor = 'black', linewidth = 1.75, column = 'BARRIO');
 ```
 
-Este tipo de mapa sirve como capa base sobre la cual luego se superponen otros datos.
+El parámetro `column` indica qué variable se usará para colorear los polígonos, asignando un color distinto a cada barrio. Sin embargo, cuando el número de categorías es grande —como ocurre con los barrios de una ciudad—, esta visualización resulta poco útil porque los colores se repiten y no se distinguen bien. En esos casos, suele ser más informativo mostrar solo los límites entre barrios, sin relleno, usando el método **`.boundary.plot()`**:
+
+```{code-cell} python
+data_barrios.boundary.plot(edgecolor = 'black');
+```
+
+Este tipo de mapa sirve como **capa base** sobre la cual se superponen otros datos.
 
 ---
 
-Supongamos que queremos calcular el área de cada barrio y determinar cuál es el de mayor tamaño. A primera vista, podríamos intentar:
+##### Un paréntesis necesario: coordenadas geográficas y cálculo de áreas
+
+Antes de continuar con más ejemplos de visualización, vale la pena detenerse en un error muy común al trabajar con datos geoespaciales: **intentar calcular áreas o distancias con un CRS geográfico.**
+
+Supongamos que queremos saber cuál es el barrio más grande de Rosario. Una idea natural sería usar el atributo `.area` de GeoPandas:
 
 ```{code-cell} python
-data_barrios.area
+data_barrios.area.head(5) # Muestra las áreas de los primeros 5 barrios del dataset
 ```
 
-Sin embargo, esto no produce resultados correctos, ya que el dataset se encuentra en el sistema de coordenadas EPSG:4326, donde las unidades están expresadas en grados (latitud y longitud), y no en metros. Para poder calcular áreas de manera adecuada, es necesario trabajar en un **sistema de coordenadas proyectado**, donde las distancias y superficies se expresen en unidades métricas.
+El resultado existe pero no tiene sentido físico: las unidades son grados al cuadrado, no metros cuadrados. Esto ocurre porque el dataset está en EPSG:4326, un sistema geográfico donde las coordenadas son ángulos, no distancias lineales (***¡Notar el Warning que aparece junto con la salida!***). Un "grado" de longitud mide distancias muy distintas según la latitud en la que se encuentre (es máximo en el Ecuador y se reduce a cero en los polos), por lo que operar aritméticamente con grados produce resultados incorrectos.
 
-Podemos reproyectar los datos utilizando el método .to_crs():
+Para calcular áreas correctamente necesitamos primero reproyectar el dataset a un sistema de coordenadas proyectado, donde las unidades sean métricas. Para datos en Argentina, el sistema oficial es el POSGAR 2007, definido por el Instituto Geográfico Nacional. Dado que Rosario se ubica cerca del meridiano central de la Faja 5, usamos EPSG:5347:
 
 ```{code-cell} python
 data_barrios_proy = data_barrios.to_crs(epsg = 5347)
-```
-
-Para hacer esta transformación, notar que estamos usando el sistema POSGAR 2007, que es el sistema oficial de Argentina definido por el Instituto Geográfico Nacional. En particular, dado que Rosario se encuentra cerca del meridiano central de la Faja 5, estamos usando EPSG:5347.
-
-```{code-cell} python
 data_barrios_proy.crs
 ```
 
-Ahora sí, las geometrías están expresadas en metros, lo que nos permite calcular áreas correctamente:
+Ahora la salida confirma que el CRS es proyectado (Projected CRS) y que las coordenadas están en metros. Con esto, el cálculo de áreas es válido:
 
 ```{code-cell} python
 data_barrios_proy['area_m2'] = data_barrios_proy.area
 data_barrios_proy['area_km2'] = data_barrios_proy['area_m2'] / 1e6
 ```
 
-Finalmente, podemos identificar el barrio de mayor tamaño:
+Y podemos identificar el barrio con mayor superficie:
 
 ```{code-cell} python
 data_barrios_proy.sort_values('area_km2', ascending = False)[['BARRIO', 'area_km2']].head(1)
 ```
 
-Veamos cuál es el barrio en el mapa
+Finalmente, podemos visualizarlo sobre el mapa base para tener una referencia espacial:
 
 ```{code-cell} python
 fig, ax = plt.subplots(figsize = (10, 10))
 
 # Base
-data_barrios_proy.boundary.plot(edgecolor = 'black')
+data_barrios_utm.boundary.plot(ax = ax, edgecolor = 'black')
 
 # Barrio con mayor superficie
-max_area_idx = data_barrios_proy['area_km2'].idxmax()
-barrio_mayor_sup = data_barrios_proy.loc[[max_area_idx]]
+max_area_idx = data_barrios_utm['area_km2'].idxmax()
+barrio_mayor_sup = data_barrios_utm.loc[[max_area_idx]]
 
 # Plot encima del gráfico base
 barrio_mayor_sup.plot(ax = ax, color = '#51a34b', edgecolor = 'black')
@@ -1876,6 +1865,119 @@ plt.axis('off')
 plt.show()
 ```
 
+---
+
+##### Puntos sobre un mapa base: centros de salud de Rosario
+
+Podemos combinar múltiples capas en un mismo mapa superponiendo GeoDataFrames. El truco es pasar el primer gráfico como argumento `ax` al segundo. Para ejemplificar, agregaremos al mapa base de Rosario los efectores de salud de Rosario, que se encuentran en el archivo [**`geo_salud.gml`**](https://datosabiertos.rosario.gob.ar/dataset/02f03d29-0352-4738-b226-e150f8958a82):
+
+```{code-cell} python
+# Leemos y exploramos el archivo de datos
+data_salud = gpd.read_file('datasets/geo_salud.gml')
+data_salud.head()
+```
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize=(8, 8))
+
+# Capa base: límites de barrios
+data_barrios.boundary.plot(edgecolor = 'black', color = 'lightgrey', 
+linewidth = 0.8, ax = ax)
+
+# Capa de puntos: centros de salud
+data_salud.plot(ax = ax, markersize = 20, color = 'darkred')
+
+plt.show()
+```
+
+Usar `column = 'titular'` hace que cada punto se coloree según el tipo de efector (Municipal, Nacional, Provincial, Privado), y `legend = True` agrega automáticamente la leyenda. El resultado es un mapa que muestra simultáneamente la estructura espacial de la ciudad y la distribución geográfica de los centros de salud por tipo.
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize=(8, 8))
+
+# Capa base: límites de barrios
+data_barrios.boundary.plot(edgecolor = 'black', color = 'lightgrey', 
+linewidth = 0.8, ax = ax)
+
+# Capa de puntos: centros de salud coloreados por tipo de efector
+data_salud.plot(ax = ax, markersize = 20, column='titular',
+                         legend = True, cmap = 'viridis',
+                         legend_kwds = dict(title = 'Efector',
+                                          bbox_to_anchor=(1.4, 1)))
+
+plt.show()
+```
+
+
+Choropleth con datos continuos: cultivos en Córdoba
+Cuando la variable que queremos representar es cuantitativa continua —no una categoría sino un valor numérico—, el mapa toma la forma de un mapa coroplético (o choropleth): cada polígono se colorea según la intensidad del valor que le corresponde, usando una escala de colores secuencial.
+pythondatos_cultivos = gpd.read_file('datasets/cultivos_por_dpto_mapa.json')
+
+# Asegurar que el CRS sea WGS 84
+datos_cultivos = datos_cultivos.to_crs(epsg=4326)
+
+fig, ax = plt.subplots(figsize=(6, 8))
+datos_cultivos.plot(edgecolor='black', linewidth=1.2,
+                    column='sup_cultivada_has',
+                    cmap='magma', legend=True,
+                    legend_kwds={'label': 'Superficie cultivada (Has)'},
+                    ax=ax)
+plt.show()
+Nótese el uso de to_crs(epsg=4326) para reprojectar los datos antes de graficarlos. Este paso es necesario cuando el dataset original tiene un CRS proyectado (como EPSG:22174, que usa metros como unidad) y queremos mostrar las coordenadas en grados de latitud y longitud, o cuando vamos a combinar capas que usan distintos sistemas de referencia.
+Una advertencia sobre los mapas coropléticos: el tamaño visual de cada polígono puede distorsionar la percepción. Un departamento geográficamente grande pero escasamente cultivado puede llamar mucho más la atención que uno pequeño con alta intensidad agrícola, simplemente porque ocupa más espacio en el mapa. Esta limitación es inherente al tipo de visualización y debe tenerse en cuenta al interpretarla.
+
+Mapas interactivos con Folium
+Los mapas estáticos producidos por GeoPandas son útiles para exploración y para figuras en documentos, pero tienen una limitación importante: no permiten al lector interactuar con los datos. Para hacer mapas interactivos que se puedan explorar en un navegador —haciendo zoom, desplazándose y consultando información al pasar el mouse sobre los objetos—, podemos usar la librería Folium.
+Folium está construida sobre Leaflet.js, una de las bibliotecas de mapas interactivos más utilizadas en la web, y permite crear mapas que se integran naturalmente en un Jupyter Notebook o en una página web. Su flujo de trabajo es diferente al de GeoPandas: en lugar de operar con el paradigma de Matplotlib (figuras y ejes), construimos el mapa agregando capas a un objeto central.
+Mapa coroplético interactivo
+pythonimport folium
+
+# Crear el mapa base centrado en Córdoba
+m = folium.Map(location=[-31.715057, -63.671522], zoom_start=7)
+folium.TileLayer('cartodbpositron').add_to(m)
+
+# Agregar la capa coroplética
+c = folium.Choropleth(
+    geo_data=datos_cultivos,
+    data=datos_cultivos,
+    columns=['nombre', 'sup_cultivada_has'],
+    key_on='feature.properties.nombre',
+    fill_color='magma',
+    fill_opacity=0.6,
+    line_opacity=0.8,
+    highlight=True,
+    legend_name='Superficie cultivada (Hectáreas)'
+).add_to(m)
+
+# Agregar tooltip con información al pasar el mouse
+c.geojson.add_child(folium.features.GeoJsonTooltip(
+    fields=['nombre', 'sup_cultivada_has'],
+    aliases=['Departamento:', 'Superficie (Has):']
+))
+
+m
+Hay algunos parámetros clave que vale la pena entender:
+location define las coordenadas del centro del mapa al cargar. zoom_start controla el nivel de zoom inicial (valores más altos hacen más zoom). TileLayer permite elegir el estilo del mapa de fondo: 'cartodbpositron' produce un fondo claro y minimalista que no compite con los datos; 'OpenStreetMap' muestra el mapa de calles completo. key_on es el campo del GeoJSON que Folium usará para conectar cada polígono con su valor en el dataset; debe seguir la sintaxis 'feature.properties.nombre_del_campo'. El tooltip agrega la ventana de información que aparece al pasar el mouse, con fields indicando los campos a mostrar y aliases sus etiquetas legibles.
+Puntos con popups interactivos
+Para datos de tipo punto, Folium permite agregar popups que se despliegan al hacer clic sobre cada marcador, mostrando información detallada del objeto:
+pythonm = folium.Map(location=[-32.952601, -60.643213], zoom_start=12)
+folium.TileLayer('OpenStreetMap').add_to(m)
+
+folium.GeoJson(
+    datos_centros_salud,
+    popup=folium.features.GeoJsonPopup(
+        fields=['name', 'direccion'],
+        labels=True
+    )
+).add_to(m)
+
+m
+La diferencia entre tooltip y popup es sutil pero importante: el tooltip se activa al pasar el mouse (hover) y es útil para inspección rápida; el popup se activa al hacer clic y es más adecuado para información más detallada.
+
+GeoPandas o Folium: ¿cuándo usar cada uno?
+Ambas herramientas son complementarias y responden a necesidades distintas. GeoPandas con Matplotlib produce mapas estáticos de alta calidad, adecuados para informes, publicaciones y análisis exploratorio rápido. Su sintaxis es consistente con el ecosistema de visualización que ya conocemos, y el resultado es una figura que puede exportarse como imagen.
+Folium produce mapas interactivos pensados para presentaciones digitales, dashboards o notebooks compartidos. Permite al usuario explorar los datos activamente —haciendo zoom, consultando valores, filtrando capas— de una manera que un mapa estático no puede ofrecer. La contrapartida es que su sintaxis es más verbosa y el mapa resultante solo funciona en entornos web.
+Una estrategia habitual en la práctica es usar GeoPandas para la exploración inicial —donde la velocidad importa más que la presentación— y reservar Folium para las visualizaciones finales que se compartirán con otras personas.
 
 ## Temas avanzados
 
