@@ -1658,7 +1658,7 @@ Una proyección cartográfica es el proceso matemático de trasladar posiciones 
 
 ```{figure} imagenes/mandarina.png
 ---
-width: 50%
+width: 65%
 align: center
 ---
 ```
@@ -1671,7 +1671,7 @@ Muchas de las proyecciones cartográficas más comunes se clasifican según la s
 
 ```{figure} imagenes/conic_proyection.png
 ---
-width: 50%
+width: 65%
 align: center
 ---
 ```
@@ -1681,16 +1681,16 @@ Este tipo de proyecciones proporcionan la apariencia de un rectángulo, que pued
 
 ```{figure} imagenes/cylindric_proyection.png
 ---
-width: 50%
+width: 65%
 align: center
 ---
 ```
 
 - **Proyecciones planas o azimutales:** consisten en proyectar una parte de la Tierra sobre un plano tangente a la esfera en un punto seleccionado. El punto de contacto puede ser el Polo Norte, el Polo Sur, un punto en el Ecuador o cualquier punto intermedio.
 
-```{figure} imagenes/azimutal_proyection.png
+```{figure} imagenes/azimutal_proyection.jpeg
 ---
-width: 50%
+width: 65%
 align: center
 ---
 ```
@@ -1733,7 +1733,7 @@ La librería GeoPandas extiende la funcionalidad de Pandas para incorporar sopor
 
 ```{figure} imagenes/geopandas_logo.png
 ---
-width: 50%
+width: 75%
 align: center
 ---
 ```
@@ -1821,7 +1821,8 @@ Antes de continuar con más ejemplos de visualización, vale la pena detenerse e
 Supongamos que queremos saber cuál es el barrio más grande de Rosario. Una idea natural sería usar el atributo `.area` de GeoPandas:
 
 ```{code-cell} python
-data_barrios.area.head(5) # Muestra las áreas de los primeros 5 barrios del dataset
+# Muestra las áreas de los primeros 5 barrios del dataset
+data_barrios.area.head(5) 
 ```
 
 El resultado existe pero no tiene sentido físico: las unidades son grados al cuadrado, no metros cuadrados. Esto ocurre porque el dataset está en EPSG:4326, un sistema geográfico donde las coordenadas son ángulos, no distancias lineales (***¡Notar el Warning que aparece junto con la salida!***). Un "grado" de longitud mide distancias muy distintas según la latitud en la que se encuentre (es máximo en el Ecuador y se reduce a cero en los polos), por lo que operar aritméticamente con grados produce resultados incorrectos.
@@ -1852,11 +1853,11 @@ Finalmente, podemos visualizarlo sobre el mapa base para tener una referencia es
 fig, ax = plt.subplots(figsize = (10, 10))
 
 # Base
-data_barrios_utm.boundary.plot(ax = ax, edgecolor = 'black')
+data_barrios_proy.boundary.plot(ax = ax, edgecolor = 'black')
 
 # Barrio con mayor superficie
-max_area_idx = data_barrios_utm['area_km2'].idxmax()
-barrio_mayor_sup = data_barrios_utm.loc[[max_area_idx]]
+max_area_idx = data_barrios_proy['area_km2'].idxmax()
+barrio_mayor_sup = data_barrios_proy.loc[[max_area_idx]]
 
 # Plot encima del gráfico base
 barrio_mayor_sup.plot(ax = ax, color = '#51a34b', edgecolor = 'black')
@@ -1869,62 +1870,120 @@ plt.show()
 
 ##### Puntos sobre un mapa base: centros de salud de Rosario
 
-Podemos combinar múltiples capas en un mismo mapa superponiendo GeoDataFrames. El truco es pasar el primer gráfico como argumento `ax` al segundo. Para ejemplificar, agregaremos al mapa base de Rosario los efectores de salud de Rosario, que se encuentran en el archivo [**`geo_salud.gml`**](https://datosabiertos.rosario.gob.ar/dataset/02f03d29-0352-4738-b226-e150f8958a82):
+Podemos combinar múltiples capas en un mismo mapa superponiendo GeoDataFrames. El mecanismo es pasar el eje (`ax`) del primer gráfico como argumento al segundo, de manera que ambas capas se dibujen sobre el mismo panel. Para ejemplificar, agregaremos al mapa base de los barrios de Rosario los efectores de salud de la ciudad, disponibles en el archivo [**`geo_salud.gml`**](https://datosabiertos.rosario.gob.ar/dataset/02f03d29-0352-4738-b226-e150f8958a82):
 
 ```{code-cell} python
-# Leemos y exploramos el archivo de datos
 data_salud = gpd.read_file('datasets/geo_salud.gml')
 data_salud.head()
 ```
 
+Explorando el GeoDataFrame, veremos que la columna `geometry` contiene objetos de tipo `POINT`: cada efector de salud es un punto en el espacio definido por su par de coordenadas. La columna `titular` indica la dependencia institucional de cada efector (Municipal, Nacional, Provincial, Privado).
+
+Como primer paso, construimos el mapa más simple: todos los efectores representados con el mismo color sobre el mapa base de barrios.
+
 ```{code-cell} python
 fig, ax = plt.subplots(figsize=(8, 8))
 
-# Capa base: límites de barrios
+# Capa base: polígonos de barrios con relleno gris claro
 data_barrios.boundary.plot(edgecolor = 'black', color = 'lightgrey', 
 linewidth = 0.8, ax = ax)
 
-# Capa de puntos: centros de salud
+# Capa de puntos: todos los efectores en rojo oscuro
 data_salud.plot(ax = ax, markersize = 20, color = 'darkred')
 
+plt.axis('off')
 plt.show()
 ```
 
-Usar `column = 'titular'` hace que cada punto se coloree según el tipo de efector (Municipal, Nacional, Provincial, Privado), y `legend = True` agrega automáticamente la leyenda. El resultado es un mapa que muestra simultáneamente la estructura espacial de la ciudad y la distribución geográfica de los centros de salud por tipo.
+Este mapa ya es informativo: permite ver cómo se distribuyen espacialmente los efectores de salud en la ciudad y en qué barrios hay mayor concentración. Sin embargo, trata a todos los efectores de la misma forma. Si nos interesa distinguir según el tipo de efector, podemos codificar esa variable mediante el color de los puntos, usando `column = 'titular'`: 
 
 ```{code-cell} python
 fig, ax = plt.subplots(figsize=(8, 8))
 
-# Capa base: límites de barrios
+# Capa base
 data_barrios.boundary.plot(edgecolor = 'black', color = 'lightgrey', 
 linewidth = 0.8, ax = ax)
 
-# Capa de puntos: centros de salud coloreados por tipo de efector
+# Capa de puntos: efectores coloreados según tipo de efector
 data_salud.plot(ax = ax, markersize = 20, column='titular',
                          legend = True, cmap = 'viridis',
                          legend_kwds = dict(title = 'Efector',
                                           bbox_to_anchor=(1.4, 1)))
 
+plt.axis('off')
 plt.show()
 ```
 
+El resultado muestra simultáneamente la estructura espacial de la ciudad y la distribución geográfica de los centros de salud según su dependencia institucional, lo que permite identificar de forma rápida, por ejemplo, si los efectores nacionales o privados se concentran en determinadas zonas de la ciudad.
 
-Choropleth con datos continuos: cultivos en Córdoba
-Cuando la variable que queremos representar es cuantitativa continua —no una categoría sino un valor numérico—, el mapa toma la forma de un mapa coroplético (o choropleth): cada polígono se colorea según la intensidad del valor que le corresponde, usando una escala de colores secuencial.
-pythondatos_cultivos = gpd.read_file('datasets/cultivos_por_dpto_mapa.json')
+#### Choropleth con datos continuos: cultivos en Córdoba
 
-# Asegurar que el CRS sea WGS 84
-datos_cultivos = datos_cultivos.to_crs(epsg=4326)
+Cuando la variable que queremos representar es cuantitativa continua, el mapa toma la forma de un mapa coroplético (***choropleth map***): cada polígono se colorea según la intensidad del valor que le corresponde, usando una escala de color secuencial. Este tipo de visualización es muy habitual en cartografía temática: mapas de densidad poblacional, tasas de desocupación, precipitaciones acumuladas por región, entre muchos otros.
 
-fig, ax = plt.subplots(figsize=(6, 8))
-datos_cultivos.plot(edgecolor='black', linewidth=1.2,
-                    column='sup_cultivada_has',
-                    cmap='magma', legend=True,
-                    legend_kwds={'label': 'Superficie cultivada (Has)'},
-                    ax=ax)
+Para ilustrarlo, trabajaremos con el archivo **`cultivos_por_dpto_mapa.json`**, que contiene datos sobre la superficie cultivada en cada uno de los departamentos de la provincia de Córdoba:
+
+```{code-cell} python
+data_cultivos = gpd.read_file('datasets/cultivos_por_dpto_mapa.json')
+data_cultivos.head()
+```
+
+El objetivo es representar visualmente la cantidad de hectáreas sembradas por departamento. La columna `sup_cultivada` contiene esa información, pero viene almacenada como texto con la unidad incluida (por ejemplo, "250000 Has"). Necesitamos extraer el número antes de poder usarlo:
+
+```{code-cell} python
+data_cultivos['sup_cultivada_has'] = data_cultivos['sup_cultivada'].str.extract(r'(\d+)').astype('int')
+
+datos_cultivos.head(1)
+```
+
+Para mejorar la legibilidad de la escala en el mapa, conviene expresar los valores en millones de hectáreas en lugar de hectáreas brutas:
+
+```{code-cell} python
+data_cultivos['sup_cultivada_millones_has'] = data_cultivos['sup_cultivada_has'] / 1e6
+```
+
+Con los datos listos, construimos el mapa coroplético. Una práctica útil es graficar primero una capa de fondo con todos los polígonos en gris claro, antes de superponer la capa con los datos. La razón principal es el manejo de valores faltantes: GeoPandas no asigna ningún color a los polígonos cuya variable de interés es `NaN`, lo que hace que directamente no se dibujen sobre el mapa —o queden en blanco, confundiéndose con el fondo del gráfico. Al colocar una capa gris debajo, esos polígonos sin dato quedan visibles con un color neutro, lo que le permite al lector distinguir entre "este departamento tiene un valor bajo" y "este departamento no tiene dato":
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize = (10, 10))
+
+# Capa de fondo en gris claro: hace visibles los polígonos sin dato (NaN),
+# que de otro modo no se dibujarían. En este dataset no hay faltantes,
+# pero es una buena práctica incorporarla sistemáticamente.
+data_cultivos.plot(ax = ax,
+                   color = 'lightgrey',
+                   edgecolor = 'black',
+                   linewidth = 1)
+
+# Capa con datos: cada departamento coloreado según superficie cultivada
+data_cultivos.plot(ax = ax,
+                   column = 'sup_cultivada_millones_has',
+                   cmap = 'inferno',
+                   vmin = 0,
+                   vmax = 1.5,
+                   linewidth = 0.8,
+                   edgecolor = 'black',
+                   legend = True,
+                   legend_kwds = {
+                       'label': 'Superficie cultivada (millones de has)',
+                       'ticks': [i/10 for i in range(0, 16)]
+                   })
+
+plt.axis('off')
 plt.show()
-Nótese el uso de to_crs(epsg=4326) para reprojectar los datos antes de graficarlos. Este paso es necesario cuando el dataset original tiene un CRS proyectado (como EPSG:22174, que usa metros como unidad) y queremos mostrar las coordenadas en grados de latitud y longitud, o cuando vamos a combinar capas que usan distintos sistemas de referencia.
-Una advertencia sobre los mapas coropléticos: el tamaño visual de cada polígono puede distorsionar la percepción. Un departamento geográficamente grande pero escasamente cultivado puede llamar mucho más la atención que uno pequeño con alta intensidad agrícola, simplemente porque ocupa más espacio en el mapa. Esta limitación es inherente al tipo de visualización y debe tenerse en cuenta al interpretarla.
+```
+Los parámetros `vmin` y `vmax` merecen una mención especial: definen los extremos de la escala de colores. Si no se especifican, GeoPandas los ajusta automáticamente al mínimo y al máximo del dataset. Esto puede ser conveniente en algunos casos, pero en otros puede generar comparaciones engañosas: si un único departamento tiene un valor extremo muy alto, la paleta se estira para incluirlo y todos los demás quedan comprimidos en un rango visual muy estrecho. Fijar `vmin` y `vmax` manualmente permite un mayor control sobre qué diferencias se hacen visibles.
+
+Notar también que en este gráfico usamos `plt.axis('off')` para ocultar los ejes. Esto tiene sentido aquí porque el CRS del dataset es un sistema proyectado (EPSG:22174) con coordenadas en metros, cuyos valores numéricos en los ejes carecen de significado inmediato para el lector. Si quisiéramos mostrar ejes con coordenadas interpretables —latitud y longitud en grados—, deberíamos reproyectar los datos a EPSG:4326 antes de graficar, como vimos anteriormente:
+
+```{code-cell} python
+data_cultivos.crs  # Confirma que el CRS actual es EPSG:22174 (proyectado, metros)
+```
+
+```{code-cell} python
+# Reproyectar a coordenadas geográficas (grados)
+data_cultivos_geo = data_cultivos.to_crs(epsg = 4326)
+```
+Una consideración final sobre los mapas coropléticos: **el tamaño visual de cada polígono puede distorsionar la percepción.** Un departamento geográficamente extenso pero con baja superficie cultivada puede capturar mucho más la atención del observador que uno pequeño con alta intensidad agrícola, simplemente porque ocupa más espacio en el mapa. Esta no es una limitación de la implementación en Python, sino una característica inherente al tipo de visualización que vale tener presente al interpretar cualquier mapa coroplético y, especialmente, al comunicar sus resultados a otras personas.
 
 Mapas interactivos con Folium
 Los mapas estáticos producidos por GeoPandas son útiles para exploración y para figuras en documentos, pero tienen una limitación importante: no permiten al lector interactuar con los datos. Para hacer mapas interactivos que se puedan explorar en un navegador —haciendo zoom, desplazándose y consultando información al pasar el mouse sobre los objetos—, podemos usar la librería Folium.
