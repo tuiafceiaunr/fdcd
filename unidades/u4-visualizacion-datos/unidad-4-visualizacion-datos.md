@@ -1520,7 +1520,7 @@ Visualizar datos georreferenciados requiere herramientas específicas y, antes d
 
 ### La forma de la Tierra: de la esfera al geoide
 
-La primera pregunta que necesitamos responder es aparentemente sencilla: **¿qué forma tiene la Tierra?** La respuesta honesta es que no es ningún cuerpo geométrico perfecto, y esa imperfección tiene consecuencias directas sobre cómo representamos posiciones sobre su superficie.
+La primera pregunta que necesitamos responder es aparentemente sencilla: **¿qué forma tiene la Tierra?** La respuesta honesta es que no se corresponde exactamente con ningún modelo geométrico, y esa imperfección tiene consecuencias directas sobre cómo representamos posiciones sobre su superficie.
 
 ```{figure} imagenes/tierra-esfera.jpg
 ---
@@ -1530,58 +1530,40 @@ align: center
 Representación de la Tierra como una esfera.
 ```
 
-La aproximación más simple es tratarla como una **esfera**. Esta simplificación hace los cálculos manejables y es suficiente para muchas aplicaciones cotidianas, pero introduce errores cuando necesitamos precisión. La razón es que la Tierra no es esférica: la rotación terrestre hace que la velocidad en el Ecuador sea mayor que en los polos, y esto deforma a nuestro planeta. El resultado es un cuerpo más "abultado" o "alargado" en la zona ecuatorial y más "achatado" en las zonas polares. El radio de la Tierra, en otras palabras, no es constante.
+La aproximación más simple es modelarla como una **esfera**, un cuerpo geométrico generado por la rotación de una circunferencia alrededor de su diámetro. Esta simplificación hace los cálculos manejables y es suficiente para mapas a pequeña escala (menores a 1:5.000.000), donde la diferencia entre una esfera y un modelo más preciso no produce errores detectables. Sin embargo, la Tierra no es esférica: la rotación terrestre genera una fuerza centrífuga que es máxima en el Ecuador y nula en los polos, lo que deforma al planeta. El resultado es un cuerpo más abultado en la zona ecuatorial y más achatado en las zonas polares. El radio de la Tierra, en otras palabras, no es constante.
 
 ```{figure} imagenes/elipsoide.png
 ---
-width: 50%
+width: 75%
 align: center
 ---
-Un elipsoide.
+Representación esquemática de un elipsoide. El semieje mayor ($a$) se sitúa sobre el plano ecuatorial y el semieje menor ($b$) es perpendicular al mismo.
 ```
 
-Una mejor aproximación es el **elipsoide** (también llamado **esferoide**), una figura tridimensional generada por la rotación de una elipse. En el caso de la Tierra, el **semieje mayor** es el radio desde el centro hasta el Ecuador, y el **semieje menor** es el radio desde el centro hasta el polo. Distintos elipsoides propuestos a lo largo de la historia difieren en las longitudes de estos semiejes, cada uno optimizado para ajustarse mejor a una región particular del planeta.
+Una mejor aproximación es el **elipsoide** (también llamado **esferoide** o, más precisamente, **elipsoide oblato de revolución**): un cuerpo geométrico generado por la rotación de una elipse alrededor de su eje menor. En el caso de la Tierra, el **semieje mayor** ($a$) es el radio desde el centro hasta el Ecuador, y el **semieje menor** ($b$) es el radio desde el centro hasta el polo. Distintos elipsoides propuestos a lo largo de la historia difieren en las longitudes de estos semiejes, cada uno optimizado para ajustarse mejor a una región particular del planeta. El grado de achatamiento de un esferoide respecto a una esfera perfecta se expresa mediante el aplanamiento ($f$):
 
-```{=html}
+$$ f = \frac{a - b}{a}$$
+
+La siguiente tabla reúne los parámetros de algunos elipsoides históricos y actuales:
+
 <style>
-  /* Estilos específicos para la tabla con la clase "styled-table" */
   .styled-table th {
     background-color: black;
     color: white;
   }
-
-  /* Estilo para las filas impares después del encabezado */
-  .styled-table tr:nth-child(odd) {
-    background-color: white;
-    color: #000000;
-  }
-
-  /* Estilo para las filas pares después del encabezado */
-  .styled-table tr:nth-child(even) {
-    background-color: white;
-    color: #000000;
-  }
-
-  /* Estilos generales de la tabla */
   .styled-table {
     border-collapse: collapse;
     border: 1px solid black;
   }
-
   .styled-table th,
   .styled-table td {
     border: 1px solid black;
     padding: 8px;
   }
-
-  /* Estilos para las filas específicas */
-  .styled-table tr[data-elipsoide="International 1924 (Hayford)"],
-  .styled-table tr[data-elipsoide="GRS 1980"],
-  .styled-table tr[data-elipsoide="WGS 84"] {
-    background-color: #f0f598; /* Cambia el color de fondo según tu preferencia */
+  .styled-table tr.destacado {
+    background-color: #f0f598 !important;
   }
 </style>
-
 <table class="styled-table">
   <thead>
     <tr>
@@ -1591,58 +1573,65 @@ Una mejor aproximación es el **elipsoide** (también llamado **esferoide**), un
     </tr>
   </thead>
   <tbody>
-    <tr data-elipsoide="Australian National">
-      <td>Australian National</td>
-      <td>6378160.000</td>
-      <td>6356774.719</td>
-    </tr>
-    <tr data-elipsoide="Clarke 1866">
-      <td>Clarke 1866</td>
-      <td>6378206.400</td>
-      <td>6356583.800</td>
-    </tr>
-    <tr data-elipsoide="Bessel 1841">
-      <td>Bessel 1841</td>
-      <td>6377397.155</td>
-      <td>6356078.963</td>
-    </tr>
-    <tr data-elipsoide="Fischer 1968">
-      <td>Fischer 1968</td>
-      <td>6378150.000</td>
-      <td>6356768.337</td>
-    </tr>
-    <tr data-elipsoide="International 1924 (Hayford)">
-      <td>International 1924 (Hayford)</td>
-      <td>6378388.000</td>
-      <td>6356911.946</td>
-    </tr>
-    <tr data-elipsoide="GRS 1980">
-      <td>GRS 1980</td>
-      <td>6378137.000</td>
-      <td>6356752.314</td>
-    </tr>
-    <tr data-elipsoide="WGS 84">
-      <td>WGS 84</td>
-      <td>6378137.000</td>
-      <td>6356752.314</td>
-    </tr>
+    <tr><td>Australian National</td><td>6.378.160,000</td><td>6.356.774,719</td></tr>
+    <tr><td>Clarke 1866</td><td>6.378.206,400</td><td>6.356.583,800</td></tr>
+    <tr><td>Bessel 1841</td><td>6.377.397,155</td><td>6.356.078,963</td></tr>
+    <tr><td>Fischer 1968</td><td>6.378.150,000</td><td>6.356.768,337</td></tr>
+    <tr><td>International 1924 (Hayford)</td><td>6.378.388,000</td><td>6.356.911,946</td></tr>
+    <tr class="destacado"><td>GRS 1980</td><td>6.378.137,000</td><td>6.356.752,314</td></tr>
+    <tr class="destacado"><td>WGS 84</td><td>6.378.137,000</td><td>6.356.752,314</td></tr>
   </tbody>
 </table>
-```
 
-El más utilizado actualmente a nivel global es el **WGS 84** (World Geodetic System 1984), que fue desarrollado por el Departamento de Defensa de los Estados Unidos y es el sistema de referencia sobre el que opera el GPS. Sus semiejes miden aproximadamente 6378137 m (mayor) y 6356752 m (menor).
+El más utilizado actualmente a nivel global es el **WGS 84** (World Geodetic System 1984), desarrollado por el Departamento de Defensa de los Estados Unidos y adoptado como referencia por el GPS. Sus semiejes —resaltados en la tabla— coinciden con los del GRS 1980, aunque difieren ligeramente en la definición del aplanamiento. Nótese también que las diferencias entre elipsoides son del orden de los cientos de metros en los semiejes: diferencias pequeñas en términos absolutos, pero significativas cuando se requiere precisión cartográfica. 
 
-Ahora bien, incluso el elipsoide es una simplificación. La masa de la Tierra no está distribuida de forma uniforme en su interior: hay variaciones de densidad que provocan irregularidades en el campo gravitatorio. Estas irregularidades deforman la superficie real del océano en reposo, que no coincide exactamente con ningún elipsoide. A esta superficie irregular —definida como aquella en la que el campo gravitatorio es constante e igual al del nivel medio del mar— se la denomina **geoide**. El geoide no es una figura geométrica regular: tiene protuberancias y depresiones que reflejan las variaciones en la densidad interna de la Tierra, y su forma solo puede conocerse mediante mediciones.
+Ahora bien, incluso el elipsoide es una simplificación. Para entender por qué, hay que considerar que el interior de la Tierra no tiene densidad uniforme: hay rocas más densas y menos densas, masas de magma, variaciones en la corteza. Esto hace que la fuerza gravitatoria no sea idéntica en todos los puntos de la superficie. Y donde la gravedad varía, también varía la altura del nivel del mar en equilibrio.
+
+Imaginemos que los océanos cubrieran toda la superficie de la Tierra, incluyendo los continentes. La superficie de ese *océano imaginario*, en calma y en equilibrio con la gravedad, no sería ni una esfera ni un elipsoide perfecto: tendría ondulaciones suaves, algo más elevada donde la gravedad es más intensa (sobre regiones de mayor densidad interna) y algo más baja donde es menos intensa. Esa superficie imaginaria es el **geoide**.
 
 ```{figure} imagenes/geoide.jpg
 ---
 width: 50%
 align: center
 ---
-La Tierra como geoide.
+El geoide (exagerado visualmente). Sus ondulaciones reflejan las variaciones en el campo gravitatorio de la Tierra causadas por la distribución no uniforme de su masa interna.
 ```
 
-En resumen, la jerarquía de modelos es la siguiente: la esfera es la aproximación más burda; el elipsoide es mucho mejor y suficiente para la mayoría de las aplicaciones; el geoide es la representación más fiel de la forma real de la Tierra, pero también la más compleja de trabajar.
+El geoide es el modelo más fiel a la forma real de la Tierra desde un punto de vista físico, y se usa como referencia para medir altitudes (la altitud de un punto es su distancia vertical al geoide, no al elipsoide). Sin embargo, su forma irregular lo hace muy difícil de trabajar matemáticamente, razón por la cual para la descripción de posiciones horizontales —latitud y longitud— seguimos usando el elipsoide.
+
+### El datum geodésico
+
+El elipsoide define la *forma* del modelo de la Tierra, pero no basta por sí solo para describir posiciones: también necesitamos saber **cómo está orientado y posicionado ese elipsoide** respecto al planeta real. Esa información adicional es lo que aporta el **datum geodésico**.
+
+El datum es un sistema de referencia que especifica el elipsoide utilizado y la forma en que ese elipsoide se alinea con la superficie terrestre. En términos prácticos, el datum establece el punto de referencia a partir del cual se miden las coordenadas geográficas.
+
+Existen dos grandes familias de datums:
+
+- Los **datums globales o geocéntricos** posicionan el centro del elipsoide en el centro de masa de la Tierra y están diseñados para funcionar en cualquier parte del mundo. En los últimos 15 años, los datos de los satélites han proporcionado nuevas mediciones para definir el esferoide que mejor se ajusta a la tierra, que relaciona las coordenadas con el centro de masa de la tierra. Un datum centrado en la tierra o geocéntrico utiliza el centro de masa de la tierra como origen. El último datum desarrollado, ampliamente utilizado, es WGS 1984. Sirve como marco para la medición mundial de ubicaciones.
+
+```{figure} imagenes/geocentric_datum.jpg
+---
+width: 50%
+align: center
+---
+Ilustración de un datum geocéntrico.
+```
+
+- Los **datums locales** ajustan el elipsoide para que se adapte con la máxima precisión a una región geográfica específica. En Argentina, por ejemplo, se han utilizado históricamente el datum ***Campo Inchauspe*** para la cartografía nacional, y existen además datums de alcance más limitado como ***Chos Malal*** y ***Tapi Aike***. Un datum local funciona excelentemente dentro de su región de diseño, pero puede introducir errores significativos si se lo aplica fuera de ella.
+
+```{figure} imagenes/local_datum.jpg
+---
+width: 50%
+align: center
+---
+Ilustración de un datum local.
+```
+
+```{admonition} **Importante**
+:class: warning
+
+Este punto tiene una implicación práctica muy importante: cuando trabajamos con múltiples datasets georreferenciados, es fundamental verificar que todos usen el mismo datum antes de combinarlos. Si un dataset usa WGS 84 y otro usa Campo Inchauspe, las coordenadas no son directamente comparables y los objetos aparecerán en posiciones incorrectas al superponerlos en un mapa.
+```
 
 
 
