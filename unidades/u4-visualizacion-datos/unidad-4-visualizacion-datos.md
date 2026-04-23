@@ -1583,6 +1583,8 @@ La siguiente tabla reúne los parámetros de algunos elipsoides históricos y ac
   </tbody>
 </table>
 
+\
+
 El más utilizado actualmente a nivel global es el **WGS 84** (World Geodetic System 1984), desarrollado por el Departamento de Defensa de los Estados Unidos y adoptado como referencia por el GPS. Sus semiejes —resaltados en la tabla— coinciden con los del GRS 1980, aunque difieren ligeramente en la definición del aplanamiento. Nótese también que las diferencias entre elipsoides son del orden de los cientos de metros en los semiejes: diferencias pequeñas en términos absolutos, pero significativas cuando se requiere precisión cartográfica. 
 
 Ahora bien, incluso el elipsoide es una simplificación. Para entender por qué, hay que considerar que el interior de la Tierra no tiene densidad uniforme: hay rocas más densas y menos densas, masas de magma, variaciones en la corteza. Esto hace que la fuerza gravitatoria no sea idéntica en todos los puntos de la superficie. Y donde la gravedad varía, también varía la altura del nivel del mar en equilibrio.
@@ -1630,10 +1632,82 @@ Ilustración de un datum local.
 ```{admonition} **Importante**
 :class: warning
 
-Este punto tiene una implicación práctica muy importante: cuando trabajamos con múltiples datasets georreferenciados, es fundamental verificar que todos usen el mismo datum antes de combinarlos. Si un dataset usa WGS 84 y otro usa Campo Inchauspe, las coordenadas no son directamente comparables y los objetos aparecerán en posiciones incorrectas al superponerlos en un mapa.
+Este último punto tiene una implicación práctica muy importante: cuando trabajamos con múltiples datasets georreferenciados, es fundamental verificar que todos usen el mismo datum antes de combinarlos. Si un dataset usa WGS 84 y otro usa Campo Inchauspe, las coordenadas no son directamente comparables y los objetos aparecerán en posiciones incorrectas al superponerlos en un mapa.
 ```
 
+### Coordenadas geográficas: latitud y longitud
 
+Con un datum establecido, podemos describir la posición de cualquier punto sobre la superficie terrestre mediante un sistema de **coordenadas geográficas**, que utiliza dos ángulos: la **latitud** y la **longitud**.
+
+```{figure} imagenes/latitud_longitud.png
+---
+width: 50%
+align: center
+---
+```
+
+La **latitud** ($\phi$) mide el ángulo entre el plano ecuatorial y la línea que une el punto con el centro de la Tierra. Toma valores entre -90° (Polo Sur) y +90° (Polo Norte), siendo 0° el Ecuador. El hemisferio norte tiene latitudes positivas y el hemisferio sur, negativas. La ciudad de Rosario, por ejemplo, está ubicada aproximadamente a -32.9° de latitud.
+
+La **longitud** ($\lambda$) mide el ángulo entre el meridiano de Greenwich (longitud 0°, que pasa por el observatorio de Greenwich, Inglaterra) y el meridiano que pasa por el punto de interés. Toma valores entre -180° y +180°, siendo negativas las longitudes al oeste de Greenwich y positivas las del este. Rosario tiene una longitud de aproximadamente -60.7°.
+
+Este sistema de coordenadas angulares es poderoso y preciso, pero tiene una limitación práctica: al trabajar con superficies planas —como una pantalla o un papel— resulta incómodo operar con ángulos. Además, las distancias en grados no son constantes: un grado de longitud equivale a distancias muy distintas dependiendo de la latitud (es máximo en el Ecuador y se reduce a cero en los polos). Esto nos lleva al problema de las **proyecciones cartográficas**.
+
+### Proyecciones cartográficas
+
+Una proyección cartográfica es el proceso matemático de trasladar posiciones desde la superficie curva de la Tierra a una superficie plana bidimensional. Es una operación inevitablemente imperfecta: así como es imposible pelar una mandarina y extender su cáscara sobre una mesa sin romperla o deformarla, también es imposible representar la esfera terrestre en un plano sin introducir distorsiones.
+
+```{figure} imagenes/mandarina.png
+---
+width: 50%
+align: center
+---
+```
+
+Dado que los mapas son planos, algunas de las proyecciones más sencillas se convierten en formas geométricas que se pueden aplanar sin extender sus superficies. Dichas superficies se denominan **superficies desarrollables**. Ejemplos comunes son los conos, cilindros y planos. Una proyección cartográfica proyecta de manera sistemática ubicaciones situadas en la superficie de un esferoide sobre posiciones representativas situadas sobre una superficie plana, utilizando para ello algoritmos matemáticos.
+
+Muchas de las proyecciones cartográficas más comunes se clasifican según la superficie de la proyección utilizada:
+
+- **Proyecciones cónicas:** la superficie desarrollable es un cono, el cual se sitúa generalmente tangente o secante en dos paralelos a la superficie del elipsoide.
+
+```{figure} imagenes/conic_proyection.png
+---
+width: 50%
+align: center
+---
+```
+
+- **Proyecciones cilíndricas:** se sitúa un cilindro imaginario alrededor del globo. El cilindro puede tocar el globo a lo largo de una línea de latitud (tipo normal), a lo largo de una línea de longitud (tipo transversal) o a lo largo de otra línea cualquiera (tipo oblicuo). 
+Este tipo de proyecciones proporcionan la apariencia de un rectángulo, que puede ser visto como una superficie cilíndrica “desenrollada”.
+
+```{figure} imagenes/cylindric_proyection.png
+---
+width: 50%
+align: center
+---
+```
+
+- **Proyecciones planas o azimutales:** consisten en proyectar una parte de la Tierra sobre un plano tangente a la esfera en un punto seleccionado. El punto de contacto puede ser el Polo Norte, el Polo Sur, un punto en el Ecuador o cualquier punto intermedio.
+
+```{figure} imagenes/azimutal_proyection.png
+---
+width: 50%
+align: center
+---
+```
+
+Las proyecciones deben conservar alguna propiedad geométrica a expensas de otras. Según qué propiedad preservan, se clasifican en:
+
+- **Proyecciones conformes:** conservan los ángulos y las formas locales, pero distorsionan las áreas. La proyección de Mercator es el ejemplo más conocido: representa correctamente las formas de los continentes en escalas locales, pero exagera enormemente el tamaño de las zonas polares (Groenlandia aparece del mismo tamaño que África, cuando en realidad es aproximadamente 14 veces más pequeña).
+
+- **Proyecciones equivalentes (o de áreas iguales)**: conservan las áreas relativas de los objetos, pero distorsionan sus formas y ángulos. La proyección Albers es un ejemplo frecuente en cartografía temática.
+
+- **Proyecciones equidistantes:** conservan las distancias desde un punto central o a lo largo de ciertos meridianos, a costa de distorsionar otras propiedades.
+
+Existen además proyecciones de compromiso como la Robinson, que no conservan ninguna propiedad perfectamente pero minimizan la distorsión general y se usan frecuentemente en mapas del mundo de carácter divulgativo.
+
+La elección de la proyección no es un detalle técnico menor: puede cambiar radicalmente la percepción del mapa y, en el caso de la cartografía temática —donde el color o el sombreado de regiones comunica información cuantitativa—, usar una proyección que distorsione las áreas puede llevar a interpretaciones incorrectas.
+
+Para los fines de este *book*, trabajaremos principalmente con coordenadas en WGS 84 (latitud y longitud en grados), que es el sistema estándar para la mayoría de los datos abiertos disponibles actualmente. Cada vez que necesitemos hacer visualizaciones precisas o cálculos de área y distancia, tendremos que prestar atención al sistema de coordenadas de referencia de nuestros datos.
 
 ## Temas avanzados
 
