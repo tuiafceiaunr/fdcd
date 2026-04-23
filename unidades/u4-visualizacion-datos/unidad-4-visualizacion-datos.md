@@ -717,7 +717,7 @@ axes[0].lines[1].set_color('#3c32a8')
 axes[0].lines[1].set_linewidth(2.5)
 
 # Variable asimétrica: x1
-sm.qqplot(datos_x1, line = 's', ax = axes[0], markerfacecolor = 'black', markeredgecolor = 'none', alpha = 0.5)
+sm.qqplot(datos_x1, line = 's', ax = axes[1], markerfacecolor = 'black', markeredgecolor = 'none', alpha = 0.5)
 axes[1].set_title('Q-Q plot x1', fontweight = 'bold')
 axes[1].set_xlabel('Cuantiles teóricos', fontweight = 'bold')
 axes[1].set_ylabel('Cuantiles observados', fontweight = 'bold')
@@ -1284,7 +1284,7 @@ plt.show()
 
 ## Gráficos para visualizar asociaciones entre variables cuantitativas
 
-Cuando trabajamos con datasets que contienen múltiples variables cuantitativas, una pregunta natural es si existe alguna relación entre ellas. Retomando el ejemplo del dataset Penguins, podríamos preguntarnos, por ejemplo si los pingüinos más pesados tienden a tener aletas más largas y, de ser así, qué tipo de forma caracteriza a dicha relación. Para responder este tipo de preguntas necesitamos herramientas que permitan visualizar asociaciones, es decir, patrones de covariación entre dos o más variables numéricas.
+Cuando trabajamos con datasets que contienen múltiples variables cuantitativas, una pregunta natural es si existe alguna relación entre ellas. Retomando el ejemplo del dataset Penguins, podríamos preguntarnos, por ejemplo si los pingüinos más pesados tienden a tener aletas más largas y, de ser así, qué tipo de forma caracteriza a dicha relación. Para responder este tipo de preguntas necesitamos herramientas que permitan visualizar asociaciones, es decir, si dos variables cuantitativas *varían o no en forma conjunta*.
 
 ### El scatterplot como punto de partida
 
@@ -1328,10 +1328,36 @@ sns.pairplot(vars = ['bill_length_mm','bill_depth_mm',
 plt.show()
 ```
 
-Cuando se usa `hue`, la diagonal deja de mostrar histogramas y pasa a mostrar curvas de densidad superpuestas para cada especie. Esto permite comparar tanto las asociaciones entre variables como las distribuciones individuales de cada grupo en una única figura.
+Cuando se usa `hue`, la diagonal deja de mostrar histogramas y pasa a mostrar curvas de densidad superpuestas para cada especie. Esto permite comparar tanto las asociaciones entre los distintos pares de variables como la distribución de cada una de estas variables entre las categorías de la variable cualitativa mapeada al color.
 
 La matriz de scatterplots es una herramienta poderosa porque explota lo que mejor hacemos los seres humanos al leer gráficos: juzgar posiciones. Cada relación se representa en su propio panel, sin que las variables compitan entre sí por el espacio visual.
 
+### *Bubble charts*: una tercera variable cuantitativa en el tamaño
+
+Una alternativa que a veces se propone para incorporar una tercera variable cuantitativa en un scatterplot es codificarla en el **tamaño de los puntos**. Este tipo de gráfico se conoce como *bubble chart* y en Seaborn se construye mapeando esa variable cuantitativa adicional en el parámetro `size` dentro de `sns.scatterplot()`:
+
+```{code-cell} python
+plt.figure(figsize = (8,5))
+
+sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm',
+                size = 'bill_length_mm',
+                color = '#788eab', edgecolor = 'black',
+                data = data_penguins)
+plt.xlabel('Masa corporal (g)', fontweight = 'bold')
+plt.ylabel('Largo de la aleta (mm)', fontweight = 'bold')
+
+plt.show()
+```
+
+El resultado puede parecer atractivo, pero en la práctica presenta limitaciones importantes que vale la pena conocer. 
+
+En primer lugar, los seres humanos somos significativamente menos precisos para juzgar diferencias de tamaño o área que para juzgar diferencias de posición. Eso significa que las asociaciones que involucran la tercera variable —la que se codifica en el tamaño de los puntos— son mucho más difíciles de percibir que las que se leen en los ejes. 
+
+En segundo lugar, los rangos de tamaño disponibles son necesariamente pequeños en relación al tamaño total de la figura, lo que hace que diferencias moderadas en los datos se traduzcan en cambios casi imperceptibles en el tamaño de los puntos. 
+
+En tercer lugar, el gráfico mezcla dos tipos de escalas visuales —posición y área— que no se perciben con la misma facilidad ni con la misma precisión.
+
+Por estas razones, cuando el objetivo es entender las relaciones entre tres o más variables cuantitativas, suele ser preferible recurrir a múltiples visualizaciones más simples —como la matriz de scatterplots— antes que intentar condensar todo en un único gráfico complejo. El principio general es claro: **la posición es el canal visual más preciso y debería ser el primero en aprovecharse.**
 
 ## Visualización de cantidades y proporciones: gráficos de barra (apiladas, agrupadas), gráficos de área
 
