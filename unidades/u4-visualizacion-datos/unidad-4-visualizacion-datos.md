@@ -1512,836 +1512,139 @@ El correlograma es una herramienta eficiente para detectar patrones globales en 
 
 Por este motivo, **los correlogramas siempre deberían complementarse con una matriz de scatterplots, al menos para las relaciones que resulten más relevantes o sorprendentes.**
 
-`vlag`, `coolwarm`, `BrBG`, `RdYlGn` y `seismic`:
+## Visualización de datos georreferenciados
 
+Una enorme cantidad de datos con los que nos encontramos en la práctica tienen una dimensión espacial: nos dicen *dónde* ocurrió algo, *dónde* está algo, o *cómo se distribuye* algo sobre la superficie de la Tierra. A este tipo de datos los llamamos **datos georreferenciados**.
 
+Visualizar datos georreferenciados requiere herramientas específicas y, antes de usarlas, es necesario entender algunos conceptos fundamentales sobre cómo se describe la posición de un punto sobre nuestro planeta. Este es el dominio de la *geodesia*, la ciencia que estudia la forma y las dimensiones de la Tierra.
 
+### La forma de la Tierra: de la esfera al geoide
 
-También es posible construir una manualmente combinando dos paletas secuenciales:
+La primera pregunta que necesitamos responder es aparentemente sencilla: **¿qué forma tiene la Tierra?** La respuesta honesta es que no es ningún cuerpo geométrico perfecto, y esa imperfección tiene consecuencias directas sobre cómo representamos posiciones sobre su superficie.
 
-## Visualización de cantidades y proporciones: gráficos de barra (apiladas, agrupadas), gráficos de área
-
-La visualización de datos es una herramienta fundamental para comprender y analizar información compleja y voluminosa. Uno de los aspectos clave en la visualización de datos es la representación de cantidades y proporciones. En este capítulo, exploraremos enfoques populares y eficaces para visualizar estos tipo de datos.
-
-Algunos ejemplos comunes de gráficos de cantidades y proporciones incluyen gráficos circulares, gráficos de barras apiladas y gráficos de área apilada. Cada uno de estos gráficos tiene sus propias ventajas y desventajas, y la elección del gráfico adecuado dependerá del contexto y los objetivos específicos de la visualización.
-
-![Algunos ejemplos de visualización de proporciones o partes de un “todo”.](./imagenes/Untitled26.png)
-
-Algunos ejemplos de visualización de proporciones o partes de un “todo”.
-
-A menudo queremos mostrar cómo un grupo, entidad o cantidad se descompone en partes individuales que representan una proporción del todo. Los ejemplos comunes incluyen las proporciones de hombres y mujeres en un grupo de personas, los porcentajes de personas que votan por diferentes partidos políticos en una elección o las cuotas de mercado de las empresas.
-El arquetipo de dicha visualización es el gráfico circular, omnipresente en cualquier presentación comercial y muy difamado entre los científicos de datos. Como veremos, visualizar proporciones puede ser un desafío, en particular cuando el todo se divide en muchas partes diferentes o cuando queremos ver cambios en las proporciones a lo largo del tiempo o según las condiciones. No existe una única visualización ideal que siempre funcione. 
-
-### Un caso para los gráficos circulares
-
-De 1961 a 1983, el parlamento alemán (llamado Bundestag) estuvo compuesto por miembros de tres partidos diferentes, CDU/CSU, SPD y FDP. Durante la mayor parte de este tiempo, CDU/CSU y SPD tenían números de escaños aproximadamente comparables, mientras que FDP generalmente ocupaba solo una pequeña fracción de escaños. Por ejemplo, en el octavo Bundestag, de 1976 a 1980, la CDU/CSU tuvo 243 escaños, SPD 214 y FDP 39, para un total de 496. Dichos datos parlamentarios se visualizan más comúnmente como un gráfico circular.
-
-```python
-import matplotlib.pyplot as plt
-
-# Datos
-partidos = ['CDU/CSU', 'FDP', 'SPD']
-votos = [243, 39, 214]
-
-# Función para mostrar valores absolutos
-def autopct_abs(values):
-    def my_autopct(pct):
-        total = sum(values)
-        val = int(round(pct * total / 100.0))
-        return f'{val}'
-    return my_autopct
-
-# Crear gráfico circular
-plt.figure(figsize=(6, 6))
-plt.pie(votos, labels=partidos, autopct=autopct_abs(votos), startangle=90)
-
-# Agregar título
-plt.title('Distribución de votos por partido')
-
-# Asegurar que el gráfico sea un círculo perfecto
-plt.axis('equal')
-
-# Mostrar gráfico
-plt.show()
+```{figure} imagenes/tierra-esfera.jpg
+---
+width: 50%
+align: center
+---
+Representación de la Tierra como una esfera.
 ```
 
-![Figura 10-1. Composición del partido del octavo Bundestag alemán, 1976–1980, visualizada como un gráfico circular. Esta visualización destaca que la coalición gobernante de SPD y FDP tenía una pequeña mayoría sobre la oposición CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled27.png)
+La aproximación más simple es tratarla como una **esfera**. Esta simplificación hace los cálculos manejables y es suficiente para muchas aplicaciones cotidianas, pero introduce errores cuando necesitamos precisión. La razón es que la Tierra no es esférica: la rotación terrestre hace que la velocidad en el Ecuador sea mayor que en los polos, y esto deforma a nuestro planeta. El resultado es un cuerpo más "abultado" o "alargado" en la zona ecuatorial y más "achatado" en las zonas polares. El radio de la Tierra, en otras palabras, no es constante.
 
-Figura 10-1. Composición del partido del octavo Bundestag alemán, 1976–1980, visualizada como un gráfico circular. Esta visualización destaca que la coalición gobernante de SPD y FDP tenía una pequeña mayoría sobre la oposición CDU/CSU. Fuente de datos: Wikipedia.
-
-Un gráfico circular divide un círculo en rebanadas de modo que el área de cada rebanada sea proporcional a la fracción del total que representa. El mismo procedimiento se puede realizar en un rectángulo y el resultado es un gráfico de barras apiladas (Figura 10-2). Según si cortamos la barra de forma vertical u horizontal, obtendremos barras apiladas verticalmente (Figura 10-2a) o barras apiladas  horizontalmente (Figura 10-2b).
-
-```python
-import matplotlib.pyplot as plt
-
-# Datos
-partidos = ['CDU/CSU', 'SPD', 'FDP']
-votos = [243, 214, 39]
-colores = ['blue', 'orange', 'green']
-
-# Configuración de la figura
-fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
-
-# Función para apilar votos
-def apilar_votos(votos, index):
-    if index == 0:
-        return 0
-    else:
-        return sum(votos[:index])
-
-# Gráfico de barras apiladas vertical
-for i, partido in enumerate(partidos):
-    axes[0].bar('Votos', votos[i], bottom=apilar_votos(votos, i), color=colores[i], label=partido)
-axes[0].set_title('Gráfico de barras apiladas vertical')
-axes[0].set_ylabel('Votos')
-axes[0].legend()
-
-# Gráfico de barras apiladas horizontal
-for i, partido in enumerate(partidos):
-    axes[1].barh('Votos', votos[i], left=apilar_votos(votos, i), color=colores[i], label=partido)
-axes[1].set_title('Gráfico de barras apiladas horizontal')
-axes[1].set_xlabel('Votos')
-axes[1].legend()
-
-# Mostrar gráfico
-plt.tight_layout()
-plt.show()
+```{figure} imagenes/elipsoide.png
+---
+width: 50%
+align: center
+---
+Un elipsoide.
 ```
 
-![Figura 10-2. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras apiladas. (a) Barras apiladas verticalmente. (b) Barras apiladas horizontalmente. No es inmediatamente obvio que el SPD y el FDP tuvieran conjuntamente más escaños que la CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled28.png)
+Una mejor aproximación es el **elipsoide** (también llamado **esferoide**), una figura tridimensional generada por la rotación de una elipse. En el caso de la Tierra, el **semieje mayor** es el radio desde el centro hasta el Ecuador, y el **semieje menor** es el radio desde el centro hasta el polo. Distintos elipsoides propuestos a lo largo de la historia difieren en las longitudes de estos semiejes, cada uno optimizado para ajustarse mejor a una región particular del planeta.
 
-Figura 10-2. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras apiladas. (a) Barras apiladas verticalmente. (b) Barras apiladas horizontalmente. No es inmediatamente obvio que el SPD y el FDP tuvieran conjuntamente más escaños que la CDU/CSU. Fuente de datos: Wikipedia.
+```{=html}
+<style>
+  /* Estilos específicos para la tabla con la clase "styled-table" */
+  .styled-table th {
+    background-color: black;
+    color: white;
+  }
 
-También podemos tomar las barras de la figura y colocarlas una al lado de la otra en lugar de apilarlas una encima de la otra. Esta visualización facilita la realización de una comparación directa de los tres grupos, aunque oscurece otros aspectos de los datos. Lo que es más importante, en una gráfica de barras una al lado de la otra, la relación de cada barra con el total no es visualmente obvia.
+  /* Estilo para las filas impares después del encabezado */
+  .styled-table tr:nth-child(odd) {
+    background-color: white;
+    color: #000000;
+  }
 
-```python
-import matplotlib.pyplot as plt
+  /* Estilo para las filas pares después del encabezado */
+  .styled-table tr:nth-child(even) {
+    background-color: white;
+    color: #000000;
+  }
 
-# Datos
-partidos = ['CDU/CSU', 'SPD', 'FDP']
-votos = [243, 214, 39]
-colores = ['grey', 'orange', 'yellow']
+  /* Estilos generales de la tabla */
+  .styled-table {
+    border-collapse: collapse;
+    border: 1px solid black;
+  }
 
-# Crear gráfico de barras
-plt.figure(figsize=(8, 6))
-bar_plot = plt.bar(partidos, votos, color=colores)
+  .styled-table th,
+  .styled-table td {
+    border: 1px solid black;
+    padding: 8px;
+  }
 
-# Agregar título y etiquetas
-plt.title('Distribución de votos por partido')
-plt.xlabel('Partidos')
-plt.ylabel('Votos')
+  /* Estilos para las filas específicas */
+  .styled-table tr[data-elipsoide="International 1924 (Hayford)"],
+  .styled-table tr[data-elipsoide="GRS 1980"],
+  .styled-table tr[data-elipsoide="WGS 84"] {
+    background-color: #f0f598; /* Cambia el color de fondo según tu preferencia */
+  }
+</style>
 
-# Función para agregar etiquetas de votos en cada barra
-def agregar_etiquetas_votos(bar_plot):
-    for barra in bar_plot:
-        altura = barra.get_height()
-        plt.text(barra.get_x() + barra.get_width() / 2, altura, str(altura), ha='center', va='bottom')
-
-# Agregar etiquetas de votos en cada barra
-agregar_etiquetas_votos(bar_plot)
-
-# Mostrar gráfico
-plt.show()
+<table class="styled-table">
+  <thead>
+    <tr>
+      <th>Elipsoide</th>
+      <th>Semieje mayor (m)</th>
+      <th>Semieje menor (m)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr data-elipsoide="Australian National">
+      <td>Australian National</td>
+      <td>6378160.000</td>
+      <td>6356774.719</td>
+    </tr>
+    <tr data-elipsoide="Clarke 1866">
+      <td>Clarke 1866</td>
+      <td>6378206.400</td>
+      <td>6356583.800</td>
+    </tr>
+    <tr data-elipsoide="Bessel 1841">
+      <td>Bessel 1841</td>
+      <td>6377397.155</td>
+      <td>6356078.963</td>
+    </tr>
+    <tr data-elipsoide="Fischer 1968">
+      <td>Fischer 1968</td>
+      <td>6378150.000</td>
+      <td>6356768.337</td>
+    </tr>
+    <tr data-elipsoide="International 1924 (Hayford)">
+      <td>International 1924 (Hayford)</td>
+      <td>6378388.000</td>
+      <td>6356911.946</td>
+    </tr>
+    <tr data-elipsoide="GRS 1980">
+      <td>GRS 1980</td>
+      <td>6378137.000</td>
+      <td>6356752.314</td>
+    </tr>
+    <tr data-elipsoide="WGS 84">
+      <td>WGS 84</td>
+      <td>6378137.000</td>
+      <td>6356752.314</td>
+    </tr>
+  </tbody>
+</table>
 ```
 
-![Figura 10-3. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras una al lado de la otra. Como en la Figura 10-2,, no es inmediatamente obvio que SPD y FDP en conjunto tuvieran más escaños que CDU/CSU. Fuente de datos: Wikipedia.](./imagenes/Untitled29.png)
+El más utilizado actualmente a nivel global es el **WGS 84** (World Geodetic System 1984), que fue desarrollado por el Departamento de Defensa de los Estados Unidos y es el sistema de referencia sobre el que opera el GPS. Sus semiejes miden aproximadamente 6378137 m (mayor) y 6356752 m (menor).
 
-Figura 10-3. Composición del partido del octavo Bundestag alemán, 1976-1980, visualizada como barras una al lado de la otra. Como en la Figura 10-2,, no es inmediatamente obvio que SPD y FDP en conjunto tuvieran más escaños que CDU/CSU. Fuente de datos: Wikipedia.
+Ahora bien, incluso el elipsoide es una simplificación. La masa de la Tierra no está distribuida de forma uniforme en su interior: hay variaciones de densidad que provocan irregularidades en el campo gravitatorio. Estas irregularidades deforman la superficie real del océano en reposo, que no coincide exactamente con ningún elipsoide. A esta superficie irregular —definida como aquella en la que el campo gravitatorio es constante e igual al del nivel medio del mar— se la denomina **geoide**. El geoide no es una figura geométrica regular: tiene protuberancias y depresiones que reflejan las variaciones en la densidad interna de la Tierra, y su forma solo puede conocerse mediante mediciones.
 
-Muchos autores rechazan categóricamente los gráficos circulares y argumentan a favor de las barras apiladas o una al lado de la otra. Otros defienden el uso de gráficos circulares en algunas aplicaciones. Dependerá de cada caso y de la opinión personal, elegir cuál es la mejor forma de representar la información.
-Según las características del conjunto de datos y la historia específica que desee contar, es posible que desee favorecer uno u otro enfoque. En el caso del octavo Bundestag alemán, un gráfico circular sería la mejor opción. Destaca que la coalición gobernante del SPD y el FDP en conjunto tenía una pequeña mayoría sobre la CDU/CSU (Figura 10-1). Este hecho no es visualmente obvio en ninguna de las otras parcelas (Figuras 10-2 y 10-3).
-En general, los gráficos circulares funcionan bien cuando el objetivo es enfatizar fracciones simples, como un medio, un tercio o un cuarto. También funcionan bien cuando tenemos conjuntos de datos muy pequeños. Un solo gráfico circular, como en la Figura 10-1, se ve bien, pero una sola columna de barras apiladas, como en la Figura 10-2a, se ve rara. Las barras apiladas, por otro lado, pueden funcionar para comparaciones en paralelo de múltiples condiciones o en una serie de tiempo, y las barras en paralelo son preferibles cuando queremos comparar directamente las fracciones individuales entre sí. En la siguiente tabla se proporciona un resumen de las diversas ventajas y desventajas de los gráficos circulares, las barras apiladas y las barras una al lado de la otra.
-
-|  | Pie Chart | Barras Apiladas | Barras lado a lado |
-| --- | --- | --- | --- |
-| Visualiza claramente los datos como proporciones de un todo | ✔ | ✔ | ✖ |
-| Permite una fácil comparación visual de las proporciones relativas | ✖ | ✖ | ✔ |
-| Enfatiza visualmente fracciones simples, como 1/2, 1/3, 1/4 | ✔ | ✖ | ✖ |
-| Se ve visualmente atractivo incluso para conjuntos de datos muy pequeños | ✔ | ✖ | ✔ |
-| Funciona bien cuando el todo se divide en muchas partes. | ✖ | ✖ | ✔ |
-| Funciona bien para la visualización de muchos conjuntos de proporciones o series temporales de proporciones. | ✖ | ✔ | ✖ |
-
-*Pros y contras de los enfoques comunes para visualizar proporciones: gráficos circulares, barras apiladas y barras de lado a lado*
-
-### Un caso para barras de lado a lado
-
-Ahora veremos un caso en el que fallan los gráficos circulares. Este ejemplo se basa en una crítica de los gráficos circulares publicada originalmente en Wikipedia [Wikipedia 2007]. Considere el escenario hipotético de cinco empresas, A, B, C, D y E, que tienen una participación de mercado más o menos comparable de aproximadamente el 20 %. Nuestro conjunto de datos hipotéticos enumera la cuota de mercado de cada empresa durante tres años consecutivos. Cuando visualizamos este conjunto de datos con gráficos circulares, es difícil ver tendencias específicas (Figura 10-4). Parece que la participación de mercado de la empresa A está creciendo y la de la empresa E se está reduciendo, pero más allá de esta observación, no podemos decir qué está pasando. En particular, no está claro cómo se comparan exactamente las cuotas de mercado de las diferentes empresas dentro de cada año.
-
-```python
-import matplotlib.pyplot as plt
-
-data = {
-    "2015": {"A": 23.3, "B": 20.9, "C": 20.9, "D": 17.4, "E": 17.4},
-    "2016": {"A": 20, "B": 21.2, "C": 18.8, "D": 20, "E": 20},
-    "2017": {"A": 17.4, "B": 17.4, "C": 19.8, "D": 22.1, "E": 23.3},
-}
-
-fig, axs = plt.subplots(1, 3, figsize=(18, 6))
-
-for i, year in enumerate(data.keys()):
-    values = list(data[year].values())
-    labels = list(data[year].keys())
-
-    axs[i].pie(values, labels=labels)
-    axs[i].set_title(f"{year}")
-
-plt.show()
+```{figure} imagenes/geoide.jpg
+---
+width: 50%
+align: center
+---
+La Tierra como geoide.
 ```
 
-![Figura 10-4. Cuota de mercado de cinco empresas hipotéticas, A–E, para los años 2015–2017, visualizadas como gráficos circulares. Esta visualización tiene dos problemas principales: (i) una comparación de la participación de mercado relativa dentro de los años es casi imposible, y (ii) los cambios en la participación de mercado a lo largo de los años son difíciles de ver.](./imagenes/Untitled30.png)
+En resumen, la jerarquía de modelos es la siguiente: la esfera es la aproximación más burda; el elipsoide es mucho mejor y suficiente para la mayoría de las aplicaciones; el geoide es la representación más fiel de la forma real de la Tierra, pero también la más compleja de trabajar.
 
-Figura 10-4. Cuota de mercado de cinco empresas hipotéticas, A–E, para los años 2015–2017, visualizadas como gráficos circulares. Esta visualización tiene dos problemas principales: (i) una comparación de la participación de mercado relativa dentro de los años es casi imposible, y (ii) los cambios en la participación de mercado a lo largo de los años son difíciles de ver.
 
-La imagen se vuelve un poco más clara cuando cambiamos a barras apiladas (Figura 10-5).
-Ahora las tendencias de una cuota de mercado creciente para la empresa A y una cuota de mercado cada vez menor para la empresa E son claramente visibles. Sin embargo, las cuotas de mercado relativas de las cinco empresas dentro de cada año siguen siendo difíciles de comparar. Y es difícil comparar las cuotas de mercado de las empresas B, C y D a lo largo de los años, porque las barras se desplazan entre sí a lo largo de los años. Este es un problema general de los diagramas de barras apiladas y la razón principal por la que normalmente no se recomienda este tipo de visualización.
-
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-data = {
-    "2015": {"A": 23.3, "B": 20.9, "C": 20.9, "D": 17.4, "E": 17.4},
-    "2016": {"A": 20, "B": 21.2, "C": 18.8, "D": 20, "E": 20},
-    "2017": {"A": 17.4, "B": 17.4, "C": 19.8, "D": 22.1, "E": 23.3},
-}
-
-years = list(data.keys())
-categories = list(data["2015"].keys())
-
-num_years = len(years)
-bar_width = 0.9
-opacity = 0.8
-
-index = np.arange(num_years)
-bottoms = np.zeros(num_years)
-
-colors = ['b', 'g', 'r', 'c', 'm']
-
-fig, ax = plt.subplots()
-
-for i, category in enumerate(categories):
-    values = [data[year][category] for year in years]
-    ax.bar(index, values, bar_width, alpha=opacity, color=colors[i], label=category, bottom=bottoms)
-    bottoms += values
-
-ax.set_xlabel('Años')
-ax.set_ylabel('Market Share')
-ax.set_xticks(index)
-ax.set_xticklabels(years)
-ax.legend()
-
-plt.show()
-```
-
-![Figura 10-5. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras apiladas. Esta visualización tiene dos problemas principales: (i) es difícil comparar las cuotas de mercado relativas dentro de los años, y (ii) los cambios en la cuota de mercado a lo largo de los años son difíciles de ver para las empresas medianas (B, C y D) porque la ubicación de las barras cambia a lo largo de los años.](./imagenes/Untitled31.png)
-
-Figura 10-5. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras apiladas. Esta visualización tiene dos problemas principales: (i) es difícil comparar las cuotas de mercado relativas dentro de los años, y (ii) los cambios en la cuota de mercado a lo largo de los años son difíciles de ver para las empresas medianas (B, C y D) porque la ubicación de las barras cambia a lo largo de los años.
-
-Para este conjunto de datos hipotéticos, las barras una al lado de la otra son la mejor opción (Figura 10-6). Esta visualización destaca que tanto las empresas A como las B aumentaron su participación de mercado de 2015 a 2017, mientras que las empresas D y E las redujeron. También muestra que las cuotas de mercado aumentan secuencialmente de la empresa A a la E en 2015 y disminuyen de manera similar en 2017.
-
-```python
-import numpy as np
-import matplotlib.pyplot as plt
-
-data = {
-    "2015": {"A": 23.3, "B": 20.9, "C": 20.9, "D": 17.4, "E": 17.4},
-    "2016": {"A": 20, "B": 21.2, "C": 18.8, "D": 20, "E": 20},
-    "2017": {"A": 17.4, "B": 17.4, "C": 19.8, "D": 22.1, "E": 23.3},
-}
-
-years = list(data.keys())
-categories = list(data["2015"].keys())
-
-num_years = len(years)
-num_categories = len(categories)
-bar_width = 0.15
-opacity = 0.8
-
-index = np.arange(num_years)
-colors = ['b', 'g', 'r', 'c', 'm']
-
-fig, ax = plt.subplots()
-
-for i, category in enumerate(categories):
-    values = [data[year][category] for year in years]
-    category_indexes = index + i * bar_width
-    ax.bar(category_indexes, values, bar_width, alpha=opacity, color=colors[i], label=category)
-
-ax.set_xlabel('Años')
-ax.set_ylabel('Market share')
-ax.set_title('Barras agrupadas por categoría y año')
-ax.set_xticks(index + bar_width * (num_categories - 1) / 2)
-ax.set_xticklabels(years)
-ax.legend()
-
-plt.show()
-```
-
-![Figura 10-6. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras de lado a lado.](./imagenes/Untitled32.png)
-
-Figura 10-6. Cuota de mercado de cinco empresas hipotéticas para los años 2015-2017, visualizadas como barras de lado a lado.
-
-### **Visualización de proporciones por separado como partes del total**
-
-Las barras una al lado de la otra tienen el problema de que no visualizan el tamaño de las partes individuales en relación con el todo, y las barras apiladas tienen el problema de que las diferentes barras no se pueden comparar fácilmente porque tienen líneas de base diferentes. Podemos resolver estos dos problemas haciendo una gráfica separada para cada parte y en cada gráfica mostrando la respectiva parte relativa al todo. Para el conjunto de datos de salud de la Figura 10-8, este procedimiento da como resultado la Figura 10-9. La distribución de edad general en el conjunto de datos se muestra como áreas grises sombreadas, y las distribuciones de edad para cada estado de salud se muestran en azul.
-Esta cifra destaca que, en términos absolutos, la cantidad de personas con una salud excelente o buena disminuye después de los 30 a 40 años, mientras que la cantidad de personas con una salud regular permanece aproximadamente constante en todas las edades.
-
-![Figura 10-9. Estado de salud por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado de salud y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.](./imagenes/Untitled33.png)
-
-Figura 10-9. Estado de salud por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado de salud y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.
-
-Para dar un segundo ejemplo, consideremos una variable diferente de la misma encuesta: el estado civil. El estado civil cambia mucho más drásticamente con la edad que el estado de salud, y una gráfica de densidades apiladas del estado civil versus la edad no es muy esclarecedora (Figura 10-10).
-
-![Figura 10-10. Estado civil por edad. Para simplificar la figura, se ha eliminado una pequeña cantidad de casos que se notifican como separados. Se ha etiquetado esta gráfica como "mala" porque la frecuencia de personas que nunca se han casado o que son viudas cambia tan drásticamente con la edad que las distribuciones por edad de las personas casadas y divorciadas están muy distorsionadas y son difíciles de interpretar. Fuente de datos: SGS.](./imagenes/Untitled34.png)
-
-Figura 10-10. Estado civil por edad. Para simplificar la figura, se ha eliminado una pequeña cantidad de casos que se notifican como separados. Se ha etiquetado esta gráfica como "mala" porque la frecuencia de personas que nunca se han casado o que son viudas cambia tan drásticamente con la edad que las distribuciones por edad de las personas casadas y divorciadas están muy distorsionadas y son difíciles de interpretar. Fuente de datos: SGS.
-
-El mismo conjunto de datos visualizado como densidades parciales es mucho más claro (Figura 10-11). En particular, vemos que la proporción de personas casadas alcanza su punto máximo alrededor de los 30 años, la proporción de personas divorciadas alcanza su punto máximo alrededor de los 40 y la proporción de viudos alcanza su punto máximo a mediados de los 70.
-
-![Figura 10-11. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado civil, y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.](./imagenes/Untitled35.png)
-
-Figura 10-11. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas muestran las estimaciones de densidad de las edades de las personas con el respectivo estado civil, y las áreas grises muestran la distribución general por edades. Fuente de datos: SGS.
-
-Sin embargo, una desventaja de la figura 10-11 es que esta representación no facilita la determinación de proporciones relativas en un momento determinado. Por ejemplo, si quisiéramos saber a qué edad están casados más del 50% de todas las personas encuestadas, no podríamos saberlo fácilmente con la figura 10-11. Para responder a esta pregunta, podemos usar el mismo
-tipo de pantalla pero muestran proporciones relativas en lugar de conteos absolutos a lo largo del eje y (Figura 10-12). Ahora vemos que los casados son mayoría a partir de finales de los 20 y los viudos son mayoría a partir de mediados de los 70.
-
-![Figura 10-12. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas en azul muestran el porcentaje de personas a la edad dada con el estado respectivo, y las áreas coloreadas en gris muestran el porcentaje de personas con todos los demás estados civiles. Fuente de datos: SGS.](./imagenes/Untitled36.png)
-
-Figura 10-12. Estado civil por edad, expresado como proporción del total de personas encuestadas. Las áreas coloreadas en azul muestran el porcentaje de personas a la edad dada con el estado respectivo, y las áreas coloreadas en gris muestran el porcentaje de personas con todos los demás estados civiles. Fuente de datos: SGS.
-
-## Visualización de asociaciones: gráficos de dispersión, correlogramas, heatmaps
-
-Traducción de: Capítulo 12 de “Fundamentals of Data Visualization”
-
-Muchos conjuntos de datos contienen dos o más variables cuantitativas, y podemos estar interesados en cómo estas variables se relacionan entre sí. Por ejemplo, podemos tener un conjunto de datos de medidas cuantitativas de diferentes animales, como la altura, el peso, la longitud y las demandas energéticas diarias de los animales. Para graficar la relación de solo dos variables, como la altura y el peso, normalmente usaremos un gráfico de dispersión. Si queremos mostrar más de dos variables a la vez, podemos optar por un gráfico de burbujas, una matriz de gráficos de dispersión o un correlograma. Finalmente, para conjuntos de datos dimensionalmente altos, puede ser útil realizar una reducción de dimensiones, por ejemplo, un análisis de componentes principales.
-
-### Gráficos de dispersión
-
-Mostraré el gráfico de dispersión básico y varias de sus variaciones utilizando un conjunto de datos de medidas realizadas en 123 pájaros jay azules. El conjunto de datos contiene información como la longitud de la cabeza (medida desde la punta del pico hasta la parte posterior de la cabeza), el tamaño del cráneo (longitud de la cabeza menos la longitud del pico) y la masa corporal de cada pájaro. Esperamos que haya relaciones entre estas variables. Por ejemplo, se esperaría que los pájaros con picos más largos tuvieran tamaños de cráneo más grandes, y que los pájaros con mayor masa corporal tuvieran picos y cráneos más grandes que los pájaros con menor masa corporal.
-Para explorar estas relaciones, comienzo con un gráfico de la longitud de la cabeza frente a la masa corporal (Figura 12-1). En este gráfico, la longitud de la cabeza se muestra a lo largo del eje y y la masa corporal a lo largo del eje x, y cada pájaro está representado por un punto. (Tenga en cuenta la terminología: decimos que graficamos la variable que se muestra a lo largo del eje y en contra de la variable que se muestra a lo largo del eje x). Los puntos forman una nube dispersa (de ahí el término gráfico de dispersión), pero sin duda hay una tendencia a que los pájaros con mayor masa corporal tengan cabezas más largas. El pájaro con la cabeza más larga cae cerca de la masa corporal máxima observada, y el pájaro con la cabeza más corta cae cerca de la masa corporal mínima observada.
-
-![Untitled](./imagenes/Untitled37.png)
-
-*Figura 12-1. Longitud de la cabeza (medida desde la punta del pico hasta la parte posterior de la cabeza, en mm) versus masa corporal (en gramos), para 123 urracas azules. Cada punto corresponde a un pájaro. Existe una tendencia moderada a que los pájaros más pesados tengan cabezas más largas. Fuente de datos: Keith Tarvin, Oberlin College*.
-
-Para generar un gráfico similar al del autor en python podemos seguir los siguientes pasos:
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns #solo para hacer gráficos más bonitos 
-sns.set() #solo para hacer gráficos más bonitos 
-
-df = pd.read_csv('datos_pajaritos.csv').set_index('pajarito_id')
-plt.scatter(df.body_mass, df.head_length)
-plt.xlabel('body mass (g)')
-plt.ylabel('head length (mm)')
-plt.title('Relación entre masa corporal y largo de la cabeza')
-#guardamos la imagen, porque a veces es  necesario
-plt.savfig('./folder/bm_vs_largo_cabeza.png', bbox_inches = 'tight')
-plt.close() #cerramos la imagen porque una imgen abierta puede interferir con otra imagen cuando trabajamos con scripts 
-```
-
-El conjunto de datos de los jay azules contiene tanto aves macho como hembra, y puede que queramos saber si la relación general entre la longitud de la cabeza y la masa corporal se sostiene por separado para cada sexo. Para abordar esta pregunta, podemos colorear los puntos en el gráfico de dispersión según el sexo del ave (Figura 12-2). Esta figura revela que la tendencia general en la longitud de la cabeza y la masa corporal está al menos parcialmente impulsada por el sexo de las aves. A la misma masa corporal, las hembras tienden a tener cabezas más cortas que los machos. Al mismo tiempo, las hembras tienden a ser más ligeras que los machos en promedio.
-
-![Untitled](./imagenes/Untitled38.png)
-
-*Figura 12-2. Longitud de cabeza versus masa corporal para 123 urracas azules. El sexo de las aves está indicado por el color. A la misma masa corporal, los machos tienden a tener cabezas más largas (y específicamente, picos más largos) que las hembras. Fuente de datos: Keith Tarvin, Oberlin College.*
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns #solo para hacer gráficos más bonitos 
-sns.set() #solo para hacer gráficos más bonitos 
-
-df = pd.read_csv('datos_pajaritos.csv').set_index('pajarito_id')
-df_male = df[df['gender']=='Male']
-df_female = df[df['gender']=='Female']
-plt.scatter(df_male.body_mass, df_male.head_length, c = 'blue')
-plt.scatter(df_female.body_mass, df_female.head_length, c = 'orange')
-plt.xlabel('body mass (g)')
-plt.ylabel('head length (mm)')
-plt.title('Relación entre masa corporal y largo de la cabeza por género')
-#guardamos la imagen, porque a veces es  necesario
-plt.savfig('./folder/bm_vs_largo_cabeza_genero.png', bbox_inches = 'tight')
-plt.close()
-```
-
-<aside>
-💡 Pueden consultar los nombres de los colores en este [link](https://matplotlib.org/stable/gallery/color/named_colors.html) y elegir lo que más les guste.
-
-</aside>
-
-Dado que la longitud de la cabeza se define como la distancia desde la punta del pico hasta la parte posterior de la cabeza, una mayor longitud de la cabeza podría implicar un pico más largo, un cráneo más grande o ambos. Podemos separar la longitud del pico y el tamaño del cráneo mirando otra variable en el conjunto de datos, el tamaño del cráneo, que es similar a la longitud de la cabeza pero excluye el pico. Como ya estamos usando la posición x para la masa corporal, la posición y para la longitud de la cabeza y el color del punto para el sexo del ave, necesitamos otra estética a la que podamos asignar el tamaño del cráneo. Una opción es usar el tamaño de los puntos, lo que resulta en una visualización llamada gráfico de burbujas (Figura 12-3).
-
-![Untitled](./imagenes/Untitled39.png)
-
-*Figura 12-3. Longitud de la cabeza versus masa corporal para 123 urracas azules. El sexo de las aves se indica por color y el tamaño del cráneo por el tamaño del símbolo. Las mediciones de longitud de la cabeza incluyen la longitud del pico, mientras que las mediciones de tamaño del cráneo no lo hacen. La longitud de la cabeza y el tamaño del cráneo tienden a estar correlacionados, pero hay algunas aves con picos inusualmente largos o cortos en relación a su tamaño de cráneo. Fuente de datos: Keith Tarvin, Oberlin College.*
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns #solo para hacer gráficos más bonitos 
-sns.set() #solo para hacer gráficos más bonitos 
-
-df = pd.read_csv('datos_pajaritos.csv').set_index('pajarito_id')
-df_male = df[df['gender']=='Male']
-df_female = df[df['gender']=='Female']
-
-fig, axs = plt.subplots(1, 2, figsize=(15, 5))
-
-axs[0].scatter(df_female.body_mass, df_female.head_length, c = 'orange', s = df_female.skull_size)
-axs[0].set_title('male')
-axs[0].set_xlabel('body mass (g)')
-axs[0].set_ylabel('head length (mm)')
-
-axs[1].scatter(df_male.body_mass, df_male.head_length, c = 'blue', s = df_male.skull_size)
-axs[1].set_title('female birds')
-axs[1].set_xlabel('body mass (g)')
-axs[1].set_ylabel('head length (mm)')
-
-plt.show()
-```
-
-Los gráficos de burbujas tienen la desventaja de que muestran los mismos tipos de variables - variables cuantitativas - con dos tipos diferentes de escalas, posición y tamaño. Esto hace que sea difícil determinar visualmente la fuerza de las asociaciones entre las diversas variables. Además, las diferencias entre los valores de datos codificados como tamaño de burbuja son más difíciles de percibir que las diferencias entre los valores de datos codificados como posición. Debido a que incluso las burbujas más grandes deben ser algo pequeñas en comparación con el tamaño total de la figura, las diferencias de tamaño entre las burbujas más grandes y las más pequeñas son necesariamente pequeñas. En consecuencia, las diferencias más pequeñas en los valores de los datos corresponden a diferencias de tamaño muy pequeñas que pueden ser virtualmente imposibles de ver. En la Figura 12-3, usé una asignación de tamaño que amplifica visualmente la diferencia entre los cráneos más pequeños (alrededor de 28 mm) y los más grandes (alrededor de 34 mm), y sin embargo, es difícil determinar cuál es la relación entre el tamaño del cráneo y el peso corporal o la longitud de la cabeza.
-
-Como alternativa a un gráfico de burbujas, puede ser preferible mostrar una matriz de gráficos de dispersión de todos contra todos, donde cada trama individual muestra dos dimensiones de datos (Figura 12-4). Esta figura muestra claramente que la relación entre el tamaño del cráneo y el peso corporal es comparable para las aves macho y hembra, excepto que las aves hembra tienden a ser un poco más pequeñas. Sin embargo, lo mismo no es cierto para la relación entre la longitud de la cabeza y el peso corporal. Hay una clara separación por sexo. Las aves macho tienden a tener picos más largos que las aves hembra, todo lo demás siendo igual.
-
-![Untitled](./imagenes/Untitled40.png)
-
-Para crear una gráfica similar en Python podemos usar el siguiente código:
-
-```python
-fig, axs = plt.subplots(3, 3, figsize=(15, 10))
-columns = ['body_mass', 'head_length', 'skull_size']
-i = 0
-for col in columns:
-    j = 0
-    for col2 in columns:
-				#agregamos labels para usarlas luego
-        axs[i, j].scatter(df_female[col], df_female[col2], c = 'orange', label = 'female')
-        axs[i, j].scatter(df_male[col], df_male[col2], c = 'blue', label = 'male')
-        j+=1
-    i+=1
-    
-#solo ponemos nombres a los ejes en los que nos interesan
-axs[0,0].set_ylabel('body mass (g)')
-axs[1,0].set_ylabel('head length (mm)')
-axs[2,0].set_ylabel('skull size (mm)')
-
-axs[2,0].set_xlabel('body mass (g)')
-axs[2,1].set_xlabel('head length (mm)')
-axs[2,2].set_xlabel('skull size (mm)')
-
-handles, labels = axs[0, 1].get_legend_handles_labels()
-fig.legend(handles, labels, loc='upper center', ncol=2)
-plt.show()
-```
-
-### Correlogramas
-
-Cuando tenemos más de tres o cuatro variables cuantitativas, las matrices de diagramas de dispersión de todos contra todos se vuelven rápidamente difíciles de manejar. En este caso, es más útil cuantificar la cantidad de asociación entre pares de variables y visualizar estas cantidades en lugar de los datos sin procesar. Una forma común de hacer esto es calcular los coeficientes de correlación.
-
-El coeficiente de correlación r es un número entre -1 y 1 que mide en qué medida covarían dos variables. Un valor de r = 0 significa que no hay asociación alguna, y un valor de 1 o -1 indica una asociación perfecta. El signo del coeficiente de correlación indica si las variables están correlacionadas (los valores más grandes de una variable coinciden con los valores más grandes de la otra) o anticorrelacionadas (los valores más grandes de una variable coinciden con los valores más pequeños de la otra). Para proporcionar ejemplos visuales de cómo se ven las diferentes intensidades de correlación, en la Figura 12-5 muestro conjuntos de puntos generados aleatoriamente que difieren ampliamente en el grado en que los valores de x e y están correlacionados.
-
-![Figura 12-5. Ejemplos de correlaciones de distinta magnitud y dirección, con coeficiente de correlación r asociado. En ambas filas, de izquierda a derecha, las correlaciones van de débil a fuerte. En la fila superior, las correlaciones son positivas (los valores más grandes para una cantidad se asocian con valores más grandes para la otra) y en la fila inferior son negativas (los valores más grandes para una cantidad se asocian con valores más pequeños para la otra). En los seis paneles, los conjuntos de valores de x e y son idénticos, pero los emparejamientos entre los valores individuales de x e y se han reorganizado para generar los coeficientes de correlación especificados.](./imagenes/Untitled41.png)
-
-Figura 12-5. Ejemplos de correlaciones de distinta magnitud y dirección, con coeficiente de correlación r asociado. En ambas filas, de izquierda a derecha, las correlaciones van de débil a fuerte. En la fila superior, las correlaciones son positivas (los valores más grandes para una cantidad se asocian con valores más grandes para la otra) y en la fila inferior son negativas (los valores más grandes para una cantidad se asocian con valores más pequeños para la otra). En los seis paneles, los conjuntos de valores de x e y son idénticos, pero los emparejamientos entre los valores individuales de x e y se han reorganizado para generar los coeficientes de correlación especificados.
-
-El coeficiente de correlación ([Pearson](https://es.wikipedia.org/wiki/Coeficiente_de_correlaci%C3%B3n_de_Pearson)) se define como:
-
-![Untitled](./imagenes/Untitled42.png)
-
-donde xi y yi son dos conjuntos de observaciones y x e y son las medias muestrales correspondientes. Podemos hacer una serie de observaciones a partir de esta fórmula. Primero, la fórmula es simétrica en xi y yi, por lo que la correlación de x con y es la misma que la correlación de y con x. En segundo lugar, los valores individuales xi y yi solo ingresan a la fórmula en el contexto de las diferencias de la media de la muestra respectiva, por lo que si cambiamos un conjunto de datos completo en una cantidad constante, por ejemplo, si reemplazamos xi con xi′ = xi + C para alguna C constante: el coeficiente de correlación permanece sin cambios. En tercer lugar, el coeficiente de correlación también permanece sin cambios si cambiamos la escala de los datos (por ejemplo, xi′ = Cxi), ya que la constante C aparecerá tanto en el numerador como en el denominador de la fórmula y, por lo tanto, se puede cancelar.
-
-Las visualizaciones de los coeficientes de correlación se denominan correlogramas. Para ilustrar el uso de un correlograma, consideraremos un conjunto de datos de más de 200 fragmentos de vidrio obtenidos durante el trabajo forense. Para cada fragmento de vidrio, tenemos medidas sobre su composición, expresada como el porcentaje en peso de varios óxidos minerales. Hay siete óxidos diferentes para los que tenemos medidas, dando un total de 6 + 5 + 4 + 3 + 2 + 1 = 21 correlaciones por pares. Podemos mostrar estas 21 correlaciones a la vez como una matriz de mosaicos de colores, donde cada mosaico representa un coeficiente de correlación (Figura 12-6). Este correlograma nos permite captar rápidamente las tendencias en los datos, como que el magnesio tiene una correlación negativa con casi todos los demás óxidos, y que el aluminio y el bario tienen una fuerte correlación positiva.
-
-![Figura 12-6. Correlaciones en contenido mineral para 214 muestras de fragmentos de vidrio obtenidos durante trabajo forense. El conjunto de datos contiene siete variables que miden las cantidades de magnesio (Mg), calcio (Ca), hierro (Fe), potasio (K), sodio (Na), aluminio (Al) y bario (Ba) que se encuentran en cada fragmento de vidrio. Los mosaicos de colores representan las correlaciones entre pares de estas variables. Fuente de datos: B. Alemán.](./imagenes/Untitled43.png)
-
-Figura 12-6. Correlaciones en contenido mineral para 214 muestras de fragmentos de vidrio obtenidos durante trabajo forense. El conjunto de datos contiene siete variables que miden las cantidades de magnesio (Mg), calcio (Ca), hierro (Fe), potasio (K), sodio (Na), aluminio (Al) y bario (Ba) que se encuentran en cada fragmento de vidrio. Los mosaicos de colores representan las correlaciones entre pares de estas variables. Fuente de datos: B. Alemán.
-
-Una debilidad del correlograma de la figura 12-6 es que las correlaciones bajas, es decir, las correlaciones con un valor absoluto cercano a cero, no se suprimen visualmente como deberían.
-Por ejemplo, el magnesio (Mg) y el potasio (K) no están en absoluto correlacionados, pero la figura 12-6 no muestra esto inmediatamente. Para superar esta limitación, podemos mostrar las correlaciones como círculos de colores y escalar el tamaño del círculo con el valor absoluto del coeficiente de correlación (Figura 12-7). De esta forma, se suprimen las correlaciones bajas y se destacan mejor las correlaciones altas.
-
-![Figura 12-7. Correlaciones en contenido mineral para muestras de vidrio forense. La escala de colores es idéntica a la de la Figura 12-6. Sin embargo, ahora la magnitud de cada correlación también está codificada en el tamaño de los círculos de colores. Esta opción quita énfasis visualmente a los casos con correlaciones cercanas a cero. Fuente de datos: B. Alemán.](./imagenes/Untitled44.png)
-
-Figura 12-7. Correlaciones en contenido mineral para muestras de vidrio forense. La escala de colores es idéntica a la de la Figura 12-6. Sin embargo, ahora la magnitud de cada correlación también está codificada en el tamaño de los círculos de colores. Esta opción quita énfasis visualmente a los casos con correlaciones cercanas a cero. Fuente de datos: B. Alemán.
-
-Todos los correlogramas tienen un inconveniente importante: son bastante abstractos. Si bien nos muestran patrones importantes en los datos, también ocultan los puntos de datos subyacentes y pueden hacer que saquemos conclusiones incorrectas. Siempre es mejor visualizar los datos sin procesar en lugar de cantidades derivadas abstractas que se han calculado a partir de ellos. Afortunadamente, con frecuencia podemos encontrar un término medio entre mostrar patrones importantes y mostrar los datos sin procesar mediante la aplicación de técnicas de reducción de dimensiones.
-
-### Gráficos de puntos y mapas de calor (heatmaps)
-
-Las barras no son la única opción para visualizar cantidades. Una limitación importante de las barras es que deben comenzar en cero, de modo que la longitud de la barra sea proporcional a la cantidad que se muestra. Para algunos conjuntos de datos, esto puede ser poco práctico o puede ocultar características clave.
-En este caso, podemos indicar las cantidades colocando puntos en los lugares apropiados a lo largo del eje x o y.
-La Figura 6-11 demuestra este enfoque de visualización para un conjunto de datos de esperanza de vida en 25 países de las Américas. Los ciudadanos de estos países tienen una esperanza de vida de entre 60 y 81 años, y cada valor de esperanza de vida individual se muestra con un punto azul en la ubicación adecuada a lo largo del eje x. Al limitar el rango del eje al intervalo de 60 a 81 años, la figura destaca las características clave de este conjunto de datos: Canadá tiene la esperanza de vida más alta entre todos los países enumerados, y Bolivia y Haití tienen una esperanza de vida mucho más baja que todos los demás países. Si hubiéramos usado barras en lugar de puntos (Figura 6-12), habríamos hecho una figura mucho menos atractiva. Debido a que las barras son tan largas en esta figura, y todas tienen casi la misma longitud, la mirada se dirige hacia el centro de las barras en lugar de hacia sus extremos, y la figura no logra transmitir su mensaje.
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-
-# Cargar el dataset
-df = pd.read_csv("https://bitsandbricks.github.io/data/gapminder.csv")
-
-# Filtrar datos del año 2007
-df_2007 = df[df.anio == 2007]
-
-# Lista de países de América
-paises_america = [
-    'Argentina', 'Bolivia', 'Brazil', 'Canada', 'Chile', 'Colombia', 'Costa Rica', 'Cuba',
-    'Dominican Republic', 'Ecuador', 'El Salvador', 'Guatemala', 'Haiti', 'Honduras', 'Jamaica',
-    'Mexico', 'Nicaragua', 'Panama', 'Paraguay', 'Peru', 'Puerto Rico', 'Trinidad and Tobago',
-    'United States', 'Uruguay', 'Venezuela'
-]
-
-# Filtrar solo los países de América y resetear el índice
-df_2007_america = df_2007[df_2007['pais'].isin(paises_america)].reset_index(drop=True)
-df_2007_america = df_2007_america.sort_values('expVida', ascending=True).reset_index(drop=True)
-
-# Crear un gráfico de dispersión con expectativa de vida en el eje X y países en el eje Y
-plt.figure(figsize=(15, 8))
-plt.scatter(df_2007_america['expVida'], df_2007_america.index, marker='o', alpha=0.5)
-
-# Etiquetar ejes y título
-plt.xlabel('Expectativa de vida (años)')
-plt.ylabel('Países')
-plt.title('Expectativa de vida por país en América en 2007')
-
-# Establecer etiquetas para los países en el eje Y
-plt.yticks(df_2007_america.index, df_2007_america['pais'])
-
-# Mostrar la gráfica
-plt.show()
-```
-
-![Figura 6-11. Esperanza de vida de los países de las Américas, para el año 2007. Fuente de datos: Gapminder.](./imagenes/Untitled45.png)
-
-Figura 6-11. Esperanza de vida de los países de las Américas, para el año 2007. Fuente de datos: Gapminder.
-
-```python
-# Crear un gráfico de barras horizontales con expectativa de vida en el eje X y países en el eje Y
-plt.figure(figsize=(15, 8))
-plt.barh(df_2007_america.index, df_2007_america['expVida'], alpha=0.5)
-
-# Etiquetar ejes y título
-plt.xlabel('Expectativa de vida (años)')
-plt.ylabel('Países')
-plt.title('Expectativa de vida por país en América en 2007')
-
-# Establecer etiquetas para los países en el eje Y
-plt.yticks(df_2007_america.index, df_2007_america['pais'])
-
-# Mostrar la gráfica
-plt.show()
-```
-
-![Figura 6-12. Esperanza de vida de los países de las Américas, para el año 2007, mostradas como barras. Este conjunto de datos no es adecuado para ser visualizado con barras. Las barras son demasiado largas y desvían la atención de la característica clave de los datos, las diferencias en la esperanza de vida entre los distintos países. Fuente de datos: Gapminder.](./imagenes/Untitled46.png)
-
-Figura 6-12. Esperanza de vida de los países de las Américas, para el año 2007, mostradas como barras. Este conjunto de datos no es adecuado para ser visualizado con barras. Las barras son demasiado largas y desvían la atención de la característica clave de los datos, las diferencias en la esperanza de vida entre los distintos países. Fuente de datos: Gapminder.
-
-Sin embargo, independientemente de si usamos barras o puntos, debemos prestar atención al orden de los valores de los datos. En las Figuras 6-11 y 6-12, los países están ordenados en orden descendente de esperanza de vida. Si en cambio los ordenáramos alfabéticamente, terminaríamos con una nube de puntos desordenada que es confusa y no transmite un mensaje claro (Figura 6-13).
-
-![Figura 6-13. Esperanza de vida de los países de las Américas, para el año 2007. Aquí, los países están ordenados alfabéticamente, lo que hace que los puntos formen una nube de puntos desordenada. Esto hace que la figura sea difícil de leer y, por lo tanto, merece ser etiquetada como "mala". Fuente de datos: Gapminder.](./imagenes/Untitled47.png)
-
-Figura 6-13. Esperanza de vida de los países de las Américas, para el año 2007. Aquí, los países están ordenados alfabéticamente, lo que hace que los puntos formen una nube de puntos desordenada. Esto hace que la figura sea difícil de leer y, por lo tanto, merece ser etiquetada como "mala". Fuente de datos: Gapminder.
-
-Todos los ejemplos hasta ahora han representado cantidades por ubicación a lo largo de una escala de posición, ya sea a través del punto final de una barra o la ubicación de un punto. Para conjuntos de datos muy grandes, ninguna de estas opciones puede ser apropiada, porque la cifra resultante sería demasiado ocupada. Ya vimos en la figura 6-7 que solo siete grupos de cuatro valores de datos pueden dar como resultado una figura compleja y no tan fácil de leer. Si tuviéramos 20 grupos de 20 valores de datos, una cifra similar probablemente sería bastante confusa.
-Como alternativa al mapeo de valores de datos en posiciones a través de barras o puntos, podemos mapear valores de datos en colores. Tal figura se llama mapa de calor. La Figura 6-14 utiliza este enfoque para mostrar el porcentaje de usuarios de Internet a lo largo del tiempo en 20 países y durante 23 años, desde 1994 hasta 2016. Si bien esta visualización dificulta determinar los valores de datos exactos que se muestran (p. ej., cuál es el porcentaje exacto de usuarios de Internet en los Estados Unidos en 2015?), hace un excelente trabajo al resaltar tendencias más amplias. Podemos ver en qué países el uso de Internet comenzó temprano y en cuáles no, y también podemos ver qué países tienen una alta penetración de Internet en el último año cubierto por el conjunto de datos (2016).
-
-```python
-import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
-
-df = pd.read_csv("https://raw.githubusercontent.com/wikimedia/analytics-wikistats/master/worldbank/API_IT.NET.USER.ZS_DS2_en_csv_v2.csv", delimiter=',', skiprows=3)
-
-# Eliminar columnas innecesarias y establecer "Country Name" como índice
-df = df.drop(columns=['Country Code', 'Indicator Name', 'Indicator Code'])
-df = df.set_index('Country Name')
-
-# Lista de países de América
-paises_america = [
-    'Argentina', 'Bolivia', 'Brazil', 'Canada', 'Chile', 'Colombia', 'Costa Rica', 'Cuba',
-    'Dominican Republic', 'Ecuador', 'El Salvador', 'Guatemala', 'Haiti', 'Honduras', 'Jamaica',
-    'Mexico', 'Nicaragua', 'Panama', 'Paraguay', 'Peru', 'Puerto Rico', 'Trinidad and Tobago',
-    'United States', 'Uruguay'
-]
-
-# Filtrar solo los países de América
-df = df.loc[paises_america]
-
-# Filtrar por años desde 1995
-years = [str(year) for year in range(1995, 2018)]
-df = df[years]
-
-# Configurar el gráfico
-plt.figure(figsize=(10, 20))
-
-# Crear el mapa de calor
-sns.heatmap(df, cmap='coolwarm', linewidths=0.1, annot=False)
-
-# Etiquetar ejes y título
-plt.xlabel('Años')
-plt.ylabel('Países')
-plt.title('Mapa de calor de usuarios de Internet a lo largo de los años en América (1995-2017)')
-
-# Mostrar el gráfico
-plt.show()
-```
-
-![Figura 6-14. Adopción de Internet a lo largo del tiempo, para países seleccionados. El color representa el porcentaje de usuarios de Internet para el respectivo país y año. Los países fueron ordenados por porcentaje de usuarios de Internet en 2016. Fuente de datos: Banco Mundial.](./imagenes/Untitled48.png)
-
-Figura 6-14. Adopción de Internet a lo largo del tiempo, para países seleccionados. El color representa el porcentaje de usuarios de Internet para el respectivo país y año. Los países fueron ordenados por porcentaje de usuarios de Internet en 2016. Fuente de datos: Banco Mundial.
-
-Como es el caso con todos los demás enfoques de visualización discutidos en este capítulo, debemos prestar atención al orden de los valores de datos categóricos al hacer mapas de calor. En la Figura 6-14, los países están ordenados por el porcentaje de usuarios de Internet en 2016. Este orden coloca al Reino Unido, Japón, Canadá y Alemania por encima de Estados Unidos, porque todos estos países tuvieron una mayor penetración de Internet en 2016 que Estados Unidos., a pesar de que Estados Unidos vio un uso significativo de Internet en un momento anterior. Alternativamente, podríamos ordenar los países por qué tan temprano comenzaron a ver un uso significativo de Internet. En la Figura 6-15, los países están ordenados por año en el que el uso de Internet aumentó por primera vez por encima del 20 %. En esta figura, Estados Unidos cae en la tercera posición desde arriba y se destaca por tener un uso de Internet relativamente bajo en 2016 en comparación con lo temprano que comenzó el uso de Internet allí. Se puede ver un patrón similar para Italia. Israel y Francia, por el contrario, comenzaron relativamente tarde pero ganaron terreno rápidamente.
-
-![Figura 6-15. Adopción de Internet a lo largo del tiempo, para países seleccionados. Los países se ordenaron por el año en que su uso de Internet superó por primera vez el 20 %. Fuente de datos: Banco Mundial.](./imagenes/Untitled49.png)
-
-Figura 6-15. Adopción de Internet a lo largo del tiempo, para países seleccionados. Los países se ordenaron por el año en que su uso de Internet superó por primera vez el 20 %. Fuente de datos: Banco Mundial.
-
-Ambas Figuras 6-14 y 6-15 son representaciones válidas de los datos. Cuál es el preferido depende de la historia que queramos transmitir. Si nuestra historia es sobre el uso de Internet en 2016, entonces la Figura 6-14 es probablemente la mejor opción. Sin embargo, si nuestra historia es acerca de cuán temprana o tardíamente se relaciona la adopción de Internet con el uso actual, entonces es preferible la Figura 6-15.
-
-## Visualización de series temporales
-
-Traducción de: Capítulo 13 de “Fundamentals of Data Visualization”. Código en Python desarrollado por nosotros.
-
-En la sección anterior se discutieron los gráficos de dispersión, donde se traza una variable cuantitativa contra otra. Surge un caso especial cuando una de las dos variables puede considerarse como tiempo, ya que el tiempo impone una estructura adicional a los datos. Ahora los puntos de datos tienen un orden inherente; podemos ordenar los puntos en orden creciente de tiempo y definir un predecesor y sucesor para cada punto de datos. Frecuentemente queremos visualizar este orden temporal, y lo hacemos con gráficos de líneas. Sin embargo, los gráficos de líneas no se limitan a series temporales. Son apropiados siempre que una variable imponga un ordenamiento en los datos. Este escenario también surge, por ejemplo, en un experimento controlado donde una variable de tratamiento se establece intencionalmente en un rango de valores diferentes. Si tenemos varias variables que dependen del tiempo, podemos dibujar trazados de línea separados o podemos dibujar un gráfico de dispersión regular y luego dibujar líneas para conectar los puntos vecinos en el tiempo.
-
-### Series de tiempo individuales
-
-Como primera demostración de una serie temporal, consideraremos el patrón de presentaciones mensuales de preprints en biología. Los preprints son artículos científicos que los investigadores publican en línea antes de la revisión formal por pares y la publicación en una revista científica. El servidor de preprints bioRxiv, fundado en noviembre de 2013 específicamente para investigadores que trabajan en ciencias biológicas, ha visto un crecimiento sustancial en las presentaciones mensuales desde entonces. Podemos visualizar este crecimiento mediante la creación de una forma de gráfico de dispersión (Capítulo 12) donde dibujamos puntos que representan el número de presentaciones en cada mes (Figura 13-1).
-
-![Figura 13-1. Presentaciones mensuales en el servidor de preprints bioRxiv, desde su inicio en noviembre de 2013 hasta abril de 2018. Cada punto representa el número de presentaciones en un mes. Ha habido un aumento constante en el volumen de presentaciones durante todo el período de 4.5 años. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled50.png)
-
-Figura 13-1. Presentaciones mensuales en el servidor de preprints bioRxiv, desde su inicio en noviembre de 2013 hasta abril de 2018. Cada punto representa el número de presentaciones en un mes. Ha habido un aumento constante en el volumen de presentaciones durante todo el período de 4.5 años. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
-
-Sin embargo, hay una diferencia importante entre la Figura 13-1 y los gráficos de dispersión discutidos en la sección anterior. En la Figura 13-1, los puntos están espaciados uniformemente a lo largo del eje x, y hay un orden definido entre ellos. Cada punto tiene exactamente un vecino a la izquierda y otro a la derecha (excepto los puntos más a la izquierda y más a la derecha, que tienen solo un vecino cada uno). Podemos enfatizar visualmente este orden conectando los puntos vecinos con líneas (Figura 13-2). A este tipo de gráfico se le llama gráfico de línea.
-
-![Figura 13-2. Presentación de las entregas mensuales al servidor de preprints bioRxiv,
-mostradas como puntos conectados por líneas. Las líneas no representan datos y sólo se
-pretenden como una guía visual. Al conectar los puntos individuales con líneas, enfatiza‐
-mos que hay un orden entre ellos: cada punto tiene exactamente un vecino que viene
-antes y otro que viene después. Fuente de datos: Jordan Anaya [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled51.png)
-
-Figura 13-2. Presentación de las entregas mensuales al servidor de preprints bioRxiv,
-mostradas como puntos conectados por líneas. Las líneas no representan datos y sólo se
-pretenden como una guía visual. Al conectar los puntos individuales con líneas, enfatiza‐
-mos que hay un orden entre ellos: cada punto tiene exactamente un vecino que viene
-antes y otro que viene después. Fuente de datos: Jordan Anaya [**http://www.prepubmed.org**](http://www.prepubmed.org/).
-
-Algunas personas se oponen a dibujar líneas entre los puntos porque las líneas no representan los datos observados. En particular, si hay solo algunas observaciones espaciadas de manera distante, si se hubieran hecho observaciones en momentos intermedios, probablemente no habrían caído exactamente en las líneas que se muestran. Por lo tanto, en cierto sentido, las líneas corresponden a datos inventados. Sin embargo, pueden ayudar con la percepción cuando los puntos están espaciados de manera distante o de manera desigual. Podemos resolver en cierta medida este dilema señalándolo en la leyenda de la figura, por ejemplo, escribiendo "las líneas son una guía visual" (ver la leyenda de la Figura 13-2).
-
-El uso de líneas para representar series de tiempo es una práctica generalmente aceptada, y con frecuencia los puntos se omiten por completo (Figura 13-3). Sin puntos, la figura pone más énfasis en la tendencia general de los datos y menos en las observaciones individuales. Una figura sin puntos también es visualmente menos ocupada. En general, cuanto más densa es la serie de tiempo, menos importante es mostrar las observaciones individuales con puntos. Para el conjunto de datos de preprints mostrado aquí, creo que está bien omitir los puntos.
-
-![Figura 13-3. Presentación de las entregas mensuales al servidor de preprints bioRxiv
-mostradas como un gráfico de línea sin puntos. Omitir los puntos enfatiza la tendencia
-temporal general mientras se reduce la importancia de las observaciones individuales en
-puntos de tiempo específicos. Es particularmente útil cuando los puntos de tiempo están
-muy densamente espaciados. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/) ](./imagenes/Untitled52.png)
-
-Figura 13-3. Presentación de las entregas mensuales al servidor de preprints bioRxiv
-mostradas como un gráfico de línea sin puntos. Omitir los puntos enfatiza la tendencia
-temporal general mientras se reduce la importancia de las observaciones individuales en
-puntos de tiempo específicos. Es particularmente útil cuando los puntos de tiempo están
-muy densamente espaciados. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/) 
-
-Podemos también rellenar el área bajo la curva con un color sólido (Figura 13-4). Esta elección enfatiza aún más la tendencia general de los datos, ya que separa visualmente el área por encima de la curva del área por debajo de ella. Sin embargo, esta visualización solo es válida si el eje y comienza en cero, de modo que la altura del área sombreada en cada punto de tiempo representa el valor de los datos en ese punto de tiempo.
-
-![Figura 13-4. Envíos mensuales al servidor de preprints bioRxiv, representados como un gráfico de línea con el área debajo de la curva rellena. Al rellenar el área debajo de la curva, se enfatiza aún más la tendencia temporal general que si solo dibujáramos una línea (Figura 13-3). Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled53.png)
-
-Figura 13-4. Envíos mensuales al servidor de preprints bioRxiv, representados como un gráfico de línea con el área debajo de la curva rellena. Al rellenar el área debajo de la curva, se enfatiza aún más la tendencia temporal general que si solo dibujáramos una línea (Figura 13-3). Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
-
-Para realizar los gráficos de arriba podemos usar el siguiente código:
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
-
-data = pd.read_csv('preprints.csv')
-
-#Figure 13-1
-plt.scatter(data.date, data.preprints_biorxiv)
-plt.xlabel('Fecha')
-plt.ylabel('Preprints')
-plt.title('Crecimiento de preprints en el sitio bioRxiv')
-
-#Figure 13-2
-plt.plot(data.date, data.preprints_biorxiv, '-o')
-plt.xlabel('Fecha')
-plt.ylabel('Preprints')
-plt.title('Crecimiento de preprints en el sitio bioRxiv')
-
-#Figure 13-3
-plt.plot(data.date, data.preprints_biorxiv)
-plt.xlabel('Fecha')
-plt.ylabel('Preprints')
-plt.title('Crecimiento de preprints en el sitio bioRxiv')
-
-#Figure 13-4
-plt.plot(data.date, data.preprints_biorxiv)
-plt.xlabel('Fecha')
-plt.ylabel('Preprints')
-plt.title('Crecimiento de preprints en el sitio bioRxiv')
-plt.fill_between(dates, values, alpha = 0.3)
-```
-
-### Múltiples series de tiempo y curvas dosis-respuesta.
-
-A menudo tenemos múltiples series de tiempo que queremos mostrar al mismo tiempo. En este caso, tenemos que ser más cuidadosos en cómo representamos los datos, porque la figura puede volverse confusa o difícil de leer. Por ejemplo, si queremos mostrar las presentaciones mensuales en múltiples servidores de preprints, un diagrama de dispersión no es una buena idea, porque las series temporales individuales se superponen (Figura 13-5). Conectar los puntos con líneas alivia este problema (Figura 13-6).
-
-![Figura 13-5. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Cada punto representa el número de envíos en un mes al respectivo servidor de preprints. Esta figura se etiqueta como "mala" porque los tres cursos de tiempo interfieren visualmente entre sí y son difíciles de leer. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled54.png)
-
-Figura 13-5. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Cada punto representa el número de envíos en un mes al respectivo servidor de preprints. Esta figura se etiqueta como "mala" porque los tres cursos de tiempo interfieren visualmente entre sí y son difíciles de leer. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
-
-![Figura 13-6. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección de q-bio de arXiv y PeerJ Preprints. Al conectar los puntos de la figura 13-5 con líneas, ayudamos al espectador a seguir cada una de las series de tiempo individuales. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled55.png)
-
-Figura 13-6. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección de q-bio de arXiv y PeerJ Preprints. Al conectar los puntos de la figura 13-5 con líneas, ayudamos al espectador a seguir cada una de las series de tiempo individuales. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
-
-La Figura 13-6 representa una visualización aceptable del conjunto de datos de preprints. Sin embargo, la leyenda separada crea una carga cognitiva innecesaria. Podemos reducir esta carga cognitiva etiquetando las líneas directamente (Figura 13-7). También he eliminado los puntos individuales en esta figura, para obtener un resultado que es mucho más simplificado y fácil de leer que el punto de partida original, Figura 13-5.
-
-![Figura 13-7. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Etiquetar directamente las líneas en lugar de proporcionar una leyenda reduce la carga cognitiva necesaria para leer la figura, y eliminar la leyenda elimina la necesidad de puntos de diferentes formas. Esto nos permite simplificar aún más la Figura 13-6 eliminando los puntos. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).](./imagenes/Untitled56.png)
-
-Figura 13-7. Envíos mensuales a tres servidores de preprints que cubren la investigación biomédica: bioRxiv, la sección q-bio de arXiv y PeerJ Preprints. Etiquetar directamente las líneas en lugar de proporcionar una leyenda reduce la carga cognitiva necesaria para leer la figura, y eliminar la leyenda elimina la necesidad de puntos de diferentes formas. Esto nos permite simplificar aún más la Figura 13-6 eliminando los puntos. Fuente de datos: Jordan Anaya, [**http://www.prepubmed.org**](http://www.prepubmed.org/).
-
-Los gráficos de líneas no se limitan a series de tiempo. Son apropiados siempre que los puntos de datos tengan un orden natural que se refleje en la variable mostrada en el eje x, de modo que los puntos adyacentes puedan conectarse con una línea. Esta situación surge, por ejemplo, en las curvas dosis-respuesta, donde medimos cómo el cambio de algún parámetro numérico en un experimento (la dosis) afecta un resultado de interés (la respuesta). La figura 13-8 muestra un experimento clásico de este tipo, midiendo el rendimiento de avena en respuesta a cantidades crecientes de fertilización. La visualización del gráfico de líneas destaca cómo las curvas dosis-respuesta tienen una forma similar para las tres variedades de avena consideradas, pero difieren en el punto de partida en ausencia de fertilización (es decir, algunas variedades tienen un rendimiento naturalmente mayor que otras).
-
-![Figura 13-8. Curva de dosis-respuesta que muestra el rendimiento medio de variedades de avena después de la fertilización con estiércol. El estiércol sirve como fuente de nitrógeno y los rendimientos de la avena generalmente aumentan a medida que hay más nitrógeno disponible, independientemente de la variedad. Aquí, la aplicación de estiércol se mide en cwt (peso del centenar) por acre. El peso del centenar es una antigua unidad imperial que equivale a 112 libras o 50,8 kg. Fuente de datos: [Yates 1935].](./imagenes/Untitled57.png)
-
-Figura 13-8. Curva de dosis-respuesta que muestra el rendimiento medio de variedades de avena después de la fertilización con estiércol. El estiércol sirve como fuente de nitrógeno y los rendimientos de la avena generalmente aumentan a medida que hay más nitrógeno disponible, independientemente de la variedad. Aquí, la aplicación de estiércol se mide en cwt (peso del centenar) por acre. El peso del centenar es una antigua unidad imperial que equivale a 112 libras o 50,8 kg. Fuente de datos: [Yates 1935].
-
-Para recrear los gráficos de arriba puede usarse el siguiente código
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
-
-data = pd.read_csv('preprints.csv')
-
-#Figure 13-5
-plt.scatter(data.date, data.preprints_biorxiv, label = 'bioRxiv')
-plt.scatter(data.date, data.preprints_arxiv, label = 'arXiv q-bio')
-plt.scatter(data.date, data.preprints_peerj, label = 'PeerJPreprints')
-plt.xlabel('Fecha')
-plt.ylabel('Preprints')
-plt.title('Crecimiento de preprints diferentes sitios web')
-plt.legend()
-
-#Figure 13-6
-plt.plot(data.date, data.preprints_biorxiv, '-o', label = 'bioRxiv')
-plt.plot(data.date, data.preprints_arxiv, '-o', label = 'arXiv q-bio')
-plt.plot(data.date, data.preprints_peerj, '-o', label = 'PeerJPreprints')
-plt.xlabel('Fecha')
-plt.ylabel('Preprints')
-plt.title('Crecimiento de preprints diferentes sitios web')
-plt.legend()
-
-#Figure 13-7
-idxmax = df.date.idxmax()
-fig, ax = plt.subplots()
-ax.plot(data.date, data.preprints_biorxiv, '-o')
-ax.annotate(xy = (df.loc[idxmax].date, df.loc[idxmax].preprints_biorxiv), 
-						text = 'bioRxiv')
-plt.plot(data.date, data.preprints_arxiv, '-o', label = 'arXiv q-bio')
-ax.annotate(xy = (df.loc[idxmax].date, df.loc[idxmax].preprints_arxiv), 
-						text = 'arXiv q-bio')
-plt.plot(data.date, data.preprints_peerj, '-o', label = 'PeerJPreprints')
-ax.annotate(xy = (df.loc[idxmax].date, df.loc[idxmax].preprints_peerj), 
-						text = 'PeerJPreprints')
-plt.xlabel('Fecha')
-plt.ylabel('Preprints')
-plt.title('Crecimiento de preprints diferentes sitios web')
-```
-
-### Series temporales de dos o más variables de respuesta
-
-En los ejemplos anteriores, tratamos con series temporales de solo una variable de respuesta (por ejemplo, envíos de preprints por mes o rendimiento de avena). Sin embargo, no es raro tener más de una variable de respuesta. Tales situaciones surgen comúnmente en macroeconomía. Por ejemplo, podemos estar interesados en el cambio en los precios de las casas de los últimos 12 meses en relación con la tasa de desempleo. Podemos esperar que los precios de las casas aumenten cuando la tasa de desempleo sea baja, y viceversa.
-
-Con las herramientas de las secciones anteriores, podemos visualizar estos datos como dos gráficas de línea separadas y apiladas una encima de la otra (Figura 13-9). Esta visualización muestra directamente las dos variables de interés y es fácil de interpretar. Sin embargo, como las dos variables se muestran como gráficas de línea separadas, compararlas puede ser engorroso. Si queremos identificar regiones temporales en las que ambas variables se muevan en la misma o en direcciones opuestas, necesitamos alternar entre las dos gráficas y comparar las pendientes relativas de las dos curvas.
-
-![Figura 13-9. Cambio de doce meses en los precios de las casas (a) y la tasa de desempleo (b) a lo largo del tiempo, desde enero de 2001 hasta diciembre de 2017. Fuentes de datos: índice de precios de las casas Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled58.png)
-
-Figura 13-9. Cambio de doce meses en los precios de las casas (a) y la tasa de desempleo (b) a lo largo del tiempo, desde enero de 2001 hasta diciembre de 2017. Fuentes de datos: índice de precios de las casas Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.
-
-Como alternativa para mostrar dos gráficas de línea separadas, podemos trazar las dos variables juntas, dibujando un camino que va desde el punto de tiempo más temprano hasta el más reciente (Figura 13-10). Esta visualización se llama gráfico de dispersión conectado, porque técnicamente estamos haciendo un gráfico de dispersión de las dos variables entre sí y luego conectando los puntos vecinos. Los físicos e ingenieros a menudo lo llaman retrato de fase, porque en sus disciplinas se utiliza comúnmente para representar el movimiento en el espacio de fase. 
-
-![Figura 13-10. Cambio de doce meses en los precios de la vivienda versus la tasa de desempleo, desde enero de 2001 hasta diciembre de 2017, se muestra como un gráfico de dispersión conectado. Las tonalidades más oscuras representan meses más recientes. La anticorrelación vista en la Figura 13-9 entre el cambio en los precios de la vivienda y la tasa de desempleo hace que el gráfico de dispersión conectado forme dos círculos en sentido antihorario. Concepto original de la figura: Len Kiefer. Fuentes de datos: índice de precios de la vivienda Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled59.png)
-
-Figura 13-10. Cambio de doce meses en los precios de la vivienda versus la tasa de desempleo, desde enero de 2001 hasta diciembre de 2017, se muestra como un gráfico de dispersión conectado. Las tonalidades más oscuras representan meses más recientes. La anticorrelación vista en la Figura 13-9 entre el cambio en los precios de la vivienda y la tasa de desempleo hace que el gráfico de dispersión conectado forme dos círculos en sentido antihorario. Concepto original de la figura: Len Kiefer. Fuentes de datos: índice de precios de la vivienda Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.
-
-En un gráfico de dispersión conectado, las líneas que van en dirección de la esquina inferior izquierda a la superior derecha representan movimiento correlacionado entre las dos variables (a medida que una variable crece, lo hace también la otra) y las líneas que van en la dirección perpendicular, desde la esquina superior izquierda hasta la inferior derecha, representan movimiento anticorrelacionado (a medida que una variable crece, la otra disminuye). Si las dos variables tienen una relación algo cíclica, veremos círculos o espirales en el gráfico de dispersión conectado. En la Figura 13-10, vemos un pequeño círculo desde 2001 hasta 2005 y un círculo grande para el resto del curso de tiempo.
-Al dibujar un gráfico de dispersión conectado, es importante que indiquemos tanto la dirección como la escala temporal de los datos. Sin tales indicaciones, el gráfico puede convertirse en un garabato sin sentido (Figura 13-11). En la Figura 13-10, utilicé un oscurecimiento gradual del color para indicar la dirección; alternativamente, se podrían dibujar flechas a lo largo del camino.
-¿Es mejor utilizar un gráfico de dispersión conectado o dos gráficos de líneas separados? Los gráficos de líneas separados tienden a ser más fáciles de leer, pero una vez que las personas se acostumbran a los gráficos de dispersión conectados, pueden extraer ciertos patrones (como comportamiento cíclico con cierta irregularidad) que pueden ser difíciles de detectar en los gráficos de líneas. De hecho, para mí, la relación cíclica entre el cambio en los precios de las viviendas y la tasa de desempleo es difícil de detectar en la Figura 13-9, pero la espiral en sentido contrario de las manecillas del reloj en la Figura 13-10 la revela. La investigación muestra que los lectores son más propensos a confundir el orden y la dirección en un gráfico de dispersión conectado que en los gráficos de líneas, y menos propensos a informar correlación [Haroz, Kosara y Franconeri 2016]. Por otro lado, los gráficos de dispersión conectados parecen generar un mayor compromiso, por lo que estos gráficos pueden ser herramientas efectivas para atraer a los lectores a una historia.
-
-![Figura 13-11. Cambio de los precios de la vivienda en un periodo de doce meses en comparación con la tasa de desempleo, de enero de 2001 a diciembre de 2017. Esta figura se etiqueta como "mala" porque sin los marcadores de fecha y sombreado de color de la Figura 13-10, no se puede ver ni la dirección ni la velocidad del cambio en los datos. Fuentes de datos: Índice de precios de la vivienda de Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.](./imagenes/Untitled60.png)
-
-Figura 13-11. Cambio de los precios de la vivienda en un periodo de doce meses en comparación con la tasa de desempleo, de enero de 2001 a diciembre de 2017. Esta figura se etiqueta como "mala" porque sin los marcadores de fecha y sombreado de color de la Figura 13-10, no se puede ver ni la dirección ni la velocidad del cambio en los datos. Fuentes de datos: Índice de precios de la vivienda de Freddie Mac, Oficina de Estadísticas Laborales de EE. UU.
-
-Para realizar las gráficas de arriba se pueden usar el siguiente código
-
-```python
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
-
-data = pd.read_csv('precions_viviendas.csv')
-
-#Figure 13-9
-fig, axs = plt.subplots(nrows=2, ncols=1, figsize=(8, 6))
-axs[0].plot(df.date, df.price_change)
-axs[1].plot(data.date, data.unemployment_rate)
-
-axs[1].set_xlabel('year')
-axs[0].set_ylabel('12-month change in house price')
-axs[1].set.ylabel('unemployment rate')
-
-#Figure 13-10
-import numpy as np
-from matplotlib.collections import LineCollection
-
-# Ordenar los datos por fecha antes de comenzar
-df.sort_values('date', inplace = True)
-
-# crear los datos como listas para que sea más fácil la manipulación
-x = df.unemployment.to_list()
-y = df.price.to_list()
-z = df.date.to_list()
-
-# Generar el mapa de color
-cmap = plt.cm.get_cmap('cool')
-
-# crear un objeto de LineCollection con una lista de segmentos
-segments = [[(x[i], y[i]), [x[i+1], y[i+1]]] for i in range(len(x)-1)]
-lc = LineCollection(segments, cmap=cmap, linewidth=2)
-
-# cambiar el color de cada segmento en función de la fecha
-lc.set_array(z)
-
-# crear la figura y el eje donde vamos a graficar
-fig, ax = plt.subplots()
-
-# Agregar el objeto de LineCollection al eje
-ax.add_collection(lc)
-ax.autoscale()
-
-# agregar la barra de color
-cbar = plt.colorbar(lc)
-cbar.set_label('date')
-
-# agregar título y nombre de ejes
-ax.set_xlabel('x')
-ax.set_ylabel('y')
-ax.set_title('Line Plot with Colormap')
-
-# mostrar el plot
-plt.show()
-
-'''Para agregar las fechas, pueden usar `annotate`.
-En nuestro caso no lo creo necesario porque ya agregamos la barra de colores'''
-```
 
 ## Temas avanzados
 
