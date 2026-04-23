@@ -1707,7 +1707,175 @@ Existen además proyecciones de compromiso como la Robinson, que no conservan ni
 
 La elección de la proyección no es un detalle técnico menor: puede cambiar radicalmente la percepción del mapa y, en el caso de la cartografía temática —donde el color o el sombreado de regiones comunica información cuantitativa—, usar una proyección que distorsione las áreas puede llevar a interpretaciones incorrectas.
 
-Para los fines de este *book*, trabajaremos principalmente con coordenadas en WGS 84 (latitud y longitud en grados), que es el sistema estándar para la mayoría de los datos abiertos disponibles actualmente. Cada vez que necesitemos hacer visualizaciones precisas o cálculos de área y distancia, tendremos que prestar atención al sistema de coordenadas de referencia de nuestros datos.
+En este [enlace](https://map-projections.net/singleview.php) se presenta toda una colección de proyecciones cartográficas. Para los fines de este *book*, trabajaremos principalmente con coordenadas en WGS 84 (latitud y longitud en grados), que es el sistema estándar para la mayoría de los datos abiertos disponibles actualmente. Cada vez que necesitemos hacer visualizaciones precisas o cálculos de área y distancia, tendremos que prestar atención al sistema de coordenadas de referencia de nuestros datos.
+
+### El sistema de coordenadas de referencia (CRS)
+
+En la práctica, toda la información sobre el datum y la proyección utilizada se condensa en un único identificador llamado **sistema de coordenadas de referencia** (CRS, por sus siglas en inglés). El registro más utilizado para identificar CRS de manera estandarizada es el sistema EPSG (European Petroleum Survey Group), que asigna un código numérico único a cada combinación de datum y proyección.
+
+Los dos CRS más frecuentes en el trabajo cotidiano con datos georreferenciados son:
+
+- **EPSG:4326** (WGS 84 geográfico): coordenadas angulares en grados de latitud y longitud. Es el sistema del GPS y el más común en datos abiertos.
+
+- **EPSG:3857** (Web Mercator): sistema proyectado en metros que usan Google Maps, OpenStreetMap y la mayoría de los servicios de mapas en línea.
+
+```{admonition} **Importante**
+:class: tip
+
+Cuando trabajemos con datos en Python, verificar y, si es necesario, transformar el CRS de nuestros datos será un paso rutinario antes de realizar cualquier análisis o visualización.
+```
+
+### GeoPandas: trabajar con datos georreferenciados en Python
+
+La librería GeoPandas extiende la funcionalidad de Pandas para incorporar soporte nativo para datos geoespaciales. Su estructura central es el GeoDataFrame, que es esencialmente un DataFrame de Pandas al que se le agrega una columna especial llamada geometry, donde se almacena la información geométrica de cada observación.
+
+```{figure} imagenes/geopandas_logo.png
+---
+width: 50%
+align: center
+---
+```
+
+GeoPandas trabaja con tres tipos básicos de geometría, que corresponden a los objetos geográficos más habituales:
+
+- Un **punto** (**`POINT`**) representa una ubicación individual en el espacio, definida por un par de coordenadas. Se usa para ubicar objetos puntuales como hospitales, estaciones de monitoreo, ciudades o sensores.
+
+- Una **línea** (**`LINESTRING`**) es una secuencia de puntos conectados que forman una trayectoria. Se usa para representar objetos lineales como calles, ríos, rutas o tendidos eléctricos.
+
+- Un **polígono** (**`POLYGON`**) es un área cerrada definida por una secuencia de puntos. Se usa para representar superficies como barrios, municipios, provincias, países, o cualquier otra región geográfica delimitada. Cuando una entidad está formada por varios polígonos no contiguos (como un archipiélago o un país con territorios separados), se usa el tipo **`MULTIPOLYGON`**.
+
+#### Lectura de archivos con datos geoespaciales
+
+GeoPandas puede leer los formatos más comunes de archivos geoespaciales: **Shapefiles** (`.shp`), **GeoJSON** (`.geojson`), **GML** (`.gml`), entre otros. Todos se leen con la misma función **`read_file()`**. Como ejemplo, trabajaremos con el dataset [**barrios.gml**](https://datosabiertos.rosario.gob.ar/dataset/568be879-5cdc-497f-a292-b05b482e4517), que contiene informacion geográfica referente a los polígonos que establecen los límites catastrales de los Barrios Oficiales del municipio.
+
+```{code-cell} python
+import geopandas as gpd
+
+data_barrios = gpd.read_file('datasets/barrios.gml')
+data_barrios.head(1)
+```
+
+Al explorar el objeto `data_barrios`, veremos que se parece mucho a un DataFrame convencional, con la diferencia de que tiene una columna **`geometry`** que contiene los objetos geométricos.
+Se trata de un objeto de tipo **`GeoDataFrame`**, algo que podemos chequear fácilmente a través del método `.info()`:
+
+```{code-cell} python
+data_barrios.info()
+```
+
+```{admonition} **Archivos auxiliares al leer datos en formato GML**
+:class: tip dropdown
+
+Al trabajar con archivos en formato GML (.gml), es posible que al leerlos con GeoPandas aparezca en la misma carpeta un archivo adicional con extensión .gfs. Este archivo no forma parte del dataset original, sino que es generado automáticamente por la biblioteca subyacente la primera vez que se lee el archivo.
+
+El archivo .gfs contiene una descripción del esquema del .gml, incluyendo información como:
+
+- los nombres de las capas
+
+- los atributos disponibles
+
+- los tipos de datos de cada variable
+
+- el tipo de geometría (polígonos, puntos, etc.)
+
+Su función principal es actuar como una especie de archivo de apoyo o caché, permitiendo que futuras lecturas del mismo .gml sean más rápidas y consistentes. En caso de que este archivo se elimine, no ocurre ningún inconveniente: simplemente se volverá a generar automáticamente la próxima vez que se lea el .gml.
+```
+
+Podemos inspeccionar el CRS del dataset con:
+
+```{code-cell} python
+data_barrios.crs
+```
+
+Esto nos devuelve información detallada sobre el sistema de coordenadas utilizado, incluyendo si es geográfico o proyectado, las unidades de medida y el datum de referencia. Analicemos un poco esta salida:
+
+- EPSG:4326: es el identificador estándar que define el sistema de coordenadas. En este caso corresponde a WGS 84.
+
+- Geographic 2D CRS: indica que se trata de un sistema de coordenadas geográfico (no proyectado), basado en coordenadas angulares.
+
+- Lat / Lon (degree): las coordenadas están expresadas como latitud (norte-sur) y longitud (este-oeste) ambas medidas en grados.
+
+- Area of Use: señala que este sistema es válido para todo el mundo.
+
+- Datum: WGS 84. Define el modelo matemático que representa la forma de la Tierra. Como ya se mencionó anteriormente, es el estándar utilizado por sistemas de posicionamiento como el GPS.
+
+- Prime Meridian: Greenwich. Establece el meridiano de referencia (longitud 0°), que pasa por Greenwich, en el Reino Unido.
+
+Verificar el CRS antes de trabajar con cualquier dataset geoespacial es una práctica indispensable.
+
+#### Visualización con GeoPandas
+
+La forma más directa de visualizar un GeoDataFrame es usar el método **`.plot()`**, que genera un mapa estático aprovechando Matplotlib como motor gráfico.
+
+**POLÍGONOS: LOS BARRIOS DE ROSARIO**
+
+Con el dataset de barrios de la ciudad de Rosario, podemos construir un mapa básico con una sola línea de código:
+
+```{code-cell} python
+data_barrios.plot(edgecolor = 'black', linewidth = 2, column = 'BARRIO')
+```
+
+El parámetro `column` indica qué variable se usará para colorear los polígonos. En este caso, cada barrio recibe un color distinto. Sin embargo, cuando el número de categorías es grande —como ocurre con los barrios de una ciudad— esta visualización resulta poco útil porque los colores se repiten y no se distinguen bien. En esos casos, suele ser más informativo mostrar solo los límites entre barrios, sin relleno, usando el método **`.boundary.plot()`**:
+
+```{code-cell} python
+data_barrios.boundary.plot(edgecolor = 'black')
+```
+
+Este tipo de mapa sirve como capa base sobre la cual luego se superponen otros datos.
+
+---
+
+Supongamos que queremos calcular el área de cada barrio y determinar cuál es el de mayor tamaño. A primera vista, podríamos intentar:
+
+```{code-cell} python
+data_barrios.area
+```
+
+Sin embargo, esto no produce resultados correctos, ya que el dataset se encuentra en el sistema de coordenadas EPSG:4326, donde las unidades están expresadas en grados (latitud y longitud), y no en metros. Para poder calcular áreas de manera adecuada, es necesario trabajar en un **sistema de coordenadas proyectado**, donde las distancias y superficies se expresen en unidades métricas.
+
+Podemos reproyectar los datos utilizando el método .to_crs():
+
+```{code-cell} python
+data_barrios_proy = data_barrios.to_crs(epsg = 5347)
+```
+
+Para hacer esta transformación, notar que estamos usando el sistema POSGAR 2007, que es el sistema oficial de Argentina definido por el Instituto Geográfico Nacional. En particular, dado que Rosario se encuentra cerca del meridiano central de la Faja 5, estamos usando EPSG:5347.
+
+```{code-cell} python
+data_barrios_proy.crs
+```
+
+Ahora sí, las geometrías están expresadas en metros, lo que nos permite calcular áreas correctamente:
+
+```{code-cell} python
+data_barrios_proy['area_m2'] = data_barrios_proy.area
+data_barrios_proy['area_km2'] = data_barrios_proy['area_m2'] / 1e6
+```
+
+Finalmente, podemos identificar el barrio de mayor tamaño:
+
+```{code-cell} python
+data_barrios_proy.sort_values('area_km2', ascending = False)[['BARRIO', 'area_km2']].head(1)
+```
+
+Veamos cuál es el barrio en el mapa
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize = (10, 10))
+
+# Base
+data_barrios_proy.boundary.plot(edgecolor = 'black')
+
+# Barrio con mayor superficie
+max_area_idx = data_barrios_proy['area_km2'].idxmax()
+barrio_mayor_sup = data_barrios_proy.loc[[max_area_idx]]
+
+# Plot encima del gráfico base
+barrio_mayor_sup.plot(ax = ax, color = '#51a34b', edgecolor = 'black')
+
+plt.axis('off')
+plt.show()
+```
+
 
 ## Temas avanzados
 
