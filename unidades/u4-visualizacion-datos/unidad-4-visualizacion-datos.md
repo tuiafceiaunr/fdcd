@@ -1310,9 +1310,27 @@ Lo que nos preguntamos ahora es: ¿qué hacemos cuando queremos explorar no una 
 El dataset de pingüinos incluye cuatro variables cuantitativas: longitud del pico (`bill_length_mm`), profundidad del pico (`bill_depth_mm`), longitud de la aleta (`flipper_length_mm`) y masa corporal (`body_mass_g`). Si quisiéramos estudiar la relación entre cada par posible de estas variables, tendríamos que construir seis scatterplots por separado. La función **`pairplot()`** de Seaborn resuelve este problema de forma elegante, generando automáticamente la matriz de scatterplots para todas las combinaciones posibles:
 
 ```{code-cell} python
-sns.pairplot(vars = ['bill_length_mm','bill_depth_mm',
-                            	'flipper_length_mm', 'body_mass_g'], data = data_penguins, height = 2, plot_kws = {'color': 'black', 'edgecolor' : 'black', 'size' : 2.5}, diag_kws = {'color': 'black', 'edgecolor' : 'black'})
-                            	
+# Diccionario para renombrar columnas
+nombres_ejes = {'bill_length_mm': 'Largo de pico (mm)', 'bill_depth_mm': 'Prof. de pico (mm)',
+                'flipper_length_mm' : 'Largo de aleta (mm)', 'body_mass_g' : 'Masa corporal (g)'}
+
+# DataFrame con columnas renombradas (sólo para plotear)
+data_plot = data_penguins.rename(columns = nombres_ejes)
+
+# Construimos la matriz de gráficos
+g = sns.pairplot(
+    vars = list(nombres_ejes.values()),
+    data = data_plot,
+    height = 2,
+    plot_kws = {'color': 'black', 'edgecolor': 'black', 's': 25},
+    diag_kws = {'color': 'black', 'edgecolor': 'black'}
+)
+
+# Para que todos los títulos de ejes estén en negrita
+for ax in g.axes.flatten():
+    ax.xaxis.label.set_fontweight('bold')
+    ax.yaxis.label.set_fontweight('bold')
+    
 plt.show()
 ```
 
@@ -1321,9 +1339,24 @@ El resultado es una grilla donde cada celda fuera de la diagonal muestra el scat
 Como ya hicimos con el scatterplot simple, podemos incorporar la variable `species` mediante el parámetro `hue` para visualizar si los patrones de asociación difieren entre las tres especies:  
 
 ```{code-cell} python
-sns.pairplot(vars = ['bill_length_mm','bill_depth_mm',
-                            	'flipper_length_mm', 'body_mass_g'], data = data_penguins, height = 2, hue = 'species',
-                            	plot_kws = {'s' : 15, 'edgecolor' : 'none'})
+# Renombramos columna 'species' para cambiar fácil el título de la leyenda
+data_plot.rename(columns = {'species' : 'Especie'}, inplace = True)
+
+# Construimos la matriz de gráficos, mapeando la especie al color
+g = sns.pairplot(
+    vars = list(nombres_ejes.values()),
+    hue = 'Especie',
+    data = data_plot,
+    height = 2,
+    plot_kws = {'edgecolor': 'none', 's': 15}
+)
+
+# Para que todos los títulos de ejes y el de la leyenda estén en negrita
+for ax in g.axes.flatten():
+    ax.xaxis.label.set_fontweight('bold')
+    ax.yaxis.label.set_fontweight('bold')
+
+g._legend.get_title().set_fontweight('bold')
 
 plt.show()
 ```
@@ -1340,11 +1373,14 @@ Una alternativa que a veces se propone para incorporar una tercera variable cuan
 plt.figure(figsize = (8,5))
 
 sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm',
-                size = 'bill_length_mm',
-                color = '#788eab', edgecolor = 'black',
+                size = 'bill_length_mm', sizes = (20, 200),
+                color = '#eb4034', edgecolor = 'darkred',
                 data = data_penguins)
+                
 plt.xlabel('Masa corporal (g)', fontweight = 'bold')
 plt.ylabel('Largo de la aleta (mm)', fontweight = 'bold')
+
+plt.legend(title = 'Largo de pico (mm)', facecolor = 'white')
 
 plt.show()
 ```
@@ -1358,6 +1394,130 @@ En segundo lugar, los rangos de tamaño disponibles son necesariamente pequeños
 En tercer lugar, el gráfico mezcla dos tipos de escalas visuales —posición y área— que no se perciben con la misma facilidad ni con la misma precisión.
 
 Por estas razones, cuando el objetivo es entender las relaciones entre tres o más variables cuantitativas, suele ser preferible recurrir a múltiples visualizaciones más simples —como la matriz de scatterplots— antes que intentar condensar todo en un único gráfico complejo. El principio general es claro: **la posición es el canal visual más preciso y debería ser el primero en aprovecharse.**
+
+### Correlogramas
+
+En la unidad anterior presentamos el **coeficiente de correlación lineal de Pearson** ($r$) como una herramienta para cuantificar el grado de asociación lineal entre dos variables de naturaleza cuantitativa. Vimos que toma valores entre -1 y 1. Un valor cercano a 1 indica una asociación lineal positiva fuerte: cuando una variable aumenta, la otra tiende a aumentar también. Un valor cercano a -1 indica una asociación lineal negativa fuerte: cuando una variable aumenta, la otra tiende a disminuir. Un valor cercano a 0 indica que no hay asociación lineal entre las variables. La fórmula que lo define es:
+
+Una propiedad importante de $r$ (que ya mencionamos con anterioridad) es que es simétrico: la correlación de $x$ con $y$ es idéntica a la de $y$ con $x$. Otra propiedad relevante es que es invariante ante cambios de escala y de origen: si multiplicamos o sumamos una constante a todos los valores de una variable, el coeficiente de correlación no cambia.
+
+La **matriz de correlación** reúne todos los coeficientes $r$ entre pares de variables en una tabla cuadrada. Para visualizarla, podemos construir un correlograma: un heatmap donde cada celda representa la correlación entre dos variables y se colorea según su valor.
+
+Para construirlo en Python, primero calculamos la matriz de correlación y luego la graficamos con sns.heatmap():
+
+```{code-cell} python
+# Construimos la matriz de correlación y la guardamos en el objeto 'matriz'
+matriz = data_penguins[['bill_length_mm', 'bill_depth_mm',
+                         'flipper_length_mm', 'body_mass_g']].corr()
+
+# Construimos el correlograma
+sns.heatmap(matriz, annot = True)
+
+plt.show()
+```
+
+El gráfico resultante es la base de un correlograma, pero requiere algunas modificaciones para ser realmente efectivo. La más importante tiene que ver con la escala de colores.
+
+#### La escala de colores en un correlograma
+
+Para el correlograma, necesitamos una **escala de colores divergente**: una escala que tenga un color neutro en el centro (correspondiente a $r = 0$) y dos colores contrastantes a medida que nos vamos moviendo hacia ambos extremos (correspondientes a $r \pm 1$). Este tipo de escala es el apropiado siempre que queremos visualizar desviaciones en dos direcciones opuestas desde un punto medio neutral.
+
+Seaborn ofrece varias paletas divergentes, entre ellas:
+
+**EJEMPLOS DE ESCALAS DIVERGENTES**
+
+1.  **`vlag`**
+
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+
+sns.color_palette('vlag', 25)
+```
+
+2.  **`coolwarm`**
+
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+
+sns.color_palette('coolwarm', 25)
+```
+
+3.  **`BrBG`**
+
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+
+sns.color_palette('BrBG', 25)
+```
+
+4.  **`RdYlGn`**
+
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+
+sns.color_palette('RdYlGn', 25)
+```
+
+5.  **`seismic`**
+
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+
+sns.color_palette('seismic', 25)
+```
+
+6.  **`bwr`**
+
+```{code-cell} python
+:tags: [remove-input, remove-stderr]
+
+sns.color_palette('bwr', 25)
+```
+
+También es posible construir una manualmente combinando dos paletas secuenciales:
+
+```{code-cell} python
+superior = sns.color_palette('Reds', 25)
+inferior = sns.color_palette('Blues_r', 25)
+paleta_custom = sns.blend_palette(inferior + superior, n_colors = 25, as_cmap = True)
+```
+
+Para aplicar la paleta divergente al correlograma, seteamos los parámetros `cmap`, `vmin` y `vmax` para fijar los límites de la escala entre -1 y 1, y agregamos un título a la barra de colores:
+
+```{code-cell} python
+# Lista de columnas con variables cuantitativas (ya renombradas)
+lista_nombres = list(nombres_ejes.values())
+
+# Matriz de correlación
+matriz_cor = data_plot[lista_nombres].corr()
+
+ax = sns.heatmap(matriz_cor,
+                 annot = True,
+                 cmap = 'vlag',
+                 vmin = -1,
+                 vmax = 1,
+                 linewidths = 0.9,
+                 cbar_kws = dict(label = 'Coef. de correlación de Pearson'))
+                 
+plt.xticks(rotation = 45)
+
+plt.show()
+```
+
+**Fijar los límites en -1 y 1 es fundamental**: si dejamos que la escala se ajuste automáticamente al rango de los datos, los colores pierden su significado absoluto y dos correlogramas de datasets distintos dejarían de ser comparables entre sí.
+
+#### Las limitaciones del correlograma
+
+El correlograma es una herramienta eficiente para detectar patrones globales en conjuntos de muchas variables, pero tiene una limitación de fondo que conviene no perder de vista: resume y oculta al mismo tiempo. Al reemplazar la nube de puntos de cada scatterplot por un único número, el correlograma descarta toda la información sobre la forma de la relación, la presencia de valores atípicos, la existencia de subgrupos dentro de los datos, o cualquier patrón no lineal que el coeficiente de Pearson no puede capturar.
+
+Por este motivo, **los correlogramas siempre deberían complementarse con una matriz de scatterplots, al menos para las relaciones que resulten más relevantes o sorprendentes.**
+
+`vlag`, `coolwarm`, `BrBG`, `RdYlGn` y `seismic`:
+
+
+
+
+También es posible construir una manualmente combinando dos paletas secuenciales:
 
 ## Visualización de cantidades y proporciones: gráficos de barra (apiladas, agrupadas), gráficos de área
 
