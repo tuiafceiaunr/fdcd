@@ -1583,7 +1583,7 @@ La siguiente tabla reúne los parámetros de algunos elipsoides históricos y ac
   </tbody>
 </table>
 
-\
+<div style="margin-bottom: 30px;"></div>
 
 El más utilizado actualmente a nivel global es el **WGS 84** (World Geodetic System 1984), desarrollado por el Departamento de Defensa de los Estados Unidos y adoptado como referencia por el GPS. Sus semiejes —resaltados en la tabla— coinciden con los del GRS 1980, aunque difieren ligeramente en la definición del aplanamiento. Nótese también que las diferencias entre elipsoides son del orden de los cientos de metros en los semiejes: diferencias pequeñas en términos absolutos, pero significativas cuando se requiere precisión cartográfica. 
 
