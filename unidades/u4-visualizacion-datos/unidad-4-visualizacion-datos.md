@@ -1802,6 +1802,7 @@ La forma más directa de visualizar un GeoDataFrame es el método **`.plot()`**,
 Con el dataset de barrios, podemos construir un mapa básico con una sola línea de código:
 
 ```{code-cell} python
+:tags: [remove-stderr]
 plt.figure(figsize = (7,7))
 data_barrios.plot(edgecolor = 'black', linewidth = 1.75, column = 'BARRIO');
 ```
@@ -1809,6 +1810,7 @@ data_barrios.plot(edgecolor = 'black', linewidth = 1.75, column = 'BARRIO');
 El parámetro `column` indica qué variable se usará para colorear los polígonos, asignando un color distinto a cada barrio. Sin embargo, cuando el número de categorías es grande —como ocurre con los barrios de una ciudad—, esta visualización resulta poco útil porque los colores se repiten y no se distinguen bien. En esos casos, suele ser más informativo mostrar solo los límites entre barrios, sin relleno, usando el método **`.boundary.plot()`**:
 
 ```{code-cell} python
+:tags: [remove-stderr]
 plt.figure(figsize = (7,7))
 data_barrios.boundary.plot(edgecolor = 'black');
 ```
@@ -2001,7 +2003,7 @@ Folium está construida sobre `Leaflet.js`, una de las bibliotecas de mapas inte
 
 ```{code-cell} python
 # Crear el mapa base centrado en Córdoba
-m = folium.Map(location = [-31.715057, -63.671522], zoom_start = 4)
+m = folium.Map(location = [-31.715057, -63.671522], zoom_start = 6)
 folium.TileLayer('cartodbpositron').add_to(m)
 
 # Agregar la capa coroplética
@@ -2039,7 +2041,7 @@ Hay algunos parámetros clave que vale la pena entender:
 Para datos de tipo punto (`POINT`), Folium permite agregar popups que se despliegan al hacer clic sobre cada marcador, mostrando información detallada del objeto:
 
 ```{code-cell} python
-m2 = folium.Map(location = [-32.952601, -60.643213], zoom_start = 7)
+m2 = folium.Map(location = [-32.952601, -60.643213], zoom_start = 11)
 folium.TileLayer('OpenStreetMap').add_to(m2)
 
 folium.GeoJson(
