@@ -1968,7 +1968,7 @@ data_cultivos.plot(ax = ax,
                    edgecolor = 'black',
                    legend = True,
                    legend_kwds = {
-                       'label': 'Superficie cultivada (millones de has)',
+                       'label': 'Superficie cultivada (millones de hectáreas)',
                        'ticks': [i/10 for i in range(0, 16)]
                    })
 
@@ -1989,7 +1989,7 @@ data_cultivos_geo = data_cultivos.to_crs(epsg = 4326)
 ```
 Una consideración final sobre los mapas coropléticos: **el tamaño visual de cada polígono puede distorsionar la percepción.** Un departamento geográficamente extenso pero con baja superficie cultivada puede capturar mucho más la atención del observador que uno pequeño con alta intensidad agrícola, simplemente porque ocupa más espacio en el mapa. Esta no es una limitación de la implementación en Python, sino una característica inherente al tipo de visualización que vale tener presente al interpretar cualquier mapa coroplético y, especialmente, al comunicar sus resultados a otras personas.
 
-#### Mapas interactivos con Folium
+### Mapas interactivos con Folium
 
 Los mapas estáticos producidos por GeoPandas son útiles para exploración y para figuras en documentos, pero tienen una limitación importante: no permiten al lector interactuar con los datos. Para hacer mapas interactivos que se puedan explorar en un navegador —haciendo zoom, desplazándose y consultando información al pasar el mouse sobre los objetos—, podemos usar la librería **Folium**.
 
@@ -2001,7 +2001,7 @@ Folium está construida sobre `Leaflet.js`, una de las bibliotecas de mapas inte
 
 ```{code-cell} python
 # Crear el mapa base centrado en Córdoba
-m = folium.Map(location = [-31.715057, -63.671522], zoom_start = 7)
+m = folium.Map(location = [-31.715057, -63.671522], zoom_start = 4)
 folium.TileLayer('cartodbpositron').add_to(m)
 
 # Agregar la capa coroplética
@@ -2011,16 +2011,17 @@ c = folium.Choropleth(
     columns = ['nombre', 'sup_cultivada_millones_has'],
     key_on = 'feature.properties.nombre',
     fill_color = 'inferno',
+    bins = 60,
     fill_opacity = 0.6,
     line_opacity = 0.8,
     highlight = True,
-    legend_name = 'Superficie cultivada (millones has)'
+    legend_name = 'Superficie cultivada (millones de hectáreas)'
 ).add_to(m)
 
 # Agregar tooltip con información al pasar el mouse
 c.geojson.add_child(folium.features.GeoJsonTooltip(
     fields = ['nombre', 'sup_cultivada_has'],
-    aliases = ['Departamento:', 'Superficie (millones Has):']
+    aliases = ['Departamento:', 'Superficie (millones de hectáreas):']
 ))
 
 m
@@ -2034,255 +2035,30 @@ Hay algunos parámetros clave que vale la pena entender:
 - `key_on` es el campo del GeoJSON que Folium usará para conectar cada polígono con su valor en el dataset. Debe seguir la sintaxis `'feature.properties.nombre_del_campo'`.
 - El `tooltip` agrega la ventana de información que aparece al pasar el mouse, con `fields` indicando los campos a mostrar y `aliases` sus etiquetas legibles.
 
+#### Puntos con popups interactivos
+Para datos de tipo punto (`POINT`), Folium permite agregar popups que se despliegan al hacer clic sobre cada marcador, mostrando información detallada del objeto:
 
-Puntos con popups interactivos
-Para datos de tipo punto, Folium permite agregar popups que se despliegan al hacer clic sobre cada marcador, mostrando información detallada del objeto:
-pythonm = folium.Map(location=[-32.952601, -60.643213], zoom_start=12)
-folium.TileLayer('OpenStreetMap').add_to(m)
+```{code-cell} python
+m2 = folium.Map(location = [-32.952601, -60.643213], zoom_start = 7)
+folium.TileLayer('OpenStreetMap').add_to(m2)
 
 folium.GeoJson(
-    datos_centros_salud,
-    popup=folium.features.GeoJsonPopup(
-        fields=['name', 'direccion'],
-        labels=True
+    data_salud,
+    popup = folium.features.GeoJsonPopup(
+        fields = ['name', 'direccion'],
+        labels = True
     )
-).add_to(m)
+).add_to(m2)
 
-m
-La diferencia entre tooltip y popup es sutil pero importante: el tooltip se activa al pasar el mouse (hover) y es útil para inspección rápida; el popup se activa al hacer clic y es más adecuado para información más detallada.
+m2
+```
 
-GeoPandas o Folium: ¿cuándo usar cada uno?
+La diferencia entre `tooltip` y `popup` es sutil pero importante: el `tooltip` se activa al pasar el mouse (hover) y es útil para inspección rápida, mientras que el `popup` se activa al hacer clic y es más adecuado para información más detallada.
+
+### GeoPandas o Folium: ¿cuándo usar cada uno?
 Ambas herramientas son complementarias y responden a necesidades distintas. GeoPandas con Matplotlib produce mapas estáticos de alta calidad, adecuados para informes, publicaciones y análisis exploratorio rápido. Su sintaxis es consistente con el ecosistema de visualización que ya conocemos, y el resultado es una figura que puede exportarse como imagen.
 Folium produce mapas interactivos pensados para presentaciones digitales, dashboards o notebooks compartidos. Permite al usuario explorar los datos activamente —haciendo zoom, consultando valores, filtrando capas— de una manera que un mapa estático no puede ofrecer. La contrapartida es que su sintaxis es más verbosa y el mapa resultante solo funciona en entornos web.
 Una estrategia habitual en la práctica es usar GeoPandas para la exploración inicial —donde la velocidad importa más que la presentación— y reservar Folium para las visualizaciones finales que se compartirán con otras personas.
-
-## Temas avanzados
-
-## Visualización de datos georreferenciados
-
-Muchos datos con los que se van a encontrar hoy en día tienen información georeferenciada, es decir nos dicen de que lugar en el mundo proviene ese dato. Por ejemplo, el siguiente mapa muestra las ciclovías y bicisendas junto con los centros culturales de la ciudad de Rosario ([link](https://datosabiertos.rosario.gob.ar/dataset/ciclov%C3%ADas-y-bicisendas) y [link](https://datosabiertos.rosario.gob.ar/dataset/centros-culturales-municipales), respectivamente)
-
-![Untitled](./imagenes/Untitled61.png)
-
-Pero antes de poder hacer estas visualizaciones tenemos que entender algunos conceptos. 
-
-### Geoide, Elipsoide y Datum
-
-El **geoide** se define como la superficie del campo de gravedad de la Tierra, que es aproximadamente igual que el nivel medio del mar. Es perpendicular a la dirección de la atracción gravitatoria. Dado que la masa de la Tierra no es uniforme en todos los puntos y la dirección de gravedad cambia, la forma del geoide es irregular. [arcgis](https://desktop.arcgis.com/es/arcmap/latest/map/projections/about-the-geoid-ellipsoid-spheroid-and-datum-and-h.htm)
-
-Para simplificar el modelo, se han ideado varios **esferoides** o **elipsoides**. Estos términos se utilizan de forma intercambiable. Un esferoide es una forma de tres dimensiones creada a partir de una elipse de dos dimensiones. En el caso de la Tierra, el semieje mayor es el radio desde el centro de la Tierra hasta el ecuador, mientras que el semieje menor es el radio desde el centro de la Tierra hasta el polo. 
-
-![Untitled](./imagenes/Untitled62.png)
-
-Un esferoide determinado se distingue de otro por las longitudes de los semiejes mayores y menores. Por ejemplo, compare el esferoide Clarke 1866 con los esferoides GRS 1980 y WGS 1984, sobre la base de las siguientes mediciones (en metros).
-
-![Untitled](./imagenes/Untitled63.png)
-
-Se puede seleccionar un esferoide determinado para su uso en un área geográfica concreta, porque ese esferoide concreto funciona excepcionalmente bien imitando el geoide para esa parte del mundo. En el caso de América del Norte, el esferoide preferido es GRS 1980, en el que se basa el Datum de Norteamérica de 1983 (NAD83). [arcgis](https://desktop.arcgis.com/es/arcmap/latest/map/projections/about-the-geoid-ellipsoid-spheroid-and-datum-and-h.htm)
-
-![Untitled](./imagenes/Untitled64.png)
-
-Geoide, [Fuente](https://upload.wikimedia.org/wikipedia/commons/c/c2/Geoide.jpg)
-
-Un **datum** se genera sobre el esferoide seleccionado y puede incorporar variaciones locales en la elevación. Con el esferoide, la rotación de la elipse crea una superficie totalmente lisa de todo el mundo. Dado que así no se refleja adecuadamente la realidad, un datum local puede incorporar variaciones locales en la elevación. El datum y el esferoide subyacentes que se utilizan como referencia para un dataset pueden cambiar los valores de las coordenadas [arcgis](https://desktop.arcgis.com/es/arcmap/latest/map/projections/about-the-geoid-ellipsoid-spheroid-and-datum-and-h.htm)
-
-El datum más usado es el [WSG84](https://es.wikipedia.org/wiki/WGS84) que es el que se usa en el Sistema de Posicionamiento Global (GPS).
-
-![Datum local, seleccionado para representar mejor las coordenadas de un país o región](./imagenes/Untitled65.png)
-
-Datum local, seleccionado para representar mejor las coordenadas de un país o región
-
-![A nivel global, se utiliza el Datum WGS84 (GPS), el cual está indicado en rojo en el gráfico](./imagenes/Untitled66.png)
-
-A nivel global, se utiliza el Datum WGS84 (GPS), el cual está indicado en rojo en el gráfico
-
-### Sistemas de Coordenadas Geográficas
-
-Un sistema de coordenadas geográficas es un método para describir la posición de una ubicación geográfica en la superficie de la Tierra utilizando mediciones esféricas de latitud y longitud. Se trata de mediciones de los ángulos (en grados) desde el centro de la Tierra hasta un punto en la superficie de la Tierra representada como una esfera. Cuando se utiliza un esferoide (elipsoide), la latitud se mide trazando una línea perpendicular a la superficie de la Tierra que va hasta el plano ecuatorial. Excepto en el ecuador o uno de los polos, esta línea no interseca con el centro de la Tierra. 
-
-El sistema de coordenadas geográficas consta de líneas de latitud y de longitud. Las líneas de longitud van de norte a sur y miden los grados hacia el este o el oeste desde el meridiano 0 de Greenwich. Los valores pueden ir de -180 a +180°. Las líneas de latitud van de este a oeste y miden los grados hacia el norte o el sur desde el ecuador. Los valores van de +90° en el Polo Norte a -90° en el Polo Sur. 
-
-El ecuador se encuentra en un ángulo de 0 grados de latitud. Generalmente, el hemisferio norte posee mediciones de latitud positivas y el hemisferio sur posee mediciones de latitud negativas. La longitud mide ángulos en una dirección de este-oeste. Las mediciones de longitud comúnmente se basan en el meridiano de Greenwich, que es una línea imaginaria que realiza un recorrido desde el Polo Norte, a través de Greenwich, Inglaterra, hasta el Polo Sur. Este ángulo es de longitud 0. El oeste del meridiano de Greenwich se registra normalmente como longitud negativa y el este como longitud positiva. Por ejemplo, la ubicación de Los Ángeles, California, tiene una latitud de aproximadamente "más 33 grados, 56 minutos" y una longitud de "menos 118 grados, 24 minutos". [arcgis](https://desktop.arcgis.com/es/arcmap/10.7/map/projections/geographic-coordinate-system.htm)
-
-![Untitled](./imagenes/Untitled67.png)
-
-### Sistemas de Coordenadas Proyectadas
-
-Muchas veces necesitamos representar la posición de los puntos de interés sobre una superficie plana, en 2D, y no con ángulos como vimos arriba. Entonces, al problema que nos enfrentamos es a pasar información que está sobre una superficie curva a una superficie plana, algo parecido a tratar de poner en un plano toda la cáscara de una mandarina.
-
-![Untitled](./imagenes/Untitled68.png)
-
-El proceso de pasar de tener la ubicación de un objeto sobre la superficie de la tierra a una superficie plana se llama “proyección”. Al igual que con la cáscara de la mandarina, el proceso incluye distorsiones puesto que es imposible pasar de forma perfecta desde una superficie curva a una plana, se puede conservar ángulos o áreas, pero no ambas. 
-
-Un **sistema de coordenadas proyectadas** es una representación plana, bidimensional de la tierra. Se basa en un sistema de coordenadas geográficas esféricas o esferoidales, pero utiliza unidades lineales para las coordenadas, de forma que los cálculos de distancia y área se pueden realizar fácilmente en términos de esas mismas unidades. [ibm](https://www.ibm.com/docs/es/db2woc?topic=SS6NHC/com.ibm.db2.luw.spatial.topics.doc/doc/csb3022b.html)
-
-Las coordenadas de longitud y latitud se convierten en coordenadas x, y en la proyección plana. La coordenada x representa normalmente la orientación hacia el este de un punto y la coordenada y representa normalmente la dirección hacia el norte de un punto. La línea central que va de este a oeste se denomina eje x, y la línea central que va del norte al sur se denomina eje y. [ibm](https://www.ibm.com/docs/es/db2woc?topic=SS6NHC/com.ibm.db2.luw.spatial.topics.doc/doc/csb3022b.html)
-
-Se utilizan fórmulas matemáticas para convertir un sistema de coordenadas geográficas tridimensionales en un sistema de coordenadas proyectadas planas bidimensionales. La transformación se denomina ***proyección cartográfica***. Las proyecciones cartográficas normalmente se clasifican según la superficie de proyección utilizada, como, por ejemplo, superficies cónicas, cilíndricas y planas. En función de la proyección utilizada, diferentes propiedades espaciales aparecerán distorsionadas. Las proyecciones están diseñadas para minimizar la distorsión de una o dos características de datos, pero es posible que la distancia, el área, la forma, la dirección o una combinación de estas propiedades no sean representaciones precisas de los datos de los que se está realizando el modelo. Existen varios tipos de proyecciones disponibles. Mientras que la mayoría de las proyecciones cartográficas intentan conservar cierta precisión de las propiedades espaciales, otras en su lugar intentan minimizar la distorsión general, como por ejemplo la proyección *Robinson*. Los tipos más habituales de proyecciones cartográficas incluyen los siguientes:
-
-**Proyecciones de áreas iguales:** Estas proyecciones conservan el área de elementos específicos. Estas proyecciones distorsionan la forma, el ángulo y la escala. La proyección *cónica de áreas iguales [Albers](https://es.wikipedia.org/wiki/Proyecci%C3%B3n_de_Albers)* es un ejemplo de una proyección de áreas iguales.
-
-**Proyecciones conformes:** Estas proyecciones conservan la forma local de áreas pequeñas. Estas proyecciones conservan ángulos individuales para describir relaciones espaciales mostrando líneas perpendiculares de red geográfica que forman intersección en ángulos de 90 grados en el mapa. Se conservan todos los ángulos; sin embargo, el área del mapa está distorsionada. Las proyecciones *Mercator* y [*Cónica conforme de Lambert*](https://es.wikipedia.org/wiki/Proyecci%C3%B3n_conforme_de_Lambert) son ejemplos de proyecciones conformes.
-
-**Proyecciones equidistantes:** Estas proyecciones conservan las distancias entre ciertos puntos manteniendo la escala de un conjunto de datos determinado. Algunas de las distancias serán distancias verdaderas, que son las mismas distancias en la misma escala que el globo. Si sale fuera del conjunto de datos, la escala se distorsionará más. La proyección *sinusoidal* y la proyección *cónica equidistante* son ejemplos de proyecciones equidistantes.
-
-**Proyecciones de dirección verdadera o azimutales:** Estas proyecciones conservan la dirección de un punto a otros puntos manteniendo algunos de los arcos de círculo grandes. Estas proyecciones dan correctamente las direcciones o azimuts de todos los puntos del mapa respecto al centro. Los mapas azimutales se pueden combinar con proyecciones de áreas iguales, conformes y equidistantes. La proyección *azimutal* *de igual área de Lambert* y la proyección *azimutal equidistante* son ejemplos de proyecciones azimutales. [ibm](https://www.ibm.com/docs/es/db2woc?topic=SS6NHC/com.ibm.db2.luw.spatial.topics.doc/doc/csb3022b.html)
-
-![Untitled](./imagenes/Untitled69.png)
-
-### Geopandas
-
-Es un paquete de Python que nos permite trabajar con datos georeferenciados, en lugar de leer los datos y crear un DataFrame, vamos a leer los datos y crear un GeoDataFrame. Veamos como funciona esto con un ejemplo.
-
-```python
-import geopandas as gpd
-
-ciclo = gpd.read_file('ciclovias_y_bicisendas.gml')
-centros = gpd.read_file('geo_cultura.gml')
-barrios = gpd.read_file('barrios.gml')
-
-ciclo[['gml_id','CATEGORIA','geometry']].head()
-centros.head()
-barrios.head()
-```
-
-Cuando miramos el geodataframe vemos la columna `geometry`. Esta columna es lo que diferencia a una geodataframe de un dataframe y la misma contiene la referencia espacial la cual puede ser un punto, una línea o polígono. En el dataframe de las ciclovías y bicisendas vemos que el objeto que guarda `geometry`es de tipo `shapely.geometry.linestring.LineString`, mientras que el objeto en los centros de salud es `shapely.geometry.point.Point` y en el de barrios vemos `shapely.geometry.point.Polygons`
-
-![Untitled](./imagenes/Untitled70.png)
-
-![Untitled](./imagenes/Untitled71.png)
-
-![Untitled](./imagenes/Untitled72.png)
-
-Para poder trabajar con los geodataframe también necesitamos saber su sistema de coordenadas de referencia, el cual podemos consultar escribiendo `gdf.crs`
-
-```python
-<Geographic 2D CRS: EPSG:4326>
-Name: WGS 84
-Axis Info [ellipsoidal]:
-- Lat[north]: Geodetic latitude (degree)
-- Lon[east]: Geodetic longitude (degree)
-Area of Use:
-- name: World.
-- bounds: (-180.0, -90.0, 180.0, 90.0)
-Datum: World Geodetic System 1984 ensemble
-- Ellipsoid: WGS 84
-- Prime Meridian: Greenwich
-```
-
-Esto nos sirve por ejemplo para saber las unidades con las que estamos trabajando o si podemos unir espacialmente a dos geodataframes puesto que si tienen diferentes CRS, no podemos hacerlo. 
-
-<aside>
-💡 En este curso no vamos a realizar análisis espaciales, puesto que se encuentra por fuera del alcance de la materia. Sólo veremos visualizaciones
-
-</aside>
-
-### Visualización
-
-Para visualizar estos datos con geopandas podemos usar la opción `.plot()` y veríamos lo siguiente:
-
-```python
-ciclo.plot()
-```
-
-![Untitled](./imagenes/Untitled73.png)
-
-Si queremos colorear a cada barrio con un color podemos hacer lo siguiente:
-
-```python
-barrios.plot(column = 'BARRIO', figsize =(10,10), cmap = 'inferno')
-```
-
-![Untitled](./imagenes/Untitled74.png)
-
-<aside>
-💡 La visualización de arriba no es muy recomendable porque hay demasiados barrios y los colores no se distinguen bien.
-
-</aside>
-
-También podemos visualizar variables continuas como por ejemplo la porción de trigo que cultiva cada departamento de la provincia de Córdoba ([datos](https://www.mapascordoba.gob.ar/#/descargas)). En el gráfico de abajo podemos ver que muy pocos departamentos cultivan trigo y que Córdoba Capital es el que más lo hace. 
-
-![Untitled](./imagenes/Untitled75.png)
-
-<aside>
-💡 Como se comentó arriba, este tipo de gráficos no es el ideal para presentar en un informe porque el tamaño de cada departamento puede dar una idea errónea, pero, puede ser de utilidad para nuestro análisis exploratorio de datos
-
-</aside>
-
-Los mapas de arriba se verían más atractivos si tuvieran un mapa de fondo, lo que nos daría una idea de la geografía del lugar. Una opción para añadir un mapa de fondo es la librería `folium` la cual nos permite además, realizar mapas interactivos. 
-
-Por ejemplo, podríamos plotear la superficie cultivada de cada departamento de la provincia de Córdoba
-
-![Untitled](./imagenes/Untitled76.png)
-
-```python
-m = folium.Map(location=[-31.715057, -63.671522], zoom_start=6)
-folium.TileLayer('OpenStreetMap').add_to(m) #podemos cambiar de Tile
-
-folium.Choropleth(
-    geo_data=cultivos,
-    name="choropleth",
-    data=cultivos,
-    columns= ["nombre","sup_cultiv"],
-    key_on="feature.properties.nombre",
-    fill_color="YlGn",
-    fill_opacity=0.7,
-    line_opacity=0.2,
-    legend_name="Superficie cultivada").add_to(m)
-m
-```
-
-O plotear que superficie del total disponible cultiva cada departamento para detectar cuáles son los que más atención le prestan a la agricultura. También podemos agregarle a este mapa un pop-up para tener información de cada departamento, por ejemplo, nombre del departamento, superficie total, superficie cultivada y porcentaje de superficie cultivada
-
-![Untitled](./imagenes/Untitled77.png)
-
-```python
-m = folium.Map(location=[-31.715057, -63.671522], zoom_start=6)
-folium.TileLayer('OpenStreetMap').add_to(m)
-
-c = folium.Choropleth(
-    geo_data=cultivos,
-    name="choropleth",
-    data=cultivos,
-    columns= ["nombre","porcentaje_cultivado"],
-    key_on="feature.properties.nombre",
-    fill_color="YlGn",
-    fill_opacity=0.7,
-    line_opacity=0.2,
-    legend_name="Porcentaje de superficie cultivada")
-
-c.geojson.add_child(folium.features.GeoJsonTooltip(['sup_cultiv']))
-
-c.add_to(m)
-m
-```
-
-Cuando ploteamos los centros culturales, es útil agregarle un pop-up con el nombre y la dirección para localizar más fácilmente cada centro:
-
-![Untitled](./imagenes/Untitled78.png)
-
-```python
-m = folium.Map(location=[-32.952601, -60.643213], zoom_start=12)
-folium.TileLayer('OpenStreetMap').add_to(m)
-
-folium.GeoJson(centros, 
-	popup=folium.features.GeoJsonPopup(fields=['name', 'direccion'], labels=True)).add_to(m)
-
-m
-```
-
-Como pueden ver arriba, escribir todas las especificaciones para que el mapa de folium se vea atractivo, lleva tiempo (aunque ese tiempo se puede reducir con la experiencia). Por eso, muchas veces, en la exploración de datos no usamos mapas de fondo y solo lo hacemos cuando vamos a usar la imágen para una presentación más formal. 
-
-Finalmente, `folium` es una de las tantas opciones para agregar un mapa de fondo, pueden probar otras y elegir la que más les guste:
-
-1. [**Matplotlib Basemap Toolkit**](https://matplotlib.org/basemap/): Esta es una extensión de Matplotlib que te permite dibujar mapas en 2D en diferentes proyecciones. Puedes superponer datos geoespaciales y tiene un buen soporte para imágenes satelitales.
-2. [**GeoPandas**](https://geopandas.org/): Esta es una extensión de pandas que soporta estructuras de datos geoespaciales. Puedes usar GeoPandas para manipular datos geoespaciales y dibujar mapas.
-3. [**Folium**](https://python-visualization.github.io/folium/): Esta librería te permite crear mapas interactivos utilizando Leaflet.js. Puedes superponer tus datos en mapas interactivos y estos se pueden visualizar en un Jupyter Notebook.
-4. [**GeoViews**](https://geoviews.org/): Es una extensión de HoloViews que proporciona una interfaz de alto nivel para visualizar datos geoespaciales.
-5. [**Cartopy**](http://scitools.org.uk/cartopy/docs/latest): Esta es una librería que proporciona herramientas para la cartografía y la visualización de datos geoespaciales. Tiene una interfaz simple y fácil de usar para crear mapas y superponer datos.
-6. [**Plotly**](https://plotly.com/python/maps/): Plotly es una librería de visualización de datos que permite crear gráficos interactivos y visualizaciones complejas, incluyendo mapas.
-7. [**PySAL**](https://pysal.org/): PySAL, o Python Spatial Analysis Library, es una librería para análisis espacial y exploratorio de geo-datos. No es para dibujar mapas per se, pero es útil para trabajar con datos geoespaciales y puede ser utilizada en conjunto con otras librerías de visualización.
-8. [**gmplot**](https://github.com/gmplot/gmplot): Permite visualizar y exportar datos para Google Maps.
 
 ## Visualizaciones avanzadas (upset plot, chord plots, raincloud plots)
 
