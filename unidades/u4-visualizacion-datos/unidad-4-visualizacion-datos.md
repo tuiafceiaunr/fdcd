@@ -1641,7 +1641,7 @@ Con un datum establecido, podemos describir la posición de cualquier punto sobr
 
 ```{figure} imagenes/latitud_longitud.png
 ---
-width: 50%
+width: 65%
 align: center
 ---
 ```
@@ -1754,17 +1754,18 @@ GeoPandas puede leer los formatos más comunes de archivos geoespaciales: **Shap
 import geopandas as gpd
 
 data_barrios = gpd.read_file('datasets/barrios.gml')
-data_barrios.head(1)
+data_barrios.head()
 ```
 
-Al explorar el objeto `data_barrios`, veremos que se parece mucho a un DataFrame convencional, con la diferencia de que tiene una columna **`geometry`** que contiene los objetos geométricos.
+Al explorar el objeto `data_barrios`, veremos que se parece mucho a un DataFrame convencional, con la diferencia de que tiene una columna **`geometry`** que contiene los objetos geométricos, en este caso polígonos (`POLYGON`).
+
 El tipo del objeto lo podemos confirmar con `.info()`:
 
 ```{code-cell} python
 data_barrios.info()
 ```
 
-La salida confirma que data_barrios es un `GeoDataFrame` y que la columna `geometry` almacena polígonos (`Polygon`).
+La salida confirma que `data_barrios` es un `GeoDataFrame`.
 
 ```{admonition} **Archivos auxiliares al leer datos en formato GML**
 :class: tip dropdown
@@ -1801,12 +1802,14 @@ La forma más directa de visualizar un GeoDataFrame es el método **`.plot()`**,
 Con el dataset de barrios, podemos construir un mapa básico con una sola línea de código:
 
 ```{code-cell} python
+plt.figure(figsize = (7,7))
 data_barrios.plot(edgecolor = 'black', linewidth = 1.75, column = 'BARRIO');
 ```
 
 El parámetro `column` indica qué variable se usará para colorear los polígonos, asignando un color distinto a cada barrio. Sin embargo, cuando el número de categorías es grande —como ocurre con los barrios de una ciudad—, esta visualización resulta poco útil porque los colores se repiten y no se distinguen bien. En esos casos, suele ser más informativo mostrar solo los límites entre barrios, sin relleno, usando el método **`.boundary.plot()`**:
 
 ```{code-cell} python
+plt.figure(figsize = (7,7))
 data_barrios.boundary.plot(edgecolor = 'black');
 ```
 
@@ -1850,7 +1853,7 @@ data_barrios_proy.sort_values('area_km2', ascending = False)[['BARRIO', 'area_km
 Finalmente, podemos visualizarlo sobre el mapa base para tener una referencia espacial:
 
 ```{code-cell} python
-fig, ax = plt.subplots(figsize = (10, 10))
+fig, ax = plt.subplots(figsize = (7, 7))
 
 # Base
 data_barrios_proy.boundary.plot(ax = ax, edgecolor = 'black')
@@ -1870,7 +1873,7 @@ plt.show()
 
 ##### Puntos sobre un mapa base: centros de salud de Rosario
 
-Podemos combinar múltiples capas en un mismo mapa superponiendo GeoDataFrames. El mecanismo es pasar el eje (`ax`) del primer gráfico como argumento al segundo, de manera que ambas capas se dibujen sobre el mismo panel. Para ejemplificar, agregaremos al mapa base de los barrios de Rosario los efectores de salud de la ciudad, disponibles en el archivo [**`geo_salud.gml`**](https://datosabiertos.rosario.gob.ar/dataset/02f03d29-0352-4738-b226-e150f8958a82):
+Podemos combinar múltiples capas en un mismo mapa superponiendo GeoDataFrames. El mecanismo es pasar el eje (`ax`) del primer gráfico como argumento al segundo, de manera que ambas capas se dibujen sobre el mismo panel. Para ejemplificar, agregaremos al mapa base de los barrios de Rosario los efectores de salud de la ciudad, disponibles en el archivo [**`geo_salud.gml`**](https://datosabiertos.rosario.gob.ar/dataset/02f03d29-0352-4738-b226-e150f8958a82), que también puede descargarse de la web de datos abiertos de la Municipalidad de Rosario:
 
 ```{code-cell} python
 data_salud = gpd.read_file('datasets/geo_salud.gml')
@@ -1882,10 +1885,10 @@ Explorando el GeoDataFrame, veremos que la columna `geometry` contiene objetos d
 Como primer paso, construimos el mapa más simple: todos los efectores representados con el mismo color sobre el mapa base de barrios.
 
 ```{code-cell} python
-fig, ax = plt.subplots(figsize=(8, 8))
+fig, ax = plt.subplots(figsize = (7, 7))
 
 # Capa base: polígonos de barrios con relleno gris claro
-data_barrios.boundary.plot(edgecolor = 'black', color = 'lightgrey', 
+data_barrios.plot(edgecolor = 'black', color = '#edeef0', 
 linewidth = 0.8, ax = ax)
 
 # Capa de puntos: todos los efectores en rojo oscuro
@@ -1898,17 +1901,18 @@ plt.show()
 Este mapa ya es informativo: permite ver cómo se distribuyen espacialmente los efectores de salud en la ciudad y en qué barrios hay mayor concentración. Sin embargo, trata a todos los efectores de la misma forma. Si nos interesa distinguir según el tipo de efector, podemos codificar esa variable mediante el color de los puntos, usando `column = 'titular'`: 
 
 ```{code-cell} python
-fig, ax = plt.subplots(figsize=(8, 8))
+fig, ax = plt.subplots(figsize = (7, 7))
 
 # Capa base
-data_barrios.boundary.plot(edgecolor = 'black', color = 'lightgrey', 
+data_barrios.plot(edgecolor = 'black', color = '#edeef0', 
 linewidth = 0.8, ax = ax)
 
 # Capa de puntos: efectores coloreados según tipo de efector
 data_salud.plot(ax = ax, markersize = 20, column='titular',
                          legend = True, cmap = 'viridis',
                          legend_kwds = dict(title = 'Efector',
-                                          bbox_to_anchor=(1.4, 1)))
+                                          bbox_to_anchor = (1.4, 1),
+						 facecolor = 'white'))
 
 plt.axis('off')
 plt.show()
