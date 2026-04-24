@@ -1924,7 +1924,7 @@ El resultado muestra simultáneamente la estructura espacial de la ciudad y la d
 
 Cuando la variable que queremos representar es cuantitativa continua, el mapa toma la forma de un mapa coroplético (***choropleth map***): cada polígono se colorea según la intensidad del valor que le corresponde, usando una escala de color secuencial. Este tipo de visualización es muy habitual en cartografía temática: mapas de densidad poblacional, tasas de desocupación, precipitaciones acumuladas por región, entre muchos otros.
 
-Para ilustrarlo, trabajaremos con el archivo **`cultivos_por_dpto_mapa.json`**, que contiene datos sobre la superficie cultivada en cada uno de los departamentos de la provincia de Córdoba:
+Para ilustrarlo, trabajaremos con el archivo **`cultivos_por_dpto_mapa.json`**, que contiene datos sobre la superficie cultivada en cada uno de los departamentos de la provincia de Córdoba y que fue confeccionado a partir de información consultada en el [portal de datos abiertos](https://datos.gob.ar/) de la Argentina:
 
 ```{code-cell} python
 data_cultivos = gpd.read_file('datasets/cultivos_por_dpto_mapa.json')
@@ -1936,7 +1936,7 @@ El objetivo es representar visualmente la cantidad de hectáreas sembradas por d
 ```{code-cell} python
 data_cultivos['sup_cultivada_has'] = data_cultivos['sup_cultivada'].str.extract(r'(\d+)').astype('int')
 
-datos_cultivos.head(1)
+data_cultivos.head(1)
 ```
 
 Para mejorar la legibilidad de la escala en el mapa, conviene expresar los valores en millones de hectáreas en lugar de hectáreas brutas:
@@ -1975,9 +1975,9 @@ data_cultivos.plot(ax = ax,
 plt.axis('off')
 plt.show()
 ```
-Los parámetros `vmin` y `vmax` merecen una mención especial: definen los extremos de la escala de colores. Si no se especifican, GeoPandas los ajusta automáticamente al mínimo y al máximo del dataset. Esto puede ser conveniente en algunos casos, pero en otros puede generar comparaciones engañosas: si un único departamento tiene un valor extremo muy alto, la paleta se estira para incluirlo y todos los demás quedan comprimidos en un rango visual muy estrecho. Fijar `vmin` y `vmax` manualmente permite un mayor control sobre qué diferencias se hacen visibles.
+Los parámetros `vmin` y `vmax` merecen una mención especial: definen los extremos de la escala de colores (siguiendo la misma lógica que en el *heatmap*, presentado en una sección anterior). Si no se especifican, GeoPandas los ajusta automáticamente al mínimo y al máximo del dataset. Esto puede ser conveniente en algunos casos, pero en otros puede generar comparaciones engañosas: si un único departamento tiene un valor extremo muy alto, la paleta se estira para incluirlo y todos los demás quedan comprimidos en un rango visual muy estrecho. Fijar `vmin` y `vmax` manualmente permite un mayor control sobre qué diferencias se hacen visibles.
 
-Notar también que en este gráfico usamos `plt.axis('off')` para ocultar los ejes. Esto tiene sentido aquí porque el CRS del dataset es un sistema proyectado (EPSG:22174) con coordenadas en metros, cuyos valores numéricos en los ejes carecen de significado inmediato para el lector. Si quisiéramos mostrar ejes con coordenadas interpretables —latitud y longitud en grados—, deberíamos reproyectar los datos a EPSG:4326 antes de graficar, como vimos anteriormente:
+Notar también que en este gráfico, y al igual que en algunos gráficos anteriores, usamos `plt.axis('off')` para ocultar los ejes. Esto tiene sentido aquí porque el CRS del dataset es un sistema proyectado (EPSG:22174) con coordenadas en metros, cuyos valores numéricos en los ejes carecen de significado inmediato para el lector. Si quisiéramos mostrar ejes con coordenadas interpretables —latitud y longitud en grados—, deberíamos **reproyectar los datos a EPSG:4326** antes de graficar, como vimos anteriormente:
 
 ```{code-cell} python
 data_cultivos.crs  # Confirma que el CRS actual es EPSG:22174 (proyectado, metros)
@@ -1989,9 +1989,17 @@ data_cultivos_geo = data_cultivos.to_crs(epsg = 4326)
 ```
 Una consideración final sobre los mapas coropléticos: **el tamaño visual de cada polígono puede distorsionar la percepción.** Un departamento geográficamente extenso pero con baja superficie cultivada puede capturar mucho más la atención del observador que uno pequeño con alta intensidad agrícola, simplemente porque ocupa más espacio en el mapa. Esta no es una limitación de la implementación en Python, sino una característica inherente al tipo de visualización que vale tener presente al interpretar cualquier mapa coroplético y, especialmente, al comunicar sus resultados a otras personas.
 
-Mapas interactivos con Folium
-Los mapas estáticos producidos por GeoPandas son útiles para exploración y para figuras en documentos, pero tienen una limitación importante: no permiten al lector interactuar con los datos. Para hacer mapas interactivos que se puedan explorar en un navegador —haciendo zoom, desplazándose y consultando información al pasar el mouse sobre los objetos—, podemos usar la librería Folium.
-Folium está construida sobre Leaflet.js, una de las bibliotecas de mapas interactivos más utilizadas en la web, y permite crear mapas que se integran naturalmente en un Jupyter Notebook o en una página web. Su flujo de trabajo es diferente al de GeoPandas: en lugar de operar con el paradigma de Matplotlib (figuras y ejes), construimos el mapa agregando capas a un objeto central.
+#### Mapas interactivos con Folium
+
+Los mapas estáticos producidos por GeoPandas son útiles para exploración y para figuras en documentos, pero tienen una limitación importante: no permiten al lector interactuar con los datos. Para hacer mapas interactivos que se puedan explorar en un navegador —haciendo zoom, desplazándose y consultando información al pasar el mouse sobre los objetos—, podemos usar la librería **Folium**.
+
+```{code-cell} python
+import folium
+```
+
+Folium está construida sobre `Leaflet.js`, una de las bibliotecas de mapas interactivos más utilizadas en la web, y permite crear mapas que se integran naturalmente en un Jupyter Notebook o en una página web. Su flujo de trabajo es diferente al de GeoPandas: en lugar de operar con el paradigma de Matplotlib (figuras y ejes), construimos el mapa agregando capas a un objeto central.
+
+
 Mapa coroplético interactivo
 pythonimport folium
 
