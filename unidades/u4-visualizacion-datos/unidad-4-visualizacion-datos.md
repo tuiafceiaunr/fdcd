@@ -1948,7 +1948,7 @@ data_cultivos['sup_cultivada_millones_has'] = data_cultivos['sup_cultivada_has']
 Con los datos listos, construimos el mapa coroplético. Una práctica útil es graficar primero una capa de fondo con todos los polígonos en gris claro, antes de superponer la capa con los datos. La razón principal es el manejo de valores faltantes: GeoPandas no asigna ningún color a los polígonos cuya variable de interés es `NaN`, lo que hace que directamente no se dibujen sobre el mapa —o queden en blanco, confundiéndose con el fondo del gráfico. Al colocar una capa gris debajo, esos polígonos sin dato quedan visibles con un color neutro, lo que le permite al lector distinguir entre "este departamento tiene un valor bajo" y "este departamento no tiene dato":
 
 ```{code-cell} python
-fig, ax = plt.subplots(figsize = (10, 10))
+fig, ax = plt.subplots(figsize = (8, 8))
 
 # Capa de fondo en gris claro: hace visibles los polígonos sin dato (NaN),
 # que de otro modo no se dibujarían. En este dataset no hay faltantes,
@@ -1999,36 +1999,42 @@ import folium
 
 Folium está construida sobre `Leaflet.js`, una de las bibliotecas de mapas interactivos más utilizadas en la web, y permite crear mapas que se integran naturalmente en un Jupyter Notebook o en una página web. Su flujo de trabajo es diferente al de GeoPandas: en lugar de operar con el paradigma de Matplotlib (figuras y ejes), construimos el mapa agregando capas a un objeto central.
 
-
-Mapa coroplético interactivo
-pythonimport folium
-
+```{code-cell} python
 # Crear el mapa base centrado en Córdoba
-m = folium.Map(location=[-31.715057, -63.671522], zoom_start=7)
+m = folium.Map(location = [-31.715057, -63.671522], zoom_start = 7)
 folium.TileLayer('cartodbpositron').add_to(m)
 
 # Agregar la capa coroplética
 c = folium.Choropleth(
-    geo_data=datos_cultivos,
-    data=datos_cultivos,
-    columns=['nombre', 'sup_cultivada_has'],
-    key_on='feature.properties.nombre',
-    fill_color='magma',
-    fill_opacity=0.6,
-    line_opacity=0.8,
-    highlight=True,
-    legend_name='Superficie cultivada (Hectáreas)'
+    geo_data = data_cultivos,
+    data = data_cultivos,
+    columns = ['nombre', 'sup_cultivada_millones_has'],
+    key_on = 'feature.properties.nombre',
+    fill_color = 'inferno',
+    fill_opacity = 0.6,
+    line_opacity = 0.8,
+    highlight = True,
+    legend_name = 'Superficie cultivada (millones has)'
 ).add_to(m)
 
 # Agregar tooltip con información al pasar el mouse
 c.geojson.add_child(folium.features.GeoJsonTooltip(
-    fields=['nombre', 'sup_cultivada_has'],
-    aliases=['Departamento:', 'Superficie (Has):']
+    fields = ['nombre', 'sup_cultivada_has'],
+    aliases = ['Departamento:', 'Superficie (millones Has):']
 ))
 
 m
+```
+
 Hay algunos parámetros clave que vale la pena entender:
-location define las coordenadas del centro del mapa al cargar. zoom_start controla el nivel de zoom inicial (valores más altos hacen más zoom). TileLayer permite elegir el estilo del mapa de fondo: 'cartodbpositron' produce un fondo claro y minimalista que no compite con los datos; 'OpenStreetMap' muestra el mapa de calles completo. key_on es el campo del GeoJSON que Folium usará para conectar cada polígono con su valor en el dataset; debe seguir la sintaxis 'feature.properties.nombre_del_campo'. El tooltip agrega la ventana de información que aparece al pasar el mouse, con fields indicando los campos a mostrar y aliases sus etiquetas legibles.
+
+- `location` define las coordenadas del centro del mapa al cargar.
+- `zoom_start` controla el nivel de zoom inicial (valores más altos hacen más zoom).
+- `TileLayer` permite elegir el estilo del mapa de fondo: `'cartodbpositron'` produce un fondo claro y minimalista que no compite con los datos, `'OpenStreetMap'` muestra el mapa de calles completo.
+- `key_on` es el campo del GeoJSON que Folium usará para conectar cada polígono con su valor en el dataset. Debe seguir la sintaxis `'feature.properties.nombre_del_campo'`.
+- El `tooltip` agrega la ventana de información que aparece al pasar el mouse, con `fields` indicando los campos a mostrar y `aliases` sus etiquetas legibles.
+
+
 Puntos con popups interactivos
 Para datos de tipo punto, Folium permite agregar popups que se despliegan al hacer clic sobre cada marcador, mostrando información detallada del objeto:
 pythonm = folium.Map(location=[-32.952601, -60.643213], zoom_start=12)
