@@ -1695,6 +1695,8 @@ align: center
 ---
 ```
 
+En el siguiente [link](https://desktop.arcgis.com/es/arcmap/latest/map/projections/projection-types.htm) puede encontrarse más información sobre los tipos de proyección más habituales.
+
 Las proyecciones deben conservar alguna propiedad geométrica a expensas de otras. Según qué propiedad preservan, se clasifican en:
 
 - **Proyecciones conformes:** conservan los ángulos y las formas locales, pero distorsionan las áreas. La proyección de Mercator es el ejemplo más conocido: representa correctamente las formas de los continentes en escalas locales, pero exagera enormemente el tamaño de las zonas polares (Groenlandia aparece del mismo tamaño que África, cuando en realidad es aproximadamente 14 veces más pequeña).
