@@ -103,7 +103,7 @@ La tabla resultante muestra, para cada beneficiario, cuál es el nombre del padr
 ```{dropdown} Para pensar...
 :class: seealso
 
-Analizar cómo se modifica la tabla anterior para distintos valores de umbrales para el *score*.
+¿Cómo cambia esta tabla si variamos el umbral del *score*?
 ```
 
 ## PASO 2: Merge usando la columna de coincidencias
@@ -124,7 +124,7 @@ El resultado final contiene sólo a los beneficiarios que pudieron vincularse co
 El *fuzzy join* es una herramienta muy útil, pero no infalible. En aplicaciones reales, conviene revisar manualmente los casos con *scores* intermedios. Cuando se dispone de un identificador único confiable en ambas bases —por ejemplo, el DNI— siempre es preferible usarlo como clave de unión. El *fuzzy join* es un recurso cuando esa alternativa no está disponible (como en este ejemplo, donde por algún motivo no contamos con esa información en el dataset `df_beneficiarios`.
 ```
 
-###Sobre el preprocesamiento de textos
+### Sobre el preprocesamiento de textos
 
 Cuando usamos `processor = utils.default_process`, las cadenas se transforman antes de ser comparadas. En particular, este preprocesamiento realiza:
 
@@ -134,19 +134,19 @@ Cuando usamos `processor = utils.default_process`, las cadenas se transforman an
 
 - eliminación de espacios en blanco extra
 
-Esto ayuda a evitar diferencias triviales como "María gonzález" vs. "maría gonzález" o problemas con signos de puntuación.
+Esto ayuda a evitar diferencias triviales como `'María gonzález'` vs. `'maría gonzález'` o problemas con signos de puntuación.
 
 Sin embargo, este procesamiento NO elimina ni normaliza tildes (acentos).
 
 Por ejemplo, las cadenas:
 
-"María González"
+`'María González'`
 
-"Maria Gonzalez"
+`'Maria Gonzalez'`
 
-siguen siendo distintas, porque los caracteres "í" y "i" (o "á" y "a") no son equivalentes. Esto explica por qué, en estos casos, el score de similitud es menor a 100.
+siguen siendo distintas, porque los caracteres `í` e `i` (o `á` y `a`) no son equivalentes. Esto explica por qué, en estos casos, el score de similitud es menor a 100.
 
-```{admonition} **Tratamiento de tildes**
+```{admonition} **Algo más sobre el tratamiento de tildes**
 :class: note
 
 Si se desea que las tildes no afecten la comparación, es necesario aplicar una normalización adicional, por ejemplo, eliminándolas con el módulo `unicodedata`.
