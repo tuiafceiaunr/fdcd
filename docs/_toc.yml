@@ -74,7 +74,5 @@ parts:
     chapters:
       - file: unidades/metodos-avanzados/metodos-avanzados-slides.md
       - file: unidades/metodos-avanzados/ejemplos-apoyo.md
-        sections:
-          - file: unidades/metodos-avanzados/notebooks/fuzzyjoins.ipynb
         
 
