@@ -43,7 +43,7 @@ print(df_padron)
 **`df_beneficiarios`**: contiene el registro de personas que reciben un subsidio municipal. Fue cargado a partir de formularios en papel digitalizados, por lo que presenta inconsistencias en los nombres: tildes faltantes, abreviaciones y errores tipográficos.
 
 ```{code-cell} python
-df_beneficiarios = pd.DataFrame({'Nombre': ['María gonzález', 'Carlos Rodríguez', 'L. F. Martínez', 'Roberto Sanches', 'Jorge Medina'],
+df_beneficiarios = pd.DataFrame({'Nombre': ['Maria Gonzalez', 'Carlos Rodríguez', 'L. F. Martínez', 'Roberto Sanches', 'Jorge Medina'],
 'Subsidio': [15000, 22000, 18000, 12000, 9000],
 'Fecha_Alta': ['2023-03-01', '2023-05-14', '2022-11-30', '2024-01-08', '2023-07-22']})
                     
@@ -121,7 +121,7 @@ El resultado final contiene sólo a los beneficiarios que pudieron vincularse co
 ```{admonition} **Importante**
 :class: important
 
-El *fuzzy join* es una herramienta muy útil, pero no infalible. En aplicaciones reales, conviene revisar manualmente los casos con *scores* intermedios. Cuando se dispone de un identificador único confiable en ambas bases —por ejemplo, el DNI— siempre es preferible usarlo como clave de unión. El *fuzzy join* es un recurso cuando esa alternativa no está disponible (como en este ejemplo, donde por algún motivo no contamos con esa información en el dataset `df_beneficiarios`.
+El *fuzzy join* es una herramienta muy útil, pero no infalible. En aplicaciones reales, conviene revisar manualmente los casos con *scores* intermedios. Cuando se dispone de un identificador único confiable en ambas bases —por ejemplo, el DNI— siempre es preferible usarlo como clave de unión. El *fuzzy join* es un recurso cuando esa alternativa no está disponible (como en este ejemplo, donde por algún motivo no contamos con esa información en el dataset `df_beneficiarios`).
 ```
 
 ### Sobre el preprocesamiento de textos
