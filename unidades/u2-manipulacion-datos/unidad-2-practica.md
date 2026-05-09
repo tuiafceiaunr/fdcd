@@ -92,29 +92,8 @@ Utilizando los archivos `conicet_personas_2020.xlsx`, `conicet_ref_sexo.xlsx` y 
 
 Utilizando el archivo `incendios-cantidad-causas-provincia_2022.csv` del Ejercicio N°2, genere una tabla que muestre el número de incendios intencionales por provincia para cada año de los incluidos en dicho dataset. 
 
+
 ### **Ejercicio N°9**
-
-Para cada uno de los siguientes pares de cadenas, calcule la similaridad de Jaro y Jaro-Winkler y la distancia de Levenshtein. Realice primero el cálculo en forma manual y luego verifique los resultados obtenidos utilizando herramientas de las librerías `jaro` y `levenhstein`.
-
-| **cadena 1** | **cadena 2** |
-| --- | --- |
-| Mariana | Merianna |
-| Della Ceca | Dellacecca |
-| Córdoba 2568 | Cordoba 2478 |
-
-### **Ejercicio N° 10**
-
-El dataset `ventas.xlsx` contiene los registros de una serie de ventas realizadas en el último tiempo en un local de productos electrónicos. Por otra parte, cuenta con el dataset `clientes_base.xlsx`, el cual contiene información sobre los clientes registrados en dicho establecimiento. 
-
-1. ¿Cuál fue el monto total de venta de productos iPad y MacBook?
-
-2. Realice la unión de ambos DataFrames utilizando la operación que considere más adecuada y la columna `nombre_cliente` como *key.* ¿Qué observa en el DataFrame resultante?
-
-3. Considerando que en `clientes_base.xlsx` los nombres de los clientes se encuentran exentos de errores ortográficos y tipográficos, ¿en qué porcentaje de los registros que conforman el dataset `ventas.xlsx` el nombre del cliente coincide con el de un cliente registrado?
-
-4. Teniendo en cuenta lo observado en los ítems anteriores, utilice herramientas de *fuzzy joins* para realizar la unión de ambos datasets. ¿De qué ciudad es el cliente que más compras realizó en el local?
-
-### **Ejercicio N° 11**
 
 1. Represente la siguiente tabla en cada uno de los formatos estudiados en la Unidad 2, utilizando un procesador de texto:
 
