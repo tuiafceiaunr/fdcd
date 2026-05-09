@@ -74,5 +74,7 @@ parts:
     chapters:
       - file: unidades/metodos-avanzados/metodos-avanzados-slides.md
       - file: unidades/metodos-avanzados/ejemplos-apoyo.md
+      - file: unidades/metodos-avanzados/metodos-avanzados-practica.md
+        title: Práctica - Métodos avanzados
         
 
