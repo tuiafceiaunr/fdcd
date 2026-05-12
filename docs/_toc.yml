@@ -72,7 +72,7 @@ parts:
         
   - caption: Métodos avanzados - Medidas de similaridad y distancia
     chapters:
-      - file: unidades/u6-ajustes-y-modelos/metodos-avanzados.md
+      - file: unidades/metodos-avanzados/metodos-avanzados.md
       - file: unidades/metodos-avanzados/metodos-avanzados-slides.md
       - file: unidades/metodos-avanzados/ejemplos-apoyo.md
       - file: unidades/metodos-avanzados/metodos-avanzados-practica.md
