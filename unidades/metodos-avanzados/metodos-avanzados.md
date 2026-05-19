@@ -246,7 +246,7 @@ Por ejemplo, para transformar `"LEWENSTEIN"` en `"LEVENSHTEIN"` hacen falta 2 op
 
 Podemos calcular este valor exacto con `rapidfuzz`:
 
-```python
+```{code-cell} python
 from rapidfuzz.distance import Levenshtein
 
 dist_lev = Levenshtein.distance('LEWENSTEIN', 'LEVENSHTEIN')
@@ -261,7 +261,102 @@ $$sim_{lev}(s_1, s_2) = 1 - \frac{dist_{lev}(s_1, s_2)}{\max(|s_1|, |s_2|)}$$
 
 Se puede verificar que $0 \leq sim_{lev} \leq 1$. El valor 1 corresponde a cadenas idénticas (distancia 0) y el valor 0 a cadenas que requieren reescribirse por completo.
 
-```python
+```{code-cell} python
 sim_lev = round(Levenshtein.normalized_similarity('LEWENSTEIN', 'LEVENSHTEIN'), 4)
 print(sim_lev)
 ```
+
+## Fuzzy joins
+
+El **fuzzy join** (o enlace difuso) es una técnica para combinar dos tablas que contienen información sobre las mismas entidades cuando aquellos campos que podrían utilizarse como claves (*keys*) no coinciden exactamente. Esto es habitual cuando los datos fueron ingresados manualmente en distintos sistemas, en distintos momentos o por distintas personas: los nombres pueden estar abreviados, tener errores tipográficos, carecer de tildes o presentar diferencias de formato.
+
+En lugar de exigir coincidencia exacta de la clave (como hace un `merge()` estándar), el *fuzzy join* busca la **mejor coincidencia aproximada** usando métricas de similaridad.
+
+### Ejemplo aplicado: padrón electoral y beneficiarios de subsidios
+
+Supongamos que trabajamos en la Secretaría de Desarrollo Social de un municipio y necesitamos cruzar dos bases de datos:
+
+- `df_padron`: el padrón electoral, con los vecinos registrados.
+
+- `df_beneficiarios`: el registro de beneficiarios de un programa de subsidios.
+
+Ambas bases fueron cargadas de forma independiente y los nombres no siempre coinciden exactamente.
+
+**`df_padron`**: contiene el registro oficial de vecinos del municipio.
+
+```{code-cell} python
+df_padron = pd.DataFrame({'Nombre': ['María González', 'Carlos Alberto Rodríguez', 'Luisa Fernanda Martínez', 'Roberto Sánchez', 'Ana Laura Pérez'],
+    'DNI': [28456123, 31782456, 25963147, 33841290, 29571834],
+    'Localidad': ['Rosario', 'Rosario', 'Villa Gobernador Gálvez', 'Rosario', 'Funes']})
+                    
+print(df_padron)
+```
+
+**`df_beneficiarios`**: contiene el registro de personas que reciben un subsidio municipal. Fue cargado a partir de formularios en papel digitalizados, por lo que presenta inconsistencias en los nombres: tildes faltantes, abreviaciones y errores tipográficos.
+
+```{code-cell} python
+df_beneficiarios = pd.DataFrame({'Nombre': ['Maria Gonzalez', 'Carlos Rodríguez', 'L. F. Martínez', 'Roberto Sanches', 'Jorge Medina'],
+'Subsidio': [15000, 22000, 18000, 12000, 9000],
+'Fecha_Alta': ['2023-03-01', '2023-05-14', '2022-11-30', '2024-01-08', '2023-07-22']})
+                    
+print(df_beneficiarios)
+```
+
+Si intentáramos combinar ambos DataFrames con `merge()` usando `Nombre` como clave, prácticamente ninguna fila coincidiría exactamente.
+
+#### Herramientas de `rapidfuzz` para fuzzy joins
+
+Para implementar el enlace difuso usaremos dos componentes de `rapidfuzz`:
+
+- **`fuzz`**: provee las funciones de similaridad entre pares de cadenas.
+
+- **`process`**: permite buscar la mejor coincidencia entre una cadena y una lista de candidatos, aplicando la función de similaridad elegida.
+
+#### `fuzz.token_sort_ratio()`
+
+Esta función realiza una comparación robusta en cuatro pasos:
+
+1. **Tokenización**: divide cada cadena en *tokens* (unidades separadas por espacios). Por ejemplo, `"Juan Pérez"` se divide en `["Juan", "Pérez"]`.
+
+2. **Normalización** *(sólo si se especifica `processor = utils.default_process`)*: convierte los *tokens* a minúsculas y elimina signos de puntuación.
+
+3. **Ordenamiento alfabético**: reordena los *tokens* alfabéticamente y los une de nuevo en una sola cadena. Esto hace que `"Carlos Alberto Rodríguez"` y `"Carlos Rodríguez Alberto"` sean tratados como idénticos.
+
+4. **Cálculo de similaridad**: aplica la similaridad basada en distancia de Levenshtein normalizada y devuelve un valor entre 0 y 100.
+
+```{admonition} Más sobre fuzzy joins
+:class: tip
+
+Para ver una resolución completa y paso a paso de fuzzy joins, consultá [este ejemplo](ejemplos-apoyo.md), incluido dentro de este mismo apartado.
+
+---
+
+## Distancias entre datos numéricos
+
+Cuando los objetos que queremos comparar están representados por variables numéricas, utilizamos métricas de distancia definidas sobre vectores en $\mathbb{R}^p$. Cada observación es un punto en un espacio $p$-dimensional y la distancia entre dos observaciones refleja cuán diferentes son.
+
+Para fijar ideas, consideremos el caso más simple: dos variables cuantitativas $X_1$ y $X_2$, es decir, $p = 2$. El "espacio" en el que viven nuestras observaciones es entonces el plano cartesiano determinado por ambos ejes. Cada observación $i$ queda representada por un único punto $P_i$, cuyas coordenadas son los valores que toman las variables para esa observación: ($x_{1i}$, $x_{2i}$). Desde el punto de vista vectorial, ese punto puede pensarse como el extremo de un vector de posición que parte del origen de coordenadas $O$ y llega hasta $P_i$. sus componentes $x_{1i}$ y $x_{2i}$ son simplemente las proyecciones de ese vector sobre cada eje.
+
+```{figure} imagenes/vector_datapoint_2d.png
+---
+width: 70%
+align: center
+---
+Representación de la observación $i$ como vector de posición en $\mathbb{R}^2$. Las componentes $x_{1i}$ y $x_{2i}$ son las proyecciones sobre cada eje.
+```
+
+Esta representación vectorial es la que subyace a todas las métricas que veremos a continuación: medir la distancia entre dos observaciones equivale a medir, de alguna manera geométricamente precisa, cuán separados están los extremos de sus respectivos vectores de posición en ese espacio $p$-dimensional.
+
+
+### Distancia euclídea
+
+La **distancia euclídea** es la medida de distancia más popular y corresponde a la noción geométrica usual de distancia en el espacio. Para dos observaciones $\mathbf{i} = (x_{1i}, x_{2i}, \ldots, x_{pi})$ y $\mathbf{j} = (x_{1j}, x_{2j}, \ldots, x_{pj})$ se define como:
+
+$$d_E(\mathbf{i}, \mathbf{j}) = \sqrt{(x_{1i} - x_{1j})^2 + (x_{2i} - x_{2j})^2 + \cdots + (x_{pi} - x_{pj})^2}$$
+
+```{admonition} Importante
+:class: warning
+
+**Sensibilidad a la escala.** La distancia euclídea es sensible a las unidades de medida de cada variable. Si las variables tienen rangos muy diferentes, las de mayor rango dominarán el cálculo, opacando la contribución de las demás. Cuando las variables no están en la misma escala, conviene **normalizar o estandarizar** los datos previamente antes de calcular distancias euclídeas.
+```
+
