@@ -9,7 +9,7 @@ kernelspec:
   name: python3
 ---
 
-# Unidades 2 y 3 - Métodos avanzados: medidas de similaridad y distancia
+# Métodos avanzados: medidas de similaridad y distancia
 
 *en construcción*
 
@@ -355,17 +355,19 @@ La **distancia euclídea** es la medida de distancia más popular y corresponde 
 
 $$d_E(\mathbf{i}, \mathbf{j}) = \sqrt{(x_{1i} - x_{1j})^2 + (x_{2i} - x_{2j})^2 + \cdots + (x_{pi} - x_{pj})^2}$$
 
+Es decir, la distancia euclídea entre dos observaciones es la longitud del segmento que une los extremos de sus vectores de posición en el espacio $p$-dimensional: la misma noción de distancia que usamos intuitivamente en el plano o en el espacio tridimensional extendida a cualquier número de dimensiones.
+
 ```{admonition} Importante
 :class: warning
 
-**Sensibilidad a la escala.** La distancia euclídea es sensible a las unidades de medida de cada variable. Si las variables tienen rangos muy diferentes, las de mayor rango dominarán el cálculo, opacando la contribución de las demás. Cuando las variables no están en la misma escala, conviene **normalizar o estandarizar** los datos previamente antes de calcular distancias euclídeas.
+**Sensibilidad a la escala.** La distancia euclídea es sensible a las unidades de medida de cada variable. Si las variables tienen rangos muy diferentes, las de mayor rango dominarán el cálculo, opacando la contribución de las demás. Cuando las variables no están en la misma escala, conviene **normalizar o estandarizar** los datos previamente antes de calcular distancias euclídeas (Unidad 5).
 ```
 
 #### Ejemplo: cálculo de una matriz de distancias con `scipy`
 
+Para ejemplificar, definiremos un dataset formado por cinco observaciones con tres variables cuantitativas $X_1$, $X_2$ y $X_3$:
 
-
-```python
+```{code-cell} python
 import pandas as pd
 
 df = pd.DataFrame({
@@ -378,21 +380,23 @@ df = pd.DataFrame({
 print(df)
 ```
 
-Antes de calcular distancias, verificamos si las variables están en escalas comparables:
+Antes de calcular distancias, tomando en cuenta lo mencionado anteriormente, es buena práctica verificar si las variables están en escalas comparables:
 
-```python
+```{code-cell} python
 print(df.describe())
 ```
 
-En este caso las tres variables presentan rangos similares, por lo que no es necesario estandarizar previamente.
+En este caso las tres variables presentan rangos similares, por lo que no es necesario estandarizar previamente. 
 
 La librería **SciPy** ofrece herramientas eficientes para calcular matrices de distancias. Usaremos dos funciones del módulo `scipy.spatial.distance`:
 
-- **`pdist()`** (*pairwise distances*): calcula todas las distancias por pares entre las filas de un DataFrame o matriz. Para $n$ observaciones, devuelve un vector compacto con las $\frac{n(n-1)}{2}$ distancias únicas.
+- **`pdist()`** (*pairwise distances*): calcula todas las distancias por pares entre las filas de un DataFrame o matriz. Para $n$ observaciones, devuelve un vector compacto con las $\frac{n(n-1)}{2}$ distancias únicas (dado que la distancia de A a B es igual a la de B a A, y la distancia de cualquier punto a sí mismo es cero).
 
-- **`squareform()`**: convierte ese vector en una matriz cuadrada simétrica de $n \times n$.
+- **`squareform()`**: convierte ese vector vector compacto en una matriz cuadrada simétrica de $n \times n$, que resulta más cómoda para inspeccionar e interpretar.
 
-```python
+El tipo de distancia a calcular se especifica mediante el parámetro `metric`:
+
+```{code-cell} python
 from scipy.spatial.distance import pdist, squareform
 
 # Matriz de distancias euclídeas
@@ -405,38 +409,41 @@ dist_eucl = pd.DataFrame(
 print(dist_eucl.round(3))
 ```
 
-Podemos visualizar la matriz de distancias con un mapa de calor:
+Una forma conveniente de inspeccionar la estructura de una matriz de distancias es visualizarla como un mapa de calor (*heatmap*) con una escala de tipo secuencial, donde los colores más claros indican pares de observaciones más similares y los más oscuros, pares más distantes:
 
-```python
-import numpy as np
+```{code-cell} python
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-sns.set_theme(style='ticks')
+sns.set_theme(style = 'ticks')
 
 ax = sns.heatmap(dist_eucl, annot = True, cmap = 'YlOrRd', vmin = 0, vmax = 10,
-                 linewidths = 0.8, annot_kws = {"fontsize": 12},
+                 linewidths = 0.9, annot_kws = {"fontsize": 12},
                  cbar_kws = dict(label = 'Distancia euclídea'))
 plt.xticks(rotation = 45)
 plt.tight_layout()
 plt.show()
 ```
 
-El mapa de calor revela la estructura de los datos: las observaciones A, B y C son muy similares entre sí (celdas claras), igual que D y E; pero la distancia entre cualquier elemento del primer grupo y cualquier elemento del segundo es considerablemente mayor (celdas oscuras).
+El mapa de calor revela con claridad la estructura de los datos: las observaciones A, B y C son similares entre sí (celdas claras en la esquina superior izquierda), al igual que D y E (celdas claras en la esquina inferior derecha). En cambio, la distancia entre cualquier observación del primer grupo y cualquier observación del segundo es considerablemente mayor (celdas oscuras), lo que sugiere la existencia de dos grupos bien diferenciados en el espacio de las tres variables.
 
 ### Distancia Manhattan
 
-También llamada **City-Block** o **Taxicab**, la **distancia Manhattan** mide la distancia entre dos puntos considerando que sólo se puede avanzar en líneas rectas horizontales o verticales, como si uno se desplazara por las calles de una ciudad en cuadrícula. Para dos observaciones con $p$ atributos:
+También llamada **City-Block** o **Taxicab**, la distancia Manhattan entre dos observaciones se obtiene sumando las diferencias absolutas coordenada por coordenada:
 
 $$d_{MHT}(
-\mathbf{i}, \mathbf{j}) = |x_{1i} - x_{1j}| + |x_{2i} - x_{2j}| + \cdots + |x_{pi} - x_{pj}|}$$
+\mathbf{i}, \mathbf{j}) = |x_{1i} - x_{1j}| + |x_{2i} - x_{2j}| + \cdots + |x_{pi} - x_{pj}|$$
 
-```python
+El nombre evoca la forma de desplazarse por las calles de una ciudad en cuadrícula —como Manhattan—, donde no es posible avanzar en diagonal sino solo en dirección horizontal o vertical. En ese contexto, la distancia entre dos puntos no es la línea recta que los une, sino la suma de los desplazamientos sobre cada eje. 
+
+Retomando el ejemplo anterior, calculamos la matriz de distancias Manhattan usando `pdist` con `metric = 'cityblock'`:
+
+```{code-cell} python
 # Matriz de distancias Manhattan
 dist_manh = pd.DataFrame(
-    squareform(pdist(df[['x1', 'x2', 'x3']], metric='cityblock')),
-    index=df['id'],
-    columns=df['id']
+    squareform(pdist(df[['x1', 'x2', 'x3']], metric = 'cityblock')),
+    index = df['id'],
+    columns = df['id']
 )
 
 print(dist_manh.round(3))
@@ -444,38 +451,116 @@ print(dist_manh.round(3))
 
 **¿Cuándo preferir Manhattan sobre Euclídea?**
 
-- En espacios de alta dimensionalidad, la distancia Manhattan puede comportarse mejor que la euclídea. La euclídea tiende a perder capacidad discriminatoria a medida que aumenta el número de dimensiones, un fenómeno conocido como la *maldición de la dimensionalidad* (*curse of dimensionality*).
+En espacios de alta dimensionalidad, la distancia Manhattan suele comportarse mejor que la euclídea. A medida que $p$ crece, las distancias euclídeas entre todos los pares de puntos tienden a concentrarse en un rango cada vez más estrecho, perdiendo capacidad discriminatoria. Este fenómeno se conoce como la *maldición de la dimensionalidad* (*curse of dimensionality*) y afecta de forma más severa a la distancia euclídea que a la Manhattan.
 
-- La distancia Manhattan es preferible cuando los datos se organizan de forma natural en cuadrícula y el movimiento diagonal no tiene sentido.
-
-- Es más adecuada cuando los atributos contribuyen de manera aditiva e independiente, ya que mide el desplazamiento total coordenada por coordenada.
+Más allá de este argumento general, la elección entre una y otra depende también de la naturaleza del problema. La distancia Manhattan es preferible cuando los datos se organizan de forma natural en cuadrícula y el movimiento diagonal no tiene sentido. También resulta más adecuada cuando los atributos contribuyen de forma aditiva e independiente, ya que acumula el desplazamiento total coordenada por coordenada sin amplificar las diferencias grandes mediante el cuadrado. La euclídea, en cambio, penaliza más fuertemente las diferencias grandes en una sola variable, lo que puede ser deseable o indeseable según el contexto.
 
 ### Distancia de Mahalanobis
 
-La **distancia de Mahalanobis** fue propuesta por Prasanta Chandra Mahalanobis en 1936. A diferencia de las distancias euclídea y Manhattan, no trata a todas las direcciones del espacio por igual: incorpora la **estructura de variabilidad y correlación de los datos** para ajustar las distancias de acuerdo a la forma de la nube de puntos.
+La **distancia de Mahalanobis** fue propuesta por Prasanta Chandra Mahalanobis en 1936. A diferencia de las distancias euclídea y Manhattan, no trata a todas las direcciones del espacio por igual: incorpora la **estructura de variabilidad y correlación de los datos** para ajustar las distancias de acuerdo a la forma de la nube de puntos. Se utiliza con frecuencia en tareas de clasificación y detección de valores atípicos multivariados.
 
-#### Formulación
-
-La distancia euclídea puede escribirse en forma matricial como:
+Para introducir la fórmula, es útil partir de la distancia euclídea escrita en su forma matricial. Dados dos vectores $\mathbf{r}_1$ y $\mathbf{r}_2$, cada uno representando una observación en $\mathbb{R}^p$ (es decir, un punto con $p$ coordenadas en el espacio de las variables), la distancia euclídea entre ellos puede expresarse como:
 
 $$d_E(\mathbf{r}_1, \mathbf{r}_2) = \sqrt{(\mathbf{r}_1 - \mathbf{r}_2)^T \, \mathbf{I} \, (\mathbf{r}_1 - \mathbf{r}_2)}$$
 
-donde $\mathbf{I}$ es la matriz identidad (que trata todas las direcciones por igual). La distancia de Mahalanobis reemplaza $\mathbf{I}$ por la inversa de la matriz de covarianza $\boldsymbol{\Sigma}$:
+donde $\mathbf{I}$ es la matriz identidad de orden $p \times p$. Multiplicar por $\mathbf{I}$ es equivalente a no transformar nada: cada dirección del espacio recibe el mismo peso, con independencia de cuánta variabilidad presenten los datos en esa dirección o de si las variables están correlacionadas entre sí.
+
+La distancia de Mahalanobis parte de la misma expresión pero reemplaza $\mathbf{I}$ por la inversa de la matriz de covarianza $\boldsymbol{\Sigma}$:
 
 $$d_M(\mathbf{r}_1, \mathbf{r}_2) = \sqrt{(\mathbf{r}_1 - \mathbf{r}_2)^T \, \boldsymbol{\Sigma}^{-1} \, (\mathbf{r}_1 - \mathbf{r}_2)}$$
 
-Al incorporar $\boldsymbol{\Sigma}^{-1}$, la distancia se ajusta automáticamente por la variabilidad de cada variable y la correlación entre ellas: **las direcciones de mayor variabilidad en los datos "pesan menos"** (son más accesibles), y **las direcciones poco compatibles con la nube "pesan más"** (son más costosas).
+$\boldsymbol{\Sigma}$ es la matriz de covarianza de los datos: una matriz $p \times p$ que resume, en su diagonal, la varianza de cada variable y, fuera de la diagonal, las covarianzas entre pares de variables. Al incorporar su inversa $\boldsymbol{\Sigma}^{-1}$, la distancia se ajusta automáticamente en dos sentidos: las direcciones en las que los datos presentan mayor variabilidad "pesan menos" (es natural encontrar puntos alejados en esa dirección, por lo que no se los penaliza tanto), mientras que las direcciones poco compatibles con la estructura de la nube "pesan más" (un desplazamiento en esa dirección resulta inusual y se refleja en una distancia mayor). En la práctica, cuando $\boldsymbol{\Sigma}$ no se conoce, se estima a partir de los datos usando la matriz de covarianza muestral $\mathbf{S}$.
+
+#### Ejemplo ilustrativo
+
+Para entender por qué la distancia euclídea puede resultar inadecuada cuando trabajamos con observaciones de variables cuantitativas que están correlacionadas, consideremos el siguiente escenario. Simulamos 50 observaciones de dos variables con una correlación lineal positiva muy fuerte ($\rho = 0.95$), y ubicamos tres puntos de interés: $P_1$ en el centro de la nube, $P_2$ dentro de la nube y alineado con su dirección principal de variación, y $P_3$ fuera de la nube, desplazado en una dirección poco compatible con su estructura.
+
+```{code-cell} python
+import numpy as np
+
+# Simulamos conjunto de datos
+np.random.seed(3)
+n, rho = 50, 0.95
+x   = np.random.normal(size = n)
+eps = np.random.normal(size = n)
+y   = rho * x + np.sqrt(1 - rho**2) * eps
+df_sim = pd.DataFrame({'x': x, 'y': y})
+
+# DataFrame con puntos P1, P2 y P3
+datos_puntos = pd.DataFrame({
+    'punto': ['P1', 'P2', 'P3'],
+    'X1':    [-0.15, 1.0,  -1.0],
+    'X2':    [ 0.05, 1.05,  1.3149]
+})
+```
+
+```{code-cell} python
+:tags: [remove-input]
+
+plt.figure(figsize=(8, 5))
+sns.scatterplot(x='x', y='y', s=100, data=df_sim, color='black', edgecolor='black')
+sns.scatterplot(x='X1', y='X2', data=datos_puntos, hue='punto',
+                marker='X', s=500, legend=False, edgecolor=None)
+for _, row in datos_puntos.iterrows():
+    plt.text(row['X1'] + 0.15, row['X2'], row['punto'],
+             fontsize=14, fontweight='bold')
+plt.xlabel('$X_1$', fontsize=14, fontweight='bold')
+plt.ylabel('$X_2$', fontsize=14, fontweight='bold')
+sns.despine()
+plt.tight_layout()
+plt.show()
+```
+
+Desde el punto de vista de la distancia euclídea, $P_2$ y $P_3$ se encuentran prácticamente a la misma distancia de $P_1$:
+
+```{code-cell} python
+dist_eucl = pd.DataFrame(
+    squareform(pdist(datos_puntos[['X1', 'X2']], metric = 'euclidean')),
+    index = datos_puntos['punto'],
+    columns = datos_puntos['punto']
+)
+dist_eucl.index.name = dist_eucl.columns.name = None
+print(dist_eucl.round(3))
+```
+
+Sin embargo, observando la forma de la nube, esta conclusión resulta contraintuitiva: $P_2$ sigue la dirección principal de variación de los datos y se encuentra perfectamente dentro de su estructura, mientras que $P_3$ se aparta de ella en una dirección que los datos prácticamente nunca toman. Desde el punto de vista estadístico, $P_3$ es mucho más atípico (está "mucho más lejos" de $P_1$ en el contexto del conjunto de datos de estas variables) que $P_2$, aunque la distancia euclídea no lo refleje.
+
+La distancia de Mahalanobis corrige exactamente esto. Calculamos $\boldsymbol{S}^{-1}$ a partir de los datos simulados —que ofician de distribución de referencia— y la usamos para calcular las distancias entre los tres puntos:  
+
+```{code-cell} python
+from scipy.spatial.distance import mahalanobis
+
+# Calculamos la inversa de la matriz de covarianza (estimada a partir de los datos simulados)
+S_inv = np.linalg.inv(np.cov(df_sim[['x', 'y']].T))
+
+# Extraemos las coordenadas y los nombres de los tres puntos
+puntos = datos_puntos[['X1', 'X2']].values
+ids    = datos_puntos['punto'].values
+
+# Inicializamos una matriz de ceros de 3x3 para ir llenando
+dist_mahal = np.zeros((len(puntos), len(puntos)))
+
+# El bucle es necesario porque mahalanobis() requiere que le pasemos
+# S_inv explícitamente. pdist() no admite ese parámetro externo,
+# por lo que no podemos usarlo aquí como con la euclídea o Manhattan.
+for i in range(len(puntos)):
+    for j in range(len(puntos)):
+        dist_mahal[i, j] = mahalanobis(puntos[i], puntos[j], S_inv)
+
+dist_mahal_df = pd.DataFrame(dist_mahal, index = ids, columns = ids)
+print(dist_mahal_df.round(3))
+```
+
+Ahora $d_M(P_1, P_2)$ < $d_M(P_1, P_3)$: la distancia de Mahalanobis reconoce que $P_2$ es más compatible con la estructura de los datos que $P_3$, capturando lo que la distancia euclídea no podía.
 
 #### Ejemplo con el dataset Iris
 
-Usaremos el clásico dataset Iris para un caso más concreto. 
+Para ver una aplicación más concreta, utilizaremos el dataset Iris. Consideraremos únicamente dos variables —`sepal_length` y `petal_length`— para facilitar la visualización.
 
 ```{code-cell} python
 iris = sns.load_dataset('iris')
 iris.head()
 ```
-
-Para simplificar visualización y cálculo, consideraremos sólo dos variables: `sepal_length` y `sepal_width`.
 
 ```{figure} imagenes/iris.svg
 ---
@@ -484,66 +569,58 @@ align: center
 ---
 ```
 
-Dado un nuevo punto con `sepal_length = 7` y `petal_length = 5`, queremos determinar a qué especie pertenece.
+El objetivo es el siguiente: dada una nueva planta con `sepal_length = 7` y `petal_length = 5`, ¿a qué especie pertenece?
 
 ```{code-cell} python
-:tags: [hide-input]
-# Nuevo punto
+:tags: [remove-input]
+
+iris = sns.load_dataset('iris')
 nuevo_punto = np.array([7, 5])
-punto = pd.DataFrame({'sepal_length': [7],
-                      'petal_length': [5]})
+punto = pd.DataFrame({'sepal_length': [7], 'petal_length': [5]})
 
-# Scatter de Iris
-plt.figure(figsize = (8,5))
-sns.scatterplot(x = 'sepal_length', y = 'petal_length', s = 125, 
-data = iris, hue = 'species', edgecolor = None)
-
-# Agregar el nuevo punto como 'X' negro
-sns.scatterplot(x = 'sepal_length', y = 'petal_length', data = punto, color = 'black', marker = 'X', s = 400, label='nueva planta', edgecolor = None)
-
-plt.xlabel("Sepal Length", fontsize = 20, fontweight = "bold")
-plt.ylabel("Petal Length", fontsize = 20, fontweight = "bold")
-plt.xticks(fontsize = 15)
-plt.yticks(fontsize = 15)
-plt.legend(fontsize=18)
+plt.figure(figsize=(8, 5))
+sns.scatterplot(x='sepal_length', y='petal_length', s=80,
+                data=iris, hue='species', edgecolor=None)
+sns.scatterplot(x='sepal_length', y='petal_length', data=punto,
+                color='black', marker='X', s=300,
+                label='nueva planta', edgecolor=None)
+plt.xlabel('Sepal length', fontsize=14, fontweight='bold')
+plt.ylabel('Petal length', fontsize=14, fontweight='bold')
+plt.legend(fontsize=12)
+sns.despine()
+plt.tight_layout()
 plt.show()
 ```
 
-Intuitivamente, es probable que, a pesar de que esté más próximo desde el punto de vista euclídeo de muchos puntos correspondientes a la especie *virginica*, pensemos que lo más lógico sería clasificarla como *versicolor*, ya que de alguna manera se encuentra dentro de la disposición de puntos de esta especie.
+Intuitivamente, aunque la nueva planta pueda estar próxima a varios puntos de *virginica* bajo la lógica de una distancia euclídea, visualmente parece encontrarse dentro de la región que ocupa *versicolor*: está alineada con la forma y dispersión de ese grupo. Para responder la pregunta de forma rigurosa, calculamos la distancia de Mahalanobis de la nueva planta al **centroide** de cada especie, usando la matriz de covarianza muestral de cada especie como referencia:
 
 
-```python
-iris = sns.load_dataset('iris')
-nuevo_punto = np.array([7, 5])
+```{code-cell} python
+:tags: [remove-input]
+
 vars_sel = ['sepal_length', 'petal_length']
-
 dist_centroid = []
 
 for especie, grupo in iris.groupby('species'):
-    # Centroide de la especie
-    centroide = grupo[vars_sel].mean().values
-    
-    # Matriz de covarianza de la especie y su inversa
+    centroide  = grupo[vars_sel].mean().values
     cov_matrix = np.cov(grupo[vars_sel].T)
-    inv_cov = np.linalg.inv(cov_matrix)
-    
-    # Distancia de Mahalanobis al centroide
-    d = mahalanobis(nuevo_punto, centroide, inv_cov)
+    inv_cov    = np.linalg.inv(cov_matrix)
+    d          = mahalanobis(nuevo_punto, centroide, inv_cov)
     dist_centroid.append({'species': especie, 'dist_mahal': d})
 
 dist_centroid_df = pd.DataFrame(dist_centroid)
 print(dist_centroid_df.round(3))
 ```
 
-La nueva planta se clasificaría como **versicolor**, por ser la especie cuyo centroide presenta la menor distancia de Mahalanobis al nuevo punto.
+La nueva planta se clasificaría como ***versicolor***: es la especie cuyo centroide presenta la menor distancia de Mahalanobis al nuevo punto, confirmando la intuición visual.
 
 #### Ventajas de la distancia de Mahalanobis
 
-**Considera la correlación.** Incorpora la estructura de covarianza entre variables, ajustando las distancias según la forma y orientación de la nube de datos. Dos variables muy correlacionadas no aportan información independiente; la distancia de Mahalanobis lo tiene en cuenta.
+**Considera la correlación entre variables.** Al incorporar la matriz de covarianza, ajusta las distancias según la forma y orientación de la nube de datos. Dos variables fuertemente correlacionadas no aportan información independiente, y la distancia de Mahalanobis lo tiene en cuenta: no penaliza desplazamientos en direcciones que los datos recorren habitualmente.
 
-**Es independiente de la escala.** No requiere estandarizar previamente las variables. La multiplicación por $\boldsymbol{\Sigma}^{-1}$ incorpora automáticamente la variabilidad de cada variable, dándole a cada una un peso proporcional a su dispersión en los datos.
+**Es invariante a la escala.** No requiere estandarizar previamente las variables. La multiplicación por $\boldsymbol{S}^{-1}$ pondera automáticamente cada variable según su variabilidad, de modo que variables con rangos muy distintos contribuyen de forma equilibrada al cálculo.
 
-**Permite la detección de valores atípicos multivariados.** Observaciones alejadas de la estructura general de los datos presentan distancias de Mahalanobis elevadas respecto al centroide de su grupo. Esto la hace especialmente útil para identificar *outliers* en espacios multivariados.
+**Permite detectar valores atípicos multivariados.** Una observación puede ser perfectamente normal en cada variable por separado y, sin embargo, resultar atípica por la combinación inusual de sus valores. La distancia de Mahalanobis al centroide del grupo captura exactamente este tipo de anomalías, que la distancia euclídea y los métodos univariados no detectarían.
 
 ### Similaridad de coseno
 
