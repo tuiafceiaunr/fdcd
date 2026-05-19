@@ -61,7 +61,7 @@ donde:
 
 Se puede verificar fácilmente que cuando las cadenas no comparten prefijo ($l = 0$), la fórmula de Jaro-Winkler se reduce exactamente a la de Jaro.
 
-### Cálculo paso a paso de la similaridad de Jaro
+#### Cálculo paso a paso de la similaridad de Jaro
 
 Para entender cómo funciona el algoritmo, vamos a calcular la similaridad de Jaro entre las siguientes dos cadenas:
 
@@ -80,9 +80,10 @@ $$\big[\frac{max(|s_1|, |s_2|)}{2}\big] - 1 = 4 - 1 = 3$$
 Es decir, un carácter en la posición $k$ de $s_1$ puede coincidir con un carácter en $s_2$ siempre que este se encuentre en alguna posición entre $k-3$ y $k+3$.
 
 **Paso 2: identificar los caracteres coincidentes y calcular $m$**
+
 Alineamos las cadenas posición a posición para facilitar la visualización:
 
-<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em;">
+<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #e8e8e8;">
       <th style="border: 1px solid #ccc; padding: 8px 14px;">Pos.</th>
@@ -99,7 +100,7 @@ Alineamos las cadenas posición a posición para facilitar la visualización:
   </thead>
   <tbody>
     <tr>
-      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">$s_1$</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">s<sub>1</sub></td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">G</td>
@@ -111,7 +112,7 @@ Alineamos las cadenas posición a posición para facilitar la visualización:
       <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
     </tr>
     <tr>
-      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">$s_2$</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">s<sub>2</sub></td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">G</td>
@@ -151,7 +152,7 @@ Por lo tanto, $m = 7$.
 
 Para calcular las transposiciones, construimos una nueva tabla listando únicamente los caracteres coincidentes. Tanto para $s_1$ como para $s_2$ los tomamos en el orden en que aparecen en las cadenas originales:
 
-<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em;">
+<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em; margin-bottom: 20px;">
   <thead>
     <tr style="background-color: #e8e8e8;">
       <th style="border: 1px solid #ccc; padding: 8px 14px;">Par</th>
@@ -197,9 +198,18 @@ $$t = \frac{2}{2} = 1$$
 
 **Paso 4: calcular la similaridad de Jaro**
 
-...
+Con $m = 7$, $|s_1| = |s_2| = 9$ y $t = 1$:
 
-### Implementación en Python: librería rapidfuzz
+$$sim_J = \frac{1}{3}\big(\frac{7}{9} + \frac{7}{9} + \frac{7 - 1}{7}\big) \approx 0.8843$$
+
+#### Cálculo de la similaridad de Jaro-Winkler
+Ambas cadenas comparten el prefijo `ARGENT` (6 caracteres), pero Jaro-Winkler considera hasta un máximo de 4, por lo que $l = 4$. Con el valor estándar $p = 0.1$:
+
+$$sim_{JW} = 0.8843 + 4~0.1(1 − 0.8843) = 0.9306$$
+
+La coincidencia del prefijo `ARGE` tiene el efecto de aumentar la similaridad de 0.88 a 0.93.
+
+#### Implementación en Python: librería rapidfuzz
 `RapidFuzz` es una biblioteca de código abierto para *fuzzy string matching* y cálculo de métricas de similaridad entre cadenas. Está implementada principalmente en C++ con bindings para Python, lo que la hace muy eficiente incluso para colecciones grandes de cadenas.
 
 Para calcular las similaridades de Jaro y Jaro-Winkler importamos las clases correspondientes del módulo `rapidfuzz.distance`:
@@ -208,8 +218,50 @@ Para calcular las similaridades de Jaro y Jaro-Winkler importamos las clases cor
 from rapidfuzz.distance import Jaro, JaroWinkler
 ```
 
-Antes de 
+```{code-cell} python
+# Similaridad de Jaro (redondeada a 4 decimales)
+sim_j = round(Jaro.similarity('ARGENTINA', 'ARGENTEAN'), 4)
+print(sim_j)
+```
 
-**Ejemplo 1: ARGENTINA vs. ARGENTEAN**
+```{code-cell} python
+# Similaridad de Jaro-Winkler (redondeada a 4 decimales)
+sim_jw = round(JaroWinkler.similarity('ARGENTINA', 'ARGENTEAN'), 4)
+print(sim_jw)
+```
 
-Para analizar cómo e
+### Distancia de edición de Levenshtein
+
+Las **distancias de edición** cuantifican la disimilitud entre dos cadenas contando la menor cantidad de operaciones de edición necesarias para transformar una cadena en la otra. La más conocida es la **distancia de edición de Levenshtein**, que considera tres operaciones elementales sobre un único carácter:
+
+1. **Inserción** de un carácter.
+
+2. **Borrado** de un carácter.
+
+3. **Sustitución** de un carácter por otro.
+
+Cada operación tiene un costo unitario. La distancia de Levenshtein entre $s_1$ y $s_2$ es el mínimo número de estas operaciones necesarias para convertir $s_1$ en $s_2$.
+
+Por ejemplo, para transformar `"LEWENSTEIN"` en `"LEVENSHTEIN"` hacen falta 2 operaciones de edición: debe sustituirse la `W` por una `V` e insertarse una `H` entre `S` y `T`. Es fácil verificar que se requiere un misno número de operaciones de edición para pasar de `"LEVENSHTEIN"` a `"LEWENSTEIN"`.
+
+Podemos calcular este valor exacto con `rapidfuzz`:
+
+```python
+from rapidfuzz.distance import Levenshtein
+
+dist_lev = Levenshtein.distance('LEWENSTEIN', 'LEVENSHTEIN')
+print(dist_lev)
+```
+
+### Similaridad normalizada de Levenshtein
+
+La distancia de Levenshtein cruda depende de la longitud de las cadenas: no tiene el mismo significado una distancia de 3 entre cadenas de 5 caracteres que entre cadenas de 50. Para obtener un valor comparable entre pares de cadenas de distinta longitud, se define la **similaridad normalizada de Levenshtein**:
+
+$$sim_{lev}(s_1, s_2) = 1 - \frac{dist_{lev}(s_1, s_2)}{\max(|s_1|, |s_2|)}$$
+
+Se puede verificar que $0 \leq sim_{lev} \leq 1$. El valor 1 corresponde a cadenas idénticas (distancia 0) y el valor 0 a cadenas que requieren reescribirse por completo.
+
+```python
+sim_lev = round(Levenshtein.normalized_similarity('LEWENSTEIN', 'LEVENSHTEIN'), 4)
+print(sim_lev)
+```
