@@ -225,7 +225,7 @@ Alineamos las cadenas posición a posición para facilitar la visualización:
   </tbody>
 </table>
 
-Recorremos $s_1$ caracter por caracter y buscamos, dentro del umbral de 3 posiciones, si ese carácter aparece en $s_2$ (sin reutilizar caracteres ya emparejados):
+Recorremos $s_1$ caracter por caracter y buscamos, dentro del umbral de 4 posiciones, si ese carácter aparece en $s_2$ (sin reutilizar caracteres ya emparejados):
 
 - D (pos. 1): coincide con la D en pos. 1 de $s_2$ (distancia 0).
 
@@ -243,7 +243,7 @@ Recorremos $s_1$ caracter por caracter y buscamos, dentro del umbral de 3 posici
 
 - E (pos. 8): coincide con la E en pos. 7 de $s_2$ (distancia = 1). 
 
-- C (pos. 9): coincide con la C en pos. 9 de $s_2$ (distancia 0).
+- C (pos. 9): coincide con la C en pos. 8 de $s_2$ (distancia = 1), que está primera y todavía no fue usada.
 
 - A (pos. 10): coincide con la A en pos. 10 de $s_2$ (distancia 0). 
 
@@ -313,10 +313,6 @@ Ambas cadenas comparten el prefijo `DELLA` (5 caracteres), pero Jaro-Winkler con
 $$sim_{JW} = 0.9333 + 4~0.1(1 − 0.9333) = 0.9600$$
 
 **Verificación de los resultados obtenidos:**
-
-```{code-cell} python
-from rapidfuzz.distance import Jaro, JaroWinkler
-```
 
 ```{code-cell} python
 # Similaridad de Jaro (redondeada a 4 decimales)
@@ -400,7 +396,7 @@ Alineamos las cadenas posición a posición para facilitar la visualización:
   </tbody>
 </table>
 
-Recorremos $s_1$ caracter por caracter y buscamos, dentro del umbral de 3 posiciones, si ese carácter aparece en $s_2$ (sin reutilizar caracteres ya emparejados):
+Recorremos $s_1$ caracter por caracter y buscamos, dentro del umbral de 5 posiciones, si ese carácter aparece en $s_2$ (sin reutilizar caracteres ya emparejados):
 
 - C (pos. 1): coincide con la C en pos. 1 de $s_2$ (distancia 0).
 
@@ -410,7 +406,7 @@ Recorremos $s_1$ caracter por caracter y buscamos, dentro del umbral de 3 posici
 
 - D (pos. 4): coincide con la D en pos. 4 de $s_2$ (distancia 0). 
 
-- O (pos. 5): coincide con la 0 en pos. 5 de $s_2$ (distancia 0).
+- O (pos. 5): coincide con la primera O en pos. 2 de $s_2$ (distancia = 3).
 
 - B (pos. 6): coincide con la B en pos. 6 de $s_2$ (distancia 0).
 
@@ -451,9 +447,9 @@ Para calcular las transposiciones, construimos una nueva tabla listando únicame
     <tr>
       <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">Coincidentes en $s_1$</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">C</td>
-      <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
-      <td style="border: 1px solid #ccc; padding: 8px 14px;">D</td>
-      <td style="border: 1px solid #ccc; padding: 8px 14px;">O</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">R</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">D</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">O</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">B</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">_</td>
@@ -463,9 +459,9 @@ Para calcular las transposiciones, construimos una nueva tabla listando únicame
     <tr>
       <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">Coincidentes en $s_2$</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">C</td>
-      <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
-      <td style="border: 1px solid #ccc; padding: 8px 14px;">D</td>
-      <td style="border: 1px solid #ccc; padding: 8px 14px;">O</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">O</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">R</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">D</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">B</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
       <td style="border: 1px solid #ccc; padding: 8px 14px;">_</td>
@@ -475,27 +471,23 @@ Para calcular las transposiciones, construimos una nueva tabla listando únicame
   </tbody>
 </table>
 
-Todos los pares coinciden en posición.
+Como se observa, en los pares 2, 3 y 4 el carácter de $s_1$ y el de $s_2$ son distintos. Estos son los 3 caracteres transpuestos (resaltados en rojo). Según la definición de Jaro, $t$ es la mitad de ese conteo:  
 
-$$t = \frac{0}{2} = 0$$
+$$t = \frac{3}{2} = 1.5 \approx 1$$
 
 **Paso 4: calcular la similaridad de Jaro**
 
-Con $m = 9$, $|s_1| = 12$, $|s_2| = 12$ y $t = 0$:
+Con $m = 9$, $|s_1| = 12$, $|s_2| = 12$ y $t = 1$:
 
-$$sim_J = \frac{1}{3}\big(\frac{9}{12} + \frac{9}{12} + \frac{9}{9}\big) = 0.8333$$
+$$sim_J = \frac{1}{3}\big(\frac{9}{12} + \frac{9}{12} + \frac{9-1}{9}\big) = 0.7963$$
 
 **Cálculo de la similaridad de Jaro-Winkler**
 
 La única coincidencia al inicio de ambas cadenas está dada por la letra `C`. Con el valor estándar $p = 0.1$:
 
-$$sim_{JW} = 0.8333 + 0.1(1 − 0.8333) = 0.8500$$
+$$sim_{JW} = 0.7963 + 0.1(1 − 0.7963) = 0.8167$$
 
 **Verificación de los resultados obtenidos:**
-
-```{code-cell} python
-from rapidfuzz.distance import Jaro, JaroWinkler
-```
 
 ```{code-cell} python
 # Similaridad de Jaro (redondeada a 4 decimales)
@@ -509,18 +501,209 @@ sim_jw = round(JaroWinkler.similarity('CÓRDOBA 2568', 'CORDOBA 2478'), 4)
 print(sim_jw)
 ```
 
+#### SAN MARTÍN vs. ASNMARTÍN
 
+- $s_1$: `SAN MARTÍN`
 
-Para cada uno de los siguientes pares de cadenas, calcule la similaridad de Jaro y Jaro-Winkler y la distancia de Levenshtein. Realice primero el cálculo en forma manual y luego verifique los resultados obtenidos utilizando herramientas de la librería `rapidfuzz`.
+- $s_2$: `ASNMARTÍN`
 
-| **cadena 1** | **cadena 2** |
-| --- | --- |
-| Mariana | Merianna |
-| Della Ceca | Dellacecca |
-| Córdoba 2568 | Cordoba 2478 |
-| San Martín | AsnMartín |
+Las longitudes de estas cadenas son $|s_1| = 10$ y $|s_2| = 9$. 
 
-Analice por qué Jaro-Winkler da mayor similaridad que Jaro en ciertos pares y no en otros.
+**Paso 1: determinar el umbral de coincidencia**
+
+Dos caracteres se consideran coincidentes si son iguales y la distancia entre sus posiciones no supera:
+
+$$\big[\frac{max(|s_1|, |s_2|)}{2}\big] - 1 = 5 - 1 = 4$$
+
+**Paso 2: identificar los caracteres coincidentes y calcular $m$**
+
+Alineamos las cadenas posición a posición para facilitar la visualización:
+
+<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #e8e8e8;">
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">Pos.</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">1</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">2</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">3</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">4</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">5</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">6</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">7</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">8</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">9</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">10</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">s<sub>1</sub></td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">S</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">N</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">_</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">M</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">T</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">Í</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">N</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">s<sub>2</sub></td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">S</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">N</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">M</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">T</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">Í</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">N</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;"></td>
+    </tr>
+  </tbody>
+</table>
+
+Recorremos $s_1$ caracter por caracter y buscamos, dentro del umbral de 4 posiciones, si ese carácter aparece en $s_2$ (sin reutilizar caracteres ya emparejados):
+
+- S (pos. 1): coincide con la S en pos. 2 de $s_2$ (distancia = 1).
+
+- A (pos. 2): coincide con la A en pos. 1 de $s_2$ (distancia = 1).
+
+- N (pos. 3): coincide con la N en pos. 3 de $s_2$ (distancia 0).
+
+- _ (pos. 4): no hay ningún espacio (_) en $s_2$. 
+
+- M (pos. 5): coincide con la M en pos. 4 de $s_2$ (distancia = 1).
+
+- A (pos. 6): coincide con la A en pos. 5 de $s_2$ (distancia = 1).
+
+- R (pos. 7): coincide con la R en pos. 6 de $s_2$ (distancia = 1).
+
+- T (pos. 8): coincide con la T en pos. 7 de $s_2$ (distancia = 1).
+
+- Í (pos. 9): coincide con la Í en pos. 8 de $s_2$ (distancia = 1).
+
+- N (pos. 10): coincide con la N en pos. 9 de $s_2$ (distancia = 1).
+
+Por lo tanto, $m = 9$.
+
+**Paso 3: identificar las transposiciones y calcular $t$**
+
+Para calcular las transposiciones, construimos una nueva tabla listando únicamente los caracteres coincidentes. Tanto para $s_1$ como para $s_2$ los tomamos en el orden en que aparecen en las cadenas originales:
+
+<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em; margin-bottom: 20px;">
+  <thead>
+    <tr style="background-color: #e8e8e8;">
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">Par</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">1</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">2</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">3</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">4</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">5</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">6</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">7</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">8</th>
+      <th style="border: 1px solid #ccc; padding: 8px 14px;">9</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">Coincidentes en $s_1$</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">S</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">N</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">M</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">T</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">Í</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">N</td>
+    </tr>
+    <tr>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">Coincidentes en $s_2$</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">S</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">N</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">M</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">A</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">R</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">T</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">Í</td>
+      <td style="border: 1px solid #ccc; padding: 8px 14px;">N</td>
+    </tr>
+  </tbody>
+</table>
+
+Como se observa, en los primeros tres pares el carácter de $s_1$ y el de $s_2$ son distintos. Estos son los 3 caracteres transpuestos (resaltados en rojo). Según la definición de Jaro, $t$ es la mitad de ese conteo:  
+
+$$t = \frac{3}{2} = 1.5 \approx 1$$
+
+**Paso 4: calcular la similaridad de Jaro**
+
+Con $m = 9$, $|s_1| = 10$, $|s_2| = 9$ y $t = 1$:
+
+$$sim_J = \frac{1}{3}\big(\frac{9}{10} + \frac{9}{9} + \frac{9-1}{9}\big) = 0.9296$$
+
+**Cálculo de la similaridad de Jaro-Winkler**
+
+No hay ninguna coincidencia en el inicio de las dos cadenas, motivo por el cual la similaridad de Jaro-Winkler es igual a la de Jaro. 
+
+$$sim_{JW} = 0.9296$$
+
+**Verificación de los resultados obtenidos:**
+
+```{code-cell} python
+# Similaridad de Jaro (redondeada a 4 decimales)
+sim_j = round(Jaro.similarity('SAN MARTÍN', 'ASNMARTÍN'), 4)
+print(sim_j)
+```
+
+```{code-cell} python
+# Similaridad de Jaro-Winkler (redondeada a 4 decimales)
+sim_jw = round(JaroWinkler.similarity('SAN MARTÍN', 'ASNMARTÍN'), 4)
+print(sim_jw)
+```
+
+### Ejercicio N°2
+
+```{code-cell} python
+import pandas as pd
+
+# Base clientes
+clientes = pd.read_excel('clientes_base.xlsx')
+clientes.head()
+```
+
+```{code-cell} python
+# Base ventas
+ventas = pd.read_excel('ventas.xlsx')
+ventas.head()
+```
+
+**1. ¿Cuál fue el monto total de venta de productos *iPad* y *MacBook*?**
+
+Para responder a esta pregunta, utilizamos el dataset de ventas. Analizamos los productos vendidos:
+
+```{code-cell} python
+ventas['producto'].unique()
+```
+
+Vemos que hay varios tipos de *iPad* y también de *MacBook*. Para filtrar los registros que corresponden a estos productos, utilizamos el método `str.contains`:
+
+```{code-cell} python
+ventas_filtrado = ventas[ventas['producto'].str.contains('iPad|MacBook')]
+ventas_filtrado
+```
+
+Calculamos el monto total utilizando el método `sum`:
+
+```{code-cell} python
+monto_total = ventas_filtrado['precio_usd_producto'].sum()
+
+print(f'El monto total de venta de estos productos fue {monto_total} USD')
+```
 
 ### Ejercicio N°2
 
