@@ -14,7 +14,7 @@ kernelspec:
 ```{admonition} **Sobre esta sección**
 :class: important
 
-En esta sección pueden encontrar una *notebook* con código para realizar *fuzzy joins*, basado en el ejemplo que se presenta en las diapositivas.
+En esta sección pueden encontrar una *notebook* con código para realizar *fuzzy joins*, basado en el ejemplo que se presenta en los apuntes y en las diapositivas de clase.
 ```
 Supongamos que trabajamos en la Secretaría de Desarrollo Social de un municipio y necesitamos cruzar dos bases de datos: el padrón electoral, que contiene información de los vecinos registrados, y el registro de beneficiarios de un programa de subsidios. 
 
