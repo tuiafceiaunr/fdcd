@@ -1,1 +1,1 @@
-# Métodos Avanzados: medidas de similaridad y distancia - Práctica
+# Práctica - Medidas de similaridad y distancia

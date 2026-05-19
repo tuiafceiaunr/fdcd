@@ -355,7 +355,6 @@ display: none;
 <div id="métodos-avanzados-medidas-de-similaridad-y-distancia---resolución" class="section level1">
 <h1>Métodos Avanzados: medidas de similaridad y distancia -
 Resolución</h1>
-<p><code>{admonition} 📂 Descargar archivos   [Descargar los archivos para la práctica desde el Campus Virtual](https://campusv.fceia.unr.edu.ar/course/view.php?id=471)</code></p>
 <div id="ejercicio-n1" class="section level3">
 <h3>Ejercicio N°1</h3>
 <div id="mariana-vs.-merianna" class="section level4">
@@ -727,7 +726,8 @@ caracteres ya emparejados):</p>
 <li><p>_ (pos. 6): no hay ningún espacio en <span class="math inline">\(s_2\)</span>.</p></li>
 <li><p>C (pos. 7): coincide con la C en pos. 6 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
 <li><p>E (pos. 8): coincide con la E en pos. 7 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
-<li><p>C (pos. 9): coincide con la C en pos. 9 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
+<li><p>C (pos. 9): coincide con la C en pos. 8 de <span class="math inline">\(s_2\)</span> (distancia = 1), que está primera y
+todavía no fue usada.</p></li>
 <li><p>A (pos. 10): coincide con la A en pos. 10 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
 </ul>
 <p>Por lo tanto, <span class="math inline">\(m = 9\)</span>.</p>
@@ -849,7 +849,6 @@ pero Jaro-Winkler considera hasta un máximo de 4, por lo que <span class="math 
 <p><span class="math display">\[sim_{JW} = 0.9333 + 4~0.1(1 − 0.9333) =
 0.9600\]</span></p>
 <p><strong>Verificación de los resultados obtenidos:</strong></p>
-<p><code>{code-cell} python from rapidfuzz.distance import Jaro, JaroWinkler</code></p>
 <p><code>{code-cell} python # Similaridad de Jaro (redondeada a 4 decimales) sim_j = round(Jaro.similarity(&#39;DELLA CECA&#39;, &#39;DELLACECCA&#39;), 4) print(sim_j)</code></p>
 <p><code>{code-cell} python # Similaridad de Jaro-Winkler (redondeada a 4 decimales) sim_jw = round(JaroWinkler.similarity(&#39;DELLA CECA&#39;, &#39;DELLACECCA&#39;), 4) print(sim_jw)</code></p>
 </div>
@@ -1010,7 +1009,7 @@ caracteres ya emparejados):</p>
 <li><p>Ó (pos. 2): no hay ninguna Ó (con tilde) en <span class="math inline">\(s_2\)</span>.</p></li>
 <li><p>R (pos. 3): coincide con la R en pos. 3 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
 <li><p>D (pos. 4): coincide con la D en pos. 4 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
-<li><p>O (pos. 5): coincide con la 0 en pos. 5 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
+<li><p>O (pos. 5): coincide con la primera O en pos. 2 de <span class="math inline">\(s_2\)</span> (distancia = 3).</p></li>
 <li><p>B (pos. 6): coincide con la B en pos. 6 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
 <li><p>A (pos. 7): coincide con la A en pos. 7 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
 <li><p>_ (pos. 8): coincide con el espacio en pos. 8 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
@@ -1067,13 +1066,13 @@ Coincidentes en <span class="math inline">\(s_1\)</span>
 <td style="border: 1px solid #ccc; padding: 8px 14px;">
 C
 </td>
-<td style="border: 1px solid #ccc; padding: 8px 14px;">
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
 R
 </td>
-<td style="border: 1px solid #ccc; padding: 8px 14px;">
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
 D
 </td>
-<td style="border: 1px solid #ccc; padding: 8px 14px;">
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
 O
 </td>
 <td style="border: 1px solid #ccc; padding: 8px 14px;">
@@ -1099,14 +1098,14 @@ Coincidentes en <span class="math inline">\(s_2\)</span>
 <td style="border: 1px solid #ccc; padding: 8px 14px;">
 C
 </td>
-<td style="border: 1px solid #ccc; padding: 8px 14px;">
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
+O
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
 R
 </td>
-<td style="border: 1px solid #ccc; padding: 8px 14px;">
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
 D
-</td>
-<td style="border: 1px solid #ccc; padding: 8px 14px;">
-O
 </td>
 <td style="border: 1px solid #ccc; padding: 8px 14px;">
 B
@@ -1126,19 +1125,293 @@ _
 </tr>
 </tbody>
 </table>
-<p>Todos los pares coinciden en posición.</p>
-<p><span class="math display">\[t = \frac{0}{2} = 0\]</span></p>
+<p>Como se observa, en los pares 2, 3 y 4 el carácter de <span class="math inline">\(s_1\)</span> y el de <span class="math inline">\(s_2\)</span> son distintos. Estos son los 3
+caracteres transpuestos (resaltados en rojo). Según la definición de
+Jaro, <span class="math inline">\(t\)</span> es la mitad de ese
+conteo:</p>
+<p><span class="math display">\[t = \frac{3}{2} = 1.5 \approx
+1\]</span></p>
 <p><strong>Paso 4: calcular la similaridad de Jaro</strong></p>
-<p>Con <span class="math inline">\(m = 9\)</span>, <span class="math inline">\(|s_1| = 12\)</span>, <span class="math inline">\(|s_2| = 12\)</span> y <span class="math inline">\(t = 0\)</span>:</p>
+<p>Con <span class="math inline">\(m = 9\)</span>, <span class="math inline">\(|s_1| = 12\)</span>, <span class="math inline">\(|s_2| = 12\)</span> y <span class="math inline">\(t = 1\)</span>:</p>
 <p><span class="math display">\[sim_J = \frac{1}{3}\big(\frac{9}{12} +
-\frac{9}{12} + \frac{9}{9}\big) = 0.8333\]</span></p>
+\frac{9}{12} + \frac{9-1}{9}\big) = 0.7963\]</span></p>
 <p><strong>Cálculo de la similaridad de Jaro-Winkler</strong></p>
 <p>La única coincidencia al inicio de ambas cadenas está dada por la
 letra <code>C</code>. Con el valor estándar <span class="math inline">\(p = 0.1\)</span>:</p>
-<p><span class="math display">\[sim_{JW} = 0.8333 + 0.1(1 − 0.8333) =
-0.8500\]</span></p>
+<p><span class="math display">\[sim_{JW} = 0.7963 + 0.1(1 − 0.7963) =
+0.8167\]</span></p>
 <p><strong>Verificación de los resultados obtenidos:</strong></p>
-<p><code>{code-cell} python from rapidfuzz.distance import Jaro, JaroWinkler</code></p>
+<p><code>{code-cell} python # Similaridad de Jaro (redondeada a 4 decimales) sim_j = round(Jaro.similarity(&#39;CÓRDOBA 2568&#39;, &#39;CORDOBA 2478&#39;), 4) print(sim_j)</code></p>
+<p><code>{code-cell} python # Similaridad de Jaro-Winkler (redondeada a 4 decimales) sim_jw = round(JaroWinkler.similarity(&#39;CÓRDOBA 2568&#39;, &#39;CORDOBA 2478&#39;), 4) print(sim_jw)</code></p>
+</div>
+<div id="san-martín-vs.-asnmartín" class="section level4">
+<h4>SAN MARTÍN vs. ASNMARTÍN</h4>
+<ul>
+<li><p><span class="math inline">\(s_1\)</span>:
+<code>SAN MARTÍN</code></p></li>
+<li><p><span class="math inline">\(s_2\)</span>:
+<code>ASNMARTÍN</code></p></li>
+</ul>
+<p>Las longitudes de estas cadenas son <span class="math inline">\(|s_1|
+= 10\)</span> y <span class="math inline">\(|s_2| = 9\)</span>.</p>
+<p><strong>Paso 1: determinar el umbral de coincidencia</strong></p>
+<p>Dos caracteres se consideran coincidentes si son iguales y la
+distancia entre sus posiciones no supera:</p>
+<p><span class="math display">\[\big[\frac{max(|s_1|, |s_2|)}{2}\big] -
+1 = 5 - 1 = 4\]</span></p>
+<p><strong>Paso 2: identificar los caracteres coincidentes y calcular
+<span class="math inline">\(m\)</span></strong></p>
+<p>Alineamos las cadenas posición a posición para facilitar la
+visualización:</p>
+<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em; margin-bottom: 20px;">
+<thead>
+<tr style="background-color: #e8e8e8;">
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+Pos.
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+1
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+2
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+3
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+4
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+5
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+6
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+7
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+8
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+9
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+10
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">
+s<sub>1</sub>
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+S
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+N
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+_
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+M
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+R
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+T
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+Í
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+N
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">
+s<sub>2</sub>
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+S
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+N
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+M
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+R
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+T
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+Í
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+N
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+</td>
+</tr>
+</tbody>
+</table>
+<p>Recorremos <span class="math inline">\(s_1\)</span> caracter por
+caracter y buscamos, dentro del umbral de 4 posiciones, si ese carácter
+aparece en <span class="math inline">\(s_2\)</span> (sin reutilizar
+caracteres ya emparejados):</p>
+<ul>
+<li><p>S (pos. 1): coincide con la S en pos. 2 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+<li><p>A (pos. 2): coincide con la A en pos. 1 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+<li><p>N (pos. 3): coincide con la N en pos. 3 de <span class="math inline">\(s_2\)</span> (distancia 0).</p></li>
+<li><p>_ (pos. 4): no hay ningún espacio (_) en <span class="math inline">\(s_2\)</span>.</p></li>
+<li><p>M (pos. 5): coincide con la M en pos. 4 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+<li><p>A (pos. 6): coincide con la A en pos. 5 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+<li><p>R (pos. 7): coincide con la R en pos. 6 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+<li><p>T (pos. 8): coincide con la T en pos. 7 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+<li><p>Í (pos. 9): coincide con la Í en pos. 8 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+<li><p>N (pos. 10): coincide con la N en pos. 9 de <span class="math inline">\(s_2\)</span> (distancia = 1).</p></li>
+</ul>
+<p>Por lo tanto, <span class="math inline">\(m = 9\)</span>.</p>
+<p><strong>Paso 3: identificar las transposiciones y calcular <span class="math inline">\(t\)</span></strong></p>
+<p>Para calcular las transposiciones, construimos una nueva tabla
+listando únicamente los caracteres coincidentes. Tanto para <span class="math inline">\(s_1\)</span> como para <span class="math inline">\(s_2\)</span> los tomamos en el orden en que
+aparecen en las cadenas originales:</p>
+<table style="border-collapse: collapse; text-align: center; font-family: monospace; font-size: 1em; margin-bottom: 20px;">
+<thead>
+<tr style="background-color: #e8e8e8;">
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+Par
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+1
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+2
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+3
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+4
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+5
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+6
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+7
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+8
+</th>
+<th style="border: 1px solid #ccc; padding: 8px 14px;">
+9
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">
+Coincidentes en <span class="math inline">\(s_1\)</span>
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
+S
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
+N
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+M
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+R
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+T
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+Í
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+N
+</td>
+</tr>
+<tr>
+<td style="border: 1px solid #ccc; padding: 8px 14px; font-weight: bold;">
+Coincidentes en <span class="math inline">\(s_2\)</span>
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
+S
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px; background-color: #ffd6d6;">
+N
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+M
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+A
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+R
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+T
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+Í
+</td>
+<td style="border: 1px solid #ccc; padding: 8px 14px;">
+N
+</td>
+</tr>
+</tbody>
+</table>
+<p>Como se observa, en los pares 2, 3 y 4 el carácter de <span class="math inline">\(s_1\)</span> y el de <span class="math inline">\(s_2\)</span> son distintos. Estos son los 3
+caracteres transpuestos (resaltados en rojo). Según la definición de
+Jaro, <span class="math inline">\(t\)</span> es la mitad de ese
+conteo:</p>
+<p><span class="math display">\[t = \frac{3}{2} = 1.5 \approx
+1\]</span></p>
+<p><strong>Paso 4: calcular la similaridad de Jaro</strong></p>
+<p>Con <span class="math inline">\(m = 9\)</span>, <span class="math inline">\(|s_1| = 12\)</span>, <span class="math inline">\(|s_2| = 12\)</span> y <span class="math inline">\(t = 1\)</span>:</p>
+<p><span class="math display">\[sim_J = \frac{1}{3}\big(\frac{9}{12} +
+\frac{9}{12} + \frac{9-1}{9}\big) = 0.7963\]</span></p>
+<p><strong>Cálculo de la similaridad de Jaro-Winkler</strong></p>
+<p>La única coincidencia al inicio de ambas cadenas está dada por la
+letra <code>C</code>. Con el valor estándar <span class="math inline">\(p = 0.1\)</span>:</p>
+<p><span class="math display">\[sim_{JW} = 0.7963 + 0.1(1 − 0.7963) =
+0.8167\]</span></p>
+<p><strong>Verificación de los resultados obtenidos:</strong></p>
 <p><code>{code-cell} python # Similaridad de Jaro (redondeada a 4 decimales) sim_j = round(Jaro.similarity(&#39;CÓRDOBA 2568&#39;, &#39;CORDOBA 2478&#39;), 4) print(sim_j)</code></p>
 <p><code>{code-cell} python # Similaridad de Jaro-Winkler (redondeada a 4 decimales) sim_jw = round(JaroWinkler.similarity(&#39;CÓRDOBA 2568&#39;, &#39;CORDOBA 2478&#39;), 4) print(sim_jw)</code></p>
 <p>Para cada uno de los siguientes pares de cadenas, calcule la

@@ -78,8 +78,8 @@ parts:
       - file: unidades/metodos-avanzados/metodos-avanzados-practica.md
         sections:
           - file: unidades/metodos-avanzados/metodos-avanzados-practica-consignas.md
-            title: Práctica - Métodos avanzados
+            title: Ejercicios de aplicación
           - file: unidades/metodos-avanzados/metodos-avanzados-practica-resolucion.md
-            title: Resolución Práctica - Métodos avanzados
+            title: Soluciones
         
 
