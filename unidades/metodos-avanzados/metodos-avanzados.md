@@ -285,6 +285,8 @@ Ambas bases fueron cargadas de forma independiente y los nombres no siempre coin
 **`df_padron`**: contiene el registro oficial de vecinos del municipio.
 
 ```{code-cell} python
+import pandas as pd
+
 df_padron = pd.DataFrame({'Nombre': ['María González', 'Carlos Alberto Rodríguez', 'Luisa Fernanda Martínez', 'Roberto Sánchez', 'Ana Laura Pérez'],
     'DNI': [28456123, 31782456, 25963147, 33841290, 29571834],
     'Localidad': ['Rosario', 'Rosario', 'Villa Gobernador Gálvez', 'Rosario', 'Funes']})
@@ -328,8 +330,7 @@ Esta función realiza una comparación robusta en cuatro pasos:
 :class: tip
 
 Para ver una resolución completa y paso a paso de fuzzy joins, consultá [este ejemplo](ejemplos-apoyo.md), incluido dentro de este mismo apartado.
-
----
+```
 
 ## Distancias entre datos numéricos
 
@@ -359,4 +360,320 @@ $$d_E(\mathbf{i}, \mathbf{j}) = \sqrt{(x_{1i} - x_{1j})^2 + (x_{2i} - x_{2j})^2 
 
 **Sensibilidad a la escala.** La distancia euclídea es sensible a las unidades de medida de cada variable. Si las variables tienen rangos muy diferentes, las de mayor rango dominarán el cálculo, opacando la contribución de las demás. Cuando las variables no están en la misma escala, conviene **normalizar o estandarizar** los datos previamente antes de calcular distancias euclídeas.
 ```
+
+#### Ejemplo: cálculo de una matriz de distancias con `scipy`
+
+
+
+```python
+import pandas as pd
+
+df = pd.DataFrame({
+    'id': ['A', 'B', 'C', 'D', 'E'],
+    'x1': [2.0, 2.5, 3.0, 7.5, 8.0],
+    'x2': [3.0, 3.5, 3.2, 7.0, 7.8],
+    'x3': [1.0, 1.2, 0.8, 6.5, 7.0]
+})
+
+print(df)
+```
+
+Antes de calcular distancias, verificamos si las variables están en escalas comparables:
+
+```python
+print(df.describe())
+```
+
+En este caso las tres variables presentan rangos similares, por lo que no es necesario estandarizar previamente.
+
+La librería **SciPy** ofrece herramientas eficientes para calcular matrices de distancias. Usaremos dos funciones del módulo `scipy.spatial.distance`:
+
+- **`pdist()`** (*pairwise distances*): calcula todas las distancias por pares entre las filas de un DataFrame o matriz. Para $n$ observaciones, devuelve un vector compacto con las $\frac{n(n-1)}{2}$ distancias únicas.
+
+- **`squareform()`**: convierte ese vector en una matriz cuadrada simétrica de $n \times n$.
+
+```python
+from scipy.spatial.distance import pdist, squareform
+
+# Matriz de distancias euclídeas
+dist_eucl = pd.DataFrame(
+    squareform(pdist(df[['x1', 'x2', 'x3']], metric = 'euclidean')),
+    index = df['id'],
+    columns = df['id']
+)
+
+print(dist_eucl.round(3))
+```
+
+Podemos visualizar la matriz de distancias con un mapa de calor:
+
+```python
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_theme(style='ticks')
+
+ax = sns.heatmap(dist_eucl, annot = True, cmap = 'YlOrRd', vmin = 0, vmax = 10,
+                 linewidths = 0.8, annot_kws = {"fontsize": 12},
+                 cbar_kws = dict(label = 'Distancia euclídea'))
+plt.xticks(rotation = 45)
+plt.tight_layout()
+plt.show()
+```
+
+El mapa de calor revela la estructura de los datos: las observaciones A, B y C son muy similares entre sí (celdas claras), igual que D y E; pero la distancia entre cualquier elemento del primer grupo y cualquier elemento del segundo es considerablemente mayor (celdas oscuras).
+
+### Distancia Manhattan
+
+También llamada **City-Block** o **Taxicab**, la **distancia Manhattan** mide la distancia entre dos puntos considerando que sólo se puede avanzar en líneas rectas horizontales o verticales, como si uno se desplazara por las calles de una ciudad en cuadrícula. Para dos observaciones con $p$ atributos:
+
+$$d_{MHT}(
+\mathbf{i}, \mathbf{j}) = |x_{1i} - x_{1j}| + |x_{2i} - x_{2j}| + \cdots + |x_{pi} - x_{pj}|}$$
+
+```python
+# Matriz de distancias Manhattan
+dist_manh = pd.DataFrame(
+    squareform(pdist(df[['x1', 'x2', 'x3']], metric='cityblock')),
+    index=df['id'],
+    columns=df['id']
+)
+
+print(dist_manh.round(3))
+```
+
+**¿Cuándo preferir Manhattan sobre Euclídea?**
+
+- En espacios de alta dimensionalidad, la distancia Manhattan puede comportarse mejor que la euclídea. La euclídea tiende a perder capacidad discriminatoria a medida que aumenta el número de dimensiones, un fenómeno conocido como la *maldición de la dimensionalidad* (*curse of dimensionality*).
+
+- La distancia Manhattan es preferible cuando los datos se organizan de forma natural en cuadrícula y el movimiento diagonal no tiene sentido.
+
+- Es más adecuada cuando los atributos contribuyen de manera aditiva e independiente, ya que mide el desplazamiento total coordenada por coordenada.
+
+### Distancia de Mahalanobis
+
+La **distancia de Mahalanobis** fue propuesta por Prasanta Chandra Mahalanobis en 1936. A diferencia de las distancias euclídea y Manhattan, no trata a todas las direcciones del espacio por igual: incorpora la **estructura de variabilidad y correlación de los datos** para ajustar las distancias de acuerdo a la forma de la nube de puntos.
+
+#### Formulación
+
+La distancia euclídea puede escribirse en forma matricial como:
+
+$$d_E(\mathbf{r}_1, \mathbf{r}_2) = \sqrt{(\mathbf{r}_1 - \mathbf{r}_2)^T \, \mathbf{I} \, (\mathbf{r}_1 - \mathbf{r}_2)}$$
+
+donde $\mathbf{I}$ es la matriz identidad (que trata todas las direcciones por igual). La distancia de Mahalanobis reemplaza $\mathbf{I}$ por la inversa de la matriz de covarianza $\boldsymbol{\Sigma}$:
+
+$$d_M(\mathbf{r}_1, \mathbf{r}_2) = \sqrt{(\mathbf{r}_1 - \mathbf{r}_2)^T \, \boldsymbol{\Sigma}^{-1} \, (\mathbf{r}_1 - \mathbf{r}_2)}$$
+
+Al incorporar $\boldsymbol{\Sigma}^{-1}$, la distancia se ajusta automáticamente por la variabilidad de cada variable y la correlación entre ellas: **las direcciones de mayor variabilidad en los datos "pesan menos"** (son más accesibles), y **las direcciones poco compatibles con la nube "pesan más"** (son más costosas).
+
+#### Ejemplo con el dataset Iris
+
+Usaremos el clásico dataset Iris para un caso más concreto. 
+
+```{code-cell} python
+iris = sns.load_dataset('iris')
+iris.head()
+```
+
+Para simplificar visualización y cálculo, consideraremos sólo dos variables: `sepal_length` y `sepal_width`.
+
+```{figure} imagenes/iris.svg
+---
+width: 70%
+align: center
+---
+```
+
+Dado un nuevo punto con `sepal_length = 7` y `petal_length = 5`, queremos determinar a qué especie pertenece.
+
+```{code-cell} python
+:tags: [hide-input]
+# Nuevo punto
+nuevo_punto = np.array([7, 5])
+punto = pd.DataFrame({'sepal_length': [7],
+                      'petal_length': [5]})
+
+# Scatter de Iris
+plt.figure(figsize = (8,5))
+sns.scatterplot(x = 'sepal_length', y = 'petal_length', s = 125, 
+data = iris, hue = 'species', edgecolor = None)
+
+# Agregar el nuevo punto como 'X' negro
+sns.scatterplot(x = 'sepal_length', y = 'petal_length', data = punto, color = 'black', marker = 'X', s = 400, label='nueva planta', edgecolor = None)
+
+plt.xlabel("Sepal Length", fontsize = 20, fontweight = "bold")
+plt.ylabel("Petal Length", fontsize = 20, fontweight = "bold")
+plt.xticks(fontsize = 15)
+plt.yticks(fontsize = 15)
+plt.legend(fontsize=18)
+plt.show()
+```
+
+Intuitivamente, es probable que, a pesar de que esté más próximo desde el punto de vista euclídeo de muchos puntos correspondientes a la especie *virginica*, pensemos que lo más lógico sería clasificarla como *versicolor*, ya que de alguna manera se encuentra dentro de la disposición de puntos de esta especie.
+
+
+```python
+iris = sns.load_dataset('iris')
+nuevo_punto = np.array([7, 5])
+vars_sel = ['sepal_length', 'petal_length']
+
+dist_centroid = []
+
+for especie, grupo in iris.groupby('species'):
+    # Centroide de la especie
+    centroide = grupo[vars_sel].mean().values
+    
+    # Matriz de covarianza de la especie y su inversa
+    cov_matrix = np.cov(grupo[vars_sel].T)
+    inv_cov = np.linalg.inv(cov_matrix)
+    
+    # Distancia de Mahalanobis al centroide
+    d = mahalanobis(nuevo_punto, centroide, inv_cov)
+    dist_centroid.append({'species': especie, 'dist_mahal': d})
+
+dist_centroid_df = pd.DataFrame(dist_centroid)
+print(dist_centroid_df.round(3))
+```
+
+La nueva planta se clasificaría como **versicolor**, por ser la especie cuyo centroide presenta la menor distancia de Mahalanobis al nuevo punto.
+
+#### Ventajas de la distancia de Mahalanobis
+
+**Considera la correlación.** Incorpora la estructura de covarianza entre variables, ajustando las distancias según la forma y orientación de la nube de datos. Dos variables muy correlacionadas no aportan información independiente; la distancia de Mahalanobis lo tiene en cuenta.
+
+**Es independiente de la escala.** No requiere estandarizar previamente las variables. La multiplicación por $\boldsymbol{\Sigma}^{-1}$ incorpora automáticamente la variabilidad de cada variable, dándole a cada una un peso proporcional a su dispersión en los datos.
+
+**Permite la detección de valores atípicos multivariados.** Observaciones alejadas de la estructura general de los datos presentan distancias de Mahalanobis elevadas respecto al centroide de su grupo. Esto la hace especialmente útil para identificar *outliers* en espacios multivariados.
+
+### Similaridad de coseno
+
+#### Representación vectorial de documentos: Bag of Words
+
+Para poder comparar documentos de texto de forma cuantitativa, primero necesitamos representarlos numéricamente. El modelo **Bag of Words** (BoW) es la representación más simple: cada documento se convierte en un vector donde cada dimensión corresponde a una palabra del vocabulario y su valor indica cuántas veces aparece esa palabra en el documento (frecuencia de término o *term frequency*).
+
+**Ejemplo:**
+
+| | "ciencia" | "datos" | "modelo" | "error" |
+|---|---|---|---|---|
+| doc1 | 2 | 3 | 1 | 0 |
+| doc2 | 1 | 2 | 0 | 4 |
+| doc3 | 2 | 3 | 1 | 0 |
+
+A partir de la información de la tabla anterior, sabemos, por ejemplo, que en el documento 1 (`doc1`), la palabra "ciencia" aparece 2 veces, "datos" 3 y "modelo", 1.
+
+En la práctica, el vocabulario puede tener miles o decenas de miles de palabras, por lo que estos vectores suelen ser muy largos y con muchos ceros (vectores *sparse* o dispersos).
+
+### ¿Por qué no usar la distancia euclídea para comparar documentos?
+
+Dado que estamos representando cada document mediante un vector, nos puede nacer calcular la similaridad entre documentos calculando la distancia euclídea entre ellos, y concluir que dos documentos son similares en cuanto a temática si su distancia euclídea es pequeña. ¿Cuál es el inconveniente? Mostraremos esto a continuación
+
+Consideremos tres documentos representados con BoW:
+
+| | "modelo" | "embeddings" |
+|---|---|---|
+| doc1 | 10 | 2 |
+| doc2 | 150 | 7 |
+| doc3 | 2 | 18 |
+
+Los documentos `doc1` y `doc2` hablan principalmente de "modelo" (la misma temática), pero `doc2` es mucho más largo (lo notamos en la frecuencia de términos). La distancia euclídea entre `doc1` y `doc2` será grande por esa diferencia de magnitud, aunque las proporciones en que aparecen los términos son similares. En cambio, `doc3` habla principalmente de "embeddings" y es temáticamente diferente de los otros dos, pero su cercanía al origen puede hacerlo parecer similar a `doc1` según la distancia euclídea.
+
+La raíz del problema es que la distancia euclídea es sensible a la **longitud del documento**: documentos más largos tienen vectores de mayor magnitud, lo que distorsiona la comparación temática.
+
+<br>
+
+La **similaridad de coseno** resuelve este problema: en lugar de medir la distancia entre los extremos de los vectores, mide el **ángulo entre ellos**. Dos vectores que apuntan en la misma dirección —independientemente de su magnitud— tienen ángulo cero y similaridad coseno máxima.
+
+```{figure} imagenes/cosine.png
+---
+width: 70%
+align: center
+---
+Dos vectores $\mathbf{i}$ y $\mathbf{j}$ en un espacio bidimensional forman un ángulo $\theta$ entre ellos. La similaridad de coseno es el coseno de dicho ángulo.
+```
+
+Para dos vectores $\mathbf{i}$ y $\mathbf{j}$:
+
+$$sim_{COS}(\mathbf{i}, \mathbf{j}) = \frac{\mathbf{i} \cdot \mathbf{j}}{\lVert \mathbf{i} \rVert \, \lVert \mathbf{j} \rVert}$$
+
+donde $\lVert \mathbf{w} \rVert = \sqrt{w_1^2 + w_2^2 + \cdots + w_p^2}$ es la **norma euclídea** del vector $\mathbf{w}$.
+
+El cociente divide el producto punto por el producto de las normas, lo que equivale a **normalizar ambos vectores** antes de compararlos. Por eso el resultado no depende de la magnitud (longitud) de los vectores.
+
+**Interpretación:**
+
+- Si $sim_{COS} = 1$: los vectores apuntan en exactamente la misma dirección. Los documentos son temáticamente muy similares.
+
+- Si $sim_{COS} = 0$: los vectores son ortogonales. Los documentos no comparten ningún término en común.
+
+```{admonition} Similaridad de coseno entre 0 y 1
+:class: tip
+
+En el contexto de vectores de frecuencias de términos, todos los valores son no negativos, por lo que $sim_{COS} \in [0, 1]$. En otros contextos donde los vectores pueden tener valores negativos (por ejemplo, embeddings de palabras o representaciones TF-IDF centradas), la similaridad puede tomar valores en $[-1, 1]$.
+```
+
+#### Implementación en Python
+
+La función `cosine()` de `scipy.spatial.distance` calcula la **distancia coseno**, que se define como $1 - sim_{COS}$. Para obtener la similaridad debemos restarla a 1.
+
+**Ejemplo 1: comparación de los tres documentos**
+
+```{code-cell} python
+from scipy.spatial.distance import cosine
+
+doc1 = [10, 2]
+doc2 = [150, 7]
+doc3 = [2, 18]
+
+print("Similaridades de coseno:")
+print("sim(doc1, doc2):", round(1 - cosine(doc1, doc2), 3))
+print("sim(doc1, doc3):", round(1 - cosine(doc1, doc3), 3))
+print("sim(doc2, doc3):", round(1 - cosine(doc2, doc3), 3))
+```
+
+La similaridad de coseno entre `doc1` y `doc2` resulta alta (ambos hablan principalmente de "modelo" en proporciones similares), aunque sus longitudes son muy distintas. La similaridad entre `doc1` y `doc3` es baja, reflejando que tratan temáticas diferentes.
+
+Comparemos este resultado con la distancia euclídea entre los mismos documentos:
+
+```{code-cell} python
+documentos = pd.DataFrame({
+    'id': ['doc1', 'doc2', 'doc3'],
+    'modelo': [10, 150, 2],
+    'embed': [2, 7, 18]
+})
+
+dist_eucl_docs = pd.DataFrame(
+    squareform(pdist(documentos[['modelo', 'embed']], metric = 'euclidean')),
+    index = documentos['id'],
+    columns = documentos['id']
+)
+
+print("Distancias euclídeas:")
+print(dist_eucl_docs.round(3))
+```
+
+La distancia euclídea entre `doc1` y `doc2` es enorme (por diferencia de longitud), y entre `doc1` y `doc3` es pequeña (ambos tienen vectores de magnitud similar). Este resultado es contrario a la interpretación temática: la similiaridad de coseno es mucho más adecuada para comparar documentos.
+
+**Ejemplo 2: cálculo manual (Han, Kamber & Pei, 2012)**
+
+Se cuenta con 5 documentos con los siguientes vectores de frecuencias de términos:
+
+```{figure} imagenes/tabla-cosine.png
+---
+width: 70%
+align: center
+---
+```
+
+Supongamos que $\mathbf{d_1}$ y $\mathbf{d_2}$ son vectores de frecuencia de términos para los dos primeros documentos sobre un vocabulario de 10 palabras:
+
+```python
+d1 = [5, 0, 3, 0, 2, 0, 0, 2, 0, 0]
+d2 = [3, 0, 2, 0, 1, 1, 0, 1, 0, 1]
+
+cos_sim = 1 - cosine(d1, d2)
+print("Similaridad coseno entre i y j:", round(cos_sim, 3))
+```
+
+El valor obtenido es cercano a 1, lo que indica que estos dos documentos son muy similares en composición temática: comparten la mayoría de los términos relevantes (los no nulos coinciden en gran medida).
+
 
