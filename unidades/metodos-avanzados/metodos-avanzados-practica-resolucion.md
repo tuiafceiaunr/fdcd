@@ -672,13 +672,13 @@ print(sim_jw)
 import pandas as pd
 
 # Base clientes
-clientes = pd.read_excel('clientes_base.xlsx')
+clientes = pd.read_excel('datasets/clientes_base.xlsx')
 clientes.head()
 ```
 
 ```{code-cell} python
 # Base ventas
-ventas = pd.read_excel('ventas.xlsx')
+ventas = pd.read_excel('datasets/ventas.xlsx')
 ventas.head()
 ```
 
@@ -700,22 +700,97 @@ ventas_filtrado
 Calculamos el monto total utilizando el método `sum`:
 
 ```{code-cell} python
-monto_total = ventas_filtrado['precio_usd_producto'].sum()
+monto_total = ventas_filtrado['monto_usd'].sum()
 
 print(f'El monto total de venta de estos productos fue {monto_total} USD')
 ```
 
-### Ejercicio N°2
+**2. Realice la unión de ambos DataFrames con `nombre_cliente` como *key* utilizando el *join* que permita que se conserve todos los registros de las ventas. ¿Cuántos registros del DataFrame resultante presentan valores faltantes en las columnas provenientes de `clientes_base`? ¿A qué atribuye ese resultado?**
 
-El dataset `ventas.xlsx` contiene los registros de una serie de ventas realizadas en el último tiempo en un local de productos electrónicos. Por otra parte, cuenta con el dataset `clientes_base.xlsx`, el cual contiene información sobre los clientes registrados en dicho establecimiento. 
+Hacemos una operación *merge* considerando a la columna `nombre_cliente` como *key* y seteando el parámetro `how = 'left'` para que el DataFrame resultante conserve todos los registros de las ventas:
 
-1. ¿Cuál fue el monto total de venta de productos *iPad* y *MacBook*?
+```{code-cell} python
+df = pd.merge(ventas, clientes, on = 'nombre_cliente', how = 'left')
+df.info()
+```
 
-2. Realice la unión de ambos DataFrames utilizando la operación que considere más adecuada y la columna `nombre_cliente` como *key*. ¿Qué observa en el DataFrame resultante?
+Observamos que en cada una de las columnas que provienen del DataFrame `clientes` (`ciudad`, `email` y `fecha_registro`) hay un total de 6 valores faltantes. Exploramos la tabla resultante para encontrar una posible causa:
 
-3. Considerando que en `clientes_base.xlsx` los nombres de los clientes se encuentran exentos de errores ortográficos y tipográficos, ¿en qué porcentaje de los registros que conforman el dataset `ventas.xlsx` el nombre del cliente coincide con el de un cliente registrado?
+```{code-cell} python
+# Ordenamos df según nombre del cliente
+df.sort_values('nombre_cliente')
+```
 
-4. Teniendo en cuenta lo observado en los ítems anteriores, utilice herramientas de *fuzzy joins* para realizar la unión de ambos datasets. ¿De qué ciudad es el cliente que más compras realizó en el local?
+Vemos que hay clientes con nombres muy similares a otros que aparecen en la base de clientes, pero que se diferencian por alguna cuestión tipográfica, como por ejemplo, la falta de alguna tilde o algún caracter.
+
+**3. Considerando que en `clientes_base.xlsx` los nombres de los clientes se encuentran exentos de errores ortográficos y tipográficos, ¿en qué porcentaje de los registros que conforman el dataset `ventas.xlsx` el nombre del cliente coincide con el de un cliente registrado?**
+
+```{code-cell} python
+# Serie de Pandas con valores booleanos
+coincidencias = ventas['nombre_cliente'].isin(clientes['nombre_cliente'].unique())
+
+# Total de registros coincidentes en el nombre
+total_coincidencias = coincidencias.sum()
+
+# Calculamos porcentaje sobre el número de registros de ventas
+porcentaje = total_coincidencias*100/len(ventas)
+
+print(f'En el {porcentaje} % de los registros de ventas coincide el nombre del cliente con el de un cliente registrado')
+```
+
+**4. Teniendo en cuenta lo observado en los ítems anteriores, utilice herramientas de *fuzzy joins* para realizar la unión de ambos datasets. ¿De qué ciudad es el cliente que más compras realizó en el local?**
+
+Tomamos como referencia el código proporcionado en la sección de [Ejemplos teórico-prácticos de apoyo](ejemplos-apoyo.md), incluida dentro de este mismo apartado.
+
+```{code-cell} python
+from rapidfuzz import process, fuzz, utils
+
+# Definimos función de búsqueda
+def buscar_coincidencia(nombre, opciones, umbral = 80):
+    resultado = process.extractOne(
+        nombre,
+        opciones,
+        scorer = fuzz.token_sort_ratio,
+        processor = utils.default_process,
+        score_cutoff = umbral
+    )
+    if resultado:
+        return resultado[0], round(resultado[1],2) 
+    return "Ningún match", "No aplica"
+    
+# Buscamos coincidencias con un umbral de 80
+ventas[['Nombre_matched', 'Score']] = ventas['nombre_cliente'].apply(
+    lambda x: pd.Series(buscar_coincidencia(x, clientes['nombre_cliente']))
+)
+
+# Exploramos resultados
+print(ventas[['nombre_cliente', 'Nombre_matched', 'Score']])
+```
+
+Se encontraron coincidencias aproximadas con *scores* altos en los 6 casos en los que la coincidencia no es exacta.
+
+Realizamos la unión difusa de ambos DataFrames utilizando el campo `Nombre_matched` del dataset de ventas:
+
+```{code-cell} python
+df_final = ventas.merge(clientes, left_on='Nombre_matched', right_on='nombre_cliente').drop(columns=['nombre_cliente_x', 'Nombre_matched', 'Score']).rename(columns={'nombre_cliente_y': 'nombre_cliente'})
+
+df_final.head()
+```
+
+Respondemos a la pregunta por la ciudad del cliente que más compras realizó:
+
+```{code-cell} python
+df_final['nombre_cliente'].value_counts().head()
+```
+
+Vemos que el cliente que realizó más compras fue Nicolás Vargas. Extraemos directamente su nombre de la Serie anterior y buscamos la ciudad en la que vive:
+
+```{code-cell} python
+cliente_max = df_final['nombre_cliente'].value_counts().idxmax()
+ciudad_cliente_max = df_final[df_final['nombre_cliente'] == cliente_max].ciudad.iloc[0]
+
+print(f'El cliente que más compras realizó es {cliente_max} y vive en {ciudad_cliente_max}')
+```
 
 ### Ejercicio N°3
 

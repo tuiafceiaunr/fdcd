@@ -11,8 +11,6 @@ kernelspec:
 
 # Métodos avanzados: medidas de similaridad y distancia
 
-*en construcción*
-
 ## Introducción
 
 En ciencia de datos, una tarea recurrente consiste en cuantificar qué tan parecidos o distintos son dos objetos entre sí. Dependiendo de la naturaleza de esos objetos —cadenas de texto, vectores numéricos, documentos— se utilizan métricas distintas.
@@ -497,15 +495,15 @@ datos_puntos = pd.DataFrame({
 ```{code-cell} python
 :tags: [remove-input]
 
-plt.figure(figsize=(8, 5))
-sns.scatterplot(x='x', y='y', s=100, data=df_sim, color='black', edgecolor='black')
+plt.figure(figsize=(8, 5.5))
+sns.scatterplot(x='x', y='y', s = 75, data=df_sim, color='black', edgecolor='black')
 sns.scatterplot(x='X1', y='X2', data=datos_puntos, hue='punto',
-                marker='X', s=500, legend=False, edgecolor=None)
+                marker='X', s = 300, legend=False, edgecolor=None)
 for _, row in datos_puntos.iterrows():
     plt.text(row['X1'] + 0.15, row['X2'], row['punto'],
              fontsize=14, fontweight='bold')
-plt.xlabel('$X_1$', fontsize=14, fontweight='bold')
-plt.ylabel('$X_2$', fontsize=14, fontweight='bold')
+plt.xlabel('$X_1$', fontsize = 14, fontweight='bold')
+plt.ylabel('$X_2$', fontsize = 14, fontweight='bold')
 sns.despine()
 plt.tight_layout()
 plt.show()
@@ -578,8 +576,8 @@ iris = sns.load_dataset('iris')
 nuevo_punto = np.array([7, 5])
 punto = pd.DataFrame({'sepal_length': [7], 'petal_length': [5]})
 
-plt.figure(figsize=(8, 5))
-sns.scatterplot(x='sepal_length', y='petal_length', s=80,
+plt.figure(figsize=(8, 5.5))
+sns.scatterplot(x='sepal_length', y='petal_length', s=75,
                 data=iris, hue='species', edgecolor=None)
 sns.scatterplot(x='sepal_length', y='petal_length', data=punto,
                 color='black', marker='X', s=300,
@@ -625,7 +623,6 @@ La nueva planta se clasificaría como ***versicolor***: es la especie cuyo centr
 ### Similaridad de coseno
 
 #### Representación vectorial de documentos: Bag of Words
-
 Para poder comparar documentos de texto de forma cuantitativa, primero necesitamos representarlos numéricamente. El modelo **Bag of Words** (BoW) es la representación más simple: cada documento se convierte en un vector donde cada dimensión corresponde a una palabra del vocabulario y su valor indica cuántas veces aparece esa palabra en el documento (frecuencia de término o *term frequency*).
 
 **Ejemplo:**
@@ -636,13 +633,11 @@ Para poder comparar documentos de texto de forma cuantitativa, primero necesitam
 | doc2 | 1 | 2 | 0 | 4 |
 | doc3 | 2 | 3 | 1 | 0 |
 
-A partir de la información de la tabla anterior, sabemos, por ejemplo, que en el documento 1 (`doc1`), la palabra "ciencia" aparece 2 veces, "datos" 3 y "modelo", 1.
-
-En la práctica, el vocabulario puede tener miles o decenas de miles de palabras, por lo que estos vectores suelen ser muy largos y con muchos ceros (vectores *sparse* o dispersos).
+En el documento 1 (`doc1`), por ejemplo, la palabra "ciencia" aparece 2 veces, "datos" 3 veces y "modelo" 1 vez. En la práctica, el vocabulario puede tener miles o decenas de miles de palabras, por lo que estos vectores suelen ser muy largos y con muchos ceros (vectores *sparse* o dispersos).
 
 ### ¿Por qué no usar la distancia euclídea para comparar documentos?
 
-Dado que estamos representando cada document mediante un vector, nos puede nacer calcular la similaridad entre documentos calculando la distancia euclídea entre ellos, y concluir que dos documentos son similares en cuanto a temática si su distancia euclídea es pequeña. ¿Cuál es el inconveniente? Mostraremos esto a continuación
+Dado que representamos cada documento mediante un vector, podría parecer natural calcular la similaridad entre documentos a partir de la distancia euclídea entre ellos, y concluir que dos documentos son temáticamente similares si dicha distancia es pequeña. Sin embargo, esto presenta un problema importante que ilustramos a continuación.
 
 Consideremos tres documentos representados con BoW:
 
@@ -652,17 +647,17 @@ Consideremos tres documentos representados con BoW:
 | doc2 | 150 | 7 |
 | doc3 | 2 | 18 |
 
-Los documentos `doc1` y `doc2` hablan principalmente de "modelo" (la misma temática), pero `doc2` es mucho más largo (lo notamos en la frecuencia de términos). La distancia euclídea entre `doc1` y `doc2` será grande por esa diferencia de magnitud, aunque las proporciones en que aparecen los términos son similares. En cambio, `doc3` habla principalmente de "embeddings" y es temáticamente diferente de los otros dos, pero su cercanía al origen puede hacerlo parecer similar a `doc1` según la distancia euclídea.
+`doc1` y `doc2` hablan principalmente de "modelo" y son temáticamente similares, pero `doc2` es mucho más largo. Aunque las proporciones en que aparecen los términos son similares, la distancia euclídea entre ellos será grande debido a la diferencia de magnitud entre sus vectores. El documento `doc3`, en cambio, habla principalmente de "embeddings" y es temáticamente distinto, pero tiene una magnitud similar a `doc1`, por lo que la distancia euclídea entre ambos resultará pequeña, a pesar de que apuntan en direcciones muy distintas.
 
 La raíz del problema es que la distancia euclídea es sensible a la **longitud del documento**: documentos más largos tienen vectores de mayor magnitud, lo que distorsiona la comparación temática.
 
 <br>
 
-La **similaridad de coseno** resuelve este problema: en lugar de medir la distancia entre los extremos de los vectores, mide el **ángulo entre ellos**. Dos vectores que apuntan en la misma dirección —independientemente de su magnitud— tienen ángulo cero y similaridad coseno máxima.
+La **similaridad de coseno** resuelve este problema: en lugar de medir la distancia entre los extremos de los vectores, mide **el ángulo entre ellos**. Dos vectores que apuntan en la misma dirección —independientemente de su magnitud— tienen ángulo cero y similaridad coseno máxima.
 
 ```{figure} imagenes/cosine.png
 ---
-width: 70%
+width: 50%
 align: center
 ---
 Dos vectores $\mathbf{i}$ y $\mathbf{j}$ en un espacio bidimensional forman un ángulo $\theta$ entre ellos. La similaridad de coseno es el coseno de dicho ángulo.
@@ -672,20 +667,18 @@ Para dos vectores $\mathbf{i}$ y $\mathbf{j}$:
 
 $$sim_{COS}(\mathbf{i}, \mathbf{j}) = \frac{\mathbf{i} \cdot \mathbf{j}}{\lVert \mathbf{i} \rVert \, \lVert \mathbf{j} \rVert}$$
 
-donde $\lVert \mathbf{w} \rVert = \sqrt{w_1^2 + w_2^2 + \cdots + w_p^2}$ es la **norma euclídea** del vector $\mathbf{w}$.
-
-El cociente divide el producto punto por el producto de las normas, lo que equivale a **normalizar ambos vectores** antes de compararlos. Por eso el resultado no depende de la magnitud (longitud) de los vectores.
+donde $\lVert \mathbf{w} \rVert = \sqrt{w_1^2 + w_2^2 + \cdots + w_p^2}$ es la **norma euclídea** del vector $\mathbf{w}$. El cociente divide el producto punto por el producto de las normas, lo que equivale a **normalizar ambos vectores** antes de compararlos. Por eso el resultado no depende de la magnitud (longitud) de los vectores.
 
 **Interpretación:**
 
 - Si $sim_{COS} = 1$: los vectores apuntan en exactamente la misma dirección. Los documentos son temáticamente muy similares.
 
-- Si $sim_{COS} = 0$: los vectores son ortogonales. Los documentos no comparten ningún término en común.
+- Si $sim_{COS} = 0$: los vectores son ortogonales. En el contexto de frecuencias de términos, esto implica que los documentos no comparten ningún término en común.
 
-```{admonition} Similaridad de coseno entre 0 y 1
+```{admonition} ¿Qué valores puede tomar la similaridad de coseno?
 :class: tip
 
-En el contexto de vectores de frecuencias de términos, todos los valores son no negativos, por lo que $sim_{COS} \in [0, 1]$. En otros contextos donde los vectores pueden tener valores negativos (por ejemplo, embeddings de palabras o representaciones TF-IDF centradas), la similaridad puede tomar valores en $[-1, 1]$.
+En el contexto de vectores de frecuencias de términos, todos los valores son no negativos, por lo que $sim_{COS} \in [0, 1]$. En otros contextos donde los vectores pueden tener valores negativos (por ejemplo, en embeddings de palabras o representaciones TF-IDF centradas), la similaridad puede tomar valores en $[-1, 1]$.
 ```
 
 #### Implementación en Python
@@ -707,7 +700,7 @@ print("sim(doc1, doc3):", round(1 - cosine(doc1, doc3), 3))
 print("sim(doc2, doc3):", round(1 - cosine(doc2, doc3), 3))
 ```
 
-La similaridad de coseno entre `doc1` y `doc2` resulta alta (ambos hablan principalmente de "modelo" en proporciones similares), aunque sus longitudes son muy distintas. La similaridad entre `doc1` y `doc3` es baja, reflejando que tratan temáticas diferentes.
+La similaridad entre `doc1` y `doc2` resulta alta, reflejando que ambos documentos tratan principalmente la misma temática en proporciones similares, a pesar de la gran diferencia en su longitud. La similaridad entre `doc1` y `doc3` es baja, lo que coincide con la interpretación temática: hablan de cosas distintas.
 
 Comparemos este resultado con la distancia euclídea entre los mismos documentos:
 
@@ -730,7 +723,7 @@ print(dist_eucl_docs.round(3))
 
 La distancia euclídea entre `doc1` y `doc2` es enorme (por diferencia de longitud), y entre `doc1` y `doc3` es pequeña (ambos tienen vectores de magnitud similar). Este resultado es contrario a la interpretación temática: la similiaridad de coseno es mucho más adecuada para comparar documentos.
 
-**Ejemplo 2: cálculo manual (Han, Kamber & Pei, 2012)**
+**Ejemplo 2**
 
 Se cuenta con 5 documentos con los siguientes vectores de frecuencias de términos:
 
@@ -739,6 +732,7 @@ Se cuenta con 5 documentos con los siguientes vectores de frecuencias de términ
 width: 70%
 align: center
 ---
+Ejemplo extraído de *Data Mining: Concepts and Techniques* (Han, Kamber & Pei, 2012).
 ```
 
 Supongamos que $\mathbf{d_1}$ y $\mathbf{d_2}$ son vectores de frecuencia de términos para los dos primeros documentos sobre un vocabulario de 10 palabras:
@@ -751,6 +745,8 @@ cos_sim = 1 - cosine(d1, d2)
 print("Similaridad coseno entre i y j:", round(cos_sim, 3))
 ```
 
-El valor obtenido es cercano a 1, lo que indica que estos dos documentos son muy similares en composición temática: comparten la mayoría de los términos relevantes (los no nulos coinciden en gran medida).
+El valor obtenido es cercano a 1, lo que indica que `d1` y `d2` son muy similares en composición temática. Ambos documentos comparten términos activos en las mismas posiciones principales —posiciones 0, 2, 4 y 7— y las diferencias en sus frecuencias son pequeñas, lo que explica la alta similaridad.
 
+## Manos a la obra
 
+Queda como ejercicio construir la matriz de similaridades de coseno entre los pares de documentos del ejemplo anterior.
