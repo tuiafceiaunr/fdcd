@@ -22,7 +22,147 @@ Probablemente, antes de obtener el modelo para T que se muestra arriba, la situa
 
 En este capítulo vamos a ver uno de los modelos más básicos de estadística, pero no menos importante, el modelo de regresión lineal. 
 
-# Regresión Lineal
+## Análisis de Regresión
+
+Bajo el nombre de **análisis de regresión** se engloba el conjunto de herramientas que permiten explicar —modelar matemáticamente— el comportamiento de una **variable respuesta $Y$** a partir de la información proporcionada por una o más **variables predictoras $X_1$, $X_2$, $\ldots$, $X_p$**.
+
+La relación entre $Y$ y las $p$ variables predictoras 
+p variables predictoras se expresa de la siguiente manera:
+
+$$f(X_1, X_2, \ldots, X_p) + \varepsilon$$
+
+donde:
+
+- $f(\cdot)$ es una función fija pero desconocida que captura la relación sistemática entre las variables.
+
+- $\varepsilon$ es el término de error aleatorio, que recoge todo aquello no incluido o explicitado en la parte sistemática del modelo: variables omitidas, variaciones no medibles, errores de medición, etc.
+
+## Regresión lineal simple
+
+### El modelo
+
+Cuando es razonable suponer que la relación entre $Y$ y una única variable predictora $X$ es aproximadamente lineal, el modelo toma la forma:
+
+$$Y = \underbrace{\beta_0 + \beta_1 X}_{f(X)} + \varepsilon$$
+
+- $\beta_0$ es la **ordenada al origen**: el valor promedio o esperado de $Y$ cuando $X = 0$.
+
+- $\beta_1$ es la **pendiente**: el cambio promedio en $Y$ cuando $X$ aumenta en una unidad.
+
+A $\beta_0$ y $\beta_1$ se los denomina **parámetros** o **coeficientes** del modelo. Desde el punto de vista estadístico, la función de regresión $f(X) = \beta_0 + \beta_1 X$ representa la **esperanza condicional** de $Y$ dado $X$:
+
+$$E[Y \mid X] = \beta_0 + \beta_1 X$$
+
+Dado que $\beta_0$ y $\beta_1$ son desconocidos, debemos estimarlos a partir de los datos. A sus estimadores los denotamos $\hat{\beta}_0$ y $\hat{\beta}_1$ (recordar de Probabilidad y Estadística el sentido de la utilización del "sombrero" sobre un parámetro), y la recta ajustada resultante es:
+
+$$\hat{y} = \hat{\beta}_0} + \hat{\beta}_1}x$$
+
+### Ejemplo de trabajo
+
+Contamos con datos sobre la superficie (en m^2^) y el precio de venta (en USD) de 10 departamentos:
+
+```{code-cell} python
+:tags: [remove-input]
+
+from IPython.display import HTML, display
+import pandas as pd
+
+# Datos
+datos = pd.DataFrame({
+    'id':        [1,  2,  3,  4,   5,   6,   7,  8,   9,   10],
+    'sup_m2':    [45, 60, 75, 90, 110, 130,  55, 80, 100,  120],
+    'precio_usd':[82000, 97500, 128000, 155000, 190000, 225000,
+                  97000, 124000, 185000, 210000]
+})
+
+# CSS + tabla HTML
+html = f"""
+<style>
+.styled-table th {{
+  background-color: #0f4954;
+  color: white;
+}}
+
+.styled-table tr:nth-child(odd) {{
+  background-color: white;
+  color: #000;
+}}
+
+.styled-table tr:nth-child(even) {{
+  background-color: #f2f8f9;
+  color: #000;
+}}
+
+.styled-table {{
+  border-collapse: collapse;
+  border: 1px solid #0f4954;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+}}
+
+.styled-table th,
+.styled-table td {{
+  border: 1px solid #b8d8de;
+  padding: 8px 14px;
+  text-align: center;
+}}
+</style>
+
+{datos.to_html(index=False, classes="styled-table")}
+"""
+
+display(HTML(html))
+```
+
+Antes de ajustar cualquier modelo, conviene **visualizar** los datos para explorar la relación entre las variables.
+
+```{code-cell} python
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Datos
+datos = pd.DataFrame({
+    'id':        [1,  2,  3,  4,   5,   6,   7,  8,   9,   10],
+    'sup_m2':    [45, 60, 75, 90, 110, 130,  55, 80, 100,  120],
+    'precio_usd':[82000, 97500, 128000, 155000, 190000, 225000,
+                  97000, 124000, 185000, 210000]
+})
+```
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize=(7, 5))
+ax.scatter(datos['sup_m2'], datos['precio_usd'], s = 80, color = 'steelblue', zorder = 3)
+ax.set_xlabel('Superficie (m²)', fontweight = 'bold')
+ax.set_ylabel('Precio (USD)', fontweight = 'bold')
+ax.set_title('Precio vs. Superficie')
+ax.grid(True, linestyle='--', alpha = 0.5)
+plt.tight_layout()
+plt.show()
+```
+
+El gráfico muestra una relación positiva y aproximadamente lineal: a mayor superficie ocupada por la propiedad, mayor precio de venta. Esto justifica proponer un modelo de regresión lineal simple.
+
+En este contexto, la variable respuesta ($Y$) es el **precio de venta en USD**, mientras que la única predictora ($X$) en consideración es la **superficie en metros cuadrados**.
+
+Intuitivamente, estimar los parámetros del modelo implicará encontrar la ecuación de la recta que mejor represente la relación entre el precio de venta y la superficie, en el sentido de que "mejor se ajuste" a la información que proporciona el conjunto de datos.
+
+### Método de Mínimos Cuadrados Ordinarios (OLS)
+
+Para estimar $\hat{\beta}_0$ y $\hat{\beta}_1$ necesitamos un criterio que defina qué significa que una recta "ajusta mejor" a los datos. Para ello introducimos el concepto de **residuo**.
+
+#### Residuos
+
+Dado el par observado $(x_i, y_i)$, el **valor ajustado** o predicho de la respuesta por el modelo es:
+
+$$\hat{y}_i = \hat{\beta}_0 + \hat{\beta}_1\, x_i$$
+
+El **residuo** asociado a la $i$-ésima observación es la distancia vertical entre el valor observado y el valor ajustado:
+
+$$e_i = y_i - \hat{y}_i$$
+
+Un residuo positivo indica que el modelo subestimó el valor real; un residuo negativo, que lo sobrestimó. Si los residuos son sistemáticamente grandes, la recta no ajusta bien.
+
 
 Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
 
