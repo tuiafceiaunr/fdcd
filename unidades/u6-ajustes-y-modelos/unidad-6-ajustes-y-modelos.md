@@ -228,14 +228,17 @@ output_coef = """
 
 for idx, row in coef_table.iterrows():
 
+    low = fmt(row['[0.025'])
+    high = fmt(row['0.975]'])
+
     output_coef += (
         f"{idx:<12}"
         f"{row['Coef.']:>13.4f}"
         f"{row['Std.Err.']:>11.3f}"
         f"{row['t']:>11.3f}"
         f"{row['P>|t|']:>11.3f}"
-        f"{fmt(row['[0.025']]):>14}"
-        f"{fmt(row['0.975]']):>13}\n"
+        f"{low:>14}"
+        f"{high:>13}\n"
     )
 
 output_coef += "=============================================================================="
