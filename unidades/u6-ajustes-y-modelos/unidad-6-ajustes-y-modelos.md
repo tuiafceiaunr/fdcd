@@ -144,7 +144,7 @@ datos = pd.DataFrame({
 ```{code-cell} python
 plt.figure(figsize = (8, 5))
 
-sns.scatterplot(x = 'sup_m2', y = 'precio_usd', s = 35, color = 'steelblue', edgecolor = 'steelblue', data = datos)
+sns.scatterplot(x = 'sup_m2', y = 'precio_usd', s = 50, color = 'steelblue', edgecolor = 'steelblue', data = datos)
 
 plt.xlabel('Superficie (m²)', fontweight = 'bold')
 plt.ylabel('Precio (USD)', fontweight = 'bold')
@@ -215,6 +215,10 @@ La salida de `summary()` es una tabla completa con toda la información del ajus
 # Tabla de coeficientes
 coef_table = modelo.summary2().tables[1]
 
+# Función para formatear números grandes en notación científica
+def fmt(x):
+    return f"{x:.3e}" if abs(x) >= 10000 else f"{x:.3f}"
+
 # Construir salida estilo statsmodels
 output_coef = """
 ==============================================================================
@@ -226,12 +230,12 @@ for idx, row in coef_table.iterrows():
 
     output_coef += (
         f"{idx:<12}"
-        f"{row['Coef.']:>12.4f}"
+        f"{row['Coef.']:>13.4f}"
         f"{row['Std.Err.']:>11.3f}"
         f"{row['t']:>11.3f}"
         f"{row['P>|t|']:>11.3f}"
-        f"{row['[0.025']:>13.3f}"
-        f"{row['0.975]']:>12.3f}\n"
+        f"{fmt(row['[0.025']]):>14}"
+        f"{fmt(row['0.975]']):>13}\n"
     )
 
 output_coef += "=============================================================================="
@@ -271,7 +275,7 @@ fig, ax = plt.subplots(figsize = (8, 5))
 
 sns.scatterplot(x = 'sup_m2', y = 'precio_usd', data = datos,
                 color = 'steelblue', edgecolor = 'steelblue', 
-                s = 35, ax = ax)
+                s = 50, ax = ax)
 sns.lineplot(x = 'sup_m2', y = 'predichos', data = datos,
              color = 'black', linewidth = 1.8, ax = ax)
 
@@ -290,7 +294,7 @@ Una segunda opción, más directa, es usar `sns.regplot`, que en una sola llamad
 fig, ax = plt.subplots(figsize = (8, 5))
 
 sns.regplot(x = 'sup_m2', y = 'precio_usd', data = datos,
-            scatter_kws = {'color': 'steelblue', 'edgecolor': 'steelblue', 's': 35},
+            scatter_kws = {'color': 'steelblue', 'edgecolor': 'steelblue', 's': 50},
             line_kws = {'color': 'black', 'linewidth': 1.8},
             ci=None,   # quitamos banda de confianza)
             ax = ax)
@@ -312,7 +316,7 @@ Una vez ajustado el modelo, queremos responder: **¿qué tan bien explica el mod
 
 Para responder esa pregunta formalmente, primero pensemos en qué significa que haya variabilidad en la respuesta. En nuestro ejemplo, los precios de los departamentos no son todos iguales: van desde unos 82.000 USD hasta unos 225.000 USD. ¿Por qué? Podemos identificar dos fuentes:
 
-- **Lo que el modelo captura:** parte de esa variabilidad se explica por las diferencias en superficie. Un departamento de 130 m^2 es más caro que uno de 45 m^2 precisamente porque la variable predictora recoge esa diferencia.
+- **Lo que el modelo captura:** parte de esa variabilidad se explica por las diferencias en superficie. Un departamento de 130 m<sup>2</sup> es más caro que uno de 45 m<sup>2</sup> precisamente porque la variable predictora recoge esa diferencia.
 
 - **Lo que el modelo no captura:** la parte restante se debe a factores no incluidos en el modelo (ubicación, estado del inmueble, piso, número de ambientes, antigüedad, etc.) y a variaciones aleatorias.
 
@@ -413,6 +417,96 @@ print(f"RMSE = {rmse:,.2f} (USD)")
 print(f"MAE  = {mae:,.2f}  (USD)")
 ```
 
+## Análisis de residuos
+
+El análisis de residuos es una herramienta diagnóstica fundamental: permite verificar si las suposiciones del modelo lineal son razonables y si el ajuste es adecuado.
+
+### Supuestos del modelo de regresión lineal
+
+El modelo $Y = \beta_0 + \beta_1 X + \varepsilon$ descansa sobre supuestos acerca del término de error $\varepsilon$. Verificar que se cumplen es tan importante como ajustar el modelo: si alguno se viola, las estimaciones pueden ser sesgadas, los errores estándar incorrectos y toda inferencia sobre los parámetros, inválida.
+
+1. **Linealidad**: la relación entre $X$ e $Y$ es efectivamente lineal, es decir, $f(X) = \beta_0 + \beta_1 X$ es una especificación correcta del modelo. Si la verdadera relación es curvilínea y ajustamos una recta, los residuos mostrarán un patrón sistemático en lugar de dispersarse aleatoriamente.
+
+2. **Homocedasticidad**: la varianza del error es constante e igual a $\sigma^2$ para todos los valores de $X$:
+
+$$\text{Var}(\varepsilon \mid X) = \sigma^2$$
+
+La violación de este supuesto se llama **heterocedasticidad** y se manifiesta, por ejemplo, cuando los residuos se vuelven más dispersos a medida que $\hat{y}$ crece (patrón de "embudo"). En ese caso, los errores estándar de los coeficientes son incorrectos y los tests de hipótesis no son válidos.
+
+3. **Independencia**: los errores correspondientes a distintas observaciones son independientes entre sí, es decir, $\text{Cov}(\varepsilon_i,\varepsilon_j) = 0$ para $i \neq j$. Este supuesto suele violarse cuando los datos tienen una estructura temporal o espacial (por ejemplo, mediciones sucesivas sobre el mismo individuo).
+
+4. **Normalidad**: los errores siguen una distribución normal con media cero y varianza $\sigma^2$:
+
+$$\varepsilon \sim N(0, \sigma^2)$$
+
+Este supuesto no es necesario para que las estimaciones OLS sean válidas, pero sí es indispensable para que los tests de hipótesis y los intervalos de confianza basados en la distribución $t$ sean válidos.
+
+### Gráficos diagnósticos de residuos
+
+En la práctica, los supuestos anteriores se verifican a través de los residuos del modelo. La idea es que si el modelo es correcto, los residuos $e_i = y_i - \hat{y}_i$ deben comportarse como una muestra de errores aleatorios: sin estructura, sin tendencia, y aproximadamente normales. Los dos gráficos diagnósticos más utilizados son los que se describen a continuación.
+
+#### Residuos vs. valores ajustados
+
+Este gráfico enfrenta los residuos $e_i$ contra los valores predichos $\hat{y}_i$. Permite detectar violaciones a los supuestos de linealidad y homocedasticidad:
+
+- **Situación ideal:** los residuos se dispersan aleatoriamente alrededor de la línea horizontal $e=0$, sin ningún patrón visible. La curva suavizada (en rojo) debe ser aproximadamente horizontal y cercana al cero.
+
+- **Patrón curvilíneo:** sugiere que la relación entre $X$ e $Y$ no es lineal y que el modelo está mal especificado.
+
+- **Patrón de "embudo"** (varianza creciente o decreciente con $\hat{y}$): indica heterocedasticidad.
+
+La curva suavizada (en rojo) que agrega `lowess = True` ayuda a detectar tendencias sistemáticas que podrían pasar desapercibidas a simple vista.
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize=(7, 5))
+
+sns.regplot(x = modelo.fittedvalues, y = modelo.resid,
+            lowess = True,
+            line_kws = dict(color = 'red', linewidth = 1.8),
+            scatter_kws = dict(s = 50, edgecolor = '#de7c47', color = '#de7c47'),
+            ax = ax)
+ax.axhline(y = 0, color = 'black', linestyle = '--', linewidth = 1.8)
+ax.set_xlabel('Valores predichos', fontweight = 'bold')
+ax.set_ylabel('Residuos', fontweight = 'bold')
+ax.set_title('Residuos vs. valores ajustados')
+
+# Eje y simétrico alrededor del cero
+low, high = ax.get_ylim()
+bound = max(abs(low), abs(high))
+ax.set_ylim(-bound, bound)
+
+plt.tight_layout()
+plt.show()
+```
+
+#### QQ-plot de los residuos
+
+El gráfico cuantil-cuantil (*QQ-plot*) permite evaluar visualmente el **supuesto de normalidad** de los errores. En el eje horizontal se ubican los cuantiles teóricos de una distribución normal estándar. En el eje vertical, los cuantiles observados de los residuos estandarizados. Si los residuos provienen de una distribución normal, los puntos deben alinearse aproximadamente sobre la diagonal de referencia.
+
+```{code-cell} python
+import statsmodels.api as sm
+
+pp = sm.ProbPlot(modelo.resid, fit = True)
+
+fig, ax = plt.subplots(figsize = (7, 5))
+pp.qqplot(ax = ax, line = 's',
+          marker = 'o',
+          markerfacecolor = '#de7c47',
+          markeredgecolor = '#de7c47',
+          markersize = 7,
+          alpha = 0.8)
+
+ax.get_lines()[-1].set(color = 'red', linewidth = 2)
+
+ax.set_xlabel('Cuantiles teóricos', fontweight = 'bold')
+ax.set_ylabel('Cuantiles muestrales', fontweight = 'bold')
+ax.set_title('QQ-plot de los residuos del modelo')
+
+plt.tight_layout()
+plt.show()
+```
+
+`line = 's'` traza la línea de referencia pasando por el primer y tercer cuartil de los datos (línea estandarizada), que es la opción más robusta para evaluar normalidad: no se ve afectada por valores extremos en las colas y es la convención más usada en la literatura estadística aplicada.
 
 Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
 
