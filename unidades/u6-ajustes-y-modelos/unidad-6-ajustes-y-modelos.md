@@ -228,14 +228,17 @@ output_coef = """
 
 for idx, row in coef_table.iterrows():
 
+    low = fmt(row['[0.025'])
+    high = fmt(row['0.975]'])
+
     output_coef += (
         f"{idx:<12}"
         f"{row['Coef.']:>13.4f}"
         f"{row['Std.Err.']:>11.3f}"
         f"{row['t']:>11.3f}"
         f"{row['P>|t|']:>11.3f}"
-        f"{fmt(row['[0.025']]):>14}"
-        f"{fmt(row['0.975]']):>13}\n"
+        f"{low:>14}"
+        f"{high:>13}\n"
     )
 
 output_coef += "=============================================================================="
@@ -431,7 +434,7 @@ El modelo $Y = \beta_0 + \beta_1 X + \varepsilon$ descansa sobre supuestos acerc
 
 $$\text{Var}(\varepsilon \mid X) = \sigma^2$$
 
-La violación de este supuesto se llama **heterocedasticidad** y se manifiesta, por ejemplo, cuando los residuos se vuelven más dispersos a medida que $\hat{y}$ crece (patrón de "embudo"). En ese caso, los errores estándar de los coeficientes son incorrectos y los tests de hipótesis no son válidos.
+   La violación de este supuesto se llama **heterocedasticidad** y se manifiesta, por ejemplo, cuando los residuos se vuelven más dispersos a medida que $\hat{y}$ crece (patrón de "embudo"). En ese caso, los errores estándar de los coeficientes son incorrectos y los tests de hipótesis no son válidos.
 
 3. **Independencia**: los errores correspondientes a distintas observaciones son independientes entre sí, es decir, $\text{Cov}(\varepsilon_i,\varepsilon_j) = 0$ para $i \neq j$. Este supuesto suele violarse cuando los datos tienen una estructura temporal o espacial (por ejemplo, mediciones sucesivas sobre el mismo individuo).
 
