@@ -1,3 +1,14 @@
+---
+jupytext:
+  text_representation:
+    extension: .md
+    format_name: myst
+kernelspec:
+  display_name: Python 3
+  language: python
+  name: python3
+---
+
 # Unidad 6 - Ajustes y Modelos
 
 Los modelos se utilizan para representar fenómenos de la realidad que queremos estudiar/entender. Al realizar una abstracción del fenómeno en un modelo, nos es más simple ver relaciones entre las diferentes partes del mismo que si miramos al fenómeno en todo su contexto puesto que muchas veces ese contexto genera ruido y no tiene que ver con el fenómeno en sí. Algunos ejemplos de modelos pueden ser:
@@ -163,6 +174,111 @@ $$e_i = y_i - \hat{y}_i$$
 
 Un residuo positivo indica que el modelo subestimó el valor real; un residuo negativo, que lo sobrestimó. Si los residuos son sistemáticamente grandes, la recta no ajusta bien.
 
+<br>
+
+El **Método de Mínimos Cuadrados Ordinarios (OLS)** consiste en encontrar los valores $\hat{\beta}_0$ y $\hat{\beta}_1$ que minimizan la sumatoria de los residuos del modelo al cuadrado y que se denomina **Suma de Cuadrados del Error** (SCE, o RSS por sus siglas en inglés):
+
+$$\text{SCE} = \sum_{i=1}^{n} e_i^2 = \sum_{i=1}^{n} (y_i - \hat{\beta}_0 - \hat{\beta}_1\, x_i)^2 \longrightarrow \min$$
+
+Dado que se trata de una función de las variables $\hat{\beta}_0$ y $\hat{\beta}_1$, para encontrar su mínimo calculamos ambas derivadas parciales, igualamos cada una a cero y resolvemos el sistema resultante (llamado **ecuaciones normales**). El resultado es:
+
+$$\hat{\beta}_1 = \frac{\sum_{i=1}^{n} x_i y_i - n\,\bar{x}\,\bar{y}}{(n-1)\,s_x^2}$$
+
+$$\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\,\bar{x}$$
+
+donde $\bar{x}$ y $\bar{y}$ son las medias muestrales de $X$ e $Y$, y $s_x^2$ es la varianza muestral de $X$.
+
+### Ajuste en Python con `statsmodels`
+
+Para realizar el ajuste en Python vamos a utilizar el módulo `statsmodels`, que provee herramientas para la estimación de modelos estadísticos, la realización de tests de hipótesis y la exploración de datos.
+
+En particular, vamos a usar la interfaz de fórmulas `statsmodels.formula.api`, que permite especificar el modelo usando una sintaxis similar a la que emplean fórmulas análogas en R: `'variable_respuesta ~ variable_predictora'`. Esto hace que el código sea más legible.
+
+```{code-cell} python
+import statsmodels.formula.api as smf
+
+# Especificamos y ajustamos el modelo
+## La fórmula 'precio_usd ~ sup_m2' le indica a statsmodels que:
+####   - precio_usd es la variable respuesta (Y)
+####   - sup_m2 es la variable predictora (X)
+## El intercepto se incluye por defecto
+
+modelo = smf.ols(formula = 'precio_usd ~ sup_m2', data = datos).fit()
+print(modelo.summary())
+```
+
+La salida de `summary()` es una tabla completa con toda la información del ajuste. Por ahora nos concentramos en los coeficientes estimados, que aparecen en la sección central:
+
+===================================================================================
+                      coef    std err          t      P>|t|      [0.025      0.975]
+-----------------------------------------------------------------------------------
+Intercept         -3676.47   9043.30     -0.407      0.695   -24521.45   17168.51
+sup_m2             1769.12     96.42     18.351      0.000     1558.31    1979.93
+===================================================================================
+
+Cada fila corresponde a un coeficiente o parámetro del modelo. La columna `coef` es la que contiene las estimaciones.
+
+La recta ajustada es entonces:
+
+$$\hat{y} = -3676.5 + 1769.1\, x$$
+
+**Interpretación de los coeficientes del modelo:**
+
+- $\hat{\beta}_0 = -3676.5$: es el precio predicho cuando la superficie es 0 m^2^. Este valor no tiene interpretación práctica en este contexto: no existen departamentos de superficie nula. La ordenada al origen solo es interpretable cuando $X = 0$ tiene sentido en el dominio del problema y cuando el rango de valores de $X$ para el cual tenemos datos incluye al valor 0.
+
+- $\hat{\beta}_1 = 1769.1$: por cada metro cuadrado adicional de superficie, el precio de la propiedad aumenta, en promedio, **1769.1 USD**. 
+
+### Representar el ajuste
+
+Para representar el modelo ajustado, mostraremos dos caminos:
+
+#### Extrayendo manualmente los valores predichos
+
+Un primer camino consiste en calcular los valores predichos por el modelo para cada observación del dataset, usando el método `predict`. Esto nos da control total sobre qué graficamos y cómo.
+
+```{code-cell} python
+datos['predichos'] = modelo.predict(datos)
+datos.head()
+```
+
+Con los valores predichos almacenados en el DataFrame, construimos el gráfico combinando un scatterplot con una línea que representa la recta ajustada:
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize = (7, 5))
+
+sns.scatterplot(x = 'sup_m2', y = 'precio_usd', data = datos,
+                color = 'steelblue', edgecolor = 'steelblye', 
+                s = 80, ax = ax)
+sns.lineplot(x = 'sup_m2', y = 'predichos', data = datos,
+             color = 'black', linewidth = 1.8, ax = ax)
+
+ax.set_xlabel('Superficie de la propiedad (m²)', fontweight = 'bold')
+ax.set_ylabel('Precio (USD)', fontweight = 'bold')
+
+plt.tight_layout()
+plt.show()
+```
+
+#### Utilizando la función `regplot` de `seaborn`
+
+Una segunda opción, más directa, es usar `sns.regplot`, que en una sola llamada grafica los puntos, ajusta la recta de regresión y (opcionalmente) agrega una banda de confianza alrededor de ella.
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize = (7, 5))
+
+sns.regplot(x = 'sup_m2', y = 'precio_usd', data = datos,
+            scatter_kws = {'color': 'steelblue', 'edgecolor': 'steelblue', 's': 80},
+            line_kws = {'color': 'black', 'linewidth': 1.8},
+            ci=None,   # quitamos banda de confianza)
+            ax = ax)
+
+ax.set_xlabel('Superficie de la propiedad (m²)', fontweight='bold')
+ax.set_ylabel('Precio (USD)', fontweight='bold')
+
+ax.grid(True, linestyle='--', alpha=0.4)
+plt.tight_layout()
+plt.show()
+```
 
 Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
 
