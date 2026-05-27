@@ -66,11 +66,11 @@ $$E[Y \mid X] = \beta_0 + \beta_1 X$$
 
 Dado que $\beta_0$ y $\beta_1$ son desconocidos, debemos estimarlos a partir de los datos. A sus estimadores los denotamos $\hat{\beta}_0$ y $\hat{\beta}_1$ (recordar de Probabilidad y Estadística el sentido de la utilización del "sombrero" sobre un parámetro), y la recta ajustada resultante es:
 
-$$\hat{y} = \hat{\beta}_0} + \hat{\beta}_1}x$$
+$$\hat{y} = \hat{\beta_0} + \hat{\beta_1}x$$
 
 ### Ejemplo de trabajo
 
-Contamos con datos sobre la superficie (en m^2^) y el precio de venta (en USD) de 10 departamentos:
+Contamos con datos sobre la superficie (en m^2) y el precio de venta (en USD) de 10 departamentos:
 
 ```{code-cell} python
 :tags: [remove-input]
@@ -142,17 +142,17 @@ datos = pd.DataFrame({
 ```
 
 ```{code-cell} python
-fig, ax = plt.subplots(figsize=(7, 5))
-ax.scatter(datos['sup_m2'], datos['precio_usd'], s = 80, color = 'steelblue', zorder = 3)
-ax.set_xlabel('Superficie (m²)', fontweight = 'bold')
-ax.set_ylabel('Precio (USD)', fontweight = 'bold')
-ax.set_title('Precio vs. Superficie')
-ax.grid(True, linestyle='--', alpha = 0.5)
-plt.tight_layout()
+plt.figure(figsize = (8, 5))
+
+sns.scatterplot(x = 'sup_m2', y = 'precio_usd', s = 35, color = 'steelblue', edgecolor = 'steelblue', data = datos)
+
+plt.xlabel('Superficie (m²)', fontweight = 'bold')
+plt.ylabel('Precio (USD)', fontweight = 'bold')
+
 plt.show()
 ```
 
-El gráfico muestra una relación positiva y aproximadamente lineal: a mayor superficie ocupada por la propiedad, mayor precio de venta. Esto justifica proponer un modelo de regresión lineal simple.
+El gráfico muestra una aproximadamente lineal y directa o positiva: a mayor superficie ocupada por la propiedad, mayor precio de venta. Además, el mismo sugiere una relación intensa, lo que justifica proponer un modelo de regresión lineal simple.
 
 En este contexto, la variable respuesta ($Y$) es el **precio de venta en USD**, mientras que la única predictora ($X$) en consideración es la **superficie en metros cuadrados**.
 
@@ -188,7 +188,7 @@ $$\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\,\bar{x}$$
 
 donde $\bar{x}$ y $\bar{y}$ son las medias muestrales de $X$ e $Y$, y $s_x^2$ es la varianza muestral de $X$.
 
-### Ajuste en Python con `statsmodels`
+### Ajuste en Python con statsmodels
 
 Para realizar el ajuste en Python vamos a utilizar el módulo `statsmodels`, que provee herramientas para la estimación de modelos estadísticos, la realización de tests de hipótesis y la exploración de datos.
 
@@ -209,12 +209,35 @@ print(modelo.summary())
 
 La salida de `summary()` es una tabla completa con toda la información del ajuste. Por ahora nos concentramos en los coeficientes estimados, que aparecen en la sección central:
 
-===================================================================================
-                      coef    std err          t      P>|t|      [0.025      0.975]
------------------------------------------------------------------------------------
-Intercept         -3676.47   9043.30     -0.407      0.695   -24521.45   17168.51
-sup_m2             1769.12     96.42     18.351      0.000     1558.31    1979.93
-===================================================================================
+```{code-cell} python
+:tags: [remove-input]
+
+# Tabla de coeficientes
+coef_table = modelo.summary2().tables[1]
+
+# Construir salida estilo statsmodels
+output_coef = """
+==============================================================================
+                 coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------
+"""
+
+for idx, row in coef_table.iterrows():
+
+    output_coef += (
+        f"{idx:<12}"
+        f"{row['Coef.']:>12.4f}"
+        f"{row['Std.Err.']:>11.3f}"
+        f"{row['t']:>11.3f}"
+        f"{row['P>|t|']:>11.3f}"
+        f"{row['[0.025']:>13.3f}"
+        f"{row['0.975]']:>12.3f}\n"
+    )
+
+output_coef += "=============================================================================="
+
+print(output_coef)
+```
 
 Cada fila corresponde a un coeficiente o parámetro del modelo. La columna `coef` es la que contiene las estimaciones.
 
@@ -244,11 +267,11 @@ datos.head()
 Con los valores predichos almacenados en el DataFrame, construimos el gráfico combinando un scatterplot con una línea que representa la recta ajustada:
 
 ```{code-cell} python
-fig, ax = plt.subplots(figsize = (7, 5))
+fig, ax = plt.subplots(figsize = (8, 5))
 
 sns.scatterplot(x = 'sup_m2', y = 'precio_usd', data = datos,
-                color = 'steelblue', edgecolor = 'steelblye', 
-                s = 80, ax = ax)
+                color = 'steelblue', edgecolor = 'steelblue', 
+                s = 35, ax = ax)
 sns.lineplot(x = 'sup_m2', y = 'predichos', data = datos,
              color = 'black', linewidth = 1.8, ax = ax)
 
@@ -259,26 +282,137 @@ plt.tight_layout()
 plt.show()
 ```
 
-#### Utilizando la función `regplot` de `seaborn`
+#### Utilizando la función **regplot** de seaborn
 
 Una segunda opción, más directa, es usar `sns.regplot`, que en una sola llamada grafica los puntos, ajusta la recta de regresión y (opcionalmente) agrega una banda de confianza alrededor de ella.
 
 ```{code-cell} python
-fig, ax = plt.subplots(figsize = (7, 5))
+fig, ax = plt.subplots(figsize = (8, 5))
 
 sns.regplot(x = 'sup_m2', y = 'precio_usd', data = datos,
-            scatter_kws = {'color': 'steelblue', 'edgecolor': 'steelblue', 's': 80},
+            scatter_kws = {'color': 'steelblue', 'edgecolor': 'steelblue', 's': 35},
             line_kws = {'color': 'black', 'linewidth': 1.8},
             ci=None,   # quitamos banda de confianza)
             ax = ax)
 
-ax.set_xlabel('Superficie de la propiedad (m²)', fontweight='bold')
-ax.set_ylabel('Precio (USD)', fontweight='bold')
+ax.set_xlabel('Superficie de la propiedad (m²)', fontweight = 'bold')
+ax.set_ylabel('Precio (USD)', fontweight = 'bold')
 
-ax.grid(True, linestyle='--', alpha=0.4)
 plt.tight_layout()
 plt.show()
 ```
+
+## Evaluación del modelo
+
+Una vez ajustado el modelo, necesitamos métricas que nos digan **qué tan bien explica o predice** los datos.
+
+### Coeficiente de Determinación ($R^2$)
+
+Una vez ajustado el modelo, queremos responder: **¿qué tan bien explica el modelo la variabilidad observada en $Y$?**
+
+Para responder esa pregunta formalmente, primero pensemos en qué significa que haya variabilidad en la respuesta. En nuestro ejemplo, los precios de los departamentos no son todos iguales: van desde unos 82.000 USD hasta unos 225.000 USD. ¿Por qué? Podemos identificar dos fuentes:
+
+- **Lo que el modelo captura:** parte de esa variabilidad se explica por las diferencias en superficie. Un departamento de 130 m^2 es más caro que uno de 45 m^2 precisamente porque la variable predictora recoge esa diferencia.
+
+- **Lo que el modelo no captura:** la parte restante se debe a factores no incluidos en el modelo (ubicación, estado del inmueble, piso, número de ambientes, antigüedad, etc.) y a variaciones aleatorias.
+
+Una forma natural de cuantificar la variabilidad total en $Y$ es sumar las desviaciones al cuadrado de cada observación respecto de la media $\bar{y}$. A esta cantidad la llamamos **Suma de Cuadrados Total (SCT)**:
+
+$$SCT = \sum_{i=1}^{n}(y_i - \bar{y})^2$$
+
+Nótese que SCT es exactamente el numerador de la varianza muestral de $Y$: si se dividiera por $n−1$, obtendríamos $s_Y^2$. Es, por lo tanto, una medida de cuánto se dispersan los valores de la respuesta alrededor de su media, sin tener en cuenta ninguna variable predictora.
+
+Puede demostrarse que esta variabilidad total se descompone de forma exacta en dos partes:
+
+$$\underbrace{\sum_{i=1}^{n}(y_i - \bar{y})^2}_{\text{SCT: variab. total}} = \underbrace{\sum_{i=1}^{n}(\hat{y}_i - \bar{y})^2}_{\text{SCR: explicada por el modelo}} + \underbrace{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}_{\text{SCE: no explicada}}$$
+
+donde:
+
+- **SCR** (Suma de Cuadrados de la Regresión): mide cuánto se alejan los valores *predichos* $\hat{y}_i$ de la media $\bar{y}$. Si el modelo no aportara nada, todos los $\hat{y}_i$ serían iguales a $\bar{y}$ y la SCR sería cero. Cuanto mayor es la SCR, más está "haciendo" el modelo.
+
+- **SCE** (Suma de Cuadrados del Error): es la suma de los residuos al cuadrado que ya conocemos. Representa lo que el modelo no logró explicar.
+
+<br>
+
+El **coeficiente de determinación** expresa la SCR como proporción de la SCT, es decir, qué fracción de la variabilidad total es explicada por el modelo:
+
+$$R^2 = \frac{\text{SCR}}{\text{SCT}} = 1 - \frac{\text{SCE}}{\text{SCT}}$$
+
+Su rango de variación es $0 \leq R^2 \leq 1$:
+
+- $R^2 = 1$: ajuste perfecto, el modelo captura el 100% de la variabilidad en $Y$.
+
+- $R^2 = 0$: el modelo no explica nada de la variabilidad en $Y$ (equivalente a usar la media $\bar{y}$ como predicción para todos los casos).
+
+En nuestro ejemplo podemos obtenerlo directamente del objeto `modelo`:
+
+```{code-cell} python
+print(f"R² = {modelo.rsquared:.4f}")
+```
+
+Un $R^2 = 0.98$ indica que el 98% de la variabilidad en los precios de los departamentos queda explicada por la superficie. El 2% restante corresponde a factores no contemplados en el modelo.
+
+```{admonition} **Advertencia importante**
+:class: warning
+Un $R^2$ alto no garantiza que el modelo sea adecuado. Puede ser elevado incluso cuando la relación entre las variables no es lineal, cuando hay valores atípicos influyentes, o cuando el modelo sobreajusta los datos. Siempre debe acompañarse de exploración gráfica y análisis de residuos.
+```
+
+La figura siguiente resume visualmente la lógica detrás del $R^2$. El panel superior muestra los errores al cuadrado cuando se predice $\bar{y}$ para todos los casos (es decir, ignorando completamente la variable predictora): esos cuadrados rosados representan la SCT. El panel inferior muestra los errores al cuadrado una vez ajustada la recta de regresión: esos cuadrados verdes, notoriamente más pequeños, representan la SCE. El $R^2$ es precisamente la proporción en que se redujeron los errores al pasar de un modelo sin predictores al modelo ajustado.
+
+```{figure} imagenes/r2-graph.png
+---
+width: 70%
+align: center
+---
+Análisis gráfico del $R^2$.
+```
+
+Nótese que la imagen usa la notación $SS_{tot}$ y $SS_{res}$ (del inglés *Sum of Squares Total* y *Sum of Squares Residual*), que son equivalentes a lo que en este texto llamamos SCT y SCE respectivamente.
+
+```{admonition} **Recurso adicional**
+:class: tip
+Para una explicación visual adicional del $R^2$ y de la intuición detrás de su fórmula, se recomienda el siguiente [video](https://www.youtube.com/watch?v=2AQKmw14mHM) de StatQuest.
+```
+
+### Error Cuadrático Medio (MSE) y su Raíz (RMSE)
+
+El **Error Cuadrático Medio** promedia los cuadrados de los residuos:
+
+$$\text{MSE} = \frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2 = \frac{\text{SCE}}{n}$$
+
+Al elevar los residuos al cuadrado, el MSE **penaliza fuertemente los errores grandes**. Su unidad es el cuadrado de la unidad de $Y$, lo que dificulta la interpretación directa.
+
+La **Raíz del Error Cuadrático Medio** resuelve ese problema:
+
+$$\text{RMSE} = \sqrt{\text{MSE}} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}$$
+
+El RMSE está expresado en las **mismas unidades que $Y$** y es la métrica más utilizada en la práctica para reportar el error de predicción.
+
+### Error Absoluto Medio (MAE)
+
+El **Error Absoluto Medio** promedia los valores absolutos de los residuos:
+
+$$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|$$
+
+Al usar el valor absoluto en lugar del cuadrado, el MAE trata todos los errores de forma proporcional a su magnitud, sin penalizar especialmente los grandes. Por eso es **más robusto ante valores atípicos** que el RMSE. Se prefiere cuando el contexto no justifica penalizar más a los errores extremos.
+
+```python
+from sklearn.metrics import mean_squared_error, mean_absolute_error
+
+y_obs  = datos['precio_usd']
+y_pred = datos['predichos']
+
+r2   = modelo.rsquared
+mse  = mean_squared_error(y_obs, y_pred)
+rmse = np.sqrt(mse)
+mae  = mean_absolute_error(y_obs, y_pred)
+
+print(f"R²   = {r2:.4f}")
+print(f"MSE  = {mse:,.2f}  (USD²)")
+print(f"RMSE = {rmse:,.2f} (USD)")
+print(f"MAE  = {mae:,.2f}  (USD)")
+```
+
 
 Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
 
@@ -658,40 +792,6 @@ La regresión es importante y conocer las métricas que se utilizan nos ayudan a
 El error es un concepto muy sencillo, simplemente es la diferencia que existe entre el valor que nuestro modelo ha predicho y el valor real de la observación con la que estamos haciendo el test.
 
 ![Untitled](./imagenes/Untitled28.png)
-
-### $R^2$  **(R cuadrado)**
-
-Existen diferentes métricas para conocer el error. Veremos las más importantes y cuando debemos de usarlas.
-
-El $R^2$  o coeficiente de determinación se define como: 
-
-$$
-R^2 = 1 - \frac{SSR}{SST}
-$$
-
-Donde:
-
-$SSR$: es la suma de los residuos cuadrados. Es decir, sumamos los cuadrados de la diferencia entre el valor real y estimado de la variable
-
-$$
-SSR = \sum_{i=1}^{n}{(yi - \hat{yi})^2}
-$$
-
-$SST$: se denomina suma de los cuadrados totales. Se calcula como la suma de los cuadrados de la diferencia entre el valor real de la variable y el valor medio de la misma.
-
-$$
-SST = \sum_{i = 1}^{n}{(yi - \bar{y})^2}
-$$
-
-El valor de $R^2$  varía entre 0 y 1. Cuando es 0 significa que el modelo no está explicando nada de la variación de la variable $y$. Cuando es 1, significa que los datos se encuentran todos sobre la recta del modelo, algo que no sucede en la vida real. 
-
-Este coeficiente explica qué porcentaje de la variación de la variable dependiente $y$  es explicado por el modelo. 
-
-Para visualizar mejor como se obtiene el $R^2$ , veamos la siguiente gráfica:
-
-![Untitled](./imagenes/Untitled29.png)
-
-También les recomendamos mirar este [video](https://www.youtube.com/watch?v=2AQKmw14mHM&ab_channel=StatQuestwithJoshStarmer) que puede ayudar a interpretar la fórmula de $R^2$
 
 ### $R^2 - ajustado$
 
