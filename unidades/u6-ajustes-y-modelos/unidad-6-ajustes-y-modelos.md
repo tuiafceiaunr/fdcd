@@ -221,9 +221,9 @@ def fmt(x):
 
 # Construir salida estilo statsmodels
 output_coef = """
-==============================================================================
-                 coef    std err          t      P>|t|      [0.025      0.975]
-------------------------------------------------------------------------------
+====================================================================================
+                       coef    std err          t      P>|t|      [0.025      0.975]
+------------------------------------------------------------------------------------
 """
 
 for idx, row in coef_table.iterrows():
@@ -404,6 +404,7 @@ $$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|$$
 Al usar el valor absoluto en lugar del cuadrado, el MAE trata todos los errores de forma proporcional a su magnitud, sin penalizar especialmente los grandes. Por eso es **más robusto ante valores atípicos** que el RMSE. Se prefiere cuando el contexto no justifica penalizar más a los errores extremos.
 
 ```python
+import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
 y_obs  = datos['precio_usd']
