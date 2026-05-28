@@ -11,27 +11,53 @@ kernelspec:
 
 # Unidad 6 - Ajustes y Modelos
 
-Los modelos se utilizan para representar fenómenos de la realidad que queremos estudiar/entender. Al realizar una abstracción del fenómeno en un modelo, nos es más simple ver relaciones entre las diferentes partes del mismo que si miramos al fenómeno en todo su contexto puesto que muchas veces ese contexto genera ruido y no tiene que ver con el fenómeno en sí. Algunos ejemplos de modelos pueden ser:
+A lo largo de esta asignatura nos hemos dedicado a explorar, limpiar, transformar y visualizar datos. Todas esas herramientas tienen un propósito común: extraer información útil de los datos para entender mejor algún fenómeno del mundo real. En esta unidad damos un paso más: **aprendemos a construir modelos**.
 
-- Modelo de predicción de selección modal de una persona en base a sus atributos.
-- Modelo de abandono de la universidad en base a los atributos de la persona y desempeño durante el primer semestre
-- Predicción de casos de Covid
+Un modelo es una representación simplificada de un fenómeno que queremos estudiar. Al abstraer lo esencial y dejar de lado lo accesorio, un modelo nos permite ver con más claridad las relaciones entre las partes del fenómeno, que de otro modo quedarían ocultas en la complejidad del contexto. Esta idea es mucho más antigua que la ciencia de datos: los modelos matemáticos son una herramienta central en casi todas las disciplinas científicas y técnicas.
 
-![Untitled](./imagenes/Untitled.png)
+Un ejemplo célebre es el del arquitecto Antoni Gaudí, quien para diseñar los arcos de la Sagrada Familia construyó modelos físicos colgantes: una cadena suspendida de dos puntos forma, por efecto de la gravedad, una curva llamada *catenaria* que, invertida, describe la forma de arco con mayor resistencia estructural. Gaudí usó ese modelo físico —simple, manipulable— para entender y diseñar estructuras de gran complejidad.
 
-- Modelo de Gaudí para diseñar arcos
+```{figure} imagenes/sagrada-familia.jpeg
+---
+width: 70%
+align: center
+---
+La Sagrada Familia de Gaudí, por dentro.
+```
 
-Incluso. probablemente, ya hayan estado usando modelos en alguna otra clase de la carrera, como por ejemplo en Cálculo. El ejemplo de abajo lo copiamos del libro “Cálculo de una Variable” de J. Stewart
+En matemática y estadística encontramos la misma lógica. El libro *Cálculo de una Variable* de J. Stewart presenta un ejemplo ilustrativo: se dispone de mediciones de temperatura del aire a diferentes alturas sobre el nivel del suelo y se propone un modelo matemático que resume esa relación en una ecuación sencilla.
 
-![Untitled](./imagenes/Untitled1.png)
+```{figure} imagenes/modelo-stewart.png
+---
+width: 70%
+align: center
+---
+Modelo que expresa la temperatura $T$ (en °C) en función de la altura $h$ (en kilómetros).
+```
 
-![Untitled](./imagenes/Untitled2.png)
+Antes de llegar a esa ecuación, la situación de partida era simplemente una nube de puntos: pares de valores (altura, temperatura) sin ninguna estructura explícita. 
 
-Probablemente, antes de obtener el modelo para T que se muestra arriba, la situación era como la imagen de abajo, mediciones de temperatura del aire a diferentes alturas sobre el nivel del suelo. Luego, se realizó un modelo lineal para predecir la temperatura del aire, variable dependiente, en función de la altura con respecto al suelo, variable independiente.
+```{figure} imagenes/datos-modelo-stewart.png
+---
+width: 70%
+align: center
+---
+Los datos recolectados que pudieron haber dado origen al modelo cuya ecuación se proporcionó en la figura anterior.
+```
 
-![Untitled](./imagenes/Untitled3.png)
+El modelo lineal transforma esa nube en una relación interpretable: permite predecir la temperatura a cualquier altura, cuantificar cuánto varía la temperatura por metro de ascenso, y comunicar ese conocimiento de forma compacta.
 
-En este capítulo vamos a ver uno de los modelos más básicos de estadística, pero no menos importante, el modelo de regresión lineal. 
+Esto es exactamente lo que haremos en esta unidad. Partimos de datos observados y construimos modelos que nos permitan explicar el comportamiento de una variable a partir de otras, predecir valores en situaciones no observadas, y cuantificar la magnitud y dirección de las relaciones entre variables.
+
+Los modelos que estudiaremos son los siguientes:
+
+- **Regresión lineal simple y múltiple:** el caso en que suponemos que la relación entre las variables puede representarse mediante una recta o un hiperplano. Es el punto de partida del aprendizaje estadístico supervisado.
+
+- **Métodos de suavizado (*bin smoothing*, kernels, LOESS):** técnicas que estiman la forma de una relación sin imponerle una estructura paramétrica rígida.
+
+- **Splines polinómicas:** funciones definidas por segmentos que combinan flexibilidad y suavidad, y que resuelven el problema del sobreajuste mediante un término de penalización.
+
+En todos los casos, la pregunta central es la misma: dada la información disponible, ¿cuál es la mejor manera de representar la relación entre las variables? Y una vez construido el modelo, ¿cómo evaluamos qué tan bueno es?
 
 ## Análisis de Regresión
 
@@ -530,9 +556,12 @@ Desde la Unidad 3 sabemos que la relación entre ambas variables cuantitativas e
 # Nos quedamos únicamente con los casos completos
 data_penguins = sns.load_dataset('penguins').dropna()
 
+# Definimos paleta de colores
+colores = {'Female': '#B05A72','Male': '#F2A35E'}
+
 plt.figure(figsize = (8,5))
 
-sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm', hue = 'sex', s = 50, data = data_penguins)
+sns.scatterplot(x = 'flipper_length_mm', y = 'body_mass_g', hue = 'sex', palette = colores, s = 50, data = data_penguins, edgecolor = None)
 
 plt.xlabel('Masa corporal (g)', fontweight = 'bold')
 plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
@@ -552,23 +581,21 @@ print(modelo1.summary())
 
 La ecuación del modelo ajustado es:
 
-$$\hat{y} = -5780.8 + 49.7~x$$
+$$\hat{y} = -5872.1 + 50.1~x$$
 
-Este modelo explica el 75.9% de la variabilidad en la masa corporal (R<sup>2</sup> = 0.759). Su representación gráfica:
+Este modelo explica el 76.2% de la variabilidad en la masa corporal (R<sup>2</sup> = 0.762). Su representación gráfica:
 
 ```{code-cell} python
 fig, ax = plt.subplots(figsize = (8, 5))
 
-sns.regplot(x = 'body_mass_g', y = 'flipper_length_mm', data = data_penguins,
+sns.regplot(x = 'flipper_length_mm', y = 'body_mass_g', data = data_penguins,
             scatter_kws = {'color': '#8a2944', 'edgecolor': '#8a2944', 's': 50},
             line_kws = {'color': 'black', 'linewidth': 1.8},
-            ci=None,
+            ci = None,
             ax = ax)
 
-plt.figure(figsize = (8,5))
-
-plt.xlabel('Masa corporal (g)', fontweight = 'bold')
-plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
+ax.set_xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
+ax.set_ylabel('Masa corporal (g)', fontweight = 'bold')
 
 plt.show()
 ```
@@ -605,7 +632,7 @@ Otra es usar el método `get_dummies()` de Pandas. En ese caso hay que tener en 
 - La opción `drop_first = True` descarta la primera categoría en orden alfabético (`Female`), devolviendo únicamente la dummy para `Male`.
 
 ```{code-cell} python
-data_penguins['sex'].get_dummies(drop_first = True)
+pd.get_dummies(data_penguins['sex'], drop_first = True)
 ```
 
 ```{admonition} **IMPORTANTE**
@@ -623,6 +650,18 @@ print(modelo2.summary())
 `statsmodels` nombra automáticamente la dummy como `sex[T.Male]`, indicando que representa el efecto de ser macho respecto de ser hembra. La ecuación del modelo ajustado es:
 
 $$\hat{y} = -5410.3 + 46.98~x_1 + 347.85~x_2$$
+
+#### Interpretación de los coeficientes
+
+- $\hat{\beta_1} = 46.98$: por cada milímetro adicional de longitud de aleta, el modelo predice que la masa corporal aumenta, en promedio, 46.98 g, manteniendo constante el sexo del animal.
+
+- $\hat{\beta_2} = 347.85$: el modelo ajustado predice que un pingüino macho pesa, en promedio, 347.85 g más que una hembra con la misma longitud de aleta. Este es el desplazamiento vertical entre las dos rectas ajustadas.
+
+Nótese que el coeficiente de `flipper_length_mm` cambió, al pasar de 49.7 (Modelo 1) a 47.0 (Modelo 2). Esto es esperable: en el modelo simple, ese coeficiente absorbía parte del efecto del sexo (que está correlacionado con la longitud de la aleta); al controlarlo explícitamente, la estimación del efecto parcial de la aleta se ajusta.
+
+#### Las rectas ajustadas son paralelas
+
+Cuando se incorpora una variable dummy de forma aditiva, el modelo produce dos rectas paralelas: una para cada categoría, con la misma pendiente $\hat{\beta}_1}$ pero distinta ordenada al origen. 
 
 De acuerdo al valor que tome $x_2$ podemos diferenciar entre un modelo ajustado para machos y otro para hembras:
 
@@ -657,156 +696,23 @@ $$
 
 </div>
 
-#### Interpretación de los coeficientes
+Representemos estas rectas gráficamente. Para ello, haremos uso del método `predict` presentado anteriormente.
 
-- $\hat{\beta_1} = 46.98$: por cada milímetro adicional de longitud de aleta, el modelo predice que la masa corporal aumenta, en promedio, 46.98 g, manteniendo constante el sexo del animal.
+```{code-cell} python
+# Primero generamos los valores predichos de la respuesta para los registros del dataset
+data_penguins['predichos'] = modelo2.predict(data_penguins)
 
-- $\hat{\beta_2} = 347.85$: el modelo ajustado predice que un pingüino macho pesa, en promedio, 347.85 g más que una hembra con la misma longitud de aleta. Este es el desplazamiento vertical entre las dos rectas ajustadas.
+# Luego los utilizamos para representar las rectas
+fig, ax = plt.subplots(figsize = (8, 5))
 
-Nótese que el coeficiente de `flipper_length_mm` cambió, al pasar de 49.7 (Modelo 1) a 47.0 (Modelo 2). Esto es esperable: en el modelo simple, ese coeficiente absorbía parte del efecto del sexo (que está correlacionado con la longitud de la aleta); al controlarlo explícitamente, la estimación del efecto parcial de la aleta se ajusta.
+sns.scatterplot(x = 'flipper_length_mm', y = 'body_mass_g', hue = 'sex', palette = colores, s = 50, data = data_penguins, edgecolor = None, ax = ax)
+sns.lineplot(x = 'flipper_length_mm', y = 'predichos', hue = 'sex', palette = colores, lwd = 1.8, data = data_penguins, ax = ax)
 
-#### Las rectas ajustadas son paralelas
+ax.set_xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
+ax.set_ylabel('Masa corporal (g)', fontweight = 'bold')
 
-Cuando se incorpora una variable dummy de forma aditiva, el modelo produce dos rectas paralelas: una para cada categoría, con la misma pendiente $\hat{\beta}_1}$ pero distinta ordenada al origen. 
-
-Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
-
-![Untitled](./imagenes/Untitled4.png)
-
-Pero cómo sabemos si una recta es mejor que otra? 
-
-## Método de los mínimos cuadrados
-
-Para realizar el ajuste del modelo, en este caso una recta, a los datos vamos a utilizar un método llamado “mínimos cuadrados”. El objetivo del mismo es encontrar la recta que produzca el menor error general.
-
-![Untitled](./imagenes/Untitled5.png)
-
-El procedimiento para calcular el error general de una recta es el siguiente:
-
-1. Tomamos una de las rectas candidatas a ser elegidas
-2. Calculamos el error que hay entre el valor medido/real y el valor del modelo/estimado, al cuál llamamos residuo
-3. Elevamos esta diferencia/error al cuadrado
-4. Obtenemos el error total sumando los errores cuadrados para cada punto
-
-$$
-L = (\hat{y}_1 - (a + b x_1))^2 + (\hat{y}_2 - (a + b x_2))^2 + ... + (\hat{y}_n - (a + b x_n))^2
-$$
-
-![Untitled](./imagenes/Untitled6.png)
-
-Entonces, en nuestro caso, probaríamos con diferentes rectas y calcularíamos el error general que cada una produce. 
-
-![Untitled](./imagenes/Untitled7.png)
-
-![Untitled](./imagenes/Untitled8.png)
-
-![Untitled](./imagenes/Untitled9.png)
-
-![Untitled](./imagenes/Untitled10.png)
-
-En nuestro ejemplo, vemos que a medida que rotamos la recta en sentido horario, el error disminuya hasta un punto y luego vuelve a aumentar. Lo que estamos observando es que el error comienza a disminuir a medida que la pendiente aumenta, hasta cierto punto, donde alcanzamos un error mínimo. A partir de este punto el error vuelve a aumentar.  
-
-![Untitled](./imagenes/Untitled11.png)
-
-Esto nos indica que estamos frente a un problema de optimización. Si consiguiéramos la ecuación de la parábola que estamos viendo arriba, podríamos buscar el mínimo de la misma usando la primer derivada. Resulta que esa ecuación si la conocemos y es la que vimos más arriba:
-
-$$
-L = (\hat{y}_1 - (a + b x_1))^2 + (\hat{y}_2 - (a + b x_2))^2 + ... + (\hat{y}_n - (a + b x_n))^2
-$$
-
-La cuál podemos rescribir como:
-
-$$
-L = \sum_{i = 1}^{n}[y_i - (a + bx_i)]^2
-$$
-
-Entonces, para obtener los valores de a y b solo debemos realizar las correspondientes derivadas parciales:³
-
-$$
-\frac{\partial L}{\partial b} = \sum_{i = 1}^{n}(-2) x_i[y_i - (a + bx_i)] = 0
-$$
-
-$$
-\frac{\partial L}{\partial a} = \sum_{i = 1}^{n}(-2)[y_i - (a + bx_i)] = 0
-$$
-
-Si despejamos la ecuaciones anteriores obtenemos los siguientes valores para a y b:
-
-$$
-b = \frac{n\sum_{i = 1}^{n}{x_i y_i} - (\sum_{i = 1}^{n}{x_i})(\sum_{i = 1}^{n}{y_i})}{n(\sum_{i = 1}^{n}{x_i^2})-(\sum_{i = 1}^{n}{x_i})^2}
-$$
-
-$$
-a = \frac{\sum_{i = 1}^{n}{y_i} - b\sum_{i = 1}^{n}{x_i}}{n} = \bar{y} - b\bar{x}
-$$
-
-Donde:
-
-$\bar{y_i}$ = media de los valores de y
-
-$\bar{x_i}$ = media de los valores de x
-
-### Interpretación de los coeficientes
-
-El término “a” es la ordenada al origen y nos indica el valor de la variable dependiente cuando la independiente es 0
-
-El término “b” es la pendiente de la recta y nos indica cómo es la variación de la variable dependiente con respecto a la independiente
-
-![Untitled](./imagenes/Untitled12.png)
-
-## Ejemplo
-
-Ir a la notebook que preparamos sobre el tema
-
-## Residuos
-
-El residuo es la diferencia entre el valor medido de la variable dependiente, y, el valor estimado por nuestro modelo. La suma de residuos fue el valor que minimizamos para obtener la mejor recta que representaba a nuestros datos. 
-
-$$
-Y = \hat{Y} + Residuos
-$$
-
-Estudiar los residuos es muy importante para verificar si un modelo lineal es el adecuado para nuestros datos. Cuando graficamos los residuos para los diferentes valores de la variable independiente, x, los mismos deben presentar una distribución aleatoria como en la figura de abajo (1) a la izquierda. Sin embargo, si los residuos se distribuyen de alguna forma en particular, como la parábola de la imagen de la derecha, entonces el modelo no es el adecuado. En este último caso, lo que sucede es que para valores bajos y altos de la variable independiente, el modelo subestima a la variable dependiente, mientras que para los valores intermedios el modelo sobrestima a la variable dependiente. Al ver el gráfico de residuos concluimos que el modelo debe ser revisado.
-
-![Untitled](./imagenes/Untitled13.png)
-
-Variables Categóricas
-
-Las variables categóricas también pueden ser incluidas como variables explicativas en la regresión lineal. Algunos ejemplos pueden ser:
-
-- Género de la persona (Femenino-Masculino)
-- Barrio de la propiedad (Martin - La Sexta - Centro)
-- Tiene pileta? (Tiene - No tiene)
-
-Cuando usamos variables categóricas no se incluyen todas las categorías sino, n-1, puesto que con esa cantidad, ya estamos representando todas las opciones posibles. Por ejemplo:
-
-Género:
-
-- Femenino:
-    - 0 - No
-    - 1 - Sí
-
-Barrio:
-
-- Martin:
-    - 0 - No
-    - 1 - Sí
-- La Sexta:
-    - 0 - No
-    - 1 - Sí
-
-Tiene pileta:
-
-- Tiene:
-    - 0 - No
-    - 1 - Sí
-    
-    ![Untitled](./imagenes/Untitled14.png)
-    
-
-Entonces, las ecuaciones con los diferentes casos se ven de esta forma:
-
-![Untitled](./imagenes/Untitled15.png)
+plt.show()
+```
 
 # Suavizado y Splines
 
