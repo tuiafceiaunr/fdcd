@@ -512,6 +512,163 @@ plt.show()
 
 `line = 's'` traza la línea de referencia pasando por el primer y tercer cuartil de los datos (línea estandarizada), que es la opción más robusta para evaluar normalidad: no se ve afectada por valores extremos en las colas y es la convención más usada en la literatura estadística aplicada.
 
+## Regresión lineal múltiple
+
+En la práctica, la variable respuesta suele depender de más de una variable predictora. El modelo de regresión lineal múltiple extiende el caso simple incorporando $p$ predictores:
+
+$$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p + \varepsilon$$
+
+La estimación de los coeficientes sigue el mismo principio OLS que en el caso simple: se buscan los valores $\hat{\beta_0}$, $\hat{\beta_1}$, $\ldots$, $\hat{\beta_p}$ que minimizan la SCE. En la práctica, nunca calcularemos estas estimaciones a mano: es lo que hace `statsmodels` internamente.
+
+### Ejemplo: predicción de masa corporal en pingüinos del Archipiélago Palmer
+
+Volvemos al dataset `penguins` para ajustar un modelo que prediga la masa corporal (`body_mass_g`) a partir de la longitud de la aleta (`flipper_length_mm`) y el sexo del animal (`sex`).
+
+Desde la Unidad 3 sabemos que la relación entre ambas variables cuantitativas es lineal, intensa y de dirección positiva: los pingüinos más pesados tienden a tener aletas más largas. Eso nos da fundamento suficiente para construir un modelo para la masa corporal que considere a la longitud de la aleta como predictor. Pero, ¿tiene sentido incorporar también el sexo como predictor?
+
+```{code-cell} python
+# Nos quedamos únicamente con los casos completos
+data_penguins = sns.load_dataset('penguins').dropna()
+
+plt.figure(figsize = (8,5))
+
+sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm', hue = 'sex', s = 50, data = data_penguins)
+
+plt.xlabel('Masa corporal (g)', fontweight = 'bold')
+plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
+
+plt.show()
+```
+
+El gráfico muestra que, para una misma longitud de aleta, los pingüinos macho tienden a ser más pesados que las hembras. Esto sugiere que incorporar el sexo como predictor puede mejorar el ajuste respecto de un modelo simple.
+
+Antes de incorporarlo, ajustemos el modelo que sólo incluye la longitud de la aleta como predictor:
+
+```{code-cell} python
+# Ajustamos modelo de regresión lineal simple (un único predictor)
+modelo1 = smf.ols(formula = 'body_mass_g ~ flipper_length_mm', data = data_penguins).fit()
+print(modelo1.summary())
+```
+
+La ecuación del modelo ajustado es:
+
+$$\hat{y} = -5780.8 + 49.7~x$$
+
+Este modelo explica el 75.9% de la variabilidad en la masa corporal (R<sup>2</sup> = 0.759). Su representación gráfica:
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize = (8, 5))
+
+sns.regplot(x = 'body_mass_g', y = 'flipper_length_mm', data = data_penguins,
+            scatter_kws = {'color': '#8a2944', 'edgecolor': '#8a2944', 's': 50},
+            line_kws = {'color': 'black', 'linewidth': 1.8},
+            ci=None,
+            ax = ax)
+
+plt.figure(figsize = (8,5))
+
+plt.xlabel('Masa corporal (g)', fontweight = 'bold')
+plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
+
+plt.show()
+```
+
+### Incorporar una variable cualitativa: variables *dummy*
+
+Las variables predictoras no tienen por qué ser numéricas. Una variable cualitativa (o categórica) puede incorporarse al modelo mediante la creación de **variables indicadoras o *dummy***.
+
+Para una variable con dos categorías (por ejemplo, el sexo del pingüino: `Male` / `Female`), se define una variable que toma el valor 1 para una de las categorías y 0 para la otra:
+
+$$X_{2} = \begin{cases}
+    1, & \text{si es un pingüino macho}.\\
+    0, & \text{si es un pingüino hembra}.
+  \end{cases}$$
+  
+La categoría codificada con 0 se denomina **categoría de referencia**: todos los coeficientes del modelo se interpretan en relación a ella. En este caso, la hembra es la referencia, de modo que $\beta_2$ mide cuánto difiere la masa corporal promedio de un macho respecto de una hembra *con la misma longitud de aleta*.
+
+De este modo, el modelo con dos predictores queda:
+
+$$Y = \beta_0 + \beta_1~X_1 + \beta_2~X_2 + \varepsilon$$
+
+donde $X_1$ es la longitud de la aleta y $X_2$ es el sexo representado a través de la variable indicadora.
+
+Podemos crear la variable dummy de varias maneras. Una posibilidad es usar una función *lambda*:
+
+```{code-cell} python
+data_penguins['male_dummy'] = data_penguins['sex'].apply(lambda x: 1 if x == 'Male' else 0)
+```
+
+Otra es usar el método `get_dummies()` de Pandas. En ese caso hay que tener en cuenta dos cuestiones:
+
+- El método genera una dummy por categoría (una para `Female` y otra para `Male`), pero sólo necesitamos $k − 1 = 1$, donde $k$ es el número de categorías de la variable categórica.
+
+- La opción `drop_first = True` descarta la primera categoría en orden alfabético (`Female`), devolviendo únicamente la dummy para `Male`.
+
+```{code-cell} python
+data_penguins['sex'].get_dummies(drop_first = True)
+```
+
+```{admonition} **IMPORTANTE**
+:class: warning
+Si la variable categórica tiene $k$ niveles (por ejemplo, tres especies de pingüinos), se crean $k - 1$ variables dummy. Incluir las $k$ generaría **colinealidad perfecta** entre los predictores —conocida como la *trampa de las variables dummy*— porque la suma de todas las dummies sería siempre igual a 1, que es idéntica a la columna de la constante. La categoría excluida actúa como categoría de referencia y su efecto queda capturado en $\beta_0$.
+```
+
+Sin embargo, al usar `smf.ols` no es necesario crear la dummy manualmente: alcanza con incluir la variable categórica directamente en la fórmula. `statsmodels` genera las dummies automáticamente, tomando como referencia la primera categoría en orden alfabético (`Female` en este caso). Para agregar un predictor, se usa el símbolo `+` a la derecha del `~`:
+
+```{code-cell} python
+modelo2 = smf.ols(formula = 'body_mass_g ~ flipper_length_mm + sex', data = data_penguins).fit()
+print(modelo2.summary())
+```
+
+`statsmodels` nombra automáticamente la dummy como `sex[T.Male]`, indicando que representa el efecto de ser macho respecto de ser hembra. La ecuación del modelo ajustado es:
+
+$$\hat{y} = -5410.3 + 46.98~x_1 + 347.85~x_2$$
+
+De acuerdo al valor que tome $x_2$ podemos diferenciar entre un modelo ajustado para machos y otro para hembras:
+
+<div style="background-color:rgba(242,163,94,0.5);
+padding:12px;
+border-radius:8px;
+margin-bottom:12px;
+color:black;">
+
+**Recta ajustada para pingüinos machos ($x_2 = 1$)**
+
+$$
+\hat{y} =
+{−5062.45} +
+{46.98}~x_{1}
+$$
+
+</div>
+
+<div style="background-color:rgba(176,90,114,0.5);
+padding:12px;
+border-radius:8px;
+color:black;">
+
+**Recta ajustada para pingüinos hembra ($x_2 = 0$)**
+
+$$
+\hat{y} =
+{−5410.3} +
+{46.98}~x_{1}
+$$
+
+</div>
+
+#### Interpretación de los coeficientes
+
+- $\hat{\beta_1} = 46.98$: por cada milímetro adicional de longitud de aleta, el modelo predice que la masa corporal aumenta, en promedio, 46.98 g, manteniendo constante el sexo del animal.
+
+- $\hat{\beta_2} = 347.85$: el modelo ajustado predice que un pingüino macho pesa, en promedio, 347.85 g más que una hembra con la misma longitud de aleta. Este es el desplazamiento vertical entre las dos rectas ajustadas.
+
+Nótese que el coeficiente de `flipper_length_mm` cambió, al pasar de 49.7 (Modelo 1) a 47.0 (Modelo 2). Esto es esperable: en el modelo simple, ese coeficiente absorbía parte del efecto del sexo (que está correlacionado con la longitud de la aleta); al controlarlo explícitamente, la estimación del efecto parcial de la aleta se ajusta.
+
+#### Las rectas ajustadas son paralelas
+
+Cuando se incorpora una variable dummy de forma aditiva, el modelo produce dos rectas paralelas: una para cada categoría, con la misma pendiente $\hat{\beta}_1}$ pero distinta ordenada al origen. 
+
 Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
 
 ![Untitled](./imagenes/Untitled4.png)
