@@ -511,6 +511,101 @@ plt.show()
 
 `line = 's'` traza la línea de referencia pasando por el primer y tercer cuartil de los datos (línea estandarizada), que es la opción más robusta para evaluar normalidad: no se ve afectada por valores extremos en las colas y es la convención más usada en la literatura estadística aplicada.
 
+## Regresión lineal múltiple
+
+En la práctica, la variable respuesta suele depender de más de una variable predictora. El modelo de regresión lineal múltiple extiende el caso simple incorporando $p$ predictores:
+
+$$Y = \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p + \varepsilon$$
+
+La estimación de los coeficientes sigue el mismo principio OLS que en el caso simple: se buscan los valores $\hat{\beta_0}$, $\hat{\beta_1}$, $\ldots$, $\hat{\beta_p}$ que minimizan la SCE. En la práctica, nunca calcularemos estas estimaciones a mano: es lo que hace `statsmodels` internamente.
+
+### Ejemplo: predicción de masa corporal en pingüinos del Archipiélago Palmer
+
+Volvemos al dataset `penguins` para ajustar un modelo que prediga la masa corporal (`body_mass_g`) a partir de la longitud de la aleta (`flipper_length_mm`) y el sexo del animal (`sex`).
+
+Desde la Unidad 3 que observamos que la relación entre ambas variables cuantitativas es lineal, intensa y que los pingüinos más pesados tienden a tener aletas más largas (dirección positiva), por lo cual eso nos daría fundamento suficiente para construir un modelo para la masa corporal que considere a la longitud de la aleta como predictor. Pero... ¿tiene sentido incorporar el sexo como un segundo predictor?
+
+```{code-cell} python
+# Nos quedamos únicamente con los casos completos
+data_penguins = sns.load_dataset('penguins').dropna()
+
+plt.figure(figsize = (8,5))
+
+sns.scatterplot(x = 'body_mass_g', y = 'flipper_length_mm', hue = 'sex', s = 50, data = data_penguins)
+
+plt.xlabel('Masa corporal (g)', fontweight = 'bold')
+plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
+
+plt.show()
+```
+
+El gráfico muestra que, para una misma longitud de aleta, los pingüinos macho tienden a ser más pesados que las hembras. Esto sugiere que incorporar el sexo como predictor puede constituir una mejora en comparación con un modelo simple.
+
+Antes de incorporar el sexo, ajustemos el modelo que sólo incluye a la longitud de la aleta como predictor.
+
+```{code-cell} python
+# Ajustamos modelo de regresión lineal simple (un único predictor)
+modelo1 = smf.ols(formula = 'body_mass_g ~ flipper_length_mm', data = data_penguins).fit()
+print(modelo1.summary())
+```
+
+La ecuación del modelo ajustado, que explica un 75.9 % de la variabilidad en la respuesta, es:
+
+$$\hat{y} = -5780.8 + 49.7~x$$
+
+La representación gráfica del ajuste es:
+
+```{code-cell} python
+fig, ax = plt.subplots(figsize = (8, 5))
+
+sns.regplot(x = 'body_mass_g', y = 'flipper_length_mm', data = data_penguins,
+            scatter_kws = {'color': '#8a2944', 'edgecolor': '#8a2944', 's': 50},
+            line_kws = {'color': 'black', 'linewidth': 1.8},
+            ci=None,
+            ax = ax)
+
+plt.figure(figsize = (8,5))
+
+plt.xlabel('Masa corporal (g)', fontweight = 'bold')
+plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
+
+plt.show()
+```
+
+### Incorporar una variable cualitativa: variables *dummy*
+
+Las variables predictoras no tienen por qué ser numéricas. Una variable cualitativa (o categórica) puede incorporarse al modelo mediante la creación de variables indicadoras o *dummy*.
+
+Para una variable con dos categorías (por ejemplo, el sexo del pingüino: `Male` / `Female`), se define una variable que toma el valor 1 para una de las categorías y 0 para la otra:
+
+$$X_{2} = \begin{cases}
+    1, & \text{si es un pingüino macho}.\\
+    0, & \text{si es un pingüino hembra}.
+  \end{cases}$$
+  
+La categoría codificada con 0 se denomina **categoría de referencia**: todos los coeficientes del modelo se interpretan en relación a ella. En este caso, la hembra es la referencia.
+
+De este modo, el modelo con dos predictores queda:
+
+$$Y = \beta_0 + \beta_1~X_1 + \beta_2~X_2 + \varepsilon$$
+
+donde $X_1$ = longitud de la aleta y $X_2$ = sexo, representado a través de una variable indicadora.
+
+Podemos realizar la operación de creación de la variable indicadora de varias maneras. Una posibilidad es utilizar una función anónima *lambda* en combinación con una estructura condicional:
+
+```{code-cell} python
+data_penguins['male_dummy'] = data_penguins['sex'].apply(lambda x: 1 if x == 'Male' else 0)
+```
+
+Otra posibilidad es utilizar el método `get_dummies()` de Pandas. Si optamos por esta posibilidad tenemos que tener en cuenta dos cuestiones importantes:
+
+- El método genera una variable dummy por categoría. Es decir, en nuestro caso nos generaría una para hembras y una para machos. Sin embargo, sólo es necesario una dummy.
+
+- En relación al punto anterior, podemos elegir la opción `drop_first = True` para que sólo nos devuelva $k-1$ dummies, para una variable con $k$ categorías. Si este es el caso, tener en cuenta que dropea la correspondiente a la primera categoría en orden alfabético. Es decir
+
+```{code-cell} python
+
+
 Supongamos que tenemos dos variables, x e y, que presentan una relación lineal visible entre ellas. Si queremos modelar el fenómeno de la imagen de abajo, podríamos usar una recta como vemos en la imagen de abajo.
 
 ![Untitled](./imagenes/Untitled4.png)
