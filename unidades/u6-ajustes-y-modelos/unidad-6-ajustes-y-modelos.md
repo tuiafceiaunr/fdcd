@@ -17,7 +17,7 @@ Un modelo es una representación simplificada de un fenómeno que queremos estud
 
 Un ejemplo célebre es el del arquitecto Antoni Gaudí, quien para diseñar los arcos de la Sagrada Familia construyó modelos físicos colgantes: una cadena suspendida de dos puntos forma, por efecto de la gravedad, una curva llamada *catenaria* que, invertida, describe la forma de arco con mayor resistencia estructural. Gaudí usó ese modelo físico —simple, manipulable— para entender y diseñar estructuras de gran complejidad.
 
-```{figure} imagenes/sagrada-familia.jpeg
+```{figure} imagenes/sagrada-familia.jpg
 ---
 width: 70%
 align: center
@@ -29,7 +29,7 @@ En matemática y estadística encontramos la misma lógica. El libro *Cálculo d
 
 ```{figure} imagenes/modelo-stewart.png
 ---
-width: 70%
+width: 40%
 align: center
 ---
 Modelo que expresa la temperatura $T$ (en °C) en función de la altura $h$ (en kilómetros).
@@ -248,7 +248,7 @@ def fmt(x):
 # Construir salida estilo statsmodels
 output_coef = """
 ====================================================================================
-                       coef    std err          t      P>|t|      [0.025      0.975]
+                     coef    std err          t      P>|t|        [0.025      0.975]
 ------------------------------------------------------------------------------------
 """
 
@@ -267,7 +267,7 @@ for idx, row in coef_table.iterrows():
         f"{high:>13}\n"
     )
 
-output_coef += "=============================================================================="
+output_coef += "===================================================================================="
 
 print(output_coef)
 ```
@@ -383,7 +383,7 @@ En nuestro ejemplo podemos obtenerlo directamente del objeto `modelo`:
 print(f"R² = {modelo.rsquared:.4f}")
 ```
 
-Un $R^2 = 0.98$ indica que el 98% de la variabilidad en los precios de los departamentos queda explicada por la superficie. El 2% restante corresponde a factores no contemplados en el modelo.
+Un $R^2 = 0.983$ indica que el 98.3% de la variabilidad en los precios de los departamentos queda explicada por la superficie. El 1.7% restante corresponde a factores no contemplados en el modelo.
 
 ```{admonition} **Advertencia importante**
 :class: warning
@@ -581,7 +581,7 @@ print(modelo1.summary())
 
 La ecuación del modelo ajustado es:
 
-$$\hat{y} = -5872.1 + 50.1~x$$
+$$\hat{y} = -5872.1 + 50.2~x$$
 
 Este modelo explica el 76.2% de la variabilidad en la masa corporal (R<sup>2</sup> = 0.762). Su representación gráfica:
 
@@ -589,7 +589,7 @@ Este modelo explica el 76.2% de la variabilidad en la masa corporal (R<sup>2</su
 fig, ax = plt.subplots(figsize = (8, 5))
 
 sns.regplot(x = 'flipper_length_mm', y = 'body_mass_g', data = data_penguins,
-            scatter_kws = {'color': '#8a2944', 'edgecolor': '#8a2944', 's': 50},
+            scatter_kws = {'color': '#8a2944', 'edgecolor': None, 's': 50},
             line_kws = {'color': 'black', 'linewidth': 1.8},
             ci = None,
             ax = ax)
@@ -657,11 +657,11 @@ $$\hat{y} = -5410.3 + 46.98~x_1 + 347.85~x_2$$
 
 - $\hat{\beta_2} = 347.85$: el modelo ajustado predice que un pingüino macho pesa, en promedio, 347.85 g más que una hembra con la misma longitud de aleta. Este es el desplazamiento vertical entre las dos rectas ajustadas.
 
-Nótese que el coeficiente de `flipper_length_mm` cambió, al pasar de 49.7 (Modelo 1) a 47.0 (Modelo 2). Esto es esperable: en el modelo simple, ese coeficiente absorbía parte del efecto del sexo (que está correlacionado con la longitud de la aleta); al controlarlo explícitamente, la estimación del efecto parcial de la aleta se ajusta.
+Nótese que el coeficiente de `flipper_length_mm` cambió, al pasar de 50.2 (Modelo 1) a 47.0 (Modelo 2). Esto es esperable: en el modelo simple, ese coeficiente absorbía parte del efecto del sexo (que está correlacionado con la longitud de la aleta); al controlarlo explícitamente, la estimación del efecto parcial de la aleta se ajusta.
 
 #### Las rectas ajustadas son paralelas
 
-Cuando se incorpora una variable dummy de forma aditiva, el modelo produce dos rectas paralelas: una para cada categoría, con la misma pendiente $\hat{\beta}_1}$ pero distinta ordenada al origen. 
+Cuando se incorpora una variable dummy de forma aditiva, el modelo produce dos rectas paralelas: una para cada categoría, con la misma pendiente $\hat{\beta_1}$ pero distinta ordenada al origen. 
 
 De acuerdo al valor que tome $x_2$ podemos diferenciar entre un modelo ajustado para machos y otro para hembras:
 
@@ -706,7 +706,7 @@ data_penguins['predichos'] = modelo2.predict(data_penguins)
 fig, ax = plt.subplots(figsize = (8, 5))
 
 sns.scatterplot(x = 'flipper_length_mm', y = 'body_mass_g', hue = 'sex', palette = colores, s = 50, data = data_penguins, edgecolor = None, ax = ax)
-sns.lineplot(x = 'flipper_length_mm', y = 'predichos', hue = 'sex', palette = colores, lwd = 1.8, data = data_penguins, ax = ax)
+sns.lineplot(x = 'flipper_length_mm', y = 'predichos', hue = 'sex', palette = colores, linewidth = 1.8, data = data_penguins, ax = ax)
 
 ax.set_xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
 ax.set_ylabel('Masa corporal (g)', fontweight = 'bold')
