@@ -566,7 +566,8 @@ sns.scatterplot(x = 'flipper_length_mm', y = 'body_mass_g', hue = 'sex', palette
 plt.xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
 plt.ylabel('Masa corporal (g)', fontweight = 'bold')
 
-plt.legend(title = 'Sexo', labels = ['Macho', 'Hembra'])
+handles, _ = plt.gca().get_legend_handles_labels()
+plt.legend(title = 'Sexo', labels = ['Macho', 'Hembra'], title_fontproperties = {'weight': 'bold'})
 
 plt.show()
 ```
@@ -714,7 +715,7 @@ ax.set_xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
 ax.set_ylabel('Masa corporal (g)', fontweight = 'bold')
 
 handles, _ = ax.get_legend_handles_labels()
-ax.legend(title = 'Sexo', handles = handles, labels = ['Macho', 'Hembra'])
+ax.legend(title = 'Sexo', handles = handles, labels = ['Macho', 'Hembra'], title_fontproperties = {'weight': 'bold'})
 
 plt.show()
 ```
