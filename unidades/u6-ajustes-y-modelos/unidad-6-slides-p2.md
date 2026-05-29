@@ -1,4 +1,4 @@
-# Diapositivas - Parte 2
+# Diapositivas - Parte 1
 
 Modelo de regresión lineal simple. Parámetros del modelo. Función de regresión. Residuos. Estimación de los parámetros del modelo. Método de mínimos cuadrados. Coeficiente de determinación (R<sup>2</sup>). Regresión lineal múltiple. Generación de variables dummy. R<sup>2</sup> ajustado. MSE, RMSE y MAE.
 
