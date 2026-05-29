@@ -1,4 +1,4 @@
-# Diapositivas - Parte 1
+# Diapositivas - Introducción
 
 Presentación introductoria al análisis de regresión.
 

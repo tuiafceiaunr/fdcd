@@ -1,4 +1,4 @@
-# Diapositivas - Parte 3
+# Diapositivas - Parte 2
 
 Inferencia sobre los parámetros de regresión: pruebas de hipótesis. Redflags en un análisis de regresión lineal: no linealidad en la relación respuesta-predictor, falta de normalidad, heterocedasticidad, *outliers* y observaciones influyentes, multicolinearidad. Algoritmos de optimización iterativos.
 

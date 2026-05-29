@@ -214,7 +214,7 @@ $$\hat{\beta}_0 = \bar{y} - \hat{\beta}_1\,\bar{x}$$
 
 donde $\bar{x}$ y $\bar{y}$ son las medias muestrales de $X$ e $Y$, y $s_x^2$ es la varianza muestral de $X$.
 
-### Ajuste en Python con statsmodels
+### Ajuste en Python con **statsmodels**
 
 Para realizar el ajuste en Python vamos a utilizar el módulo `statsmodels`, que provee herramientas para la estimación de modelos estadísticos, la realización de tests de hipótesis y la exploración de datos.
 
@@ -566,7 +566,7 @@ sns.scatterplot(x = 'flipper_length_mm', y = 'body_mass_g', hue = 'sex', palette
 plt.xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
 plt.ylabel('Masa corporal (g)', fontweight = 'bold')
 
-ax.legend(title = 'Sexo', labels = ['Macho', 'Hembra'])
+plt.legend(title = 'Sexo', labels = ['Macho', 'Hembra'])
 
 plt.show()
 ```
@@ -713,7 +713,8 @@ sns.lineplot(x = 'flipper_length_mm', y = 'predichos', hue = 'sex', palette = co
 ax.set_xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
 ax.set_ylabel('Masa corporal (g)', fontweight = 'bold')
 
-ax.legend(title = 'Sexo', labels = ['Macho', 'Hembra'])
+handles, _ = ax.get_legend_handles_labels()
+ax.legend(title = 'Sexo', handles = handles, labels = ['Macho', 'Hembra'])
 
 plt.show()
 ```
