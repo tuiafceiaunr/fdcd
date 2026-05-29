@@ -29,7 +29,7 @@ En matemática y estadística encontramos la misma lógica. El libro *Cálculo d
 
 ```{figure} imagenes/modelo-stewart.png
 ---
-width: 40%
+width: 35%
 align: center
 ---
 Modelo que expresa la temperatura $T$ (en °C) en función de la altura $h$ (en kilómetros).
@@ -96,7 +96,7 @@ $$\hat{y} = \hat{\beta_0} + \hat{\beta_1}x$$
 
 ### Ejemplo de trabajo
 
-Contamos con datos sobre la superficie (en m^2) y el precio de venta (en USD) de 10 departamentos:
+Contamos con datos sobre la superficie (en m<sup>2</sup>) y el precio de venta (en USD) de 10 departamentos:
 
 ```{code-cell} python
 :tags: [remove-input]
@@ -247,9 +247,9 @@ def fmt(x):
 
 # Construir salida estilo statsmodels
 output_coef = """
-====================================================================================
+======================================================================================
                      coef    std err          t      P>|t|        [0.025      0.975]
-------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 """
 
 for idx, row in coef_table.iterrows():
@@ -267,7 +267,7 @@ for idx, row in coef_table.iterrows():
         f"{high:>13}\n"
     )
 
-output_coef += "===================================================================================="
+output_coef += "======================================================================================"
 
 print(output_coef)
 ```
@@ -563,8 +563,10 @@ plt.figure(figsize = (8,5))
 
 sns.scatterplot(x = 'flipper_length_mm', y = 'body_mass_g', hue = 'sex', palette = colores, s = 50, data = data_penguins, edgecolor = None)
 
-plt.xlabel('Masa corporal (g)', fontweight = 'bold')
-plt.ylabel('Longitud de la aleta (mm)', fontweight = 'bold')
+plt.xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
+plt.ylabel('Masa corporal (g)', fontweight = 'bold')
+
+ax.legend(title = 'Sexo', labels = ['Macho', 'Hembra'])
 
 plt.show()
 ```
@@ -706,12 +708,29 @@ data_penguins['predichos'] = modelo2.predict(data_penguins)
 fig, ax = plt.subplots(figsize = (8, 5))
 
 sns.scatterplot(x = 'flipper_length_mm', y = 'body_mass_g', hue = 'sex', palette = colores, s = 50, data = data_penguins, edgecolor = None, ax = ax)
-sns.lineplot(x = 'flipper_length_mm', y = 'predichos', hue = 'sex', palette = colores, linewidth = 1.8, data = data_penguins, ax = ax)
+sns.lineplot(x = 'flipper_length_mm', y = 'predichos', hue = 'sex', palette = colores, linewidth = 1.8, data = data_penguins, ax = ax, legend = False)
 
 ax.set_xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
 ax.set_ylabel('Masa corporal (g)', fontweight = 'bold')
 
+ax.legend(title = 'Sexo', labels = ['Macho', 'Hembra'])
+
 plt.show()
+```
+
+## R<sup>2</sup>2 ajustado
+
+Al agregar más predictores, la SCE nunca puede aumentar: **el $R^2$ nunca disminuye al incorporar variables**, aunque éstas no aporten información real. Esto lo convierte en una métrica poco confiable para comparar modelos con distinto número de predictores.
+
+El **$R^2$ ajustado** corrige este problema penalizando la complejidad del modelo:
+
+$$R^2_{\text{adj}} = 1 - \frac{\text{SCE}/(n - p - 1)}{\text{SCT}/(n-1)}$$
+
+A diferencia del $R^2$, el $R^2_{\text{adj}}$ **puede disminuir** si se agrega una variable que no mejora genuinamente el ajuste. Es por eso la métrica preferida para comparar modelos.
+
+```python
+print(f"Modelo 1 — R² ajustado: {modelo.rsquared_adj:.4f}")
+print(f"Modelo 2 — R² ajustado: {modelo2.rsquared_adj:.4f}")
 ```
 
 # Suavizado y Splines
