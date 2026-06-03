@@ -339,7 +339,7 @@ plt.show()
 
 ## Evaluación del modelo
 
-Una vez ajustado el modelo, necesitamos métricas que nos digan **qué tan bien explica o predice** los datos.
+Una vez ajustado el modelo, necesitamos métricas cuantitativas que nos permitan evaluar su desempeño bajo dos enfoques: qué tan bien explica la variabilidad de los datos históricos y qué tan preciso es al predecir la variable respuesta.
 
 ### Coeficiente de Determinación ($R^2$)
 
@@ -347,9 +347,9 @@ Una vez ajustado el modelo, queremos responder: **¿qué tan bien explica el mod
 
 Para responder esa pregunta formalmente, primero pensemos en qué significa que haya variabilidad en la respuesta. En nuestro ejemplo, los precios de los departamentos no son todos iguales: van desde unos 82.000 USD hasta unos 225.000 USD. ¿Por qué? Podemos identificar dos fuentes:
 
-- **Lo que el modelo captura:** parte de esa variabilidad se explica por las diferencias en superficie. Un departamento de 130 m<sup>2</sup> es más caro que uno de 45 m<sup>2</sup> precisamente porque la variable predictora recoge esa diferencia.
+- **Variabilidad explicada (capturada por el modelo):** parte de esa variabilidad se explica por las diferencias en superficie. Un departamento de 130 m<sup>2</sup> es más caro que uno de 45 m<sup>2</sup> precisamente porque la variable predictora recoge esa diferencia.
 
-- **Lo que el modelo no captura:** la parte restante se debe a factores no incluidos en el modelo (ubicación, estado del inmueble, piso, número de ambientes, antigüedad, etc.) y a variaciones aleatorias.
+- **Variabilidad no explicada (el error):** la parte restante se debe a factores no incluidos en el modelo (ubicación, estado del inmueble, piso, número de ambientes, antigüedad, etc.) y a variaciones puramente aleatorias.
 
 Una forma natural de cuantificar la variabilidad total en $Y$ es sumar las desviaciones al cuadrado de cada observación respecto de la media $\bar{y}$. A esta cantidad la llamamos **Suma de Cuadrados Total (SCT)**:
 
@@ -409,7 +409,10 @@ Nótese que la imagen usa la notación $SS_{tot}$ y $SS_{res}$ (del inglés *Sum
 Para una explicación visual adicional del $R^2$ y de la intuición detrás de su fórmula, se recomienda el siguiente [video](https://www.youtube.com/watch?v=2AQKmw14mHM) de StatQuest.
 ```
 
-### Error Cuadrático Medio (MSE) y su Raíz (RMSE)
+### Métricas de error
+A diferencia del $R^2$, las siguientes métricas no miden proporciones, sino el tamaño promedio de nuestros errores de predicción en las unidades de la variable original.
+
+#### Error Cuadrático Medio (MSE) y su Raíz (RMSE)
 
 El **Error Cuadrático Medio** promedia los cuadrados de los residuos:
 
@@ -423,7 +426,7 @@ $$\text{RMSE} = \sqrt{\text{MSE}} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y
 
 El RMSE está expresado en las **mismas unidades que $Y$** y es la métrica más utilizada en la práctica para reportar el error de predicción.
 
-### Error Absoluto Medio (MAE)
+#### Error Absoluto Medio (MAE)
 
 El **Error Absoluto Medio** promedia los valores absolutos de los residuos:
 
@@ -431,7 +434,10 @@ $$\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|$$
 
 Al usar el valor absoluto en lugar del cuadrado, el MAE trata todos los errores de forma proporcional a su magnitud, sin penalizar especialmente los grandes. Por eso es **más robusto ante valores atípicos** que el RMSE. Se prefiere cuando el contexto no justifica penalizar más a los errores extremos.
 
-```python
+#### Cálculo de métricas en Python
+Para calcular estas métricas de error de forma automatizada, podemos recurrir al módulo `metrics` de la librería `scikit-learn` combinándolo con las predicciones del modelo:
+
+```{code-cell} python
 import numpy as np
 from sklearn.metrics import mean_squared_error, mean_absolute_error
 
@@ -443,10 +449,12 @@ mse  = mean_squared_error(y_obs, y_pred)
 rmse = np.sqrt(mse)
 mae  = mean_absolute_error(y_obs, y_pred)
 
-print(f"R²   = {r2:.4f}")
-print(f"MSE  = {mse:,.2f}  (USD²)")
-print(f"RMSE = {rmse:,.2f} (USD)")
-print(f"MAE  = {mae:,.2f}  (USD)")
+print(f"""
+R²   = {r2:.4f}
+MSE  = {mse:,.2f} (USD²)
+RMSE = {rmse:,.2f} (USD)
+MAE  = {mae:,.2f} (USD)
+""")
 ```
 
 ## Análisis de residuos
@@ -739,9 +747,11 @@ donde:
 
 A diferencia del $R^2$ estándar, el $R^2_{\text{adj}}$ **puede disminuir** si la nueva variable no aporta suficiente poder explicativo como para compensar el incremento en $p$. Por lo tanto, es la métrica de elección cuando se realiza selección de variables o comparación de modelos con diferente complejidad.
 
-```python
-print(f"Modelo 1 — R² ajustado: {modelo.rsquared_adj:.4f}")
-print(f"Modelo 2 — R² ajustado: {modelo2.rsquared_adj:.4f}")
+```{code-cell} python
+print(f"""
+Modelo 1 — R² ajustado: {modelo.rsquared_adj:.4f}
+Modelo 2 — R² ajustado: {modelo2.rsquared_adj:.4f}
+""")
 ```
 
 ## Inferencia sobre los parámetros del modelo
@@ -871,7 +881,7 @@ df = pd.read_csv('datasets/advertising.csv')
 df.head()
 ```
 
-Si analizamos, por ejemplo, el mercado cuya información se encuentra en la primera fila, el reporte nos indica que se invirtieron 230100 US$ en TV, 37800 US$ en radio y 69200 US$ en diarios/periódicos, alcanzando un volumen de ventas de 22100 unidades del producto.
+Si analizamos, por ejemplo, el mercado cuya información se encuentra en la primera fila, el reporte nos indica que se invirtieron 230100 USD en TV, 37800 USD en radio y 69200 USD en diarios/periódicos, alcanzando un volumen de ventas de 22100 unidades del producto.
 
 Para asegurarnos de que la carga fue completa y que contamos con el volumen de información esperado por la empresa, verificamos las dimensiones del DataFrame:
 
@@ -984,9 +994,9 @@ $$\widehat{\text{Sales}} = 4.6309 + 0.0544 \cdot \text{TV} + 0.1072 \cdot \text{
 
 Para consolidar el entendimiento, pongamos a prueba el modelo con un caso práctico de predicción:
 
-**Desafío de predicción:** supongamos que la empresa planea ingresar a un nuevo mercado y decide invertir 150000 US$ en TV, 30000 US$ en Radio y 60000 US$ en periódicos (Newspaper). ¿Cuáles serían las ventas esperadas?
+**Desafío de predicción:** supongamos que la empresa planea ingresar a un nuevo mercado y decide invertir 150000 USD en TV, 30000 USD en Radio y 60000 USD en periódicos (Newspaper). ¿Cuáles serían las ventas esperadas?
 
-Aquí es donde la inferencia estadística demuestra su valor práctico para el negocio. Como nuestro análisis demostró que la inversión en prensa escrita no tiene un impacto real sobre las ventas en presencia de los otros medios, los 60000 US$ destinados a prensa escrita simplemente se ignoran en el cálculo, ya que no forman parte de la ecuación del modelo óptimo.
+Aquí es donde la inferencia estadística demuestra su valor práctico para el negocio. Como nuestro análisis demostró que la inversión en prensa escrita no tiene un impacto real sobre las ventas en presencia de los otros medios, los 60000 USD destinados a prensa escrita simplemente se ignoran en el cálculo, ya que no forman parte de la ecuación del modelo óptimo.
 
 Recordando que las variables deben ingresarse en las unidades correctas (en miles de dólares), reemplazamos los valores correspondientes en nuestra fórmula:
 
@@ -994,7 +1004,7 @@ $$\widehat{\text{Sales}} = 4.6309 + 0.0544 \cdot (150) + 0.1072 \cdot (30)$$
 
 $$\widehat{\text{Sales}} = 4.6309 + 8.1600 + 3.2160 = 16.0069$$
 
-El modelo predice un volumen de ventas esperado de aproximadamente 16007 unidades ($16.0069 \times 1000$) para ese mercado. Gracias a la inferencia, no solo obtuvimos una estimación precisa, sino que le ahorramos a la empresa el costo de analizar (o realizar) una inversión ineficiente en medios tradicionales que no aportan valor.
+El modelo predice un volumen de ventas esperado de aproximadamente 16007 unidades para ese mercado. Gracias a la inferencia, no solo obtuvimos una estimación precisa, sino que le ahorramos a la empresa el costo de analizar (o realizar) una inversión ineficiente en medios tradicionales que no aportan valor.
 
 <br>
 
@@ -1015,7 +1025,7 @@ prediccion = modelo2.predict(nuevo_mercado)
 print(f"Ventas predichas (en miles de unidades): {prediccion[0]:.4f}")
 ```
 
-Como se observa, el resultado es idéntico al que obtuvimos "a mano" a partir de la ecuación del modelo ajustado.
+Como se observa, el resultado se corresponde con el que obtuvimos "a mano" a partir de la ecuación del modelo ajustado (la diferencia tiene que ver pura y exclusivamente con el redondeo de las estimaciones de los coeficientes).
 
 ## Suavizado y Splines
 
