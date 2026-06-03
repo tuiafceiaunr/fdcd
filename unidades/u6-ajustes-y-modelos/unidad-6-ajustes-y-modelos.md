@@ -11,6 +11,8 @@ kernelspec:
 
 # Unidad 6 - Ajustes y Modelos
 
+## Introducción
+
 A lo largo de esta asignatura nos hemos dedicado a explorar, limpiar, transformar y visualizar datos. Todas esas herramientas tienen un propósito común: extraer información útil de los datos para entender mejor algún fenómeno del mundo real. En esta unidad damos un paso más: **aprendemos a construir modelos**.
 
 Un modelo es una representación simplificada de un fenómeno que queremos estudiar. Al abstraer lo esencial y dejar de lado lo accesorio, un modelo nos permite ver con más claridad las relaciones entre las partes del fenómeno, que de otro modo quedarían ocultas en la complejidad del contexto. Esta idea es mucho más antigua que la ciencia de datos: los modelos matemáticos son una herramienta central en casi todas las disciplinas científicas y técnicas.
@@ -735,9 +737,26 @@ print(f"Modelo 1 — R² ajustado: {modelo.rsquared_adj:.4f}")
 print(f"Modelo 2 — R² ajustado: {modelo2.rsquared_adj:.4f}")
 ```
 
-# Suavizado y Splines
+## Inferencia sobre los parámetros del modelo
 
-## Suavizado
+Hasta ahora usamos el modelo ajustado con dos propósitos: describir la relación entre las variables e interpretar los coeficientes estimados. Pero hay una pregunta que aún no respondimos formalmente: ¿podemos confiar en que esos coeficientes reflejan una relación real, o podrían ser simplemente el resultado del azar?
+
+Esta pregunta es el corazón de la inferencia estadística sobre los parámetros del modelo.
+
+### El problema de la muestra
+
+Los datos con los que ajustamos el modelo son siempre **una muestra de una población más grande.** Si repitiéramos el estudio con una muestra diferente —otros departamentos, otros pingüinos— es lógico pensar que, como estaríamos partiendo de un conjunto diferente de datos, obtendríamos valores ligeramente distintos para $\hat{\beta}_0$, $\hat{\beta}_1$, etc. Esto no es un defecto del método sino una consecuencia inevitable de trabajar con datos muestrales.
+
+A pesar de que asumimos que los parámetros del modelo ($\beta_0$, $\beta_1$, etc.) son valores fijos, lo que esto implica, sin embargo, es que sus estimadores ($\hat{\beta}_0$, $\hat{\beta}_1$, etc.) son el resultado de un proceso aleatorio (el muestreo) que, como tal, tiene su propia variabilidad. Si repitiéramos el muestreo muchas veces y ajustáramos el modelo con cada muestra, obtendríamos una distribución de valores posibles para los $\beta$-sombrero.
+
+```{admonition}
+:class: note
+Describir formalmente la distribución de los estimadores requiere herramientas de probabilidad e inferencia estadística que están fuera del alcance de este curso. Lo que sí podemos hacer es entender la intuición detrás de ese resultado y aprender a leer e interpretar lo que nos devuelve el *software*.
+```
+
+## Suavizado y Splines
+
+### Suavizado
 
 El material de esta sección fue extraído de: [http://rafalab.dfci.harvard.edu/dsbook/smoothing.html](http://rafalab.dfci.harvard.edu/dsbook/smoothing.html)
 
