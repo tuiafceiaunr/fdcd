@@ -909,7 +909,6 @@ print(modelo1.summary())
 Centraremos nuestra atención sobre la tabla de coeficientes:
 
 ```{code-cell} python
-```{code-cell} python
 :tags: [remove-input]
 
 # Tabla de coeficientes
