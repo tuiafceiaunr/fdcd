@@ -789,7 +789,61 @@ Para decidir entre ambas opciones, se evalúa qué tan "lejos"" está el coefici
 
 $$t = \frac{\hat{\beta}_1}{SE(\hat{\beta}_1)}$$
 
-Este cociente mide a cuántos errores estándar de distancia se encuentra $\hat{\beta}_1$ del valor planteado por la hipótesis nula ($\beta_1 = 0$). Cuanto mayor sea el valor absoluto de $t$ ($|t|$), más raro sería haber obtenido ese coeficiente por puro azar, aportando mayor evidencia en contra de $H_0$ y permitiendo calcular el valor $p$ que observamos en los reportes de código.
+Este cociente mide a cuántos errores estándar de distancia se encuentra $\hat{\beta}_1$ del valor planteado por la hipótesis nula ($\beta_1 = 0$). Cuanto mayor sea el valor absoluto de $t$ ($|t|$), más raro sería haber obtenido ese coeficiente por puro azar, aportando mayor evidencia en contra de $H_0$. 
+
+### El valor-$p$
+
+Para tomar la decisión final sobre qué hipótesis respaldar, usamos el valor-$p$ ($p$-value). Antes de dar su definición formal, apelemos a una analogía.
+
+#### La analogía del adivino
+Imaginemos que conocemos a una persona que dice tener el superpoder de adivinar el color de las cartas de una baraja de póker tradicional al tacto. De entrada, desconfiamos profundamente de tamaña afirmación y asumimos la postura escéptica: que no sabe nada y que su habilidad real es cero. Para probarlo, le damos una carta. Resulta que la adivina. ¿Nos sorprendería automáticamente ese hecho? No mucho, ya que hay un 50% de chances de acertar por pura suerte, en tanto existen solo dos alternativas: rojo o negro.
+
+Pero si le damos a nuestro *adivino en potencia* 10 cartas seguidas y acierta las 10, la situación cambia por completo. La probabilidad de que alguien sin ninguna habilidad logre eso por puro azar es de aproximadamente 0.001 (un 0.1%), el resultado de calcular $\left(\frac{1}{2}\right)^{10}$. Ese número tan diminuto resume lo increíblemente incómodo que resultaría seguir sosteniendo nuestra postura escéptica en esta situación. En ese punto, dejaríamos de atribuirlo a la casualidad y concluiríamos que nuestro adivino declarado tiene una habilidad real.
+
+<br>
+
+Eso es, en esencia, lo que hace el valor-$p$ en nuestro modelo de regresión.
+
+El punto de partida es siempre el "mundo escéptico" de la hipótesis nula ($H_0$): asumimos, provisionalmente, que el parámetro asociado al predictor en cuestión vale exactamente cero ($\beta_1 = 0$). Luego nos preguntamos: en ese mundo donde la variable no tiene efecto real alguno, ¿cuán probable sería observar, por puro azar de la muestra, una estimación $\hat{\beta}_1$ tan alejada de cero (o más) como la que obtuvimos?
+
+```{admonition} **Definición del valor-$p$**
+:class: tip
+El valor-$p$ es la probabilidad de obtener, asumiendo que $H_0$ es verdadera, un estadístico $t$ tan extremo como el observado (en valor absoluto), o más extremo aún, por puro efecto de la variabilidad muestral.
+```
+
+Su rango de variación va de 0 a 1 (ya que después de todo se trata de una probabilidad) y actúa como un "detector de mentiras" del azar:
+
+- **valor-$p$ pequeño (convencionalmente menor a 0.05)**: sería extremadamente improbable observar un coeficiente así si el predictor no hiciera nada en la realidad. Por lo tanto, el azar "pierde credibilidad": rechazamos $H_0$ y concluimos que el predictor es **estadísticamente significativo.**
+
+- **valor-$p$ "grande" (convencionalmente mayor a 0.05)**: el resultado obtenido es perfectamente compatible con el ruido de una muestra en un mundo donde $\beta_1 = 0$. No tenemos evidencia suficiente para descartar el azar, por lo que no rechazamos $H_0$.
+
+```{admonition} **Dos puntos importantes**
+:class: warning
+
+1. **El valor-$p$ NO es la probabilidad de que $H_0$ sea verdadera.** De hecho, desde la perspectiva de la estadística frecuencial, los parámetros del modelo son valores **fijos**, no variables aleatorias. Por lo tanto, no tiene sentido hablar de la "probabilidad de que $\beta_1 = 0$".
+
+    En cambio, el valor-$p$ es la probabilidad de observar nuestros datos *dado que $H_0$ es verdadera*. Un valor-$p$ pequeño no "demuestra" de forma absoluta que $\beta_1 \neq 0$, sino que indica que nuestros datos son muy incompatibles con la hipótesis de que el predictor en cuestión influye.
+
+2. **El umbral de 0.05 es una convención y se conoce formalmente como nivel de significación ($\alpha$).** Este límite refleja qué tan conservadores queremos ser antes de declarar que una variable aporta información real: en algunos contextos donde se requiere extrema cautela se usan criterios más estrictos ($\alpha = 0.01$), mientras que en fases exploratorias se puede ser más flexible ($\alpha = 0.10$), dependiendo siempre de las consecuencias prácticas de apresurarnos a sacar una conclusión.
+```
+
+### Intervalos de confianza
+
+Una forma complementaria —y en muchos sentidos más informativa— de cuantificar la incertidumbre sobre un coeficiente es construir un **intervalo de confianza**.
+
+Un intervalo de confianza del 95% para $\beta_1$ es un rango de valores calculado a partir de nuestra muestra que tiene una propiedad teórica: si repitiéramos el proceso de muestreo infinitas veces y construyéramos un intervalo para cada muestra, el verdadero parámetro poblacional estaría contenido dentro de esos límites el 95% de las veces.
+
+En su cálculo interviene un percentil de la distribución $t$ (que depende del tamaño de la muestra, del número de predictores y del nivel de confianza elegido) y el error estándar estimado del coeficiente.
+
+- **Si el intervalo NO contiene al cero:** significa que el cero no es un valor plausible para el parámetro. Esto es equivalente a rechazar $H_0$ con un valor-$p$ $\leq 0.05$.
+
+- **Si el intervalo CONTIENE al cero:** significa que es perfectamente posible que el verdadero impacto de la variable sea nulo. Esto es equivalente a obtener un valor-$p$ $> 0.05$.
+
+El test de hipótesis y la estimación por intervalo de confianza son dos caras de la misma moneda. Siempre que exista compatibilidad entre el nivel de significación del test y el grado de confianza del intervalo (por ejemplo, un test con $\alpha = 0.05$ frente a un intervalo del $95\%$), ambas herramientas de la inferencia estadística conducirán exactamente a la misma conclusión.
+
+### Lectura práctica desde **statsmodels**
+
+Toda esta teoría se resume en la tabla de coeficientes que obtenemos al ejecutar modelo.summary(). Imaginemos que estamos analizando cómo influye la superficie en metros cuadrados (sup_m2) sobre el precio de venta de propiedades:
 
 ## Suavizado y Splines
 
@@ -1049,7 +1103,7 @@ $p$: cantidad de variables independientes
 
 En la fórmula de arriba podemos observar que cuando aumentamos el número de variables explicativas en nuestro modelo, más se penalizará el valor del $R^2$. 
 
-### Valor-p (p-value) e Intervalo de confianza
+### valor-$p$ (p-value) e Intervalo de confianza
 
 El valor p nos sirve para determinar si una variable es estadísticamente significativa o no. Cuando estimamos el coeficiente de una variable en realidad estamos estimando el valor esperado del mismo, osea, ese coeficiente tiene una distribución normal con su media y su varianza. No vamos a entrar en detalles sobre porqué sucede esto porque está fuera del alcance de nuestro curso. Sin embargo, la siguiente imagen puede darnos una intuición sobre lo que sucede. Los datos que nosotros obtenemos para realizar nuestro modelo son una muestra de la realidad. Por ejemplo, si tenemos un dato de precio de alquiler donde un departamento de 60$[m^2]$ cuesta 100.000 $[\$]$ eso no quiere decir que todos los departamentos de 60 $[m^2]$ van a costar lo mismo. Probablemente, haya otros departamentos con la misma superficie que cuesten más o menos, y tal vez, en nuestra muestra no tenemos esos datos recolectados. Por esa razón, cuando estimamos nuestro modelo, en lugar de estimar un valor para cada coeficiente estimamos su media y alguna información sobre su distribución.
 
