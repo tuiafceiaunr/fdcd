@@ -722,15 +722,21 @@ ax.legend(title = 'Sexo', handles = handles, labels = ['Macho', 'Hembra'], title
 plt.show()
 ```
 
-## R<sup>2</sup>2 ajustado
+## R<sup>2</sup> ajustado
 
-Al agregar más predictores, la SCE nunca puede aumentar: **el $R^2$ nunca disminuye al incorporar variables**, aunque éstas no aporten información real. Esto lo convierte en una métrica poco confiable para comparar modelos con distinto número de predictores.
+Al agregar más predictores, la Suma de Cuadrados de Error (SCE) nunca puede aumentar. En el peor de los casos, se mantendrá invariante. Como consecuencia, **el $R^2$ convencional nunca disminuye al incorporar nuevas variables al modelo**, incluso si estas son completamente irrelevantes o puro ruido. Esto lo convierte en una métrica engañosa para comparar modelos con distinto número de predictores.
 
-El **$R^2$ ajustado** corrige este problema penalizando la complejidad del modelo:
+El **$R^2$ ajustado** corrige este problema penalizando la inclusión de variables innecesarias:
 
 $$R^2_{\text{adj}} = 1 - \frac{\text{SCE}/(n - p - 1)}{\text{SCT}/(n-1)}$$
 
-A diferencia del $R^2$, el $R^2_{\text{adj}}$ **puede disminuir** si se agrega una variable que no mejora genuinamente el ajuste. Es por eso la métrica preferida para comparar modelos.
+donde:
+
+- $n$ es el número de observaciones.
+
+- $p$ es el número de predictores en el modelo.
+
+A diferencia del $R^2$ estándar, el $R^2_{\text{adj}}$ **puede disminuir** si la nueva variable no aporta suficiente poder explicativo como para compensar el incremento en $p$. Por lo tanto, es la métrica de elección cuando se realiza selección de variables o comparación de modelos con diferente complejidad.
 
 ```python
 print(f"Modelo 1 — R² ajustado: {modelo.rsquared_adj:.4f}")
@@ -739,20 +745,51 @@ print(f"Modelo 2 — R² ajustado: {modelo2.rsquared_adj:.4f}")
 
 ## Inferencia sobre los parámetros del modelo
 
-Hasta ahora usamos el modelo ajustado con dos propósitos: describir la relación entre las variables e interpretar los coeficientes estimados. Pero hay una pregunta que aún no respondimos formalmente: ¿podemos confiar en que esos coeficientes reflejan una relación real, o podrían ser simplemente el resultado del azar?
+Hasta ahora usamos el modelo ajustado con dos propósitos: describir la relación entre las variables e interpretar los coeficientes estimados. Pero hay una pregunta que aún no respondimos formalmente: **¿podemos confiar en que esos coeficientes reflejan una relación real en el mundo, o podrían ser simplemente el resultado del azar (ruido en los datos)?**
 
-Esta pregunta es el corazón de la inferencia estadística sobre los parámetros del modelo.
+Esta pregunta es el corazón de la inferencia estadística.
 
-### El problema de la muestra
+### El problema de la muestra y la variabilidad
 
-Los datos con los que ajustamos el modelo son siempre **una muestra de una población más grande.** Si repitiéramos el estudio con una muestra diferente —otros departamentos, otros pingüinos— es lógico pensar que, como estaríamos partiendo de un conjunto diferente de datos, obtendríamos valores ligeramente distintos para $\hat{\beta}_0$, $\hat{\beta}_1$, etc. Esto no es un defecto del método sino una consecuencia inevitable de trabajar con datos muestrales.
+Los datos con los que ajustamos un modelo son siempre **una muestra de una población más grande.** Si recolectáramos una muestra nueva —otros departamentos, otros pingüinos—, los valores en los datos cambiarían. En consecuencia, al volver a ajustar el modelo obtendríamos valores ligeramente distintos para $\hat{\beta}_0$, $\hat{\beta}_1$, etc. Esto no es un defecto del método sino una consecuencia inevitable de trabajar con datos muestrales.
 
-A pesar de que asumimos que los parámetros del modelo ($\beta_0$, $\beta_1$, etc.) son valores fijos, lo que esto implica, sin embargo, es que sus estimadores ($\hat{\beta}_0$, $\hat{\beta}_1$, etc.) son el resultado de un proceso aleatorio (el muestreo) que, como tal, tiene su propia variabilidad. Si repitiéramos el muestreo muchas veces y ajustáramos el modelo con cada muestra, obtendríamos una distribución de valores posibles para los $\beta$-sombrero.
+Aunque asumimos que los verdaderos parámetros poblacionales del modelo ($\beta_0$, $\beta_1$, etc.) son valores fijos y desconocidos, los valores de sus estimadores ($\hat{\beta}_0$, $\hat{\beta}_1$, etc.) cambian de muestra en muestra. Si repitiéramos el proceso de muestreo infinitas veces y ajustáramos el modelo con cada nuevo conjunto de datos, generaríamos una enorme colección de diferentes valores posibles para cada $\hat{\beta}$. Si representáramos todos esos valores en un histograma o un gráfico de densidad, veríamos que algunos resultados ocurren con mucha frecuencia y otros son extremadamente raros. Al comportamiento de esta colección de valores lo llamamos **distribución muestral del estimador $\hat{\beta}$** y es, formalmente, una **distribución de probabilidad**. 
 
-```{admonition}
+```{admonition} **Importante**
 :class: note
-Describir formalmente la distribución de los estimadores requiere herramientas de probabilidad e inferencia estadística que están fuera del alcance de este curso. Lo que sí podemos hacer es entender la intuición detrás de ese resultado y aprender a leer e interpretar lo que nos devuelve el *software*.
+
+Describir matemáticamente la distribución muestral de los estimadores requiere herramientas avanzadas de probabilidad que exceden los objetivos de este módulo. Nuestro foco estará en comprender la intuición detrás de estos conceptos y aprender a interpretar de forma crítica los resultados que nos devuelve el *software*.
 ```
+
+### Cuantificando la incertidumbre: el error estándar
+
+Para saber qué tan precisa es nuestra estimación, necesitamos medir cuánto variarían esos coeficientes si cambiáramos de muestra. Esa medida de dispersión es el **Error estándar del estimador**, denotado como $SE(\hat{\beta}_j)$.
+
+Un error estándar "pequeño" indica que el estimador es muy estable (baja incertidumbre). n error estándar grande indica que el valor estimado es muy sensible a la muestra particular que nos tocó (alta incertidumbre).
+
+En la salida de `statsmodels`, el error estándar de cada coeficiente aparece en la columna `std err`.
+
+### Prueba de hipótesis sobre los parámetros
+
+Para darle un marco formal a esta evaluación, supongamos que estamos trabajando con un modelo de regresión lineal múltiple con dos predictores:
+
+$$Y = \beta_0 + \beta_1~X_1 + \beta_2~X_2 + \varepsilon$$
+
+Dado que nuestro estimador $\hat{\beta_1} tiene variabilidad muestral, surge una pregunta natural: **¿el valor que obtuvimos a partir de nuestra muestra de datos está suficientemente lejos de cero como para concluir que existe una relación real entre $x_1$ e $y$? Si en la población general el verdadero valor fuera $\beta_1 = 0$, significaría que el predictor $x_1$ no tiene ningún efecto lineal sobre la variable respuesta $y$, por lo que su inclusión en el modelo sería innecesaria.
+
+Este dilema se formaliza matemáticamente mediante una **prueba o *test* de hipótesis**. Para evaluar el impacto específico del predictor $x_1$, planteamos:
+
+$$H_0: \beta_1 = 0 \qquad \text{vs.} \qquad H_1: \beta_1 \neq 0$$
+
+- **Hipótesis nula ($H_0$)**: representa el escenario donde el predictor $x_1$ no aporta información nueva para explicar a la variable $y$ (una vez que ya se tiene en cuenta a $x_2$). Si $H_0$ es verdadera, cualquier valor de $\hat{\beta}_1$ distinto de cero que hayamos observado en nuestra muestra se debe puramente al azar del muestreo.
+
+- **Hipótesis alternativa ($H_1$)**: sostiene que existe un efecto lineal real de $x_1$ sobre $y$. Si $H_0$ es falsa, confirmamos que el predictor y la respuesta se relacionan linealmente, justificando su permanencia en el modelo.
+
+Para decidir entre ambas opciones, se evalúa qué tan "lejos"" está el coeficiente estimado $\hat{\beta}_1$ del cero, usando su propia variabilidad como unidad de medida. Esto se calcula mediante el estadístico $t$:
+
+$$t = \frac{\hat{\beta}_1}{SE(\hat{\beta}_1)}$$
+
+Este cociente mide a cuántos errores estándar de distancia se encuentra $\hat{\beta}_1$ del valor planteado por la hipótesis nula ($\beta_1 = 0$). Cuanto mayor sea el valor absoluto de $t$ ($|t|$), más raro sería haber obtenido ese coeficiente por puro azar, aportando mayor evidencia en contra de $H_0$ y permitiendo calcular el valor $p$ que observamos en los reportes de código.
 
 ## Suavizado y Splines
 
