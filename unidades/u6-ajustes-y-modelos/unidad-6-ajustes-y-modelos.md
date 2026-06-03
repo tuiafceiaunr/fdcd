@@ -700,6 +700,7 @@ $$
 $$
 
 </div>
+<br>
 
 Representemos estas rectas gráficamente. Para ello, haremos uso del método `predict` presentado anteriormente.
 
@@ -775,7 +776,7 @@ Para darle un marco formal a esta evaluación, supongamos que estamos trabajando
 
 $$Y = \beta_0 + \beta_1~X_1 + \beta_2~X_2 + \varepsilon$$
 
-Dado que nuestro estimador $\hat{\beta_1} tiene variabilidad muestral, surge una pregunta natural: **¿el valor que obtuvimos a partir de nuestra muestra de datos está suficientemente lejos de cero como para concluir que existe una relación real entre $x_1$ e $y$? Si en la población general el verdadero valor fuera $\beta_1 = 0$, significaría que el predictor $x_1$ no tiene ningún efecto lineal sobre la variable respuesta $y$, por lo que su inclusión en el modelo sería innecesaria.
+Dado que nuestro estimador $\hat{\beta_1}$ tiene variabilidad muestral, surge una pregunta natural: **¿el valor que obtuvimos a partir de nuestra muestra de datos está suficientemente lejos de cero como para concluir que existe una relación real entre $x_1$ e $y$? Si en la población general el verdadero valor fuera $\beta_1 = 0$, significaría que el predictor $x_1$ no tiene ningún efecto lineal sobre la variable respuesta $y$, por lo que su inclusión en el modelo sería innecesaria.
 
 Este dilema se formaliza matemáticamente mediante una **prueba o *test* de hipótesis**. Para evaluar el impacto específico del predictor $x_1$, planteamos:
 
@@ -795,10 +796,19 @@ Este cociente mide a cuántos errores estándar de distancia se encuentra $\hat{
 
 Para tomar la decisión final sobre qué hipótesis respaldar, usamos el valor-$p$ ($p$-value). Antes de dar su definición formal, apelemos a una analogía.
 
-#### La analogía del adivino
+<div style="background-color:rgba(94,129,242,0.5);
+padding:12px;
+border-radius:8px;
+margin-bottom:12px;
+color:black;">
+
+**La analogía del adivino**
+
 Imaginemos que conocemos a una persona que dice tener el superpoder de adivinar el color de las cartas de una baraja de póker tradicional al tacto. De entrada, desconfiamos profundamente de tamaña afirmación y asumimos la postura escéptica: que no sabe nada y que su habilidad real es cero. Para probarlo, le damos una carta. Resulta que la adivina. ¿Nos sorprendería automáticamente ese hecho? No mucho, ya que hay un 50% de chances de acertar por pura suerte, en tanto existen solo dos alternativas: rojo o negro.
 
 Pero si le damos a nuestro *adivino en potencia* 10 cartas seguidas y acierta las 10, la situación cambia por completo. La probabilidad de que alguien sin ninguna habilidad logre eso por puro azar es de aproximadamente 0.001 (un 0.1%), el resultado de calcular $\left(\frac{1}{2}\right)^{10}$. Ese número tan diminuto resume lo increíblemente incómodo que resultaría seguir sosteniendo nuestra postura escéptica en esta situación. En ese punto, dejaríamos de atribuirlo a la casualidad y concluiríamos que nuestro adivino declarado tiene una habilidad real.
+
+</div>
 
 <br>
 
@@ -822,7 +832,7 @@ Su rango de variación va de 0 a 1 (ya que después de todo se trata de una prob
 
 1. **El valor-$p$ NO es la probabilidad de que $H_0$ sea verdadera.** De hecho, desde la perspectiva de la estadística frecuencial, los parámetros del modelo son valores **fijos**, no variables aleatorias. Por lo tanto, no tiene sentido hablar de la "probabilidad de que $\beta_1 = 0$".
 
-    En cambio, el valor-$p$ es la probabilidad de observar nuestros datos *dado que $H_0$ es verdadera*. Un valor-$p$ pequeño no "demuestra" de forma absoluta que $\beta_1 \neq 0$, sino que indica que nuestros datos son muy incompatibles con la hipótesis de que el predictor en cuestión influye.
+    En cambio, el valor-$p$ es la probabilidad de observar nuestros datos *dado que $H_0$ es verdadera*. Un valor-$p$ pequeño no "demuestra" de forma absoluta que $\beta_1 \neq 0$, sino que indica que nuestros datos son muy incompatibles con la hipótesis de que el predictor en cuestión no influye.
 
 2. **El umbral de 0.05 es una convención y se conoce formalmente como nivel de significación ($\alpha$).** Este límite refleja qué tan conservadores queremos ser antes de declarar que una variable aporta información real: en algunos contextos donde se requiere extrema cautela se usan criterios más estrictos ($\alpha = 0.01$), mientras que en fases exploratorias se puede ser más flexible ($\alpha = 0.10$), dependiendo siempre de las consecuencias prácticas de apresurarnos a sacar una conclusión.
 ```
@@ -841,9 +851,171 @@ En su cálculo interviene un percentil de la distribución $t$ (que depende del 
 
 El test de hipótesis y la estimación por intervalo de confianza son dos caras de la misma moneda. Siempre que exista compatibilidad entre el nivel de significación del test y el grado de confianza del intervalo (por ejemplo, un test con $\alpha = 0.05$ frente a un intervalo del $95\%$), ambas herramientas de la inferencia estadística conducirán exactamente a la misma conclusión.
 
-### Lectura práctica desde **statsmodels**
+### Ejemplo práctico: el dataset *Advertising*
 
-Toda esta teoría se resume en la tabla de coeficientes que obtenemos al ejecutar modelo.summary(). Imaginemos que estamos analizando cómo influye la superficie en metros cuadrados (sup_m2) sobre el precio de venta de propiedades:
+Una empresa de consumo masivo registró su inversión publicitaria y sus ventas en 200 mercados distintos. Los datos se encuentran en el archivo [advertising.csv](https://drive.google.com/file/d/1tSM-uaRk_oAXKjcpyGrVkU8FUYPJpLSn/view). El objetivo de la empresa es entender cómo impacta el presupuesto destinado a publicidad en tres medios distintos (`TV`, `Radio` y `Newspaper`) sobre las ventas (`Sales`) del producto.
+
+Las variables de presupuesto publicitario están expresadas en miles de dólares y `Sales` está en miles de unidades vendidas.
+
+#### Exploración y validación de los datos
+
+Antes de ajustar cualquier modelo, el primer paso fundamental como científicos de datos es inspeccionar la estructura de nuestro conjunto de datos para verificar que la información sea coherente con el problema planteado. Vamos a cargar el archivo y observar las primeras filas:
+
+```{code-cell} python
+import pandas as pd
+
+# Importamos los datos
+df = pd.read_csv('datasets/advertising.csv')
+
+# Visualizamos las primeras 5 observaciones
+df.head()
+```
+
+Si analizamos, por ejemplo, el mercado cuya información se encuentra en la primera fila, el reporte nos indica que se invirtieron 230100 US$ en TV, 37800 US$ en radio y 69200 US$ en diarios/periódicos, alcanzando un volumen de ventas de 22100 unidades del producto.
+
+Para asegurarnos de que la carga fue completa y que contamos con el volumen de información esperado por la empresa, verificamos las dimensiones del DataFrame:
+
+```{code-cell} python
+# Verificamos filas (observaciones) y columnas (variables)
+print(f"Dimensiones del dataset: {df.shape}")
+```
+
+El resultado confirma que disponemos de 200 filas (los 200 mercados históricos analizados) y 4 columnas (las tres variables predictoras de inversión y nuestra variable de respuesta). Con los datos correctamente validados, estamos listos para avanzar.
+
+#### Ajuste del modelo múltiple completo y análisis de la salida
+
+Ajustamos un modelo de regresión lineal múltiple utilizando la librería `statsmodels`:
+
+```{code-cell} python
+import statsmodels.formula.api as smf
+
+# Ajustamos el modelo lineal múltiple completo: Sales en función de los tres medios
+modelo1 = smf.ols(formula = 'Sales ~ TV + Radio + Newspaper', data = df).fit()
+
+# Mostramos el resumen completo
+print(modelo1.summary())
+```
+
+Centraremos nuestra atención sobre la tabla de coeficientes:
+
+```{code-cell} python
+```{code-cell} python
+:tags: [remove-input]
+
+# Tabla de coeficientes
+coef_table_advertising = modelo1.summary2().tables[1]
+
+# Función para formatear números grandes en notación científica
+def fmt(x):
+    return f"{x:.3e}" if abs(x) >= 10000 else f"{x:.3f}"
+
+# Construir salida estilo statsmodels
+output_coef = """
+======================================================================================
+                     coef    std err          t      P>|t|        [0.025      0.975]
+--------------------------------------------------------------------------------------
+"""
+
+for idx, row in coef_table_advertising.iterrows():
+
+    low = fmt(row['[0.025'])
+    high = fmt(row['0.975]'])
+
+    output_coef += (
+        f"{idx:<12}"
+        f"{row['Coef.']:>13.4f}"
+        f"{row['Std.Err.']:>11.3f}"
+        f"{row['t']:>11.3f}"
+        f"{row['P>|t|']:>11.3f}"
+        f"{low:>14}"
+        f"{high:>13}\n"
+    )
+
+output_coef += "======================================================================================"
+
+print(output_coef)
+```
+
+**¿Qué información nos brinda cada columna de este reporte?**
+
+- **`coef`**: la estimación puntual de cada parámetro ($\hat{\beta}_j$).
+
+- **`std err`**: el error estándar estimado ($\widehat{SE}$), que mide la incertidumbre o variabilidad de la estimación.
+
+- **`t`**: el estadístico de la prueba ($t = \hat{\beta}_j / \widehat{SE}$).
+
+- **`P>|t|`**: el valor-$p$ (la probabilidad de que el coeficiente observado sea una mera casualidad del azar).
+
+- **`[0.025 0.975]`**: los límites inferior y superior del intervalo de confianza del 95%.
+
+Si analizamos el comportamiento de cada medio publicitario bajo nuestro nivel de significación convencional ($\alpha = 0.05$), podemos extraer conclusiones sumamente valiosas para la estrategia de la empresa:
+
+- Inversión en `TV`: su coeficiente es de 0.0544. El error estándar es sumamente bajo (0.001), lo que nos da un estadístico $t$ enorme (39.525). Como consecuencia, su valor-$p$ figura como 0.000 (lo que indica que es menor a 0.001, por ende, menor a $\alpha = 0.05$) y su intervalo de confianza [0.052, 0.057] no contiene al cero. Todo coincide de manera consistente: hay evidencia estadística contundente de que la publicidad en `TV` tiene un efecto lineal positivo sobre las ventas.
+
+- Inversión en `Radio`: el coeficiente es de 0.1070 con un valor-$p$ de 0.000. Su intervalo de confianza es [0.090, 0.124], el cual está completamente alejado del cero. Al igual que la `TV`, la `Radio` es un predictor estadísticamente significativo y muy importante para el modelo.
+
+- Inversión en `Newspaper` (prensa escrita): acá ocurre lo más interesante. Su coeficiente estimado es casi cero (0.0003), pero lo crucial es mirar las métricas de inferencia. Su estadístico $t$ es muy bajo (0.057), lo que nos arroja un **valor-$p$ grande de 0.954**. Esto significa que en un mundo donde la publicidad en diarios no genera ningún efecto real, tendríamos un 95.4% de probabilidades de observar un coeficiente como ese (o más extremo) por puro azar del muestreo. Mirando el intervalo de confianza, confirmamos que va desde -0.011 hasta 0.012, es decir, **contiene al cero.**
+
+Bajo la óptica de la inferencia estadística, concluimos que la variable `Newspaper` no aporta información real para explicar las ventas cuando ya se tienen en cuenta las inversiones en `TV` y `Radio`. El resultado que observamos en la muestra es perfectamente compatible con el azar.
+
+Para un científico de datos, esta es la señal formal para tomar una decisión de diseño: podríamos eliminar `Newspaper` del modelo para simplificarlo sin perder poder explicativo (evitando agregar complejidad innecesaria). Para el negocio, sugiere una recomendación directa: la empresa debería reasignar ese presupuesto publicitario hacia los medios que sí demostraron un impacto real.
+
+#### Hacia la simplificación: el modelo reducido
+
+Remover una variable no significativa no es una decisión que se tome a ciegas. Esperamos que al quitar `Newspaper`, el modelo no pierda capacidad explicativa y que, además, mejore su penalización por complejidad. Aquí es donde cobra relevancia la métrica que estudiamos algunos apartados atrás: el $R^2$ ajustado.
+
+Para comprobar si nuestra decisión de diseño es correcta, ajustamos un modelo reducido que excluya a la prensa escrita y conserve únicamente los predictores significativos (`TV` y `Radio`), para luego comparar el comportamiento de ambos.
+
+```{code-cell} python
+# Ajustamos el modelo lineal múltiple reducido: Sales en función de TV y Radio
+modelo2 = smf.ols(formula = 'Sales ~ TV + Radio', data = df).fit()
+
+# Mostramos el resumen completo
+print(modelo2.summary())
+```
+
+Al revisar la nueva salida, se observa que el $R^2$ ajustado aumenta sutilmente al eliminar Newspaper (pasa de 0.901 a 0.902). Aunque el incremento numérico sea muy leve, el hecho de que no haya disminuido nos confirma formalmente que hicimos bien en prescindir de la incorporación de ese predictor, logrando así un modelo más simple.
+
+<br>
+
+Una vez seleccionado nuestro modelo óptimo, podemos pasar en limpio su ecuación matemática a partir de los nuevos coeficientes estimados:
+
+$$\widehat{\text{Sales}} = 4.6309 + 0.0544 \cdot \text{TV} + 0.1072 \cdot \text{Radio}$$
+
+Para consolidar el entendimiento, pongamos a prueba el modelo con un caso práctico de predicción:
+
+**Desafío de predicción:** supongamos que la empresa planea ingresar a un nuevo mercado y decide invertir 150000 US$ en TV, 30000 US$ en Radio y 60000 US$ en periódicos (Newspaper). ¿Cuáles serían las ventas esperadas?
+
+Aquí es donde la inferencia estadística demuestra su valor práctico para el negocio. Como nuestro análisis demostró que la inversión en prensa escrita no tiene un impacto real sobre las ventas en presencia de los otros medios, los 60000 US$ destinados a prensa escrita simplemente se ignoran en el cálculo, ya que no forman parte de la ecuación del modelo óptimo.
+
+Recordando que las variables deben ingresarse en las unidades correctas (en miles de dólares), reemplazamos los valores correspondientes en nuestra fórmula:
+
+$$\widehat{\text{Sales}} = 4.6309 + 0.0544 \cdot (150) + 0.1072 \cdot (30)$$
+
+$$\widehat{\text{Sales}} = 4.6309 + 8.1600 + 3.2160 = 16.0069$$
+
+El modelo predice un volumen de ventas esperado de aproximadamente 16007 unidades ($16.0069 \times 1000$) para ese mercado. Gracias a la inferencia, no solo obtuvimos una estimación precisa, sino que le ahorramos a la empresa el costo de analizar (o realizar) una inversión ineficiente en medios tradicionales que no aportan valor.
+
+<br>
+
+En la práctica, en lugar de realizar estas cuentas "a mano" sustituyendo los valores en la ecuación matemática, recurrimos al método `.predict()` que nos provee `statsmodels`.
+
+Para hacerlo, primero debemos construir un objeto `DataFrame` (usando la librería Pandas) que contenga los escenarios que queremos evaluar. Es un requisito estricto que los nombres de las columnas coincidan exactamente con los nombres de las variables predictoras que utilizamos al definir la fórmula del modelo:
+
+```{code-cell} python
+# Creamos el DataFrame con el nuevo escenario a predecir
+# Notar que 'Newspaper' no se incluye porque nuestro modelo óptimo (modelo2) no lo utiliza
+nuevo_mercado = pd.DataFrame({
+    'TV': [150],
+    'Radio': [30]
+})
+
+# Realizamos la predicción automática
+prediccion = modelo2.predict(nuevo_mercado)
+print(f"Ventas predichas (en miles de unidades): {prediccion[0]:.4f}")
+```
+
+Como se observa, el resultado es idéntico al que obtuvimos "a mano" a partir de la ecuación del modelo ajustado.
 
 ## Suavizado y Splines
 
