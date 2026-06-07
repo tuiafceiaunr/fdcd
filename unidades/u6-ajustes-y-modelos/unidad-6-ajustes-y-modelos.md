@@ -577,7 +577,7 @@ plt.xlabel('Longitud de la aleta (mm)', fontweight = 'bold')
 plt.ylabel('Masa corporal (g)', fontweight = 'bold')
 
 handles, _ = plt.gca().get_legend_handles_labels()
-plt.legend(title = 'Sexo', labels = ['Macho', 'Hembra'], title_fontproperties = {'weight': 'bold'})
+plt.legend(title = 'Sexo', handles = handles, labels = ['Macho', 'Hembra'], title_fontproperties = {'weight': 'bold'})
 
 plt.show()
 ```
