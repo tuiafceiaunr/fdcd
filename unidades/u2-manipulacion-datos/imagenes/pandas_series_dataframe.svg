@@ -1,0 +1,96 @@
+<svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" font-family="Verdana, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#8a5a00"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="500" fill="#ffffff"/>
+
+  <text x="500" y="32" font-size="22" font-weight="bold" text-anchor="middle" fill="#1a1a2e">Series y DataFrame en pandas</text>
+  <text x="500" y="54" font-size="13" text-anchor="middle" fill="#555">Ejemplo: registro de personas</text>
+
+  <!-- SERIES (izquierda) -->
+  <text x="170" y="92" font-size="15" font-weight="bold" text-anchor="middle" fill="#8a5a00">Series (unidimensional)</text>
+
+  <rect x="70" y="105" width="60" height="38" fill="#dcdcdc" stroke="#888"/>
+  <text x="100" y="129" font-size="12" text-anchor="middle">índice</text>
+  <rect x="130" y="105" width="140" height="38" fill="#ffdca8" stroke="#888"/>
+  <text x="200" y="129" font-size="13" font-weight="bold" text-anchor="middle">nombre</text>
+
+  <rect x="70" y="143" width="60" height="38" fill="#f2f2f2" stroke="#888"/>
+  <text x="100" y="167" font-size="13" text-anchor="middle">0</text>
+  <rect x="130" y="143" width="140" height="38" fill="#fff3e0" stroke="#888"/>
+  <text x="200" y="167" font-size="13" text-anchor="middle">Pedro</text>
+
+  <rect x="70" y="181" width="60" height="38" fill="#f2f2f2" stroke="#888"/>
+  <text x="100" y="205" font-size="13" text-anchor="middle">1</text>
+  <rect x="130" y="181" width="140" height="38" fill="#fff3e0" stroke="#888"/>
+  <text x="200" y="205" font-size="13" text-anchor="middle">Julia</text>
+
+  <rect x="70" y="219" width="60" height="38" fill="#f2f2f2" stroke="#888"/>
+  <text x="100" y="243" font-size="13" text-anchor="middle">2</text>
+  <rect x="130" y="219" width="140" height="38" fill="#fff3e0" stroke="#888"/>
+  <text x="200" y="243" font-size="13" text-anchor="middle">Camila</text>
+
+  <text x="170" y="278" font-size="12" text-anchor="middle" fill="#444">array de valores + índice asociado</text>
+
+  <!-- DATAFRAME (derecha) -->
+  <text x="710" y="92" font-size="15" font-weight="bold" text-anchor="middle" fill="#1a4d6d">DataFrame (bidimensional)</text>
+
+  <rect x="430" y="105" width="55" height="38" fill="#dcdcdc" stroke="#888"/>
+  <rect x="485" y="105" width="105" height="38" fill="#cfe3f3" stroke="#888"/>
+  <text x="537" y="129" font-size="12" font-weight="bold" text-anchor="middle">dni</text>
+  <rect x="590" y="105" width="105" height="38" fill="#ffdca8" stroke="#888"/>
+  <text x="642" y="129" font-size="13" font-weight="bold" text-anchor="middle">nombre</text>
+  <rect x="695" y="105" width="110" height="38" fill="#d7f0d7" stroke="#888"/>
+  <text x="750" y="129" font-size="12" font-weight="bold" text-anchor="middle">apellido</text>
+  <rect x="805" y="105" width="130" height="38" fill="#eed6f2" stroke="#888"/>
+  <text x="870" y="129" font-size="12" font-weight="bold" text-anchor="middle">año_nacimiento</text>
+
+  <rect x="430" y="143" width="55" height="38" fill="#f2f2f2" stroke="#888"/>
+  <text x="457" y="167" font-size="13" text-anchor="middle">0</text>
+  <rect x="485" y="143" width="105" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="537" y="167" font-size="12" text-anchor="middle">40576890</text>
+  <rect x="590" y="143" width="105" height="38" fill="#fff3e0" stroke="#888"/>
+  <text x="642" y="167" font-size="13" text-anchor="middle">Pedro</text>
+  <rect x="695" y="143" width="110" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="750" y="167" font-size="13" text-anchor="middle">Aguirre</text>
+  <rect x="805" y="143" width="130" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="870" y="167" font-size="13" text-anchor="middle">1995</text>
+
+  <rect x="430" y="181" width="55" height="38" fill="#f2f2f2" stroke="#888"/>
+  <text x="457" y="205" font-size="13" text-anchor="middle">1</text>
+  <rect x="485" y="181" width="105" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="537" y="205" font-size="12" text-anchor="middle">32492645</text>
+  <rect x="590" y="181" width="105" height="38" fill="#fff3e0" stroke="#888"/>
+  <text x="642" y="205" font-size="13" text-anchor="middle">Julia</text>
+  <rect x="695" y="181" width="110" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="750" y="205" font-size="13" text-anchor="middle">Martinez</text>
+  <rect x="805" y="181" width="130" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="870" y="205" font-size="13" text-anchor="middle">1988</text>
+
+  <rect x="430" y="219" width="55" height="38" fill="#f2f2f2" stroke="#888"/>
+  <text x="457" y="243" font-size="13" text-anchor="middle">2</text>
+  <rect x="485" y="219" width="105" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="537" y="243" font-size="12" text-anchor="middle">30298710</text>
+  <rect x="590" y="219" width="105" height="38" fill="#fff3e0" stroke="#888"/>
+  <text x="642" y="243" font-size="13" text-anchor="middle">Camila</text>
+  <rect x="695" y="219" width="110" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="750" y="243" font-size="13" text-anchor="middle">Suarez</text>
+  <rect x="805" y="219" width="130" height="38" fill="#ffffff" stroke="#888"/>
+  <text x="870" y="243" font-size="13" text-anchor="middle">1985</text>
+
+  <text x="682" y="278" font-size="12" text-anchor="middle" fill="#444">filas (registros) × columnas (atributos)</text>
+
+  <!-- Flecha conectora -->
+  <path d="M615,300 C520,350 300,350 210,300" stroke="#8a5a00" stroke-width="2.2" fill="none" marker-end="url(#arrow)"/>
+  <text x="410" y="378" font-size="13" text-anchor="middle" fill="#8a5a00" font-style="italic">una columna de un DataFrame es, en sí misma, una Series</text>
+
+  <!-- Resumen -->
+  <line x1="60" y1="410" x2="940" y2="410" stroke="#dddddd" stroke-width="1"/>
+  <text x="170" y="435" font-size="13" text-anchor="middle" fill="#333" font-weight="bold">Series</text>
+  <text x="170" y="453" font-size="12" text-anchor="middle" fill="#333">vector de valores + índice</text>
+  <text x="710" y="435" font-size="13" text-anchor="middle" fill="#333" font-weight="bold">DataFrame</text>
+  <text x="710" y="453" font-size="12" text-anchor="middle" fill="#333">conjunto de Series que comparten el mismo índice</text>
+</svg>

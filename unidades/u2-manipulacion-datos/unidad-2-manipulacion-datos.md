@@ -400,7 +400,7 @@ En particular, HTML permite representar datos tabulares mediante tablas, lo que 
 
 HTML (al igual que XML) utiliza una sintaxis de marcado, basada en etiquetas (*tags*), para estructurar el contenido. Las etiquetas “marcan” o delimitan distintas partes del documento y definen su significado.
 
-📌 Elementos clave para tablas en HTML:
+**Elementos clave para tablas en HTML:**
 
 `<table>`: define el inicio y el fin de una tabla.
 
@@ -459,6 +459,7 @@ Ejemplo de una tabla HTML:
 
 - Generación de reportes o visualizaciones simples en formato web.
 
+
 **Ventajas:**
 
 - Es un estándar ampliamente utilizado y bien documentado.
@@ -467,9 +468,10 @@ Ejemplo de una tabla HTML:
 
 - Permite acceder a una enorme cantidad de datos disponibles públicamente en la Web.
 
-- Las tablas HTML pueden convertirse relativamente fácil a formatos tabulares como DataFrames.
+- Las tablas HTML pueden convertirse relativamente fácil a formatos tabulares como `DataFrame`.
 
-**Desventajas**:
+
+**Desventajas:**
 
 - No es un formato diseñado para el almacenamiento eficiente de datos.
 
@@ -479,6 +481,7 @@ Ejemplo de una tabla HTML:
 
 - Requiere tareas adicionales de parseo para transformar la información en datos tabulares utilizables.
 
+
 ## Pandas
 
 ``` {admonition} **Sobre este apartado**
@@ -486,15 +489,23 @@ Ejemplo de una tabla HTML:
 En esta sección se retoman conceptos vistos en Programación III y se incorporan nuevas ideas que serán fundamentales para el trabajo con datos tabulares.
 ```
 
-**PANDAS** es una librería de Python para el análisis y manipulación de datos. Proporciona **estructuras de datos** eficientes para almacenar y organizar información, y un conjunto de **funciones** que permiten realizar una gran variedad de operaciones, como filtrar, transformar, agrupar o resumir datos, entre muchas otras.
+**pandas** es una librería de Python para el análisis y manipulación de datos. Proporciona **estructuras de datos** eficientes para almacenar y organizar información, y un conjunto de **funciones y métodos** que permiten realizar una gran variedad de operaciones, como filtrar, transformar, agrupar o resumir datos, entre muchas otras.
 
-### Estructuras de datos básicas en Pandas
+### Estructuras de datos básicas en pandas
 
-Pandas proporciona dos estructuras principales para trabajar con datos:
+pandas proporciona dos estructuras principales para trabajar con datos:
 
-- **Series:** una serie de Pandas es una matriz unidimensional capaz de contener cualquier tipo de dato: números enteros, cadenas de texto, números decimales, objetos de Python, etc. Cada elemento de la serie posee un identificador único llamado **índice** (*index*).
+- **`Series`:** una `Series` de pandas es un array unidimensional capaz de contener cualquier tipo de dato: números enteros, cadenas de texto, números decimales, objetos de Python, etc. Cada elemento de la `Series` posee un identificador único llamado **índice** (*index*).
 
-- **DataFrame:** un DataFrame es una estructura bidimensional tabular formada por filas y columnas. Cada fila está identificada por un índice, y las distintas columnas pueden almacenar datos de diferente tipo.
+- **`DataFrame`:** un `DataFrame` es una estructura bidimensional tabular formada por filas y columnas. Cada fila está identificada por un índice, y las distintas columnas pueden almacenar datos de diferente tipo.
+
+```{figure} imagenes/pandas_series_dataframe.svg
+---
+width: 90%
+align: center
+---
+Una `Series` es un array unidimensional con índice. Un `DataFrame` es un conjunto de `Series` que comparten el mismo índice, una por cada columna.
+```
 
 ### Tipos de datos usuales
 
@@ -517,9 +528,9 @@ En el trabajo con datos tabulares es habitual encontrarse con valores faltantes.
 
 **NaN (*Not a Number*):** es un valor especial utilizado principalmente en contextos de cálculo numérico. Suele aparecer en datos de tipo flotante y representa resultados indefinidos o inválidos (por ejemplo, una división por cero). Una característica importante es que `NaN` no es igual a sí mismo: la comparación `NaN == NaN` siempre devuelve `False`.
 
-**None:** es el valor nulo propio de Python y se utiliza para indicar la ausencia de un valor en un sentido general. No está pensado específicamente para el análisis de datos y, cuando se trabaja con estructuras como DataFrame de Pandas, suele convertirse internamente en un valor faltante del tipo `NaN` o `NA`.
+**None:** es el valor nulo propio de Python y se utiliza para indicar la ausencia de un valor en un sentido general. No está pensado específicamente para el análisis de datos y, cuando se trabaja con estructuras como `DataFrame`, suele convertirse internamente en un valor faltante del tipo `NaN` o `NA`.
 
-**NA:** es una representación de valor faltante utilizada en el análisis de datos, originalmente asociada al lenguaje R. En Pandas existe como pd.NA y está diseñada para representar datos faltantes de manera explícita, independientemente del tipo de dato (numérico, texto o booleano).
+**NA:** es una representación de valor faltante utilizada en el análisis de datos, originalmente asociada al lenguaje R. En pandas existe como `pd.NA` y está diseñada para representar datos faltantes de manera explícita, independientemente del tipo de dato (numérico, texto o booleano).
 
 Comprender estas diferencias es importante, ya que la forma en que se representan los valores faltantes influye en las operaciones disponibles, las conversiones de tipo y el comportamiento de los métodos de análisis.
 ```
@@ -530,7 +541,7 @@ En muchos lenguajes existen distintos tipos de enteros (por ejemplo, 8, 16, 32 o
 
 En cambio, los valores de punto flotante (`float`) suelen almacenarse internamente en doble precisión (64 bits), siguiendo el estándar IEEE 754.
 
-En Pandas, los tipos numéricos suelen representarse explícitamente con tamaños fijos, como:
+En pandas, los tipos numéricos suelen representarse explícitamente con tamaños fijos, como:
 
 - `int64`: enteros de 64 bits
 
@@ -539,32 +550,46 @@ En Pandas, los tipos numéricos suelen representarse explícitamente con tamaño
 
 ### Lectura de archivos con datos tabulares
 
-Pandas permite leer datos desde múltiples formatos de archivo y convertirlos directamente en DataFrames. Algunos de los formatos más comunes son: archivos CSV (.csv), archivos Excel (.xlsx, .xls), archivos JSON (.json), archivos de texto delimitados (.txt), archivos Parquet (.parquet). La lectura de datos se realiza mediante funciones específicas para cada tipo de archivo, por ejemplo:
+pandas permite leer datos desde múltiples formatos de archivo y convertirlos directamente en `DataFrame`. Algunos de los formatos más comunes son: archivos CSV (`.csv`), archivos Excel (`.xlsx`, `.xls`), archivos JSON (`.json`), archivos de texto delimitados (`.txt`) y archivos Parquet (`.parquet`). La lectura de datos se realiza mediante funciones específicas para cada tipo de archivo:
 
-- **`read_csv()`**. Si bien el archivo .csv sigue siendo orientado a filas, la librería se encarga de ponerlo dentro de un objeto `DataFrame`. `read_csv()` también permite leer archivos .txt.
+- **`read_csv()`**. Si bien el archivo `.csv` sigue siendo orientado a filas, la función se encarga de convertirlo en un `DataFrame`. `read_csv()` también permite leer archivos `.txt`.
 
-- **`read_excel()`**. La función `read_excel()` nos permite leer archivos .xlsx o .xls. Si el archivo en cuestión tiene más de una hoja, se debe especificar el nombre de la hoja con la que se quiere trabajar en el argumento `sheet_name`.
+- **`read_excel()`**. La función `read_excel()` permite leer archivos `.xlsx` o `.xls`. Si el archivo en cuestión tiene más de una hoja, se debe especificar el nombre de la hoja con la que se quiere trabajar en el argumento `sheet_name`.
 
-- **`read_json()`**. Pandas cuenta con la función `read_json()`, la cual posibilita la lectura/importación de archivos JSON al entorno de trabajo. Esta función convierte automáticamente los datos en un objeto `DataFrame`.
+- **`read_json()`**. La función `read_json()` posibilita la lectura de archivos JSON, convirtiéndolos automáticamente en un `DataFrame`.
 
-- **`read_parquet()`**. Pandas cuenta con la función `read_parquet()` para la lectura de archivos con este formato. El parámetro `engine` nos permite seleccionar la librería específica de parquet para leer el archivo: io.parquet.engine (`auto`), `pyarrow`, `fastparquet`. Por ejemplo:
+- **`read_parquet()`**. La función `read_parquet()` permite leer archivos con este formato. Algunos de sus parámetros más habituales son:
+
+  - **`engine`**: indica qué librería utiliza pandas por detrás para leer el archivo Parquet. Las opciones son `'pyarrow'`, `'fastparquet'` (ambas son librerías externas especializadas en este formato) o `'auto'`, que es el valor por defecto y deja que pandas elija automáticamente según lo que esté instalado en el entorno.
+
+  - **`columns`**: permite indicar una lista con los nombres de las columnas que se quieren leer, en lugar de cargar el archivo completo. Este parámetro es un buen ejemplo concreto de la ventaja de un formato orientado a columnas como Parquet: si solo se necesitan dos o tres columnas de un archivo con cien, `columns` evita leer del disco las columnas restantes.
+
+  - **`storage_options`**: permite pasar credenciales u otras opciones de conexión cuando el archivo no está almacenado localmente, sino en un servicio de almacenamiento remoto (por ejemplo, un *bucket* en la nube). Al leer un archivo local, como en el ejemplo siguiente, este parámetro no es necesario y se deja en `None`.
 
 ```{code-cell} python3
 :tags: ["skip-execution"]
 
 import pandas as pd
 
-pd.read_parquet('datasets/datos.parquet', engine = 'auto', 
-columns = None, storage_options = None, use_nullable_dtypes = False)
+df = pd.read_parquet(
+    'datasets/datos.parquet',
+    engine = 'auto',
+    columns = None,
+    storage_options = None
+)
 ```
 
-Estas funciones permiten especificar opciones como el delimitador, la presencia de encabezados, el tipo de datos de las columnas o el manejo de valores faltantes.
+```{dropdown} Nota sobre versiones de pandas
+`read_parquet()` tiene además un parámetro llamado `dtype_backend`, que permite elegir con qué tipo de estructura interna se representan los datos leídos (por ejemplo, `'numpy_nullable'` o `'pyarrow'`). Es una opción más avanzada, pensada sobre todo para el manejo fino de valores faltantes, y no es necesaria para el uso habitual de la función en esta asignatura.
+```
+
+Estas funciones permiten especificar opciones adicionales, como el delimitador, la presencia de encabezados, el tipo de dato de las columnas o el manejo de valores faltantes.
 
 #### Inferencia de tipos de datos al leer archivos
 
 Como se comentó anteriormente, los archivos CSV no almacenan información explícita sobre el tipo de dato de cada columna, ya que todo el contenido se guarda como texto plano.
 
-Cuando se lee un archivo CSV con herramientas básicas, toda la información se interpreta inicialmente como texto. Sin embargo, cuando se utiliza Pandas la librería intenta inferir automáticamente el tipo de dato más apropiado para cada columna. Además, es posible especificar manualmente los tipos deseados mediante el parámetro `dtype`:
+Cuando se lee un archivo CSV con herramientas básicas, toda la información se interpreta inicialmente como texto. Sin embargo, cuando se utiliza pandas, la librería intenta inferir automáticamente el tipo de dato más apropiado para cada columna. Además, es posible especificar manualmente los tipos deseados mediante el parámetro `dtype`:
 
 ```{code-cell} python3
 :tags: ["skip-execution"]
@@ -576,7 +601,7 @@ Esto fuerza a que la columna `price` sea interpretada como número de punto flot
 
 ### Inspección de tipos de datos en un DataFrame
 
-Pandas permite inspeccionar rápidamente los tipos de datos de cada columna utilizando el método **`info()`**.
+pandas permite inspeccionar rápidamente los tipos de datos de cada columna utilizando el método **`info()`**.
 
 Tomemos como ejemplo el dataset que contiene información sobre los pasajeros que viajaban en el Titanic:
 
@@ -596,25 +621,25 @@ Esta salida muestra, para cada columna, la siguiente información:
 
 - La cantidad de valores no nulos
 
-- El tipo de dato asignado por Pandas
+- El tipo de dato asignado por pandas
 
 ```{admonition} **El método info()**
 :class: tip
 
-La utilización de este método es una buena práctica luego de importar los datos, ya que permite detectar inconsistencias entre el tipo de dato esperado y el tipo asignado e identificar columnas que contienen valores faltantes. Por este motivo, `info()` suele ser uno de los primeros comandos que se ejecutan al comenzar a explorar un nuevo conjunto de datos.
+La utilización de este método es una buena práctica luego de importar los datos, ya que permite detectar inconsistencias entre el tipo de dato esperado y el tipo asignado, e identificar columnas que contienen valores faltantes. Por este motivo, `info()` suele ser uno de los primeros comandos que se ejecutan al comenzar a explorar un nuevo conjunto de datos.
 ```
 
 #### object *vs.* str
 
-En Pandas, las columnas que contienen texto suelen representarse con el tipo de dato `object`, en lugar del tipo `str` de Python. Esto ocurre porque `object` es un tipo general que puede contener cualquier objeto de Python, incluyendo cadenas de texto. Además, las columnas de texto pueden contener valores faltantes (`NaN`), y el tipo `object` es compatible con esta situación.
+En pandas, las columnas que contienen texto suelen representarse con el tipo de dato `object`, en lugar del tipo `str` de Python. Esto ocurre porque `object` es un tipo general que puede contener cualquier objeto de Python, incluyendo cadenas de texto. Además, las columnas de texto pueden contener valores faltantes (`NaN`), y el tipo `object` es compatible con esta situación.
 
 En términos prácticos, cuando una columna aparece como `object`, generalmente contiene texto. Sin embargo, también podría contener una mezcla de tipos, por lo que es importante inspeccionar los datos cuando sea necesario.
 
-*Nota: versiones recientes de pandas incorporan un tipo específico llamado string, orientado exclusivamente a texto, pero el uso de object sigue siendo muy común.*
+*Nota: versiones recientes de pandas incorporan un tipo específico llamado `string`, orientado exclusivamente a texto, pero el uso de `object` sigue siendo muy común.*
 
 ### Conversión de tipos de datos
 
-En muchos casos, al leer un conjunto de datos, el tipo asignado automáticamente por Pandas a una columna no coincide con el tipo deseado. Son ejemplos de estas situaciones los siguientes:
+En muchos casos, al leer un conjunto de datos, el tipo asignado automáticamente por pandas a una columna no coincide con el tipo deseado. Son ejemplos de estas situaciones los siguientes:
 
 - Números almacenados como texto.
 
@@ -634,14 +659,14 @@ A través de la siguiente línea, se convierte la columna `Age` del dataset de p
 df['Age'] = df['Age'].astype('int64')
 ```
 
-También es posible convertir a otros tipos, como `float`, `object` o `bool` utilizando el mismo método. Tomando como ejemplo tres columnas de otro DataFrame:
+También es posible convertir a otros tipos, como `float`, `object` o `bool`, utilizando el mismo método. Tomando como ejemplo tres columnas de otro `DataFrame`:
 
 ```{code-cell} python
 :tags: ["skip-execution"]
 
-data['price'] = data['price'].astype('float64')
-data['category'] = data['category'].astype('object')
-data['is_active'] = data['is_active'].astype('bool')
+data['precio'] = data['precio'].astype('float64')
+data['categoria'] = data['categoria'].astype('object')
+data['esta_activo'] = data['esta_activo'].astype('bool')
 ```
 
 **Conversión de varias columnas a la vez:**
@@ -660,23 +685,20 @@ df = df.astype({
 
 #### Errores frecuentes en la conversión
 
-Definir el tipo de dato de una columna suele ser una tarea intuitiva y, en muchos casos, Pandas (u otras librerías) realiza una inferencia adecuada de forma automática. Sin embargo, en la práctica aparecen situaciones en las que una elección incorrecta del tipo de dato puede conducir a errores o a la pérdida de información.
+Definir el tipo de dato de una columna suele ser una tarea intuitiva y, en muchos casos, pandas (u otras librerías) realiza una inferencia adecuada de forma automática. Sin embargo, en la práctica aparecen situaciones en las que una elección incorrecta del tipo de dato puede conducir a errores o a la pérdida de información.
 
 Algunos problemas habituales son los siguientes:
 
-- **Pérdida de información al leer identificadores numéricos como enteros.** En muchos conjuntos de datos existen columnas numéricas que representan identificadores o códigos y no cantidades. Por ejemplo, una columna de seis dígitos que codifica una localización con la estructura ***ccdddd***, donde los primeros dos dígitos representan la ciudad y los últimos cuatro el distrito.
-Si el código de ciudad puede comenzar con 0 y la columna se lee como `int`, ese cero inicial se pierde. Por ejemplo, el valor 013349 pasará a leerse como 13349. Luego, al intentar recuperar la ciudad extrayendo los dos primeros dígitos, se obtendrá 13 en lugar de 01, introduciendo un error en la información.
-En estos casos, el tipo de dato adecuado es `str`, ya que el valor debe interpretarse como un código y no como un número.
+- **Pérdida de información al leer identificadores numéricos como enteros.** En muchos conjuntos de datos existen columnas numéricas que representan identificadores o códigos y no cantidades. Por ejemplo, una columna de seis dígitos que codifica una localización con la estructura ***ccdddd***, donde los primeros dos dígitos representan la ciudad y los últimos cuatro el distrito. Si el código de ciudad puede comenzar con 0 y la columna se lee como `int`, ese cero inicial se pierde. Por ejemplo, el valor `013349` pasará a leerse como `13349`. Luego, al intentar recuperar la ciudad extrayendo los dos primeros dígitos, se obtendrá `13` en lugar de `01`, introduciendo un error en la información. En estos casos, el tipo de dato adecuado es `str`, ya que el valor debe interpretarse como un código y no como un número.
 
 - **Conversión a texto en presencia de valores faltantes.**
-Intentar convertir una columna completa a `str` cuando contiene valores faltantes puede generar comportamientos no deseados. Los valores nulos (`NaN`) pueden coexistir naturalmente con datos numéricos, pero no con cadenas de texto estándar.
-Una estrategia recomendada es tratar primero los valores faltantes (por ejemplo, imputándolos o eliminándolos, acciones que se abordarán más adelante) y luego realizar la conversión al tipo `str`.
+Intentar convertir una columna completa a `str` cuando contiene valores faltantes puede generar comportamientos no deseados. Los valores nulos (`NaN`) pueden coexistir naturalmente con datos numéricos, pero no con cadenas de texto estándar. Una estrategia recomendada es tratar primero los valores faltantes (por ejemplo, imputándolos o eliminándolos, acciones que se abordarán más adelante) y luego realizar la conversión al tipo `str`.
 
-Además, si una columna contiene valores incompatibles con el tipo solicitado, el método `astype()` producirá un error. Por ejemplo, si se intenta convertir una columna con valores faltantes a un tipo entero (`int`), la conversión fallará, ya que los enteros estándar no admiten `NaN`. Por este motivo, suele ser necesario limpiar o tratar los datos faltantes antes de realizar la conversión de tipos.
+- **Valores incompatibles con el tipo de dato al que se quiere convertir.** Si una columna contiene valores incompatibles con el tipo solicitado, el método `astype()` producirá un error. Por ejemplo, si se intenta convertir una columna con valores faltantes a un tipo entero (`int`), la conversión fallará, ya que los enteros estándar no admiten `NaN`. Por este motivo, suele ser necesario limpiar o tratar los datos faltantes antes de realizar la conversión de tipos.
 
 #### Conversión segura con **to_numeric()**
 
-En situaciones donde una columna contiene números almacenados como texto, puede utilizarse:
+En situaciones donde una columna contiene números almacenados como texto, puede utilizarse la función:
 
 ```{code-cell} python
 :tags: ["skip-execution"]
@@ -703,29 +725,32 @@ Python incluye el módulo `csv`, que permite escribir archivos CSV sin depender 
 ```{code-cell} python
 :tags: ["skip-execution"]
 
+import csv
+
 # Datos a escribir en el archivo CSV
 datos = [
-    ['Nombre', 'Edad', 'Ciudad'],  # Encabezados (no todos los CSV los incluyen)
-    ['Juan', 30, 'Rosario'],
-    ['Ana', 25, 'Madrid'],
-    ['Pedro', 40, 'Lima']
+    ['nombre', 'edad', 'ocupacion'],  # Encabezados (no todos los CSV los incluyen)
+    ['Juan', 25, 'estudiante'],
+    ['Ana', 30, 'ingeniera'],
+    ['Agustina', 48, 'psicologa'],
+    ['Pedro', 74, 'jubilado']
 ]
 
 # Escritura del archivo CSV
-with open('datos.csv', mode='w') as archivo:
-    # En Windows es recomendable especificar lineterminator='\n'
-    writer = csv.writer(archivo, lineterminator='\n')
+with open('personas.csv', mode = 'w') as archivo:
+    # En Windows es recomendable especificar lineterminator = '\n'
+    writer = csv.writer(archivo, lineterminator = '\n')
     for fila in datos:
         writer.writerow(fila)
 ```
 
 En este ejemplo, los datos se organizan como una lista de listas, donde cada sublista representa una fila de la tabla. El objeto `csv.writer` se encarga de transformar esa estructura en el formato CSV correspondiente.
 
-👉 Esta forma es útil para entender cómo funciona el formato CSV “desde abajo”, pero no es la más habitual cuando se trabaja con datos en análisis de datos.
+👉 Esta forma es útil para entender cómo funciona el formato CSV “desde abajo”, pero **no es la más habitual cuando se trabaja con datos en análisis de datos.**
 
-**Opción 2: usando Pandas (mucho más habitual)**
+**Opción 2: usando pandas (mucho más habitual)**
 
-En contextos de análisis de datos, la forma más común y conveniente de escribir un CSV es a partir de un `DataFrame` de Pandas.
+En contextos de análisis de datos, la forma más común y conveniente de escribir un CSV es a partir de un `DataFrame`.
 
 ```{code-cell} python
 :tags: ["skip-execution"]
@@ -733,32 +758,35 @@ En contextos de análisis de datos, la forma más común y conveniente de escrib
 import pandas as pd
 
 datos = [
-    ['Juan', 30, 'Rosario'],
-    ['Ana', 25, 'Madrid'],
-    ['Pedro', 40, 'Lima']
+    ['Juan', 25, 'estudiante'],
+    ['Ana', 30, 'ingeniera'],
+    ['Agustina', 48, 'psicologa'],
+    ['Pedro', 74, 'jubilado']
 ]
 
 df = pd.DataFrame(
     datos,
-    columns = ['Nombre', 'Edad', 'Ciudad']
+    columns = ['nombre', 'edad', 'ocupacion']
 )
 
-df.to_csv('datos.csv', index = False)
+df.to_csv('personas.csv', index = False)
 
-print(pd.read_csv('datos.csv'))
+print(pd.read_csv('personas.csv'))
 ```
+
 Aquí:
 
-- Los datos se almacenan directamente en un DataFrame.
+- Los datos se almacenan directamente en un `DataFrame`.
 
 - El método **`to_csv()`** se encarga de la escritura.
 
 - El argumento `index = False` evita que se guarde el índice del DataFrame como una columna adicional.
 
-👉 Esta es la forma recomendada cuando los datos ya están en Pandas, ya que es más clara, menos propensa a errores y fácilmente extensible.
+👉 Esta es la forma recomendada cuando los datos ya están en pandas, ya que es más clara, menos propensa a errores y fácilmente extensible.
 
 #### Escritura de datos en formato Parquet
-Como se mencionó previamente, el formato Parquet es un formato binario, columnar y comprimido, muy utilizado en entornos de *Big Data* y análisis de grandes volúmenes de información. Para trabajar con Parquet en Python, suele utilizarse la librería `pyarrow` junto con `pandas`.
+
+Como se mencionó previamente, el formato Parquet es un formato binario, columnar y comprimido, muy utilizado en entornos de *Big Data* y análisis de grandes volúmenes de información. Para trabajar con Parquet en Python, suele utilizarse la librería `pyarrow` junto con pandas.
 
 ```{code-cell} python
 :tags: ["skip-execution"]
@@ -769,19 +797,19 @@ import pyarrow.parquet as pq
 
 # Creamos un DataFrame de pandas
 datos = pd.DataFrame({
-    'nombre': ['Juan', 'Ana', 'Pedro'],
-    'edad': [30, 25, 40],
-    'ciudad': ['Rosario', 'Madrid', 'Lima']
+    'nombre': ['Juan', 'Ana', 'Agustina', 'Pedro'],
+    'edad': [25, 30, 48, 74],
+    'ocupacion': ['estudiante', 'ingeniera', 'psicologa', 'jubilado']
 })
 
 # Convertimos el DataFrame en una tabla de PyArrow
 tabla = pa.Table.from_pandas(datos)
 
 # Escribimos el archivo Parquet
-pq.write_table(tabla, 'datos.parquet')
+pq.write_table(tabla, 'personas.parquet')
 ```
 
-En este ejemplo, los datos se crean como un DataFrame de Pandas y posteriormente se convierten a un objeto `pa.Table`, que es la estructura interna que utiliza `pyarrow`. Finalmente, se escriben en un archivo Parquet con `write_table()`. El archivo resultante puede ser leído por cualquier herramienta que soporte el formato Parquet, incluyendo Pandas, Spark y otros motores de procesamiento de datos.
+En este ejemplo, los datos se crean como un `DataFrame` de pandas y posteriormente se convierten a un objeto `pa.Table`, que es la estructura interna que utiliza `pyarrow`. Finalmente, se escriben en un archivo Parquet con `write_table()`. El archivo resultante puede ser leído por cualquier herramienta que soporte el formato Parquet, incluyendo pandas, Spark y otros motores de procesamiento de datos.
 
 ## Manejo de fechas
 
@@ -791,45 +819,62 @@ El módulo `datetime` de Python provee clases para representar y manipular fecha
 
 Un objeto de fecha y hora de tipo *naive* no contiene información sobre la zona horaria. Representa una fecha y una hora determinadas, pero no queda especificado a qué huso horario se refiere. Este tipo de objetos es frecuente cuando se trabaja con datos simples o cuando la información proviene de archivos de texto, como archivos CSV. Sin embargo, puede generar ambigüedades en contextos internacionales.
 
-Por ejemplo, podemos elegir representar la fecha y la hora del primer partido de Argentina en la Copa Mundial FIFA 2026, frente a Argelia en Kansas City, sin indicar el huso horario:
+Por ejemplo, podemos representar la fecha y la hora de uno de los partidos más recordados del Mundial 2026: la semifinal entre Argentina e Inglaterra, jugada en el Atlanta Stadium, donde Argentina remontó un 0-1 en contra para ganar 2-1 y clasificarse a la final, sin indicar el huso horario:
 
 ```{code-cell} python
 
 from datetime import datetime
 
-partido_naive = datetime(2026, 6, 16, 22, 0, 0)
+partido_naive = datetime(2026, 7, 15, 15, 0, 0)
 print(partido_naive)
 ```
-Este valor indica simplemente “las 22:00”, pero no especifica si se trata de la hora de Argentina, de Kansas City u otra zona horaria. En ausencia de esa información, el instante exacto del evento es ambiguo. 
+
+Este valor indica simplemente "el 15 de julio de 2026 a las 15:00", pero no especifica en qué huso horario. Sin esa información, no queda claro si se trata de la hora de Atlanta, de Argentina o de algún otro lugar, y el instante exacto del evento queda ambiguo.
 
 ### Fechas y horas *aware*
 
 Un objeto de tipo *aware* contiene información explícita sobre la zona horaria, lo que permite representar un instante específico en el tiempo de forma inequívoca. Para trabajar con este tipo de objetos es habitual utilizar la librería `pytz`, que provee una base completa de husos horarios.
 
-Retomando el ejemplo del primer partido de Argentina en el Mundial 2026, que se juega en Kansas City el martes 16 de junio a las 21 hs. (hora local), y se transmite en Argentina a las 22 hs., podemos representar correctamente este evento incluyendo el huso horario correspondiente:
-
+El partido se jugó en el Atlanta Stadium, en Georgia, Estados Unidos, y comenzó a las 15:00, hora local de esa ciudad. Podemos representar correctamente ese instante incluyendo el huso horario correspondiente a la sede del partido:
 
 ```{code-cell} python
 
 from datetime import datetime
 import pytz
 
-zona_arg = pytz.timezone('America/Argentina/Buenos_Aires')
+zona_atlanta = pytz.timezone('America/New_York')
 
-partido_aware = zona_arg.localize(datetime(2026, 6, 16, 22, 0, 0))
+partido_aware = zona_atlanta.localize(datetime(2026, 7, 15, 15, 0, 0))
 
 print(partido_aware)
 ```
 
-En este caso, el objeto de fecha y hora contiene información explícita sobre la zona horaria de Argentina, lo que permite identificar sin ambigüedades el instante exacto en el que se disputa el partido (detalle no menor cuando se trata de un partido de la Selección, ya que podemos saber con exactitud a qué hora tenemos que tener lista la picada).
+Una vez que el datetime es *aware*, es posible convertirlo a cualquier otra zona horaria sin ambigüedad, utilizando el método `astimezone()`. Por ejemplo, podemos saber a qué hora comenzó el partido en Argentina:
 
-Retomando lo dicho anteriormente, es evidente que este tipo de representación es especialmente importante en eventos internacionales, ya que un mismo evento ocurre en un único momento real, pero se manifiesta a distintas horas locales según la ubicación geográfica.
+```{code-cell} python
 
-### Manejo de fechas en Pandas
+zona_arg = pytz.timezone('America/Argentina/Buenos_Aires')
+
+partido_argentina = partido_aware.astimezone(zona_arg)
+
+print(partido_argentina)
+```
+
+Esta es precisamente la ventaja de trabajar con datetimes *aware*: al tener información explícita sobre la zona horaria de origen, es posible convertir el instante a la hora local de cualquier otra región del mundo de manera directa y sin errores. Con un objeto *naive* esta conversión no sería posible, porque no habría forma de saber a partir de qué huso horario convertir.
+
+Es evidente que este tipo de representación es especialmente importante en eventos internacionales, ya que un mismo evento ocurre en un único momento real, pero se manifiesta a distintas horas locales según la ubicación geográfica.
+
+```{admonition} Una alternativa a pytz
+:class: note
+
+Desde la versión 3.9 de Python, la librería estándar incluye el módulo `zoneinfo`, que también permite trabajar con husos horarios sin necesidad de instalar una librería externa. `pytz` sigue siendo ampliamente utilizado y es perfectamente válido, pero vale la pena mencionar que `zoneinfo` es una alternativa moderna e integrada al lenguaje.
+```
+
+### Manejo de fechas en pandas
 
 Cuando los datos se leen desde archivos como .csv, no se conserva información sobre los tipos de datos de cada columna. Si una columna contiene fechas, Pandas la interpreta inicialmente como texto.
 
-Para convertir una columna a tipo fecha se utiliza la función **`pd.to_datetime()`**:
+Para convertir una columna al tipo fecha se utiliza la función **`pd.to_datetime()`**:
 
 ```{code-cell} python
 :tags: ["skip-execution"]
@@ -837,9 +882,9 @@ Para convertir una columna a tipo fecha se utiliza la función **`pd.to_datetime
 df['fecha'] = pd.to_datetime(df['fecha'])
 ```
 
-Como resultado, la columna se transforma a un tipo de dato especial de pandas llamado `datetime64`, que permite realizar operaciones temporales de manera eficiente.
+Como resultado, la columna se transforma al tipo de dato especial de pandas llamado `datetime64`, que permite realizar operaciones temporales de manera eficiente.
 
-**Sobre `datetime64`:**
+#### Sobre `datetime64`
 
 `datetime64` es un tipo de dato numérico que se representa internamente como un entero de 64 bits. Cada valor corresponde a la cantidad de unidades de tiempo transcurridas desde una fecha de referencia, conocida como *epoch*, que es el 1 de enero de 1970.
 
@@ -853,17 +898,18 @@ La precisión puede ajustarse según la unidad de tiempo utilizada, por ejemplo:
 
 Este tipo de dato está optimizado para trabajar con grandes volúmenes de datos y permite realizar operaciones vectorizadas, como ordenar fechas, calcular diferencias temporales o extraer componentes como año, mes o día.
 
-### Operaciones frecuentes con fechas en Pandas
+### Operaciones frecuentes con fechas en pandas
 
-Una vez que una columna ha sido convertida al tipo `datetime64`, Pandas permite realizar de forma sencilla distintas operaciones temporales. Estas operaciones son muy habituales en el análisis de datos y justifican la importancia de convertir correctamente las fechas.
+Una vez que una columna fue convertida al tipo `datetime64`, pandas permite realizar de forma sencilla distintas operaciones temporales. Estas operaciones son muy habituales en el análisis de datos y justifican la importancia de convertir correctamente las fechas.
 
-Supongamos un `DataFrame` con una columna llamada `fecha`:
+Supongamos un `DataFrame` con una columna llamada `fecha`, ya convertida:
 
 ```{code-cell} python
 :tags: ["skip-execution"]
 
 df['fecha'] = pd.to_datetime(df['fecha'])
 ```
+
 #### Extracción de componentes temporales
 
 Es posible extraer fácilmente partes de la fecha, como el año, el mes o el día, utilizando el atributo `.dt`:
@@ -875,36 +921,41 @@ df['fecha'].dt.year
 df['fecha'].dt.month
 df['fecha'].dt.day
 ```
+
 Esto resulta útil, por ejemplo, para agrupar observaciones por año o analizar comportamientos estacionales.
+
+```{admonition} ¿Función, método o atributo?
+:class: note
+
+`year`, `month` y `day` se escriben sin paréntesis: no son funciones ni métodos, sino **atributos** (propiedades) del accesor `.dt`. Devuelven directamente un valor ya calculado, en vez de ejecutar una operación. Es un caso a tener en cuenta porque no sigue la convención de "función/método" que usamos para el resto del material.
+```
 
 #### Diferencias entre fechas
 
-ambién es posible calcular diferencias entre fechas. Por ejemplo, si queremos saber cuántos días faltan para el primer partido de la Selección Argentina en el Mundial 2026, podemos calcular la diferencia entre la fecha actual y la fecha del partido.
+También es posible calcular diferencias entre fechas. Por ejemplo, si queremos saber cuántos días transcurrieron desde el épico partido de la Selección Argentina contra Inglaterra en el Mundial 2026, podemos calcular la diferencia entre la fecha actual y la fecha del partido.
 
-Supongamos que:
-- `fecha_hoy` representa la fecha actual.
-- `fecha_partido` representa la fecha del partido Argentina vs. Argelia.
+Supongamos que hoy es **18 de agosto de 2026**:
 
 ```{code-cell} python
-:tags: ["skip-execution"]
 
-from datetime import datetime
-import pytz
+fecha_hoy = zona_arg.localize(datetime(2026, 8, 18))
+fecha_partido = zona_arg.localize(datetime(2026, 7, 15))
 
-zona_arg = pytz.timezone('America/Argentina/Buenos_Aires')
-
-fecha_hoy = zona_arg.localize(datetime.now())
-fecha_partido = zona_arg.localize(datetime(2026, 6, 16, 22, 0, 0))
-
-dias_hasta_partido = fecha_partido - fecha_hoy
+dias_desde_partido = fecha_hoy - fecha_partido
 ```
 
-El resultado es un objeto de tipo `timedelta`, que representa la cantidad de tiempo que falta para el partido. A partir de este objeto es posible obtener, por ejemplo, el número de días:
+El resultado es un objeto de tipo `timedelta`, que representa la cantidad de tiempo que transcurrió desde el partido. A partir de este objeto es posible obtener, por ejemplo, el número de días:
 
 ```{code-cell} python
 :tags: ["skip-execution"]
 
-dias_hasta_partido.days
+dias_desde_partido.days
+```
+
+```{admonition} En un caso real
+:class: tip
+
+En una aplicación real, en lugar de fijar `fecha_hoy` manualmente, se utilizaría `datetime.now()` para obtener la fecha y hora actuales del sistema. Acá se fijó un valor concreto (18 de agosto de 2026) para que el resultado de este ejemplo sea siempre el mismo, sin importar cuándo se ejecute.
 ```
 
 Este tipo de cálculo es habitual en aplicaciones que trabajan con eventos futuros, como calendarios, recordatorios o sistemas de planificación.
@@ -923,6 +974,7 @@ Esto permite analizar la evolución temporal de los datos o preparar series de t
 
 Para concluir esta sección, es oportuno mencionar que el manejo adecuado de fechas es fundamental en muchos problemas reales, como el análisis de series temporales, el estudio de eventos en el tiempo o la comparación entre períodos.
 
+
 ```{figure} imagenes/date.png
 ---
 width: 70%
@@ -930,7 +982,8 @@ align: center
 ---
 ```
 
-## Manos a la obra 1 
+```{admonition} 🤓 MANOS A LA OBRA N° 1
+:class: manos-a-la-obra
 
 1. Leé el archivo [`lista_personas.csv`](https://drive.google.com/drive/folders/1ZBdU_g8DXv4-8_ubM5gpeML4BZVYMHKP?usp=sharing).
 
@@ -949,7 +1002,8 @@ align: center
    
 7. ¿Quién es la persona de mayor edad entre las personas del dataset?
 
-8. Extraer el mes de nacimiento de cada persona en una nueva columna. ¿Cuál fue el mes con mayor cantidad de nacimientos
+8. Extraer el mes de nacimiento de cada persona en una nueva columna. ¿Cuál fue el mes con mayor cantidad de nacimientos?
+```
 
 ## Manipulación de datos
 
