@@ -1,0 +1,7 @@
+﻿.manos-a-la-obra {
+    background-color: #ffff82 !important;
+    border-left: 4px solid #e6c200 !important;
+}
+.manos-a-la-obra > .admonition-title {
+    background-color: #e6c200 !important;
+}
