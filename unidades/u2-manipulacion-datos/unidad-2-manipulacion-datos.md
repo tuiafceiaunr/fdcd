@@ -13,7 +13,7 @@ kernelspec:
 
 ## ¿Qué son los datos?
 
-Los datos son una porción de información de algún tema en particular que se guardan para ser utilizados en futuros análisis. Los datos pueden venir de tres formas: estructurados, no estructurados y semi-estructurados. Durante este curso, vamos a utilizar mayormente datos estructurados y algunos semi-estructurados.
+Los datos son una porción de información de algún tema en particular que se guarda para ser utilizada en futuros análisis. Los datos pueden presentarse de tres formas: estructurados, no estructurados y semi-estructurados. A lo largo de este curso trabajaremos mayormente con datos estructurados, y en menor medida con datos semi-estructurados.
 
 ## Datos estructurados, no estructurados y semi-estructurados
 
@@ -49,9 +49,7 @@ Bases de datos relacionales.
 
 ### Datos no estructurados
 
-Los datos no estructurados son información que no posee un modelo de datos predefinido ni un esquema fijo, y cuya organización interna no sigue una estructura tabular. Por esta razón, no pueden representarse naturalmente mediante filas y columnas. Este tipo de datos suele presentarse en formatos libres o complejos, donde el significado está implícito en el contenido más que en una estructura explícita.
-
-Ejemplos: correos electrónicos, mensajes de chat, documentos de texto, imágenes, audio, video, publicaciones en redes sociales, páginas web.
+Los datos no estructurados son información que no posee un modelo de datos predefinido ni un esquema fijo, y cuya organización interna no sigue una estructura tabular. Por esta razón, no pueden representarse naturalmente mediante filas y columnas. Este tipo de datos suele presentarse en formatos libres o complejos, donde el significado está implícito en el contenido más que en una estructura explícita. Ejemplos: correos electrónicos, mensajes de chat, documentos de texto, imágenes, audio, video, publicaciones en redes sociales, páginas web.
 
 **Algunas diferencias respecto a los datos estructurados:**
 
@@ -106,19 +104,19 @@ Resulta intuitivo observar que el ejemplo anterior contiene información sobre e
 
 XML utiliza ***tags*** para darle forma a los datos. Los tags pueden ser:
 
-- **Elementos,** como `<First Name>`.
+- **Elementos,** como `<FirstName>`.
 
 - **Atributos,** como `Age='23'`. 
 
 A su vez, los elementos pueden tener elementos hijos que permiten expresar relaciones, como `Hobby` dentro del elemento `Hobbies`.
 
-### JSON (JavaScript Object Notation)
+### JSON (*JavaScript Object Notation*)
 
 JSON es un formato de datos liviano, ampliamente utilizado para almacenar e intercambiar información, especialmente en aplicaciones web y APIs. Está basado en una **estructura de pares clave–valor**, admite listas (arreglos) y soporta estructuras jerárquicas.
 
 Utiliza llaves `{}` para delimitar objetos y corchetes `[]` para listas.
 
-A continuación, un ejemplo conocido:
+Retomando el mismo registro que en el ejemplo de XML:
 
 ```json
 {
@@ -133,11 +131,11 @@ A continuación, un ejemplo conocido:
 }
 ```
 
-### YAML (YAML Ain’t Markup Language)
+### YAML (*YAML Ain’t Markup Language*)
 
 YAML es un lenguaje de serialización de datos diseñado para ser altamente legible para humanos. La estructura se define principalmente mediante indentación y saltos de línea, reduciendo el uso de caracteres especiales.
 
-Ejemplo:
+El mismo registro, ahora en YAML:
 
 ```yaml
 firstName: Quinn
@@ -164,6 +162,32 @@ Formato liviano basado en pares clave–valor y listas. Estándar de facto para 
 **YAML.**
 Formato orientado a la legibilidad humana. Muy utilizado en archivos de configuración y automatización.
 ```
+
+### Un mismo dato, distintos formatos
+
+Vale la pena detenerse en un punto: las tres categorías que acabamos de ver no son compartimentos estancos. Un mismo dato del mundo real puede circular en distintos formatos según la etapa del proceso y el sistema que lo esté manejando. Pensemos en el recorrido de un pedido hecho en un *e-commerce*, desde que se genera hasta que llega a un análisis de datos:
+
+Cuando el pedido se **guarda en la base de datos** de la tienda, queda representado en una tabla con columnas fijas como `id_pedido`, `id_cliente`, `fecha`, `monto` y `estado`. Es un dato **estructurado**: todos los pedidos comparten exactamente los mismos atributos.
+
+Cuando otra aplicación necesita **consultar ese pedido a través de una API**, lo habitual es que la respuesta llegue en formato JSON, algo como:
+
+```json
+{
+    "id_pedido": 4821,
+    "cliente": "Ana Gómez",
+    "items": [
+        {"producto": "Zapatillas", "cantidad": 1},
+        {"producto": "Medias", "cantidad": 3}
+    ],
+    "estado": "enviado"
+}
+```
+
+Acá ya no hay un esquema tabular rígido: la cantidad de elementos dentro de `items` puede variar de un pedido a otro. Es un dato **semi-estructurado**.
+
+Si además el cliente dejó un **comentario sobre su compra** ("llegó rápido pero la caja venía golpeada"), ese texto libre es un dato **no estructurado**: no tiene campos predefinidos ni una estructura que pueda anticiparse de antemano.
+
+Reconocer en qué categoría cae cada dato con el que trabajamos es el primer paso antes de decidir cómo procesarlo.
 
 ## Datos tabulares
 
@@ -204,73 +228,44 @@ Para ilustrar lo anterior, supongamos que tenemos la siguiente tabla con informa
 | 32492645 | Julia | Martinez | 1988 |
 | 30298710 | Camila | Suarez | 1985 |
 
-Si el archivo se guarda **orientado a filas** tendrá esta forma:
+Si el archivo se guarda **orientado a filas**, conceptualmente los datos se almacenan así:
 
-| row | value |
-| --- | --- |
-| row 1 | 40576890 |
-|  | Pedro |
-|  | Aguirre |
-|  | 1995 |
-| row 2 | 32492645 |
-|  | Julia |
-|  | Martinez |
-|  | 1988 |
-| row 3 | 30298710 |
-|  | Camila |
-|  | Suarez |
-|  | 1985 |
+**Fila 1** → 40576890, Pedro, Aguirre, 1995
 
-Por este motivo, desde un punto de vista conceptual, los datos se almacenarían de la siguiente manera:
+**Fila 2** → 32492645, Julia, Martinez, 1988
 
-Fila 1 →
-40576890, Pedro, Aguirre, 1995
+**Fila 3** → 30298710, Camila, Suarez, 1985
 
-Fila 2 →
-32492645, Julia, Martinez, 1988
+Es decir, cada registro contiene todos sus atributos de forma consecutiva.
 
-Es decir, cada registro contiene todos sus atributos consecutivos.
+Por el contrario, si el archivo se guarda **orientado a columnas**, los datos se almacenan así:
 
-Por el contrario, si el archivo se guarda **orientado a columnas** tendrá esta otra forma:
+**Columna dni** → 40576890, 32492645, 30298710
 
-| column | value |
-| --- | --- |
-| dni | 40576890 |
-|  | 32492645 |
-|  | 40576890 |
-| nombre | Pedro |
-|  | Julia |
-|  | Camila |
-| apellido | Aguirre |
-|  | Martinez |
-|  | Suarez |
-| año_nacimiento | 1995 |
-|  | 1988 |
-|  | 1985 |
+**Columna nombre** → Pedro, Julia, Camila
 
-Conceptualmente, los datos se almacenarían así:
+**Columna apellido** → Aguirre, Martinez, Suarez
 
-Columna dni →
-40576890, 32492645
-
-Columna nombre →
-Pedro, Julia
-
-Columna apellido →
-Aguirre, Martinez
-
-Columna anio_nacimiento →
-1995, 1988
+**Columna año_nacimiento** → 1995, 1988, 1985
 
 Es decir, cada columna almacena consecutivamente los valores de ese atributo.
+
+```{figure} imagenes/row_column_oriented.svg
+---
+width: 95%
+align: center
+---
+Comparación esquemática entre el almacenamiento orientado a filas y el orientado a columnas, usando el mismo conjunto de datos.
+```
 
 ```{dropdown} Más info
 :class: seealso
 
-Los formatos de archivo orientados a columnas (más adelante se verá que Parquet es uno de ellos) son ampliamente utilizados en entornos de análisis y *Big Data*, mientras que muchos formatos tradicionales (como CSV) son esencialmente orientados a filas.
+Los formatos de archivo orientados a columnas (más adelante veremos que Parquet es uno de ellos) son ampliamente utilizados en entornos de análisis y *Big Data*, mientras que muchos formatos tradicionales (como CSV) son esencialmente orientados a filas.
 
 El siguiente [post](https://dataschool.com/data-modeling-101/row-vs-column-oriented-databases/#:~:text=Row%20oriented%20databases%20are%20databases,benefits%20for%20storing%20data%20quickly) muestra de forma clara las ventajas y desventajas de cada tipo de archivo.
 ```
+
 ### Tipos de archivos para el almacenamiento de datos tabulares
 
 Existen distintos formatos de archivo para almacenar datos tabulares. A lo largo de esta materia trabajaremos principalmente con los siguientes:
@@ -294,11 +289,13 @@ En los archivos CSV, los diferentes registros (las filas) se separan entre sí m
 Ejemplo:
 
 ```
-Name, Age, Gender
-John, 25, Male
-Jane, 30, Female
-Bob, 40, Male
+nombre, edad, ocupacion
+Juan, 25, estudiante
+Ana, 30, ingeniera
+Pedro, 74, jubilado
+Agustina, 48, psicologa
 ```
+
 **Dos cuestiones importantes a tener en cuenta:** 
 
 - Los archivos CSV poseen un formato de almacenamiento **orientado a filas.**
@@ -327,7 +324,7 @@ Bob, 40, Male
 
 #### TXT
 
-El formato .txt es uno de los más simples y generales para el almacenamiento de información. Cuando se utilizan para datos tabulares, los archivos de texto suelen ser conceptualmente similares a los CSV, aunque no existe una convención estricta sobre cómo deben estructurarse.
+El formato `.txt` es uno de los más simples y generales para el almacenamiento de información. Cuando se utilizan para datos tabulares, los archivos de texto suelen ser conceptualmente similares a los CSV, aunque no existe una convención estricta sobre cómo deben estructurarse.
 
 **Aplicaciones:**
 
@@ -353,7 +350,7 @@ Los archivos de texto plano se utilizan comúnmente para almacenar grandes volú
 
 #### Apache Parquet
 
-Apache Parquet es un formato de almacenamiento de datos tabulares orientado a columnas, diseñado y optimizado para cargas de datos de gran tamaño y consultas analíticas. Fue desarrollado como proyecto de código abierto en 2013 y es ampliamente utilizado en ecosistemas de *Big Data*, especialmente en conjunto con herramientas como Hadoop, Hive, Impala y Spark.
+Apache Parquet es un formato de almacenamiento de datos tabulares orientado a columnas, diseñado y optimizado para cargas de datos de gran tamaño y consultas analíticas. Fue desarrollado por Cloudera y Twitter en 2013 como proyecto de código abierto, y es ampliamente utilizado en ecosistemas de *Big Data*, especialmente en conjunto con herramientas como Hadoop, Hive, Impala y Spark.
 
 Parquet almacena los datos en columnas comprimidas, lo que lo hace mucho más eficiente que formatos como CSV cuando se trabaja con grandes volúmenes de información.
 
@@ -377,11 +374,21 @@ Parquet almacena los datos en columnas comprimidas, lo que lo hace mucho más ef
 
 - **Mayor complejidad conceptual y técnica:** el uso de Parquet requiere herramientas específicas para su lectura y escritura, y una comprensión básica de conceptos como esquemas, compresión y almacenamiento columnar, lo que puede representar una barrera inicial para principiantes.
 
-- **No es legible por humanos:** a diferencia de archivos de texto plano, los archivos Parquet son binarios, por lo que no pueden inspeccionarse o editarse fácilmente sin herramientas especializadas.
+- **No es legible por humanos:** a diferencia de los archivos de texto plano, los archivos Parquet son binarios, por lo que no pueden inspeccionarse o editarse fácilmente sin herramientas especializadas.
 
 #### JSON
 
-El formato JSON fue presentado previamente en la sección de datos semi-estructurados. En el contexto de datos tabulares, puede utilizarse cuando los registros presentan una estructura homogénea, aunque no es su uso principal.
+El formato JSON fue presentado previamente en la sección de datos semi-estructurados. Como se explicó más arriba, JSON es un formato flexible que puede representar tanto estructuras jerárquicas como datos tabulares. Se utiliza para representar una tabla específicamente cuando los registros tienen una estructura homogénea, es decir, cuando se trata de una lista de objetos donde todos comparten exactamente las mismas claves. Por ejemplo, la misma tabla de personas utilizada anteriormente podría representarse así:
+
+```json
+[
+    {"dni": "40576890", "nombre": "Pedro", "apellido": "Aguirre", "año_nacimiento": 1995},
+    {"dni": "32492645", "nombre": "Julia", "apellido": "Martinez", "año_nacimiento": 1988},
+    {"dni": "30298710", "nombre": "Camila", "apellido": "Suarez", "año_nacimiento": 1985}
+]
+```
+
+Aunque no es su uso principal, este formato es habitual como origen de datos tabulares cuando provienen de una API o de un sistema que expone su información en JSON.
 
 #### HTML (*HyperText Markup Language*)
 
