@@ -1016,9 +1016,29 @@ align: center
 Cualquier semejanza con la realidad es pura coincidencia...
 ```
 
+Antes de ver técnicas puntuales, vale la pena repasar por qué motivos los datos suelen llegar en mal estado. Algunas de las causas más frecuentes son:
+
+- **Errores humanos.** Alguien tipea mal un valor (por ejemplo, escribe `1000` como `100`), o una misma categoría queda registrada de formas distintas según quién haya cargado el dato (`Rosario`, `ROSARIO`, `rosario`).
+
+- **Errores del sistema.** Fallas técnicas que interrumpen el registro de información durante un período, generando datos faltantes que no tienen que ver con el fenómeno en sí, sino con un problema de captura.
+
+- **Valores inesperados.** Por ejemplo, si alguien decide representar un dato faltante con un signo de interrogación dentro de una columna numérica, pandas va a interpretar toda la columna como texto (`object`) en lugar de como un tipo numérico, aunque casi todos los valores sean números.
+
+- **Información incompleta.** Es el caso típico de una encuesta con preguntas opcionales: no todas las personas las responden, y eso genera valores faltantes que no se deben a ningún error, sino a que la información directamente no existe.
+
+- **Resolución inadecuada.** Los datos pueden estar disponibles con una granularidad distinta a la que necesitamos para el análisis (por ejemplo, se registraron por día, pero el análisis requiere una resolución horaria).
+
+- **Relevancia de las variables.** Muchas veces los datos se generan como subproducto de otro proceso (un sistema de ventas, una *app*, un sensor) y no fueron pensados específicamente para el análisis que queremos hacer. Antes de poder usarlos, hay que adaptarlos a ese propósito.
+
+- **Formato inadecuado.** La estructura en la que llegan los datos (por ejemplo, en formato ancho cuando se necesita en formato largo, como vamos a ver a continuación) puede no ser la más conveniente para el análisis, y es necesario reorganizarla.
+
+- **Errores de configuración en el registro.** Cuando los datos provienen de fuentes automáticas (sensores, formularios web, integraciones entre sistemas), una mala configuración puede hacer que falten campos o que lleguen en un orden distinto al esperado.
+
+No todos estos problemas tienen solución: por ejemplo, si los datos se registraron a diario y el análisis requiere resolución horaria, esa información simplemente no está disponible y no hay forma de reconstruirla. Sin embargo, la mayoría de los problemas de calidad de datos sí pueden abordarse, y es responsabilidad de quien analiza los datos identificarlos y tratarlos adecuadamente antes de sacar conclusiones. El resto de esta sección presenta algunas de las herramientas más importantes de pandas para esa tarea.
+
 ### Datos en forma larga o ancha
 
-Reformar un DataFrame de Pandas es una de las tareas de manipulación de datos más comunes en el mundo del análisis de datos y consiste en su transposición desde un **formato ancho** (*wide*) a uno **largo** (*long*), o viceversa. A continuación, abordaremos esta operación trabajando con un ejemplo concreto.
+Reformar un `DataFrame` de pandas es una de las tareas de manipulación de datos más comunes en el mundo del análisis de datos y consiste en su transformación desde un **formato ancho** (*wide*) a uno **largo** (*long*), o viceversa. A continuación, abordaremos esta operación trabajando con un ejemplo concreto.
 
 Supongamos una encuesta de movilidad urbana en la que a cada persona se le pregunta cuánto tiempo tarda en ir de su casa al trabajo utilizando distintos medios de transporte: auto, moto, colectivo y bicicleta. Además, se registra cuál es el modo de transporte que la persona utiliza habitualmente.
 
@@ -1049,11 +1069,11 @@ En el formato largo, cada fila representa una observación individual. En este e
 | 2 | bici | 18 | bici |
 
 
-Este formato es especialmente útil para realizar agrupamientos, generar visualizaciones y aplicar modelos estadísticos o de *machine learning*.
+Este formato es especialmente útil para realizar agrupamientos, generar visualizaciones y ajustar modelos estadísticos o de *machine learning*.
 
 #### De formato ancho a formato largo
 
-Para pasar de formato ancho a formato largo en Pandas se utiliza la función **`pd.melt()`**, que permite agrupar varias columnas en una sola, generando un DataFrame con mayor cantidad de filas.
+Para pasar de formato ancho a formato largo en pandas se utiliza la función **`pd.melt()`**, que permite agrupar varias columnas en una sola, generando un `DataFrame` con mayor cantidad de filas.
 
 A continuación, generamos un conjunto de datos sintético que representa la encuesta de movilidad en formato ancho:
 
@@ -1080,7 +1100,7 @@ data = pd.DataFrame({
 data.head()
 ```
 
-Transformamos ahora el DataFrame al formato largo:
+Transformamos ahora el `DataFrame` al formato largo:
 
 ```{code-cell} python
 
@@ -1106,7 +1126,7 @@ print(df_largo)
 
 - `value_name = 'tiempo_viaje'` establece el nombre de la columna que contendrá los valores numéricos correspondientes. 
 
-Si exploramos la estructura del DataFrame resultante utilizando el método `info` presentado anteriormente, nos encontramos con la siguiente salida:
+Si exploramos la estructura del `DataFrame` resultante utilizando el método `info()` presentado anteriormente, nos encontramos con la siguiente salida:
 
 ```{code-cell} python
 
@@ -1123,7 +1143,7 @@ df_largo.info()
 
 En algunas situaciones, el formato largo no resulta el más conveniente. Al momento de comparar los tiempos de viaje entre distintos modos para cada persona, calcular diferencias entre ellos, o construir tablas resumen donde cada modo de transporte aparezca como una columna, resulta más conveniente trabajar con los datos en formato ancho.
 
-En Pandas, esta transformación puede realizarse mediante la función **`pivot()`**, que reorganiza un DataFrame a partir de tres componentes clave:
+En pandas, esta transformación puede realizarse mediante el método **`pivot()`**, que reorganiza un `DataFrame` a partir de tres componentes clave:
 
 - un índice, que identifica las filas,
 
@@ -1131,7 +1151,7 @@ En Pandas, esta transformación puede realizarse mediante la función **`pivot()
 
 - y una variable de valores, que completa la tabla resultante.
 
-Continuando con el ejemplo anterior, partimos del DataFrame `df_largo`, que se encuentra en formato largo y contiene una fila por persona y por modo de transporte.
+Continuando con el ejemplo anterior, partimos del `DataFrame` `df_largo`, que se encuentra en formato largo y contiene una fila por persona y por modo de transporte.
 
 ```{code-cell} python
 
@@ -1141,26 +1161,29 @@ df_ancho = df_largo.pivot(index = ['persona_id', 'modo_elegido'],
 
 print(df_ancho)
 ```
-Como resultado, obtenemos un DataFrame en el que cada fila corresponde a una persona y cada columna representa el tiempo de viaje asociado a un modo de transporte.
+Como resultado, obtenemos un `DataFrame` en el que cada fila corresponde a una persona y cada columna representa el tiempo de viaje asociado a un modo de transporte.
 
 ```{admonition} **Punto importante**
 :class: important
 
-Notar que el DataFrame generado presenta un **índice multinivel**, ya que cada observación está identificada simultáneamente por `persona_id` y por `modo_elegido`. Este tipo de índice surge de manera natural cuando se combinan múltiples variables para identificar las filas.
+Notar que el `DataFrame` generado presenta un **índice multinivel**, ya que cada observación está identificada simultáneamente por `persona_id` y por `modo_elegido`. Este tipo de índice surge de manera natural cuando se combinan múltiples variables para identificar las filas.
 
-En muchos casos, puede resultar más cómodo trabajar con un índice simple. Para ello, podemos restablecer el índice y volver a convertir estas variables en columnas explícitas:
+En muchos casos, puede resultar más cómodo trabajar con un índice simple. Para ello, podemos restablecer el índice y volver a convertir estas variables en columnas explícitas con el método `reset_index()`:
 
 ```python
 df_ancho = df_ancho.reset_index()
 
 print(df_ancho.head())
 
-modo  index  persona_id modo_elegido  auto  bici  bus  moto
-0         0           1         moto    29    24   39    25
-1         1           2         bici    29    18   60    29
-2         2           3         auto    15    47   33    30
-3         3           4         auto    24    26   45    29
-4         4           5         moto    24    48   23    29
+modo  persona_id modo_elegido  auto  bici  bus  moto
+0              1         moto    29    24   39    25
+1              2         bici    29    18   60    29
+2              3         auto    15    47   33    30
+3              4         auto    24    26   45    29
+4              5         moto    24    48   23    29
+```
+
+La palabra `modo` que aparece arriba de la fila de encabezados no es una columna: es el nombre que pandas le asigna al índice de columnas, heredado del parámetro `columns = 'modo'` que usamos en el `pivot()`.
 ```
 
 **¿Por qué volver al formato ancho?**
@@ -1184,7 +1207,7 @@ align: center
 ---
 ```
 
-En el análisis de datos es muy común encontrarnos con valores faltantes, usualmente representados como `NaN` (*Not a Number*) en Pandas. La presencia de estos valores puede deberse a múltiples razones: errores en la recolección de datos, problemas en la carga de la base, o simplemente al hecho de que no todas las variables son relevantes o aplicables para todos los registros. Un ejemplo de esto último podría ser el caso de una base de datos compuesta por información recolectada a partir de una encuesta a todas las personas que componen un grupo de hogares. Si en una de las preguntas se indaga a cada persona acerca de la edad a la cual consiguió su primer trabajo, no sería esperable recibir una respuesta en el caso de un niño de 5 años.
+En el análisis de datos es muy común encontrarnos con valores faltantes, usualmente representados como `NaN` (*Not a Number*) en pandas. La presencia de estos valores puede deberse a múltiples razones: errores en la recolección de datos, problemas en la carga de la base, o simplemente al hecho de que no todas las variables son relevantes o aplicables para todos los registros. Un ejemplo de esto último podría ser el caso de una base de datos compuesta por información recolectada a partir de una encuesta a todas las personas que componen un grupo de hogares. Si en una de las preguntas se indaga a cada persona acerca de la edad a la cual consiguió su primer trabajo, no sería esperable recibir una respuesta en el caso de un niño de 5 años.
 
 ```{admonition} Importante
 :class: important
@@ -1204,9 +1227,9 @@ La elección entre una u otra estrategia dependerá del contexto del problema, d
 
 #### Eliminación de registros con datos faltantes
 
-Por defecto, el método `dropna()` elimina cualquier fila del DataFrame que contenga al menos un valor faltante.
+Por defecto, el método `dropna()` elimina cualquier fila del `DataFrame` que contenga al menos un valor faltante.
 
-Consideremos el siguiente DataFrame de ejemplo:
+Consideremos el siguiente `DataFrame` de ejemplo:
 
 ```{code-cell} python
 
@@ -1218,7 +1241,7 @@ data = pd.DataFrame(
      [1., np.nan, np.nan],
      [np.nan, np.nan, np.nan],
      [np.nan, 6.5, 3.]],
-    columns=['ColA', 'ColB', 'ColC']
+    columns = ['ColA', 'ColB', 'ColC']
 )
 
 print(data)
@@ -1236,7 +1259,7 @@ Observamos que sólo se conserva la fila que no contiene ningún valor faltante.
 
 **Eliminación selectiva con `how = 'all'`**
 
-En algunos casos, puede resultar excesivo eliminar registros que tengan sólo uno o dos valores faltantes. Si nuestro interés es eliminar únicamente aquellas filas que estén **completamente compuestas por `NaN`**, podemos usar el argumento `how='all'`:
+En algunos casos, puede resultar excesivo eliminar registros que tengan sólo uno o dos valores faltantes. Si nuestro interés es eliminar únicamente aquellas filas que estén **completamente compuestas por `NaN`**, podemos usar el argumento `how = 'all'`:
 
 ```{code-cell} python
 
@@ -1455,6 +1478,106 @@ Interpolación lineal por intervalos: en lugar de utilizar un único polinomio g
 ```
 
 Este tipo de interpolación resulta especialmente útil cuando el comportamiento de los datos cambia entre distintos tramos, y es común en el análisis de series temporales.
+
+### Validación de datos
+
+Una vez que los datos fueron limpiados e imputados, todavía queda un paso importante antes de pasar al análisis: **verificar que efectivamente cumplen con lo que se espera de ellos**. Un dataset puede tener los tipos de dato correctos, sin valores faltantes, y aun así contener errores: una edad que no tiene sentido, una categoría mal codificada, una fecha de nacimiento posterior a la fecha actual, o una clave que no tiene correspondencia en ninguna otra tabla.
+
+A este proceso se lo conoce como **validación de datos**, y consiste en aplicar un conjunto de reglas o chequeos que permiten detectar inconsistencias antes de que afecten un análisis posterior. Es una buena práctica realizarlo luego de la limpieza y la imputación, ya que estas operaciones pueden introducir nuevos errores, o dejar en evidencia inconsistencias que antes estaban ocultas detrás de valores faltantes.
+
+Para ilustrar esta sección vamos a trabajar con un extracto de la **Encuesta Nacional de Factores de Riesgo (ENFR)**, una encuesta real realizada por el INDEC (Instituto Nacional de Estadística y Censos) en 2018. Releva comportamientos y condiciones de vida que pueden afectar la salud de la población argentina de 18 años y más, como el consumo de tabaco y alcohol, la alimentación y la actividad física, así como la prevalencia de enfermedades no transmisibles como la hipertensión, la diabetes y la obesidad. Los datos originales, el manual de operaciones y los resultados de la encuesta están disponibles públicamente en la [página del INDEC](https://www.indec.gob.ar/indec/web/Institucional-Indec-BasesDeDatos-2).
+
+Cabe aclarar que no haremos uso de la base original completa, sino un extracto con una selección de variables, sobre 29224 personas encuestadas, con algunas modificaciones introducidas con fines pedagógicos.
+
+```{dropdown} Diccionario de variables del dataset ENFR
+:class: seealso
+
+- `id`: identificador único del caso.
+- `region`: región del país, según la clasificación del INDEC.
+- `sexo`: codificado como `1` = varón, `2` = mujer.
+- `edad`: edad en años cumplidos. Rango esperado: 0 a 104.
+- `ingreso_mensual`: ingreso total mensual del hogar, en pesos. Rango esperado: 0 a 300000.
+- `educacion`: máximo nivel educativo alcanzado (`hasta primario incompleto`, `hasta secundario incompleto`, `secundario completo y más`).
+- `condicion_laboral`: condición de actividad laboral (`ocupado`, `desocupado`, `inactivo`).
+- `depresion_ansiedad`: si la persona se sintió ansiosa o deprimida el día de la entrevista (`sin`, `moderada`, `alta`).
+- `nivel_actividad_fisica`: nivel de actividad física (`alta`, `media`, `baja`).
+- `fumador`: hábito de fumar (`no fumador`, `ex fumador`, `fumador`).
+- `dejar_fumar`: si intentó dejar de fumar en el último año (`Sí`, `No`, `Ns/Nc`).
+- `peso`: peso corporal, en kilogramos.
+- `altura`: altura, en centímetros.
+- `hipertension`: presión arterial elevada por autorreporte (`Sí`, `No`, o el código `99` para "no sabe/no contesta").
+- `diabetes`: diabetes por autorreporte (`Sí`, `No`, `Ns/Nc`).
+```
+
+Comencemos importando la base:
+
+````{code-cell} python
+df_enfr = pd.read_excel('datasets/datos_ENFR.xlsx')
+
+df_enfr.head()
+````
+
+#### Validación de atributos numéricos
+
+Para validar una variable cuantitativa, resulta útil preguntarse cuál es el rango de valores razonables que puede tomar, y comparar eso contra lo que efectivamente aparece en los datos. El método **`describe()`** es un buen punto de partida, ya que devuelve un resumen con algunas medidas descriptivas útiles que veremos en la próxima unidad, entre las que se encuentran el mínimo y el máximo.
+
+Tomemos como ejemplo la variable `edad`:
+
+````{code-cell} python
+df_enfr['edad'].describe()
+````
+
+Sabemos, según la metadata de la encuesta, que la edad máxima esperable en este relevamiento es de 104 años. Sin embargo, al observar la salida de `describe()`, el valor máximo es notoriamente más alto que eso. Esto es una señal de que hay al menos un valor fuera de rango, aunque todavía no sabemos si se trata de un único caso aislado o de un problema más extendido.
+
+Para investigarlo, filtramos el `DataFrame` quedándonos únicamente con las filas donde la edad supera el máximo esperado:
+
+````{code-cell} python
+df_enfr[df_enfr['edad'] > 104]
+````
+
+Supongamos que, tras revisar el registro original, se determina que la edad correcta para ese caso era 25 años. Podemos corregir el valor utilizando indexación booleana junto con `.loc[]`:
+
+```{code-cell} python
+df_enfr.loc[df_enfr['edad'] > 104, 'edad'] = 25
+```
+
+````{admonition} Sobre `.loc[]`
+:class: note
+
+`df.loc[condicion, 'columna']` selecciona, dentro de la columna indicada, únicamente las filas que cumplen la condición booleana y permite asignarles un nuevo valor directamente, sin necesidad de crear una copia intermedia del `DataFrame`.
+````
+
+Después de aplicar la corrección, conviene volver a ejecutar `describe()` sobre la columna para confirmar que el valor máximo ahora se encuentra dentro del rango esperado.
+
+```{code-cell} python
+df_enfr['edad'].describe()
+```
+
+#### Validación de atributos categóricos
+
+Al validar variables categóricas suele aparecer más de un tipo de problema. Dos de los más frecuentes son que pandas interprete una variable categórica como si fuera numérica, y que existan valores que no pertenecen al conjunto de categorías esperadas.
+
+**Variables categóricas mal tipadas.** En nuestro dataset, la columna `sexo` está codificada como `1` (masculino) y `2` (femenino). Si inspeccionamos su tipo de dato:
+
+```{code-cell} python
+df_enfr['sexo'].dtype
+```
+
+pandas la va a reportar como `int64`, ya que no tiene forma de saber, únicamente a partir de los valores `1` y `2`, que en realidad representan categorías y no cantidades. Esto es un problema porque, si no se corrige, alguien podría por error calcular un promedio de la columna `sexo`, lo cual no tiene ningún sentido conceptual. Podemos corregirlo traduciendo los códigos a etiquetas legibles y convirtiendo la columna al tipo `category`:
+
+```{code-cell} python
+df_enfr['sexo_cat'] = df_enfr['sexo'].map({1: 'masculino', 2: 'femenino'}).astype('category')
+```
+
+El método `map()` reemplaza cada valor de la columna según el diccionario provisto, y `astype('category')` le indica explícitamente a pandas que se trata de una variable categórica.
+
+**Valores fuera del conjunto esperado.** Otro chequeo habitual consiste en verificar que una columna categórica solo contenga valores dentro de un conjunto conocido. Por ejemplo, la columna `condicion_laboral` debería tomar únicamente los valores `'Ocupado'`, `'Desocupado'` o `'Inactivo'`:
+
+```{code-cell} python
+df_enfr['condicion_laboral'].unique()
+```
+
+
 
 ### Combinaciones de conjuntos de datos
 
