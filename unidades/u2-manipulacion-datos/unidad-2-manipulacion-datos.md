@@ -206,6 +206,20 @@ Los datos tabulares pueden almacenarse en distintos tipos de archivos, entre ell
 - `.parquet`
 
 
+```{admonition} ¿Por qué JSON aparece en esta lista si es semi-estructurado?
+:class: important
+
+Puede llamar la atención que JSON, presentado en la sección anterior como un formato semi-estructurado, aparezca ahora entre los formatos utilizados para almacenar datos tabulares (que son, por definición, datos estructurados). Vale la pena aclarar esta aparente contradicción antes de seguir.
+
+La clasificación en *estructurado*, *semi-estructurado* y *no estructurado* describe **qué tan flexible es un formato**, es decir, qué tipos de esquema es capaz de representar. No describe la forma específica que tiene un archivo en particular.
+
+- **CSV** solo puede representar datos con un esquema fijo y tabular: no existe forma de expresar en un CSV una jerarquía o una lista de longitud variable dentro de un registro. Por eso CSV queda siempre atado a la categoría de datos estructurados.
+
+- **JSON**, en cambio, es un formato más flexible: puede representar tanto estructuras jerárquicas y de longitud variable (semi-estructuradas, como el ejemplo de `hobbies` visto anteriormente) como, en un caso particular, una lista de objetos donde todos comparten exactamente las mismas claves. Ese caso particular es, ni más ni menos, una tabla.
+
+En definitiva: **todo dato tabular puede expresarse en JSON, pero no todo archivo JSON representa datos tabulares.** Por eso aparece en esta lista: no porque sea inherentemente estructurado, sino porque es capaz de representar, entre otras cosas, datos que sí lo son.
+```
+
 ### Archivos orientados a filas y orientados a columnas
 
 Antes de revisar cada tipo de archivo en particular, es preciso establecer una diferenciación entre las formas generales de organizar físicamente los datos tabulares en un archivo o sistema de almacenamiento:
@@ -1570,11 +1584,36 @@ df_enfr_val['sexo_cat'] = df_enfr_val['sexo'].map({1: 'masculino', 2: 'femenino'
 
 El método `map()` reemplaza cada valor de la columna según el diccionario provisto, y `astype('category')` le indica explícitamente a pandas que se trata de una variable categórica.
 
-**Valores fuera del conjunto esperado.** Otro chequeo habitual consiste en verificar que una columna categórica solo contenga valores dentro de un conjunto conocido. Por ejemplo, la columna `condicion_laboral` debería tomar únicamente los valores `'Ocupado'`, `'Desocupado'` o `'Inactivo'`:
+**Categorías inconsistentes.** Otro problema habitual es que una misma categoría esté registrada de más de una forma distinta dentro de los datos, por ejemplo, por errores de tipeo o por la presencia o ausencia de tildes. El método `value_counts()` es una buena herramienta para detectar este tipo de casos, ya que muestra de un vistazo todas las categorías presentes junto con su frecuencia. Lo usamos acá de forma anticipada, aunque se presenta con más detalle en la sección ***Listado de métodos útiles***, más adelante en esta unidad.
 
 ```{code-cell} python
-df_enfr['condicion_laboral'].unique()
+df_enfr['region'].value_counts()
 ```
+
+Si observamos el resultado con atención, aparecen dos pares de categorías que en realidad representan la misma región, pero escrita de forma distinta: `'Patagonica'` / `'Patagónica'` (con y sin tilde) y `'Nordeste'` / `'Noreste'` (dos formas de referirse a la misma región según el criterio del INDEC). Este tipo de inconsistencia es fácil de pasar por alto, pero distorsiona cualquier análisis posterior que dependa de la variable `region`, ya que reparte los casos de una misma región entre dos categorías en lugar de una.
+
+Para corregir ambos casos a la vez, usamos el método `replace()`, pasándole un diccionario con las correspondencias necesarias:
+
+```{code-cell} python
+df_enfr_val['region'] = df_enfr_val['region'].replace({
+    'Patagonica': 'Patagónica',
+    'Nordeste': 'Noreste'
+})
+```
+
+```{admonition} `replace()` vs. `map()`
+:class: tip
+
+Para este tipo de corrección puntual conviene usar `replace()` y no `map()`. La diferencia es importante: `map()` reemplaza el valor de **cada fila** según el diccionario provisto, y cualquier valor que no aparezca como clave en ese diccionario se convierte en `NaN`. Si acá hubiéramos usado `map()` con un diccionario que solo contiene las dos correcciones, el resto de las regiones (`'Cuyo'`, `'Metropolitana'`, `'Pampeana'`, etc.) se hubiera convertido en valores faltantes, ya que ninguna de ellas está en el diccionario. `replace()`, en cambio, solo modifica los valores que coinciden con alguna clave del diccionario y deja el resto sin tocar, el comportamiento correcto cuando se quiere corregir algunos casos puntuales sin afectar el resto del dataset.
+```
+
+Verificamos que ambas correcciones hayan funcionado, volviendo a contar las categorías:
+
+```{code-cell} python
+df_enfr_val['region'].value_counts()
+```
+
+Ahora `'Patagónica'` y `'Noreste'` aparecen como categorías únicas, cada una con la suma de los casos que antes estaban repartidos entre las dos variantes.
 
 #### Detección de duplicados
 
