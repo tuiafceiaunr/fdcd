@@ -1538,19 +1538,18 @@ df_enfr[df_enfr['edad'] > 104]
 Supongamos que, tras revisar el registro original, se determina que la edad correcta para ese caso era 25 años. Podemos corregir el valor utilizando indexación booleana junto con `.loc[]`:
 
 ```{code-cell} python
-df_enfr.loc[df_enfr['edad'] > 104, 'edad'] = 25
+# Hacemos una copia del DataFrame original para realizar las modificaciones
+df_enfr_val = df_enfr.copy()
+
+df_enfr_val.loc[df_enfr_val['edad'] > 104, 'edad'] = 25
 ```
 
-````{admonition} Sobre `.loc[]`
-:class: note
-
-`df.loc[condicion, 'columna']` selecciona, dentro de la columna indicada, únicamente las filas que cumplen la condición booleana y permite asignarles un nuevo valor directamente, sin necesidad de crear una copia intermedia del `DataFrame`.
-````
+**`df.loc[condicion, 'columna']`** selecciona, dentro de la columna indicada, únicamente las filas que cumplen la condición booleana, y permite asignarles un nuevo valor directamente a esa selección.
 
 Después de aplicar la corrección, conviene volver a ejecutar `describe()` sobre la columna para confirmar que el valor máximo ahora se encuentra dentro del rango esperado.
 
 ```{code-cell} python
-df_enfr['edad'].describe()
+df_enfr_val['edad'].describe()
 ```
 
 #### Validación de atributos categóricos
@@ -1566,7 +1565,7 @@ df_enfr['sexo'].dtype
 pandas la va a reportar como `int64`, ya que no tiene forma de saber, únicamente a partir de los valores `1` y `2`, que en realidad representan categorías y no cantidades. Esto es un problema porque, si no se corrige, alguien podría por error calcular un promedio de la columna `sexo`, lo cual no tiene ningún sentido conceptual. Podemos corregirlo traduciendo los códigos a etiquetas legibles y convirtiendo la columna al tipo `category`:
 
 ```{code-cell} python
-df_enfr['sexo_cat'] = df_enfr['sexo'].map({1: 'masculino', 2: 'femenino'}).astype('category')
+df_enfr_val['sexo_cat'] = df_enfr_val['sexo'].map({1: 'masculino', 2: 'femenino'}).astype('category')
 ```
 
 El método `map()` reemplaza cada valor de la columna según el diccionario provisto, y `astype('category')` le indica explícitamente a pandas que se trata de una variable categórica.
@@ -1577,7 +1576,67 @@ El método `map()` reemplaza cada valor de la columna según el diccionario prov
 df_enfr['condicion_laboral'].unique()
 ```
 
+#### Detección de duplicados
 
+Otro chequeo habitual consiste en identificar registros repetidos. Consideremos el siguiente `DataFrame` de ejemplo, con mediciones de muestras de laboratorio:
+
+````{code-cell} python
+
+mediciones = pd.DataFrame({
+    'id_muestra': [1, 2, 3, 3, 4],
+    'area': [3.2, 2.7, 2.9, 2.9, 2.6],
+    'volumen': [8.2, 6.9, 7.7, 7.7, 6.9]
+})
+
+print(mediciones)
+````
+
+El método `duplicated()` devuelve una `Series` booleana que marca con `True` cada fila que es una repetición exacta de una fila anterior:
+
+````{code-cell} python
+mediciones.duplicated()
+````
+
+Para quedarnos únicamente con las filas que no se repiten, se utiliza el método `drop_duplicates()`:
+
+````{code-cell} python
+mediciones.drop_duplicates()
+````
+
+En muchos casos, sin embargo, no interesa detectar filas *enteramente* duplicadas, sino verificar la unicidad de una columna puntual que debería identificar de forma única a cada observación, como un identificador. En nuestro dataset, la columna `id` debería identificar sin ambigüedades a cada persona encuestada:
+
+````{code-cell} python
+duplicados = df_enfr['id'].duplicated()
+print(df_enfr[duplicados])
+````
+
+Si el resultado no está vacío, significa que hay identificadores repetidos, lo cual normalmente no debería ocurrir.
+
+#### Consistencia entre columnas
+
+Algunos chequeos no dependen de una sola columna, sino de la relación entre varias. El dataset ENFR no tiene un caso de este tipo, pero es un chequeo frecuente en otros contextos: si un dataset tuviera columnas `fecha_inicio` y `fecha_fin`, sería razonable esperar que la segunda sea siempre posterior a la primera:
+
+````{code-cell} python
+:tags: ["skip-execution"]
+
+inconsistencias = df['fecha_fin'] < df['fecha_inicio']
+print(df[inconsistencias])
+````
+
+#### Más allá de pandas
+Para proyectos más grandes, donde conviene declarar de forma reutilizable qué reglas debe cumplir un dataset, existen librerías especializadas en validación de datos, como `pandera`. Permiten definir un "esquema" con las reglas esperadas para cada columna y validar un `DataFrame` completo de una sola vez:
+
+```python
+import pandera as pa
+
+esquema = pa.DataFrameSchema({
+    'edad': pa.Column(int, pa.Check.between(0, 104)),
+})
+
+esquema.validate(df_enfr)
+```
+
+También existen herramientas orientadas a validar datos dentro de flujos de trabajo más grandes y automatizados, como `Great Expectations`. No forman parte del contenido de este curso, pero vale la pena saber que existen para cuando el volumen o la complejidad de los datos lo justifique.
 
 ### Combinaciones de conjuntos de datos
 

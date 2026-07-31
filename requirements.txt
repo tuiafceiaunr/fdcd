@@ -1,6 +1,7 @@
 pandas
 numpy
 pytz
+pandera
 openpyxl
 matplotlib
 seaborn
